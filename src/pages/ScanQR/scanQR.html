@@ -1,0 +1,46 @@
+<div class="container" style="padding: 0;">
+    <div class="ScanQR-header">
+        <div style="line-height: 50px; float: left;">
+            <button id="PickApp-button-pick" style="height: 40px; border: none; background-color: #1E2833;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                </svg>
+            </button>
+            <!-- <img style="padding: 0; margin: 0;"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAA21BMVEVHcEzR7/mGqsR6pcHd8PaqzuCDrcdHfKMVYJEBWYw1cZz+///39fOMsMhUhqkeZZQ4cZwoaZYNXY9+psFThaphjq+b0Onu8O9kj7E8dJ1Crd/2+vv96eGN0u81r+QznMuw3/Isa5jb7/U7r+MfqeFOueecu9AsrOJuxOtXh6pKteVvw+mBzO1ZvOd8y+xcveit4PTw8e0VpeAyruP4rJT3p5D5vKjxWSnycEv2noX7w7H1k3j5wbD0gmLxXTD0hWb3qJH0iWr2lXnyb0vwUh/yZj7zc1DyZDn0gWEEvxu3AAAASXRSTlMAHXaZJxhRw/7/3gEJP6X3y/H/XZB8LQ+b2M0FGF7x6z7nMtv/zXP6lbLWdFOpgb5RPf/pX3Uo/9ZiNYtOm/iwSXdd0P/lve/Hl/YjrQAAAZ1JREFUeAFskAMSxAAMAFPbtnn2/192rptBsDGMBEExHNaFICmaYVGCWyJeECVaphSV0og5w3VWZQ3T0ihaEYUpIylVsgUegDMNR2X10WgOdxmKtH6OJ9i0Kmt+T4MwQrpEDryYYhKth2mWF6n327nU3kY5ghC7eVWbH2zZdCN44CPjbessbzfvCK/JamKYI2TGHGx3YV6/azlBT97ref22QbtHwAqKA/9xLbJR3Xi0beUGHpjHf/4pCoMeWsfwXO36y49FnqU9fBfsL+eqRj52fMjzw+hF19sd4t0lLwLC3Id5tud5a4CPV5vEkMBADJzitrnWto2Jsf7/i2o3HJuyUm2+GvVX0/5unAcu5DPao0JtLMnMBqPmYk7qjur9q/J1PwgjxWvF+TxD/Bi1OD6ZvAtHkYT0QM6wSsJU1t4Cis5kbhCjzSEJL4jkT6aMQio9kAEiapWHutHslaeMEQ2H0iFW0quftQP7PpWOIj1HUaoRazA5xwZvy+MqwtjVrx8j8LE8KJ1VdBxg9ErjnV/fU52ciwH/V13y0ht6AueMOFH8ctIWAAAAAElFTkSuQmCC"
+                alt="">
+            <span style="color: rgba(255, 255, 255, .75);;">HOMEOS VIỆT NAM</span> -->
+        </div>
+    </div>
+    <div style="padding: 0 20px 0 20px;">
+        <!-- <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="margin-bottom: 30px; margin-top: 20px;"> -->
+        <img src="https://sonlahpc.hymetco.com/dist/img/logo_hymetco.png" alt="" width="180" style="margin-bottom: 1px; margin-top: 1px;">
+        <div style="padding: 20px 20px 0 20px;">
+            <div class="tab">
+                <button id="tab-scan-qr" class="tablinks tablinkQR">Quét QR</button>
+                <button id="tab-text" class="tablinks tablinkQR">Nhập thủ công</button>
+            </div>
+        </div>
+        <div id="tab1" class="tab-content">
+            <button class="clickScanQR start" data-id="1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" fill="currentColor" style="color: #000000;" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                    <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
+                    <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
+                    <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+                    <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
+                    <path d="M12 9h2V8h-2z" />
+                </svg>
+            </button>
+        </div>
+        <div id="tab2" class="tab-content">
+            <div style="color: #fff; font-size: 1.5rem; padding: 50px 0 0 0;">Định danh thiết bị</div>
+            <div style="text-align: start; margin: 15px 0;">
+                <span style="color: #fff;">Mã trạm:</span>
+                <input id="device_name" type="text" style="width: 100%; height: 50px; color: #fff; padding-left: 20px; margin-top: 10px; background-color: #343a40; border: none; border-bottom: 1px solid #626262;" placeholder="Nhập mã trạm...">
+            </div>
+            <button id="truycap" class="btn btn-warning" style="background-color: #f39c12;border: solid 1px #f39c12; width: 100%; color: #fff; margin-top: 20px;">Truy cập trạm</button>
+        </div>
+    </div>
+</div>
+<script src="https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/ScanQR/scanQR.js"></script>
+<!-- <script src="./pages/ScanQR/scanQR.js"></script> -->

@@ -1,0 +1,487 @@
+<div class="background">
+    <div id="landscape"></div>
+    <div id="glass"></div>
+</div>
+<div class="container-homePage" style="padding: 0; width: 100%;">
+    <div class="homePage-header history-header" style="background-color: #282d31; z-index: 1001; position: fixed; height: 50px; top: 0; left: 0;">
+        <div style="line-height: 50px; justify-content: flex-start;" class="d-flex">
+            <button class="ScanQRNext" style="height: 40px; border: none; background-color: #282d31;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                    style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                </svg>
+            </button>
+            <p id="footer-stationName" style="width: 250px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">-</p>
+        </div>
+        <div class="d-flex" style="line-height: 50px; margin-right: 20px;">
+            <button id="share-qrcode-workstation" style="height: 40px; border: none; background-color: #282d31; padding: 0;margin-right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" style="color: #fff;" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                    <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div>-</div>
+    <div id="homePage-body" class="pb-5 pt-4">
+        <div id="box-status" class="row" style="margin: 15px; margin-bottom: 0;">
+            <div class=" col-5" style="padding-left: 0; padding-right: 0; padding-bottom: 15px;">
+                <div class="box-value"
+                    style="height: 100%; padding-left: 0; padding-right: 0; margin-right: 0; display: flex; align-items: center; justify-content: center;">
+                    <div>
+                        <div class="d-flex">
+                            <div id="statusBattery">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="margin-right: 5px; color: yellow" fill="currentColor" class="bi bi-battery-half" viewBox="0 0 16 16">
+                                    <path d="M2 6h5v4H2z" />
+                                    <path d="M2 4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm10 1a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm4 3a1.5 1.5 0 0 1-1.5 1.5v-3A1.5 1.5 0 0 1 16 8" />
+                                </svg>
+                            </div>
+                            <p style="margin: 0; font-size: 14px; line-height: 30px;">Năng lượng</p>
+                        </div>
+                        <div>
+                            <p id="energy" style="font-size: 25px; margin: 0;">-</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-7" style="padding-left: 0; padding-right: 0;">
+                <div class="box-value" style="height: 80px;">
+                    <div class="d-flex" style="line-height: 20px;">
+                        <div id="status"></div>
+                        <p style="margin: 0; font-size: 14px; margin-left: 10px;">Trạng thái</p>
+                    </div>
+                    <div>
+                        <p id="text-status" style="font-size: 16px; margin: 0;">mất kết nối</p>
+                    </div>
+                </div>
+                <div class="box-value" style="height: 80px;">
+                    <div class="d-flex" style="line-height: 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5" />
+                        </svg>
+                        <p style="margin: 0; font-size: 14px; margin-left: 10px;">Cập nhật</p>
+                    </div>
+                    <div>
+                        <p id="lateDateTime" style="font-size: 16px; margin: 0;">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="listValue" class="row">
+            <div id="box-RT" class="d-none col-6 p-2">
+                <div class="box-value d-flex"
+                    style="height: 116px; margin: 0; padding-left: 0; padding-top: 0;">
+                    <div style="width: 60px;">
+                        <div id="temperature"
+                            style="pointer-events: none; margin-left: 5px; width: 50px; height: 100px;">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="250 200 200 200">
+                                <defs>
+                                    <linearGradient id="liquidGrad" x1="557" y1="150" x2="557" y2="546"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#FF0909" />
+                                        <stop offset="0.2" stop-color="#F3481A" />
+                                        <stop offset="0.5" stop-color="#FABA2C" />
+                                        <stop offset="1" stop-color="#00BCF2" />
+                                    </linearGradient>
+                                    <rect id="tube" x="357" y="150" width="60" height="400" rx="43"
+                                        ry="43" />
+                                    <clipPath id="liquidMask">
+                                        <use xlink:href="#tube" class="liquidMask" />
+                                    </clipPath>
+                                    <clipPath id="tubeMask">
+                                        <use xlink:href="#tube" class="liquidMask" />
+                                    </clipPath>
+                                    <path id="liquid"
+                                        d="M757,552v490H357V552c50,0,50,20,100,20s50-20,100-20,50,20,100,20S707,552,757,552Z" />
+                                    <mask id="gradMask">
+                                        <use xlink:href="#liquid" class="liquid" x="0" fill="#FCEFD6" />
+                                        <use xlink:href="#liquid" class="liquid" x="0" fill="#EEE"
+                                            opacity="0.7" />
+                                    </mask>
+                                </defs>
+
+
+                                <g class="whole" transform="translate(0, -40)">
+
+                                    <use xlink:href="#tube" class="tubeBg" fill="#C8D9D3" opacity="0.61" />
+
+                                    <g class="dragger d-none" transform="translate(-6, 0)">
+                                        <circle cx="294" cy="540" r="36" fill="#FABA2C" />
+                                        <path class="dragTip"
+                                            d="M315.5,556.76,299.24,540.5l16.26-16.26,36.26,16.26Z"
+                                            fill="#FABA2C" />
+                                        <text class="label" x="294" y="551"
+                                            style="font-weight: 700;">100</text>
+                                        <!--  <path id="dragShine" d="M330,540c-26,2-18-44-72,0a36,36,0,0,1,72,0Z" fill="#E9E9E9" opacity="0.052"/>    -->
+                                    </g>
+
+
+                                    <g mask="url(#gradMask)">
+                                        <use xlink:href="#tube" fill="url(#liquidGrad)" />
+                                    </g>
+                                    <line class="tubeShine" x1="371" y1="200" x2="371" y2="443" fill="none"
+                                        stroke="#FFF" stroke-linecap="round" stroke-miterlimit="10"
+                                        stroke-width="8" opacity="0.21" stroke-dasharray="153 30"
+                                        stroke-dashoffset="-20" />
+                                    <!--        <text class="tubeLabel" x="400" y="180">100°</text>
+                                      <text class="tubeLabel" x="400" y="356">50°</text>
+                                      <text class="tubeLabel" x="400" y="540">0°</text> -->
+                                    <g class="measurements" fill="none" stroke="#FCEFD6" stroke-width="3"
+                                        stroke-linecap="round" opacity="1">
+                                        <line x1="358" y1="196" x2="370" y2="196" />
+                                        <line x1="358" y1="234" x2="370" y2="234" />
+                                        <line x1="358" y1="273" x2="370" y2="273" />
+                                        <line x1="358" y1="311" x2="370" y2="311" />
+                                        <line x1="358" y1="350" x2="370" y2="350" />
+                                        <line x1="358" y1="388" x2="370" y2="388" />
+                                        <line x1="358" y1="426" x2="370" y2="426" />
+                                        <line x1="358" y1="465" x2="370" y2="465" />
+                                        <line x1="358" y1="503" x2="370" y2="503" />
+                                    </g>
+
+                                    <!--  <rect class="tubeShine" x="372" y="162" width="56" height="364.02" rx="31.5" ry="31.5" fill="none" stroke="#fff" stroke-miterlimit="10" stroke-width="8" stroke-linecap="round" stroke-dasharray="15 30" opacity="0.31"/> -->
+                                    <circle class="follower" cx="400" cy="540" r="0" fill="#62B6CB"
+                                        fill-opacity="1" stroke="#FCEFD6" stroke-width="0" />
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div>
+                            <p id="titleRT">Nhiệt độ</p>
+                            <h5 id="RT">-</h5>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="box-RH" class="d-none col-6 p-2" style="padding-right: 0;">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            style="color: #00ffff;" fill="currentColor" class="bi bi-thermometer-snow"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M5 12.5a1.5 1.5 0 1 1-2-1.415V9.5a.5.5 0 0 1 1 0v1.585A1.5 1.5 0 0 1 5 12.5" />
+                            <path
+                                d="M1 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM3.5 1A1.5 1.5 0 0 0 2 2.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0L5 10.486V2.5A1.5 1.5 0 0 0 3.5 1m5 1a.5.5 0 0 1 .5.5v1.293l.646-.647a.5.5 0 0 1 .708.708L9 5.207v1.927l1.669-.963.495-1.85a.5.5 0 1 1 .966.26l-.237.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.884.237a.5.5 0 1 1-.26.966l-1.848-.495L9.5 8l1.669.963 1.849-.495a.5.5 0 1 1 .258.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.237.883a.5.5 0 1 1-.966.258L10.67 9.83 9 8.866v1.927l1.354 1.353a.5.5 0 0 1-.708.708L9 12.207V13.5a.5.5 0 0 1-1 0v-11a.5.5 0 0 1 .5-.5" />
+                        </svg>
+                        <p style="padding-left: 5px;">Độ ẩm</p>
+                    </div>
+                    <h5 id="RH">-</h5>
+                </div>
+            </div>
+            <div id="box-RP" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            style="color: #0084ff;" fill="currentColor" class="bi bi-speedometer2"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z" />
+                            <path fill-rule="evenodd"
+                                d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3" />
+                        </svg>
+                        <p style="padding-left: 5px;">Áp suất</p>
+                    </div>
+                    <h5 id="RP">-</h5>
+                </div>
+            </div>
+            <div id="box-RD" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            style="color: #d2d6db;" fill="currentColor"
+                            class="bi bi-cloud-lightning-rain-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M2.658 11.026a.5.5 0 0 1 .316.632l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.316m9.5 0a.5.5 0 0 1 .316.632l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.316m-7.5 1.5a.5.5 0 0 1 .316.632l-.5 1.5a.5.5 0 1 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.316m9.5 0a.5.5 0 0 1 .316.632l-.5 1.5a.5.5 0 0 1-.948-.316l.5-1.5a.5.5 0 0 1 .632-.316m-7.105-1.25A.5.5 0 0 1 7.5 11h1a.5.5 0 0 1 .474.658l-.28.842H9.5a.5.5 0 0 1 .39.812l-2 2.5a.5.5 0 0 1-.875-.433L7.36 14H6.5a.5.5 0 0 1-.447-.724zm6.352-7.249a5.001 5.001 0 0 0-9.499-1.004A3.5 3.5 0 1 0 3.5 10H13a3 3 0 0 0 .405-5.973" />
+                        </svg>
+                        <p style="padding-left: 5px;">Lượng mưa</p>
+                    </div>
+                    <div class="d-flex justify-content-center" style="align-items: center;">
+                        <h5 id="RD">0 mm</h5>
+                        <p style="font-size: 12px; margin: 0; margin-left: 5px; padding-bottom: 5px;"
+                            id="lastTimeRain"></p>
+                    </div>
+                    <p>Trong ngày</p>
+                </div>
+            </div>
+            <div id="box-RN" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            class="bi bi-moisture" viewBox="0 0 16 16">
+                            <path
+                                d="M13.5 0a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V7.5h-1.5a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V15h-1.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5zM7 1.5l.364-.343a.5.5 0 0 0-.728 0l-.002.002-.006.007-.022.023-.08.088a29 29 0 0 0-1.274 1.517c-.769.983-1.714 2.325-2.385 3.727C2.368 7.564 2 8.682 2 9.733 2 12.614 4.212 15 7 15s5-2.386 5-5.267c0-1.05-.368-2.169-.867-3.212-.671-1.402-1.616-2.744-2.385-3.727a29 29 0 0 0-1.354-1.605l-.022-.023-.006-.007-.002-.001zm0 0-.364-.343zm-.016.766L7 2.247l.016.019c.24.274.572.667.944 1.144.611.781 1.32 1.776 1.901 2.827H4.14c.58-1.051 1.29-2.046 1.9-2.827.373-.477.706-.87.945-1.144zM3 9.733c0-.755.244-1.612.638-2.496h6.724c.395.884.638 1.741.638 2.496C11 12.117 9.182 14 7 14s-4-1.883-4-4.267" />
+                        </svg>
+                        <p style="padding-left: 5px;">Mực nước</p>
+                    </div>
+                    <h5 id="RN">-</h5>
+                </div>
+            </div>
+            <div id="box-SS" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-droplet-half" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10c0 0 2.5 1.5 5 .5s5-.5 5-.5c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"/>
+                            <path fill-rule="evenodd" d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z"/>
+                        </svg>
+                        <p style="padding-left: 5px;">Độ mặn</p>
+                    </div>
+                    <h5 id="SS">-</h5>
+                </div>
+            </div>
+            <div id="box-EC" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-lightning" viewBox="0 0 16 16">
+                            <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1z"/>
+                        </svg>
+                        <p style="padding-left: 5px;">Độ dẫn điện</p>
+                    </div>
+                    <h5 id="EC">-</h5>
+                </div>
+            </div>
+            <div id="box-TN" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-beaker" viewBox="0 0 16 16">
+                            <path d="M9.5 3a.5.5 0 0 0 0 1H13V3zm2 2a.5.5 0 0 0 0 1H13V5zm-2 2a.5.5 0 0 0 0 1H13V7zm2 2a.5.5 0 0 0 0 1H13V9zm-2 2a.5.5 0 0 0 0 1H13v-1zm2 2a.5.5 0 0 0 0 1H13v-1z"/>
+                            <path d="M.5 0a.5.5 0 0 0-.354.854l.122.12A2.5 2.5 0 0 1 1 2.744V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2.743a2.5 2.5 0 0 1 .732-1.768l.122-.121A.5.5 0 0 0 15.5 0zM2 2.743A3.5 3.5 0 0 0 1.535 1h12.93A3.5 3.5 0 0 0 14 2.743V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                          </svg>
+                        <p style="padding-left: 5px;">Dung tích</p>
+                    </div>
+                    <h5 id="TN">-</h5>
+                </div>
+            </div>
+            <div id="box-QV" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-water" viewBox="0 0 16 16">
+                            <path d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"/>
+                          </svg>
+                        <p style="padding-left: 5px;">Lưu lượng đến</p>
+                    </div>
+                    <h5 id="QV">-</h5>
+                </div>
+            </div>
+            <div id="box-QR" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-water" viewBox="0 0 16 16">
+                            <path d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"/>
+                          </svg>
+                        <p style="padding-left: 5px;">Lưu lượng xả</p>
+                    </div>
+                    <h5 id="QR">-</h5>
+                </div>
+            </div>
+            <div id="box-QN" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-water" viewBox="0 0 16 16">
+                            <path d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"/>
+                          </svg>
+                        <p style="padding-left: 5px;">Lưu lượng Nước</p>
+                    </div>
+                    <h5 id="QN">-</h5>
+                </div>
+            </div>
+            <div id="box-VN" class="d-none col-6 p-2">
+                <div class="box-value" style="height: 116px; margin: 0;">
+                    <div class="d-flex justify-content-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-water" viewBox="0 0 16 16">
+                            <path d="M.036 3.314a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 3.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 6.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0L.314 9.964a.5.5 0 0 1-.278-.65m0 3a.5.5 0 0 1 .65-.278l1.757.703a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.014-.406a2.5 2.5 0 0 1 1.857 0l1.015.406a1.5 1.5 0 0 0 1.114 0l1.757-.703a.5.5 0 1 1 .372.928l-1.758.703a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.014-.406a1.5 1.5 0 0 0-1.114 0l-1.015.406a2.5 2.5 0 0 1-1.857 0l-1.757-.703a.5.5 0 0 1-.278-.65"/>
+                          </svg>
+                        <p style="padding-left: 5px;">Tốc độ dòng chảy</p>
+                    </div>
+                    <h5 id="VN">-</h5>
+                </div>
+            </div>
+        </div>
+        <div id="acQuy">
+            <!-- <div class="progress"
+                style="background-color: #242427; border: solid 1px #484848; height: 25px; border-radius: 15px; box-shadow: 2px 2px #0c0c0c;">
+                <div id="acQuy-bar" class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25"
+                    aria-valuemin="0" aria-valuemax="100">-</div>
+            </div> -->
+        </div>
+        <div id="Chart">
+            <div class="d-flex justify-content-between">
+                <div class="d-none d-flex justify-content-center align-items-center"
+                    style="height: 40px; padding-top: 10px; padding-left: 10px;">
+                    <div id="loading-spinner" class="d-none spinner-border text-light" role="status">
+                    </div>
+                </div>
+                <div class="button-list">
+                    <button id="button-list-ngay" class="btn btn-primary btn-chart active"
+                        type="button">Ngày</button>
+                    <button id="button-list-tuan" class="btn btn-primary btn-chart"
+                        type="button">Tuần</button>
+                    <button id="button-list-thang" class="btn btn-primary btn-chart"
+                        type="button">Tháng</button>
+                    <button id="button-list-nam" class="btn btn-primary btn-chart"
+                        type="button">Năm</button>
+                </div>
+            </div>
+            <div id="chart-QN" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ lưu lượng nước</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartQN" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-VN" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ tốc độ dòng chảy</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartVN" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RD" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ lượng mưa</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="lineBarChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RT" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 id="titleChartRT" style="margin: 0; padding-left: 2px;">Biểu đồ nhiệt độ</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartRT" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RH" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ độ ẩm</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartRH" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RP" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ áp suất</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartRP" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RN" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ mực nước</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartRN" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-RN72H" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Mực nước trong 72h qua</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartRN72H" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-SS" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" style="color: white; padding-top: 5px;" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                    </svg> -->
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ độ mặn</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartSS" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-EC" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ độ dẫn điện</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartEC" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-TN" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ dung tích</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartTN" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-QV" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ lưu lượng đến</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartQV" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div id="chart-QR" class="d-none form-total">
+                <div class="header-form d-flex">
+                    <h3 style="margin: 0; padding-left: 2px;">Biểu đồ lưu lượng xả</h3>
+                </div>
+                <div class="content-form">
+                    <canvas id="ChartQR" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div style="color: #313539;">-</div>
+        </div>
+    </div>
+    <div class="homePage-footer history-footer d-flex text-white justify-content-around align-items-center" style="z-index: 1001; position: fixed; height: 60px; bottom: 0; left: 0; right: 0; margin: 10px 20px; border-radius: 50px; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2); background: rgba(0, 0, 0, 0.6);">
+        <!-- <div class="d-flex align-items-center"> -->
+            <button id="export-kttv" class="btn d-flex flex-column align-items-center text-white p-0" style="margin-right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                     class="bi bi-file-earmark-arrow-down mb-1" viewBox="0 0 16 16">
+                    <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                </svg>
+                <small>Xuất báo cáo</small>
+            </button>
+            <button id="scanUpload" class="btn d-none flex-column align-items-center text-white p-0" style="margin-right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" style="color: #fff;" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                    <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
+                    <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                </svg>
+                <small>Báo cáo hiện trạng</small>
+            </button>
+            <button id="settingAlert" class="btn d-none flex-column align-items-center text-white p-0" style="margin-right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" style="color: #fff;" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+                </svg>
+                <small>Cảnh báo</small>
+            </button>
+        <!-- </div> -->
+    </div>
+</div>
+<script src="https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/KTTV/kttv.js"></script>
+<!-- <script src="./pages/KTTV/kttv.js"></script> -->
