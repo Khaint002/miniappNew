@@ -49,7 +49,7 @@ function showAddWorkStationButton() {
     buttonHTML.on('click', function () {
         if (HOMEOSAPP.checkTabHistory == 1) {
             HOMEOSAPP.stopInterval();
-            HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 2) {
             $(".WarrantyScanNext").click();
         }
@@ -186,7 +186,7 @@ function handleItemClick(item) {
     const itemHistory = { 'CodeWorkStation': item.CodeWorkStation, 'NameWorkStation': item.NameWorkStation, 'domain': item.domain, 'date': HOMEOSAPP.getCurrentTime(), 'workstationType': item.workstationType }
     localStorage.setItem('itemHistory', JSON.stringify(itemHistory));
     $("#loading-popup").show();
-    HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/KTTV/kttv.html");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 }
 
 HOMEOSAPP.stopInterval = function() {
@@ -675,7 +675,7 @@ function addMarkers(locations, mapContainerId) {
         map.invalidateSize();
 
         // ✅ Sau khi map đã sẵn sàng -> mới fetch và thêm layer GeoJSON
-        fetch('https://sonlahpc.hymetco.com/singlepage/SONLAHPC/dist/json/coordinates.json')
+        fetch('https://miniapp-new.vercel.app/src/dist/json/coordinates.json')
             .then(response => response.json())
             .then(data => {
                 const coordinatesLayer = L.layerGroup().addTo(map);
@@ -1159,7 +1159,7 @@ function WarningEnergy(value) {
 $("#PickApp-button-scanQR").click(function () {
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
-        HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/ScanQR/scanQR.html");
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     } else if (HOMEOSAPP.checkTabHistory == 2) {
         $(".WarrantyScanNext").click();
     }

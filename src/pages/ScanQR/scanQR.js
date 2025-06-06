@@ -916,7 +916,7 @@ async function CheckWorkStation(workstationID) {
         // document.getElementById("footer-stationName").textContent = data[0].WORKSTATION_ID + " - " + data[0].WORKSTATION_NAME;
         localStorage.setItem("MATRAM", data[0].WORKSTATION_ID);
         toastr.success("Truy cập thành công!");
-        HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/KTTV/kttv.html");
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
     }
 }
 
@@ -941,7 +941,7 @@ function scanAgain() {
 $("#result-truycap").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
-    HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/KTTV/kttv.html");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 });
 
 $("#PickApp-button-pick").click(function () {

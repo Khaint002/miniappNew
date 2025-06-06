@@ -162,7 +162,7 @@ function handleMuaApp() {
     // showElement("LoadScreen", "img-station");
     $('#loading-popup').show();
     hideElement("pickApp");
-    HOMEOSAPP.loadPage("https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/History/history.html");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
     setTimeout(() => {
         // hideElement("LoadScreen", "img-station");
         $('#loading-popup').hide();

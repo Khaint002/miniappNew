@@ -1,14 +1,50 @@
 var HOMEOSAPP = {};
 HOMEOSAPP.application = "";
+var typeQR;
 HOMEOSAPP.listDomain = [];
 HOMEOSAPP.checkTabHistory = 0;
 HOMEOSAPP.UserID = localStorage.getItem("userID");
-var typeQR;
 var checkReport = '';
 let historyStack = ['pickApp'];
 var UserID = localStorage.getItem("userID");
 var DataUser = JSON.parse(localStorage.getItem("userInfo"));
 let screens = document.querySelectorAll('.app > div[id]');
+localStorage.setItem('historyStack', JSON.stringify([]));
+
+HOMEOSAPP.loadPage = function (url) {
+    let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+    if (!historyStack.includes(url)) {
+        historyStack.push(url);
+    } else {
+        historyStack.splice(historyStack.indexOf(url), 1);
+        historyStack.push(url);
+    }
+    localStorage.setItem('historyStack', JSON.stringify(historyStack));
+
+    if (url.startsWith("http")) {
+        $("#content-block").load(url);
+    } else {
+        $("#"+url).show();
+    }
+}
+
+HOMEOSAPP.goBack = function () {
+    let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+    let preUrl;
+    if (historyStack[historyStack.length - 1].startsWith("http")) {
+        if (historyStack.length > 1) {
+            historyStack.pop();
+            preUrl = historyStack[historyStack.length - 1];
+            localStorage.setItem('historyStack', JSON.stringify(historyStack));
+            $("#content-block").load(preUrl);
+        }
+    } else if(historyStack.length > 1) {
+        preUrl = historyStack[historyStack.length - 1];
+        $("#"+preUrl).hide();
+        historyStack.pop();
+        localStorage.setItem('historyStack', JSON.stringify(historyStack));
+    }
+}
 
 setTimeout(() => {
     document.getElementById("LoadScreen").classList.add("d-none");
@@ -33,14 +69,23 @@ setTimeout(() => {
             }
         ];
     }
-    
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if(urlParams){
+        window.workstationID = urlParams.get('workstationID');
+    }
     if(window.workstationID){
         HOMEOSAPP.application = "KTTV";
         HOMEOSAPP.checkTabHistory = 1;
-        $("#content-block").load("https://son-la-hpc.vercel.app/pages/ScanQR/scanQR.html");
+        let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+        historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        localStorage.setItem('historyStack', JSON.stringify(historyStack));
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+        // $("#content-block").load();
     } else {
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
-        $("#content-block").load("https://son-la-hpc.vercel.app/pages/menu/menu.html");
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
     }
 }, 2000);
 
@@ -92,8 +137,8 @@ HOMEOSAPP.handleUser = async function (type) {
         }
     } else {
         // localStorage.setItem('RoleUser', 'GUEST');
-        document.getElementById("QUYEN").classList.add("d-none");
-        document.getElementById("LogoPickScreen").style.paddingTop = "10vh";
+        document.getElementById("QUYEN")?.classList.add("d-none");
+        document.getElementById("LogoPickScreen")?.style.setProperty("padding-top", "10vh");
     }
     WarrantyCheckUser(localStorage.getItem("RoleUser"));
 }
@@ -139,8 +184,204 @@ async function getListDomain() {
     }
 }
 
-getListDomain();
 
+HOMEOSAPP.getDM = async function (url, table_name, c, check) {
+    let user_id_getDm = 'admin';
+    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
+    if(check == "NotCentral"){
+        let dataUser;
+        if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else {
+            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        }
+         
+        user_id_getDm = dataUser[0].StateName;
+        Sid_getDM = dataUser[0].StateId;
+    }
+    const d = {
+        // Uid: 'vannt',
+        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
+        Uid: user_id_getDm,
+        Sid: Sid_getDM,
+        tablename: table_name,
+        c: c,
+        other: '',
+        cmd: ''
+    };
+    
+    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url+"/getDm?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    resolve(state);  // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                HomeOS.Service.SetActionControl(true);
+                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+                reject(e);  // Trả về lỗi nếu thất bại
+            }
+        });
+    });
+}
+getListDomain();
+HOMEOSAPP.add = async function (table, data, URL, check) {
+    // const d = {Uid: "vannt", Sid:'3d798037-9bd9-4195-8673-a4794547d2fd', tablename:table, jd:JSON.stringify(data), ex:''};
+    let user_id_getDm = 'admin';
+    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
+    let url = 'https://central.homeos.vn/service_XD/service.svc';
+    if(check == "NotCentral"){
+        url = URL;
+        let dataUser;
+        if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else {
+            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        }
+        
+        user_id_getDm = dataUser[0].StateName;
+        Sid_getDM = dataUser[0].StateId;
+    }
+    
+    const d = { Uid: user_id_getDm, Sid: Sid_getDM, tablename: table, jd: JSON.stringify(data), ex: '' };
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            // url: "https://DEV.HOMEOS.vn/service/service.svc/ExecuteData?callback=?",
+            url: url+"/ExecuteData?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    resolve(state);  // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+            },
+            error: function (e, t, x) {
+            }
+        });
+    });
+}
+
+HOMEOSAPP.WorkstationStatistics = async function(url, c, check, code) {
+    let user_id_getDm = 'admin';
+    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
+    if(check == "NotCentral"){
+        let dataUser;
+        if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else {
+            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        }
+        
+        user_id_getDm = dataUser[0].StateName;
+        Sid_getDM = dataUser[0].StateId;
+    }
+    const maTram = localStorage.getItem("MATRAM");
+    const d = {
+        // Uid: 'vannt',
+        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
+        Uid: user_id_getDm,
+        Sid: Sid_getDM,
+        c: c
+    };
+    
+    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url+"/WorkstationStatistics?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    const result = state.DATA.find(obj => obj.hasOwnProperty("DN"+maTram+"3"));
+                    const dataArray = result["DN"+maTram+"3"];
+                    resolve(dataArray);  // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                HomeOS.Service.SetActionControl(true);
+                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+                reject(e);  // Trả về lỗi nếu thất bại
+            }
+        });
+    });
+}
+
+HOMEOSAPP.getNewData = function (workstation, c, url, key) {
+    return new Promise((resolve, reject) => {
+        let urlK;
+        if(key){
+            urlK = url + "/GetNewData?w=" + workstation +"&k="+key;
+        } else {
+            urlK = url + "/GetNewData?w=" + workstation;
+        }
+        $.ajax({
+            url: urlK,
+            type: "GET",
+            dataType: "jsonp",
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    resolve(state); // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error); // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                document.getElementById("result-form-total").classList.remove("d-none");
+                document.getElementById("result-condition").classList.add("d-none");
+                document.getElementById("result-form-loading").classList.add("d-none");
+                document.getElementById("result-form").classList.remove("d-none");
+                document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+                document.getElementById("result-form-title").classList.remove("d-none");
+                document.getElementById("result-form-stationID").classList.add("d-none");
+                document.getElementById("result-form-stationName").classList.add("d-none");
+                document.getElementById("result-truycap").classList.add("d-none");
+                //toastr.error("Vui lòng quét đúng mã QR!");
+            },
+        });
+    });
+}
 
 HOMEOSAPP.getCurrentTime = function(time) {
     // Tạo đối tượng Date mới để lấy thời gian hiện tại
@@ -198,7 +439,7 @@ HOMEOSAPP.getDataChart = function(typeTime, start, end, type, zone, url) {
 HOMEOSAPP.getDataReport = function(active, url) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: url + "/ApiServicePublic/" + "GetDataReport" +"/" + "ACTIVE="+active,
+            url: url + "/ApiServicePublic/" + "GetDataReport/ACTIVE="+active,
             type: "GET",
             dataType: "jsonp",
             contentType: "application/json; charset=utf-8",
@@ -220,7 +461,61 @@ HOMEOSAPP.getDataReport = function(active, url) {
     });
 }
 
+function checkRoleUser(user_id, password, url, check) {
+    let sessionItems = JSON.parse(localStorage.getItem('dataSession')) || [];
 
+    if (check === "Export") {
+        sessionItems = sessionItems.filter(item => item.url !== url);
+        localStorage.setItem('dataSession', JSON.stringify(sessionItems));
+    }
+    // Tìm session trùng với URL
+    const existingSession = sessionItems.find(item => item.url === url);
+
+    if (existingSession) {
+        // Nếu đã có session → trả về luôn
+        return Promise.resolve([{
+            StateName: user_id,
+            StateId: existingSession.sid // giả sử bạn lưu `sid` ở đây
+        }]);
+    }
+
+    // Nếu chưa có session, gọi API
+    const d = {
+        Uid: user_id,
+        p: password,
+        ip: '0.0.0.0',
+        a: '6fba9a59-46f1-42e6-baea-b2479fa1eb3b'
+    };
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url + "GetSessionId?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    const state = JSON.parse(msg);
+                    const newSession = {
+                        url: url,
+                        sid: state[0]?.StateId || '', // lưu sid nếu có
+                        name: state[0]?.StateName || user_id
+                    };
+                    // Cập nhật localStorage
+                    sessionItems.push(newSession);
+                    localStorage.setItem('dataSession', JSON.stringify(sessionItems));
+                    resolve(state);
+                } catch (error) {
+                    reject(error);
+                }
+            },
+            error: function (e, t, x) {
+                reject(e);
+            }
+        });
+    });
+}
 
 function roundToTwoDecimals(num) {
     if (Number.isInteger(num)) {
@@ -234,7 +529,7 @@ var chartConfigs = [
     { id: "ChartRT", varName: "ChartRT", zone: "RT", label: "Nhiệt độ (°C)", unit: "°C", type: "line", color: "rgb(173 14 14)", border: "rgb(173 14 14)", divideBy10: true, tension: 0.4 },
     { id: "ChartRH", varName: "ChartRH", zone: "RH", label: "Độ ẩm (%)", unit: "%", type: "line", color: "rgb(13,154,154, 0.5)", border: "rgb(13,154,154)", divideBy10: true, fill: true, tension: 0.4, min: 0, max: 100 },
     { id: "ChartRP", varName: "ChartRP", zone: "RP", label: "Áp suất (hPa)", unit: "hPa", type: "line", color: "rgb(40, 167, 69)", border: "rgb(40, 167, 69)", divideBy10: true, dashed: true },
-    { id: "ChartRN", varName: "ChartRN", zone: "RN", label: "Mực nước (cm)", unit: "cm", type: "line", color: "rgb(0,95,95, 0.5)", border: "rgb(13,154,154)", divideBy10: false, fill: true, tension: 0.4 },
+    { id: "ChartRN", varName: "ChartRN", zone: "RN", label: "Mực nước (m)", unit: "m", type: "line", color: "rgb(0,95,95, 0.5)", border: "rgb(13,154,154)", divideBy10: true, fill: true, tension: 0.4 },
     { id: "ChartSS", varName: "ChartSS", zone: "SS", label: "Độ mặn (ppt)", unit: "ppt", type: "line", color: "rgb(40, 167, 69)", border: "rgb(40, 167, 69)", divideBy10: true, tension: 0.4 },
     { id: "ChartEC", varName: "ChartEC", zone: "EC", label: "Độ dẫn điện (μs/cm)", unit: "μs/cm", type: "line", color: "rgb(0,95,95)", border: "rgb(13,154,154)", divideBy10: true, tension: 0.4 },
     { id: "ChartTN", varName: "ChartTN", zone: "TN", label: "dung tích (tr.m³)", unit: "tr.m³", type: "line", color: "rgb(0,95,95)", border: "rgb(13,154,154)", divideBy10: true, tension: 0.4 },
@@ -281,8 +576,8 @@ HOMEOSAPP.createChartData = function(data, type, typeData) {
                 value = config.divideBy10 ? item.AverageValue / 10000 : item.AverageValue;
             } else if(zone == 'EC'){
                 value = config.divideBy10 ? item.AverageValue / 1000 : item.AverageValue;
-            } else if(zone == 'QN' || zone == 'VN') {
-                value = config.divideBy10 ? item.AverageValue : item.AverageValue;
+            } else if(zone == 'QN' || zone == 'VN' || zone == 'RN') {
+                value = config.divideBy10 ? item.AverageValue / 100 : item.AverageValue;
             } else {
                 value = config.divideBy10 ? item.AverageValue / 10 : item.AverageValue;
             }
@@ -384,10 +679,142 @@ HOMEOSAPP.formatDateTime = function(date) {
     return formattedDatetime
 }
 
+HOMEOSAPP.callBackExport = function (link) {
+    
+}
 
+function sha1Encode(message) {
+    function rotate_left(n, s) {
+        return (n << s) | (n >>> (32 - s));
+    }
 
+    function cvt_hex(val) {
+        let str = "";
+        let i;
+        let v;
+        for (i = 7; i >= 0; i--) {
+            v = (val >>> (i * 4)) & 0x0f;
+            str += v.toString(16);
+        }
+        return str;
+    }
+
+    function utf8_encode(str) {
+        return unescape(encodeURIComponent(str));
+    }
+
+    let blockstart;
+    let i, j;
+    const W = new Array(80);
+    let H0 = 0x67452301;
+    let H1 = 0xEFCDAB89;
+    let H2 = 0x98BADCFE;
+    let H3 = 0x10325476;
+    let H4 = 0xC3D2E1F0;
+    let A, B, C, D, E;
+    let temp;
+
+    message = utf8_encode(message);
+    const msg_len = message.length;
+
+    const word_array = [];
+    for (i = 0; i < msg_len - 3; i += 4) {
+        j = (message.charCodeAt(i) << 24) |
+            (message.charCodeAt(i + 1) << 16) |
+            (message.charCodeAt(i + 2) << 8) |
+            message.charCodeAt(i + 3);
+        word_array.push(j);
+    }
+
+    switch (msg_len % 4) {
+        case 0:
+            i = 0x080000000;
+            break;
+        case 1:
+            i = (message.charCodeAt(msg_len - 1) << 24) | 0x0800000;
+            break;
+        case 2:
+            i = (message.charCodeAt(msg_len - 2) << 24) |
+                (message.charCodeAt(msg_len - 1) << 16) |
+                0x08000;
+            break;
+        case 3:
+            i = (message.charCodeAt(msg_len - 3) << 24) |
+                (message.charCodeAt(msg_len - 2) << 16) |
+                (message.charCodeAt(msg_len - 1) << 8) |
+                0x80;
+            break;
+    }
+
+    word_array.push(i);
+
+    while ((word_array.length % 16) !== 14) word_array.push(0);
+
+    word_array.push(msg_len >>> 29);
+    word_array.push((msg_len << 3) & 0x0ffffffff);
+
+    for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+        for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
+        for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+        A = H0;
+        B = H1;
+        C = H2;
+        D = H3;
+        E = H4;
+
+        for (i = 0; i <= 19; i++) {
+            temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 20; i <= 39; i++) {
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 40; i <= 59; i++) {
+            temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        for (i = 60; i <= 79; i++) {
+            temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+            E = D;
+            D = C;
+            C = rotate_left(B, 30);
+            B = A;
+            A = temp;
+        }
+
+        H0 = (H0 + A) & 0x0ffffffff;
+        H1 = (H1 + B) & 0x0ffffffff;
+        H2 = (H2 + C) & 0x0ffffffff;
+        H3 = (H3 + D) & 0x0ffffffff;
+        H4 = (H4 + E) & 0x0ffffffff;
+    }
+
+    const sha1hash = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+    return sha1hash.toLowerCase();
+}
 
 $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
-    window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
+    if(window.shareWorkStation){
+        window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
+    } else {
+
+    }
 });
