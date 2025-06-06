@@ -449,7 +449,7 @@ $("#BackCodeQR").click(function () {
 
 $(".ScanQRNext").click(function () {
     stopIntervalMonitoring()
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+    HOMEOSAPP.goBack();
 });
 
 $("#button-list-ngay").click(function () {

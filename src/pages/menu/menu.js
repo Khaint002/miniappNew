@@ -76,7 +76,7 @@ var apps = [
     { id: "IOT", name: "Web OS", version: "v4.56 Pro", description: "IIoT", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: false },
     { id: "den", name: "Đèn", version: "v6.10.24", description: "Chiếu sáng thông minh", bgColor: "#28a745", icon: "bi-lightbulb-fill", visible: false },
     { id: "warranty", name: "Bảo hành", version: "v1.0.4", description: "Bảo hành sản phẩm", bgColor: "#e29038", icon: "bi-tools", visible: false },
-    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Điều khiển, giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: false }
+    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Điều khiển, giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: true }
 ];
 
 function renderApps(apps, containerId) {
@@ -149,10 +149,11 @@ async function pickApp(type) {
 
         case 'CONTROL':
             HOMEOSAPP.application = "CONTROL";
-            checkApp = type;
-            showElement("history");
-            hideElement("pickApp");
-            runLed7();
+            handleControlApp();
+            // checkApp = type;
+            // showElement("history");
+            // hideElement("pickApp");
+            // runLed7();
             break;
     }
 }
@@ -174,6 +175,37 @@ function handleMuaApp() {
 
         $('.workstation_access').removeClass("d-none");
         $('.workstation_category').removeClass("d-none");
+        $('.warranty_scansQRcode').addClass("d-none");
+        $('.warranty_lot').addClass("d-none");
+        $('.warranty_scanQRcode').addClass("d-none");
+
+        // historyListDetail.empty();
+        // showAddWorkStationButton();
+        HOMEOSAPP.checkTabHistory = 1;
+        // showHistory();
+        // pickApp('MUA');
+    }, 2000);
+}
+
+function handleControlApp() {
+    // showElement("LoadScreen", "img-station");
+    $('#loading-popup').show();
+    hideElement("pickApp");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+    setTimeout(() => {
+        // hideElement("LoadScreen", "img-station");
+        $('#loading-popup').hide();
+        showElement("history");
+        $('#nameHistory').removeClass("d-none");
+        $('#nameHistory').addClass("d-flex");
+        $('#listTabMap').addClass("d-none");
+        $('#NameHistoryPage').text("Tủ điều khiển:");
+        $('#descHistoryPage').text("Lịch sử tủ đã truy cập:");
+        $('#historySelect').addClass("d-none");
+        $('#footerHistoryPage').text("chọn tủ đã truy cập hoặc thêm mới");
+        
+        $('.workstation_access').addClass("d-none");
+        $('.workstation_category').addClass("d-none");
         $('.warranty_scansQRcode').addClass("d-none");
         $('.warranty_lot').addClass("d-none");
         $('.warranty_scanQRcode').addClass("d-none");

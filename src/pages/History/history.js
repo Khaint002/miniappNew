@@ -27,10 +27,9 @@ async function pickApp(type) {
 
         case 'CONTROL':
             HOMEOSAPP.application = "CONTROL";
-            checkApp = type;
-            showElement("history");
-            hideElement("pickApp");
-            runLed7();
+            checkTabHistory = 1;
+            addItemWarranty('condition');
+            // runLed7();
             break;
     }
 }
@@ -562,21 +561,16 @@ function addMarkers(locations, mapContainerId) {
     if (map) {
         map.remove(); // Xóa bản đồ cũ
     }
-    //[20.304373, 100.256392], [24.353953, 108.614381]
     const bounds = L.latLngBounds(
-        L.latLng(20.3, 100.2),  // Góc dưới trái
-        L.latLng(24.3, 106.6)  // Góc trên phải
+        L.latLng(6.2, 100.1),  // Góc dưới trái
+        L.latLng(26.3, 110.6)  // Góc trên phải
     );
-    // const bounds = L.latLngBounds(
-    //     L.latLng(8.2, 102.1),  // Góc dưới trái
-    //     L.latLng(23.4, 110.0)  // Góc trên phải
-    // );
     map = L.map(mapContainerId, {
-        maxBounds: bounds,       // Giới hạn vùng
+        maxBounds: bounds,
         maxBoundsViscosity: 1.0,
-        minZoom: 7,   
+        minZoom: 6,
         maxZoom: 19,
-    }).setView([21.8, 103], 7);
+    }).setView([16.0, 106.0], 6);
 
     map.on('moveend', function () {
         if (!bounds.contains(map.getCenter())) {
@@ -591,63 +585,39 @@ function addMarkers(locations, mapContainerId) {
     // });
 
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // const tiles = L.tileLayer('http://somebits.com:8001/rivers/{z}/{x}/{y}.json', {
         maxZoom: 19
     }).addTo(map);
-
-    
-    
+    // fetch(`http://somebits.com:8001/rivers/${10}/${512}/${314}.json`)
+    // .then(response => response.json())
+    // .then(data => {
+    //     L.geoJSON(data).addTo(map);
+    // });
     locations.forEach(loc => {
         let typeName = '';
         if(loc.type == "N"){
             typeName = 'N';
-        } else if(loc.type == "M" || loc.type == "MS" ){
+        } else if(loc.type == "M" || loc.type == "MS"){
             typeName = 'R';
         }
-        
-        let customHTML = "";
-        if(loc.type == "MSL"){
-            customHTML= `
-                <div class="marker-wrapper marker-${loc.code}">
-                    <div class="marker-label marker-label-${loc.code}" style="font-size: 13px;"></div>
-                    <svg class="marker-pin" viewBox="0 0 24 24">
-                        <path d="M12 0C8.1 0 5 3.1 5 7c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z" fill="#4285f4" stroke="rgb(66, 133, 244)" stroke-width="2"/>
-                    </svg>
-                    <div class="mePin-wrapper">
-                        <div class="mePin-child">
-                            <b>${typeName}</b>
-                        </div>
+        const customHTML = `
+            <div class="marker-wrapper marker-${loc.code}">
+                <div class="marker-label marker-label-${loc.code}" style="font-size: 13px;"></div>
+                <svg class="marker-pin" viewBox="0 0 24 24">
+                    <path d="M12 0C8.1 0 5 3.1 5 7c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z" fill="#4285f4" stroke="rgb(66, 133, 244)" stroke-width="2"/>
+                    <circle cx="12" cy="8.5" r="3.5" fill="white"/>
+                </svg>
+                <div class="mePin-wrapper">
+                    <div class="mePin-child">
+                        <b>${typeName}</b>
+                        <svg id="mePin" xmlns="http://www.w3.org/2000/svg" width="33.3" height="32.4" viewBox="0 0 43.3 42.4">
+                            <path class="ring_outer mePin bounceInDown" fill="#dc3545" d="M28.6 23c6.1 1.4 10.4 4.4 10.4 8 0 4.7-7.7 8.6-17.3 8.6-9.6 0-17.4-3.9-17.4-8.6 0-3.5 4.2-6.5 10.3-7.9.7-.1-.4-1.5-1.3-1.3C5.5 23.4 0 27.2 0 31.7c0 6 9.7 10.7 21.7 10.7s21.6-4.8 21.6-10.7c0-4.6-5.7-8.4-13.7-10-.8-.2-1.8 1.2-1 1.4z"></path>
+                            <path class="ring_inner" fill="#dc3545" d="M27 25.8c2 .7 3.3 1.8 3.3 3 0 2.2-3.7 3.9-8.3 3.9-4.6 0-8.3-1.7-8.3-3.8 0-1 .8-1.9 2.2-2.6.6-.3-.3-2-1-1.6-2.8 1-4.6 2.7-4.6 4.6 0 3.2 5.1 5.7 11.4 5.7 6.2 0 11.3-2.5 11.3-5.7 0-2-2.1-3.9-5.4-5-.7-.1-1.2 1.3-.7 1.5z"></path>
+                        </svg>
                     </div>
                 </div>
-            `;
-        } else if(loc.type == "NMLLTD"){
-            customHTML= `
-                <div class="marker-wrapper marker-${loc.code}">
-                    <div class="marker-label marker-label-${loc.code}" style="font-size: 13px;"></div>
-                    <svg class="marker-pin" viewBox="0 0 24 24" width="18" height="24" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="12,20 4,6 20,6" fill="#ffe400" stroke="#ffe400" stroke-width="1" />
-                    </svg>
-                    <div class="mePin-wrapper">
-                        <div class="mePin-child">
-                            <b>${typeName}</b>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else if(loc.type == "TD"){
-            customHTML= `
-                <div class="marker-wrapper marker-${loc.code}">
-                    <div class="marker-label marker-label-${loc.code}" style="font-size: 13px;"></div>
-                    <svg class="marker-pin" viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="6" y="6" width="18" height="18" fill="#ffe400" stroke="#ffe400" stroke-width="1" />
-                    </svg>
-                    <div class="mePin-wrapper">
-                        <div class="mePin-child">
-                            <b style="right: 10px;">${typeName}</b>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+            </div>
+        `;
 
         const icon = L.divIcon({
             className: `custom-marker custom-${loc.code}`,
@@ -656,7 +626,8 @@ function addMarkers(locations, mapContainerId) {
             iconAnchor: [20, 40],
             popupAnchor: [0, -40]
         });
-        
+        console.log(loc);
+
         const marker = L.marker(loc.coords, { icon, customData: loc }).addTo(map);
         marker.options.customData = {
             type: loc.type, // Loại của trạm (NAAM, N, M, v.v.)
@@ -671,24 +642,9 @@ function addMarkers(locations, mapContainerId) {
         marker.bindPopup(loc.popup);
         markerMap.set(loc.code, marker);
     });
+
     setTimeout(() => {
         map.invalidateSize();
-
-        // ✅ Sau khi map đã sẵn sàng -> mới fetch và thêm layer GeoJSON
-        fetch('https://miniapp-new.vercel.app/src/dist/json/coordinates.json')
-            .then(response => response.json())
-            .then(data => {
-                const coordinatesLayer = L.layerGroup().addTo(map);
-                for (let i = 0; i < data.length; i++) {
-                    let coord = L.geoJson(data[i], {
-                        color: data[i].config?.stroke,
-                        fillColor: data[i].config?.fill,
-                        weight: 1.5,
-                        fillOpacity: 0.5,
-                    });
-                    coordinatesLayer.addLayer(coord);
-                }
-            });
     }, 10);
 }
 // setInterval(() => {
@@ -1553,6 +1509,140 @@ $("#backCategory").click(function () {
     showCategory();
     historyListCategoryAdd.empty();
 });
+
+//history control
+function addItemWarranty() {
+    if (HOMEOSAPP.application == 'CONTROL') {
+        let ConditionItems = JSON.parse(localStorage.getItem('dataCondition'));
+
+        console.log('1:', ConditionItems);
+        if (ConditionItems && ConditionItems.length > 0) {
+            historyListDetail.empty()
+            ConditionItems.forEach(item => {
+
+                const element = $(
+                    '<div class="iconApp">' +
+                    '<div id="App' + item.CodeCondition + '" class="icon" style="background-color: #28a745 !important; display: block">' +
+                    '<img style="width: 70px; height: 70px; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgCondition + '" alt="">' +
+                    '</div>' +
+                    '<div class="info-box-content" style="padding-right: 0">' +
+                    '<div class="d-flex justify-content-between">' +
+                    '<span class="app-text">' + item.CodeCondition + '</span>' +
+                    '<span class="app-text" style="padding-right: 0">' + item.date.substring(0, 11) + '</span>' +
+                    '</div>' +
+                    '<span class="app-text-number" style="padding-right: 0">' + item.NameCondition + '</span>' +
+                    '</div>' +
+                    '</div>'
+                );
+                // Tạo phần tử bao bọc với nút X
+                const totalElement = $(
+                    '<div style="padding-bottom: 13px; position: relative;" class="history-item" data-code="' + item.CodeCondition + '">' +
+                    '<div class="close-icon">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">' +
+                    '<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>' +
+                    '</svg>' +
+                    '</div>' +
+                    '</div>'
+                );
+
+                // Thêm phần tử chính vào phần tử bao bọc
+                totalElement.append(element);
+
+                // Gắn sự kiện click cho nút X
+                totalElement.find('.close-icon').on('click', function (e) {
+                    e.stopPropagation(); // Ngăn chặn sự kiện click lan đến phần tử chính
+
+                    // Hiển thị popup xác nhận
+                    const confirmDelete = confirm(`Bạn có chắc chắn muốn xóa tủ điều khiển "${item.NameCondition}" khỏi phần lịch sử?`);
+                    if (confirmDelete) {
+                        totalElement.remove(); // Xóa phần tử nếu người dùng chọn "Có"
+                        ConditionItems = ConditionItems.filter(i => i.CodeCondition !== item.CodeCondition);
+                        localStorage.setItem('dataCondition', JSON.stringify(ConditionItems));
+                        toastr.success(`tủ "${item.CodeCondition}" đã bị xóa!`);
+                        if (ConditionItems.length == 0) {
+                            showAddWorkStationButton(); // Ẩn nút nếu có ít nhất 1 phần tử
+                        }
+                    }
+                });
+
+                // Gắn sự kiện click cho phần tử chính
+                element.on('click', function () {
+                    accessDevice(item.CodeCondition, 'DK');
+                    document.getElementById("history").classList.add("hidden");
+                });
+
+                // Thêm phần tử vào danh sách lịch sử
+
+                historyListDetail.append(totalElement);
+            });
+        }
+    } else {
+        warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
+
+        console.log(warrantyItems);
+        if (warrantyItems && warrantyItems.length > 0) {
+            historyListDetail.empty()
+            warrantyItems.forEach(item => {
+
+                const element = $(
+                    '<div class="iconApp">' +
+                    '<div id="App' + item.CodeWarranty + '" class="icon" style="background-color: #28a745 !important; display: block">' +
+                    '<img style="width: 100%; height: 100%; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgWarranty + '" alt="">' +
+                    '</div>' +
+                    '<div class="info-box-content" style="padding-right: 0">' +
+                    '<div class="d-flex justify-content-between">' +
+                    '<span class="app-text">' + item.CodeWarranty + '</span>' +
+                    '<span class="app-text" style="padding-right: 0">' + item.date.substring(0, 11) + '</span>' +
+                    '</div>' +
+                    '<span class="app-text-number" style="padding-right: 0">' + item.NameWarranty + '</span>' +
+                    '</div>' +
+                    '</div>'
+                );
+                // Tạo phần tử bao bọc với nút X
+                const totalElement = $(
+                    '<div style="padding-bottom: 13px; position: relative;" class="history-item" data-code="' + item.CodeWarranty + '">' +
+                    '<div class="close-icon">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">' +
+                    '<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>' +
+                    '</svg>' +
+                    '</div>' +
+                    '</div>'
+                );
+
+                // Thêm phần tử chính vào phần tử bao bọc
+                totalElement.append(element);
+
+                // Gắn sự kiện click cho nút X
+                totalElement.find('.close-icon').on('click', function (e) {
+                    e.stopPropagation(); // Ngăn chặn sự kiện click lan đến phần tử chính
+
+                    // Hiển thị popup xác nhận
+                    const confirmDelete = confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${item.NameWarranty} [${item.CodeWarranty}]" khỏi phần lịch sử?`);
+                    if (confirmDelete) {
+                        totalElement.remove(); // Xóa phần tử nếu người dùng chọn "Có"
+                        warrantyItems = warrantyItems.filter(i => i.CodeWarranty !== item.CodeWarranty);
+                        localStorage.setItem('dataWarranty', JSON.stringify(warrantyItems));
+                        toastr.success(`Trạm "${item.CodeWarranty}" đã bị xóa!`);
+                        if (warrantyItems.length == 0) {
+                            showAddWorkStationButton(); // Ẩn nút nếu có ít nhất 1 phần tử
+                        }
+                    }
+                });
+
+                // Gắn sự kiện click cho phần tử chính
+                element.on('click', function () {
+                    accessDevice(item.CodeWarranty.substring(2));
+                    document.getElementById("history").classList.add("hidden");
+                });
+
+                // Thêm phần tử vào danh sách lịch sử
+
+                historyListDetail.append(totalElement);
+            });
+        }
+    }
+}
+
 
 checkHeight();
 pickApp(HOMEOSAPP.application);
