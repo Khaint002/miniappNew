@@ -281,12 +281,10 @@ function formatCustomDate(date) {
 
 
 $("#schedule-condition").click(function () {
-    // $("#title-condition-popup").text("Biểu đồ điện năng pha 3");
-    $("#schedule-condition-popup").show();
-    // initCharts()
+    HOMEOSAPP.loadPage("schedule-condition-popup")
 });
 $("#error-condition").click(function () {
-    // $("#title-condition-popup").text("Biểu đồ điện năng pha 3");
+    
     $("#error-condition-popup").show();
     // initCharts()
 });

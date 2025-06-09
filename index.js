@@ -136,9 +136,7 @@ HOMEOSAPP.handleUser = async function (type) {
             console.error("Error fetching user data:", error);
         }
     } else {
-        // localStorage.setItem('RoleUser', 'GUEST');
         document.getElementById("QUYEN")?.classList.add("d-none");
-        document.getElementById("LogoPickScreen")?.style.setProperty("padding-top", "10vh");
     }
     WarrantyCheckUser(localStorage.getItem("RoleUser"));
 }
