@@ -168,6 +168,8 @@ function handleMuaApp() {
         // hideElement("LoadScreen", "img-station");
         $('#loading-popup').hide();
         showElement("history");
+        $('#nameHistory').addClass("d-none");
+        $('#nameHistory').removeClass("d-flex");
         $('#NameHistoryPage').text("Quan trắc:")
         $('#descHistoryPage').text("Lịch sử truy cập")
         $('#historySelect').removeClass("d-none");
