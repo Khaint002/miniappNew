@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <link rel="stylesheet" href="/index.css" />
@@ -22,7 +23,8 @@
     <div class="app h-100">
         <div id="LoadScreen">
             <div id="LogoLoadScreen" class="d-flex flex-column justify-content-center align-items-center w-100">
-                <img id="LogoLoadScreen" src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200">
+                <img id="LogoLoadScreen" src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt=""
+                    width="200">
                 <!-- <h3 style="color: rgba(255, 255, 255, .8);">Thuỷ điện sơn la</h3> -->
             </div>
             <img id="img-station" class="hidden full-screen-img"
@@ -302,19 +304,9 @@
                                 d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                         </svg>
                     </button>
-                    <p id="title-condition-popup" style="
-                width: 250px;
-                font-size: 20px;
-                color: #fff;
-                text-align: left;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-              ">
-                        -
-                    </p>
+                    <p id="title-condition-popup" style="width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">-</p>
                 </div>
-                <div class="row">
+                <div class="row" style="overflow-y: auto; height: 90%;">
                     <div class="col-md-12 mb-4">
                         <canvas id="chartVoltage"></canvas>
                     </div>
@@ -695,9 +687,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <script src="/index.js"></script>
+    <script src="/src/api/ajax.js"></script>
     <!-- <script src="https://son-la-hpc.vercel.app/src/api/ajax.js"></script> -->
 </body>
 

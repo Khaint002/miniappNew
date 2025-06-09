@@ -173,7 +173,6 @@ if (typeof HomeOS !== 'undefined') {
 
 async function getListDomain() {
     const datatest = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_SERVICE', "1=1");
-    console.log(datatest.data);
     for (let i = datatest.data.length - 1; i >= 0; i--) {
         if(datatest.data[i].DOMAIN == "sonla.homeos.vn"){
             datatest.data[i].DOMAIN = "sonlahpc.hymetco.com"

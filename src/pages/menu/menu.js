@@ -1,6 +1,5 @@
 var UserID = localStorage.getItem("userID");
 var DataUser = JSON.parse(localStorage.getItem("userInfo"));
-console.log('chạy');
 
 async function handleUser() {
     if (UserID) {

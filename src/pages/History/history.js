@@ -1567,8 +1567,8 @@ function addItemWarranty() {
 
                 // Gắn sự kiện click cho phần tử chính
                 element.on('click', function () {
-                    accessDevice(item.CodeCondition, 'DK');
-                    document.getElementById("history").classList.add("hidden");
+                    HOMEOSAPP.itemControl = item;
+                    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
                 });
 
                 // Thêm phần tử vào danh sách lịch sử
