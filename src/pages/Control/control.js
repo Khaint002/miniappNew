@@ -190,7 +190,7 @@ async function saveCondition(data) {
     localStorage.setItem('dataCondition', JSON.stringify(waranntyItems));
 }
 
-const renderReray = async function (data) {
+var renderReray = async function (data) {
     return new Promise((resolve) => {
         const typeMatch = data.match(/(\d+)K-(\d+)TB/i);
         const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
@@ -839,7 +839,9 @@ var onClose = function () {
     wss = null;
 }
 
-
+$(".WarrantyScanNext").click(function () {
+    HOMEOSAPP.handleControlApp();
+})
 
 createChartDataCondition = function (data) {
     // Destroy charts if exist

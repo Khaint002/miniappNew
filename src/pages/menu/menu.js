@@ -148,7 +148,7 @@ async function pickApp(type) {
 
         case 'CONTROL':
             HOMEOSAPP.application = "CONTROL";
-            handleControlApp();
+            HOMEOSAPP.handleControlApp("IN");
             // checkApp = type;
             // showElement("history");
             // hideElement("pickApp");
@@ -188,36 +188,7 @@ function handleMuaApp() {
     }, 2000);
 }
 
-function handleControlApp() {
-    // showElement("LoadScreen", "img-station");
-    $('#loading-popup').show();
-    hideElement("pickApp");
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
-    setTimeout(() => {
-        // hideElement("LoadScreen", "img-station");
-        $('#loading-popup').hide();
-        showElement("history");
-        $('#nameHistory').removeClass("d-none");
-        $('#nameHistory').addClass("d-flex");
-        $('#listTabMap').addClass("d-none");
-        $('#NameHistoryPage').text("Tủ điều khiển:");
-        $('#descHistoryPage').text("Lịch sử tủ đã truy cập:");
-        $('#historySelect').addClass("d-none");
-        $('#footerHistoryPage').text("chọn tủ đã truy cập hoặc thêm mới");
-        
-        $('.workstation_access').addClass("d-none");
-        $('.workstation_category').addClass("d-none");
-        $('.warranty_scansQRcode').addClass("d-none");
-        $('.warranty_lot').addClass("d-none");
-        $('.warranty_scanQRcode').addClass("d-none");
 
-        // historyListDetail.empty();
-        // showAddWorkStationButton();
-        HOMEOSAPP.checkTabHistory = 1;
-        // showHistory();
-        // pickApp('MUA');
-    }, 2000);
-}
 
 async function handleWarrantyApp() {
     checkApp = 'GUA';

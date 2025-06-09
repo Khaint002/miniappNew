@@ -678,6 +678,66 @@ HOMEOSAPP.formatDateTime = function(date) {
     return formattedDatetime
 }
 
+HOMEOSAPP.handleControlApp = function(check) {
+    // showElement("LoadScreen", "img-station");
+    $('#loading-popup').show();
+    hideElement("pickApp");
+    if(check == 'IN'){
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        setTimeout(() => {
+            // hideElement("LoadScreen", "img-station");
+            $('#loading-popup').hide();
+            showElement("history");
+            $('#nameHistory').removeClass("d-none");
+            $('#nameHistory').addClass("d-flex");
+            $('#listTabMap').addClass("d-none");
+            $('#NameHistoryPage').text("Tủ điều khiển:");
+            $('#descHistoryPage').text("Lịch sử tủ đã truy cập:");
+            $('#historySelect').addClass("d-none");
+            $('#footerHistoryPage').text("chọn tủ đã truy cập hoặc thêm mới");
+            
+            $('.workstation_access').addClass("d-none");
+            $('.workstation_category').addClass("d-none");
+            $('.warranty_scansQRcode').addClass("d-none");
+            $('.warranty_lot').addClass("d-none");
+            $('.warranty_scanQRcode').addClass("d-none");
+
+            // historyListDetail.empty();
+            // showAddWorkStationButton();
+            HOMEOSAPP.checkTabHistory = 1;
+            // showHistory();
+            // pickApp('MUA');
+        }, 2000);
+    } else {
+        HOMEOSAPP.goBack();
+        setTimeout(() => {
+            // hideElement("LoadScreen", "img-station");
+            $('#loading-popup').hide();
+            showElement("history");
+            $('#nameHistory').removeClass("d-none");
+            $('#nameHistory').addClass("d-flex");
+            $('#listTabMap').addClass("d-none");
+            $('#NameHistoryPage').text("Tủ điều khiển:");
+            $('#descHistoryPage').text("Lịch sử tủ đã truy cập:");
+            $('#historySelect').addClass("d-none");
+            $('#footerHistoryPage').text("chọn tủ đã truy cập hoặc thêm mới");
+            
+            $('.workstation_access').addClass("d-none");
+            $('.workstation_category').addClass("d-none");
+            $('.warranty_scansQRcode').addClass("d-none");
+            $('.warranty_lot').addClass("d-none");
+            $('.warranty_scanQRcode').addClass("d-none");
+
+            // historyListDetail.empty();
+            // showAddWorkStationButton();
+            HOMEOSAPP.checkTabHistory = 1;
+            // showHistory();
+            // pickApp('MUA');
+        }, 200);
+    }
+    
+}
+
 HOMEOSAPP.callBackExport = function (link) {
     
 }
