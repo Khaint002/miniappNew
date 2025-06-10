@@ -874,8 +874,39 @@ function openTab(evt, tabName) {
 }
 
 $("#truycap").click(function () {
-    getInputValue()
+    if(HOMEOSAPP.checkTabHistory == 1){
+        getInputValue()
+    } else if(HOMEOSAPP.checkTabHistory == 2){
+        checkDevice();
+    }
 });
+
+async function checkDevice() {
+    var inputValue = document.getElementById("device_name").value;
+    
+    if (inputValue == null || inputValue == "") {
+        toastr.error("Vui lòng nhập mã thiết bị!");
+    } else {
+        let dataWarranty = [];
+        const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
+        const matchedItem = dataQRcode.data.find(item =>
+            item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
+        );
+        console.log(matchedItem);
+        if (matchedItem != undefined) {
+            dataWarranty.push(matchedItem);
+        }
+        if (dataWarranty.length == 1) {
+            $("#loading-popup").show()
+            let checkQRcode = dataWarranty[0].QR_CODE.split(',');
+            console.log(checkQRcode);
+            HOMEOSAPP.CodeCondition = checkQRcode[3];
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+        } else {
+            toastr.error("Sản phẩm không tồn tại hoặc chưa được thêm vào hệ thống")
+        }
+    }
+}
 
 async function getInputValue(checkW) {
     var inputValue = document.getElementById("device_name").value;
@@ -949,13 +980,27 @@ $("#PickApp-button-pick").click(function () {
 });
 
 $("#tab-scan-qr").click(function (event) {
-    if(window.workstationID && window.workstationID != "done"){
-        openTab(event, 'tab1');
-        getInputValue(window.workstationID);
-        window.workstationID = "done";
-    } else {
-        openTab(event, 'tab1')
+    if(HOMEOSAPP.checkTabHistory == 1){
+        if(window.workstationID && window.workstationID != "done"){
+            openTab(event, 'tab1');
+            getInputValue(window.workstationID);
+            window.workstationID = "done";
+        } else {
+            openTab(event, 'tab1')
+        }
+    } else if(HOMEOSAPP.checkTabHistory == 2){
+        document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
+        document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
+        if(window.cabinetID && window.cabinetID != "done"){
+            openTab(event, 'tab1');
+            HOMEOSAPP.CodeCondition = window.workstationID;
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+            window.cabinetID = "done";
+        } else {
+            openTab(event, 'tab1')
+        }
     }
+    
     
 });
 $("#tab-text").click(function (event) {

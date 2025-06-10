@@ -702,7 +702,7 @@ HOMEOSAPP.handleControlApp = function(check) {
 
             // historyListDetail.empty();
             // showAddWorkStationButton();
-            HOMEOSAPP.checkTabHistory = 1;
+            HOMEOSAPP.checkTabHistory = 2;
             // showHistory();
             // pickApp('MUA');
         }, 2000);
@@ -728,7 +728,7 @@ HOMEOSAPP.handleControlApp = function(check) {
 
             // historyListDetail.empty();
             // showAddWorkStationButton();
-            HOMEOSAPP.checkTabHistory = 1;
+            HOMEOSAPP.checkTabHistory = 2;
             // showHistory();
             // pickApp('MUA');
         }, 200);

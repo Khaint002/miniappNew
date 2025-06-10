@@ -13,7 +13,7 @@ var ctx_E = document.getElementById("chartEnergy").getContext('2d');
 var ChartU, ChartI, ChartP, ChartE;
 // xác định thiết bị cần truy cập
 async function accessDevice() {
-    const inputValue = HOMEOSAPP.itemControl.CodeCondition;
+    const inputValue = HOMEOSAPP.CodeCondition;
     
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
@@ -23,13 +23,11 @@ async function accessDevice() {
         const matchedItem = dataQRcode.data.find(item =>
             item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
         );
-        console.log(dataQRcode);
-
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
         if (dataWarranty.length == 1) {
-            if (HOMEOSAPP.itemControl) {
+            if (HOMEOSAPP.CodeCondition) {
                 $("#loading-popup").show()
                 let checkQRcode = dataWarranty[0].QR_CODE.split(',');
                 const dataQRCondition = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
@@ -284,16 +282,14 @@ $("#schedule-condition").click(function () {
     HOMEOSAPP.loadPage("schedule-condition-popup")
 });
 $("#error-condition").click(function () {
-    
-    $("#error-condition-popup").show();
-    // initCharts()
+    HOMEOSAPP.loadPage("error-condition-popup")
 });
 
 $("#export-condition").click(function () {
     checkReport = 'condition';
     $("#filter-kttv").addClass("d-none");
     $("#filter-condition").removeClass("d-none");
-    $("#export-condition-popup").show();
+    HOMEOSAPP.loadPage("export-condition-popup");
 });
 
 $("#export-kttv").click(function () {
@@ -314,7 +310,13 @@ $("#settingAlert").click(function () {
     
 });
 
+$("#BackSchedule").click(function () {
+    HOMEOSAPP.goBack();
+});
 
+$("#BackExportCondition").click(function () {
+    HOMEOSAPP.goBack();
+});
 
 onOffRelay = function (id, color) {
     const icon = document.getElementById("icon-" + id);

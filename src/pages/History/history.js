@@ -27,7 +27,7 @@ async function pickApp(type) {
 
         case 'CONTROL':
             HOMEOSAPP.application = "CONTROL";
-            checkTabHistory = 1;
+            checkTabHistory = 2;
             addItemWarranty('condition');
             // runLed7();
             break;
@@ -50,7 +50,8 @@ function showAddWorkStationButton() {
             HOMEOSAPP.stopInterval();
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 2) {
-            $(".WarrantyScanNext").click();
+            
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
     });
     historyListDetail.append(buttonHTML); // Giả sử bạn có một div với id "addWorkStationContainer" để chứa nút này
@@ -1117,7 +1118,7 @@ $("#PickApp-button-scanQR").click(function () {
         HOMEOSAPP.stopInterval();
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     } else if (HOMEOSAPP.checkTabHistory == 2) {
-        $(".WarrantyScanNext").click();
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     }
 });
 // danh mục
@@ -1567,7 +1568,7 @@ function addItemWarranty() {
 
                 // Gắn sự kiện click cho phần tử chính
                 element.on('click', function () {
-                    HOMEOSAPP.itemControl = item;
+                    HOMEOSAPP.itemControl = item.CodeCondition;
                     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
                 });
 
