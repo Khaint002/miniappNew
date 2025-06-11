@@ -736,6 +736,327 @@ HOMEOSAPP.handleControlApp = function(check) {
     
 }
 
+var reportOptions = [
+    { value: "CHANGE", text: "Tuỳ ý" },
+    { value: "MONTH1", text: "Tháng 1" },
+    { value: "MONTH2", text: "Tháng 2" },
+    { value: "MONTH3", text: "Tháng 3" },
+    { value: "MONTH4", text: "Tháng 4" },
+    { value: "MONTH5", text: "Tháng 5" },
+    { value: "MONTH6", text: "Tháng 6" },
+    { value: "MONTH7", text: "Tháng 7" },
+    { value: "MONTH8", text: "Tháng 8" },
+    { value: "MONTH9", text: "Tháng 9" },
+    { value: "MONTH10", text: "Tháng 10" },
+    { value: "MONTH11", text: "Tháng 11" },
+    { value: "MONTH12", text: "Tháng 12" },
+    { value: "QUY1", text: "Quý 1" },
+    { value: "QUY2", text: "Quý 2" },
+    { value: "QUY3", text: "Quý 3" },
+    { value: "QUY4", text: "Quý 4" },
+    { value: "MOMTHSTART", text: "6 tháng đầu năm" },
+    { value: "MOMTHEND", text: "6 tháng cuối năm" },
+    { value: "MOMTH9START", text: "9 tháng đầu năm" },
+    { value: "YEAR", text: "Cả năm" },
+];
+
+// Hàm khởi tạo các option trong select
+HOMEOSAPP.renderOptions = function() {
+    console.log(1);
+    const $select = $("#dateTimeReport");
+    $select.empty(); // Xóa tất cả option hiện có
+
+    reportOptions.forEach(opt => {
+        const $option = $("<option></option>")
+            .val(opt.value)
+            .text(opt.text);
+        $select.append($option);
+    });
+}
+
+HOMEOSAPP.getReportRange = function(value) {
+    const year = new Date().getFullYear();
+    let startDate, endDate;
+
+    const date = (m, d) => new Date(year, m - 1, d);
+
+    switch (value) {
+        case "CHANGE":
+            startDate = null;
+            endDate = null;
+            break;
+        case "MONTH1":
+        case "MONTH2":
+        case "MONTH3":
+        case "MONTH4":
+        case "MONTH5":
+        case "MONTH6":
+        case "MONTH7":
+        case "MONTH8":
+        case "MONTH9":
+        case "MONTH10":
+        case "MONTH11":
+        case "MONTH12":
+            const month = parseInt(value.replace("MONTH", ""));
+            startDate = date(month, 1);
+            endDate = new Date(year, month, 0); // ngày cuối cùng của tháng
+            break;
+        case "QUY1":
+            startDate = date(1, 1);
+            endDate = date(3, 31);
+            break;
+        case "QUY2":
+            startDate = date(4, 1);
+            endDate = date(6, 30);
+            break;
+        case "QUY3":
+            startDate = date(7, 1);
+            endDate = date(9, 30);
+            break;
+        case "QUY4":
+            startDate = date(10, 1);
+            endDate = date(12, 31);
+            break;
+        case "MOMTHSTART":
+            startDate = date(1, 1);
+            endDate = date(6, 30);
+            break;
+        case "MOMTHEND":
+            startDate = date(7, 1);
+            endDate = date(12, 31);
+            break;
+        case "MOMTH9START":
+            startDate = date(1, 1);
+            endDate = date(9, 30);
+            break;
+        case "YEAR":
+            startDate = date(1, 1);
+            endDate = date(12, 31);
+            break;
+        default:
+            startDate = null;
+            endDate = null;
+    }
+
+    return { startDate, endDate };
+}
+function formatDate(date) {
+    if (!date) return '';
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+document.getElementById("dateTimeReport").addEventListener("change", function () {
+    const selectedValue = this.value;
+    const { startDate, endDate } = HOMEOSAPP.getReportRange(selectedValue);
+
+    // Đổ vào input
+    document.getElementById("startDate").value = formatDate(startDate);
+    document.getElementById("endDate").value = formatDate(endDate);
+});
+
+function DateFormatServerToLocal(input, format) {
+    if (!input) return '';
+
+    let dateObj;
+
+    // Nếu là Date object
+    if (input instanceof Date) {
+        dateObj = input;
+    }
+    // Nếu là chuỗi, cố gắng parse thành Date
+    else if (typeof input === 'string') {
+        dateObj = new Date(input);
+
+        // Nếu parse fail (Invalid Date), trả về rỗng
+        if (isNaN(dateObj.getTime())) return '';
+    } else {
+        return '';
+    }
+
+    // Lấy từng phần của ngày/giờ
+    let dd = String(dateObj.getDate()).padStart(2, '0');
+    let mm = String(dateObj.getMonth() + 1).padStart(2, '0'); // Month bắt đầu từ 0
+    let yyyy = dateObj.getFullYear();
+    let yy = String(yyyy).slice(-2);
+    let HH = String(dateObj.getHours()).padStart(2, '0');
+    let MM = String(dateObj.getMinutes()).padStart(2, '0');
+    let SS = String(dateObj.getSeconds()).padStart(2, '0');
+
+    const map = { dd, mm, yyyy, yy, HH, MM, SS };
+
+    return format.replace(/dd|mm|yyyy|yy|HH|MM|SS/g, (token) => map[token] || '');
+}
+
+HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, reportType, isViewer) {
+    if (isViewer)
+        this.IsViewer = isViewer;
+    const data = JSON.parse(localStorage.getItem("itemHistory"));
+    console.log(data);
+    
+    // const datetesst =  DateFormatServerToLocal(Sdate.toISOString(), 'dd/mm/yy');
+    // console.log(datetesst, ":--", new Date(datetesst));
+    // var c = [{"ID":"091840","NAME":"Trực Ninh","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_API_MOBILE"},{"ID":"RT","NAME":"Thiết bị đo nhiệt độ","IDFIELD":"ZONE_PROPERTY","NAMETABLE":"VW_COMMAND","REPORT_ID":"RPT_API_MOBILE"}]
+    var c = [];
+    var linkbase;
+    var nameReport;
+    if(checkReport == 'KTTV'){
+        linkbase = 'https://'+data.domain+'/Service/Service.svc/';
+        // c = [{"ID":data.CodeWorkStation,"NAME":data.NameWorkStation,"IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_API_MOBILE"},{"ID":reportType,"NAME":"","IDFIELD":"ZONE_PROPERTY","NAMETABLE":"VW_COMMAND","REPORT_ID":"RPT_API_MOBILE"}];
+        nameReport = reportType;
+    } else {
+        linkbase = 'https://central.homeos.vn/service_XD/service.svc/';
+        const data = JSON.parse(localStorage.getItem("itemCondition"));
+        const qrCodeParts = data[0].QR_CODE.split(',');
+        c = [{"ID":qrCodeParts[3],"NAME":"","IDFIELD":"","NAMETABLE":"DM_WORKSTATION","REPORT_ID": reportType}]
+        // c = [{"ID":"12929172","NAME":"Tủ chị Hà tầng 1","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_BAO_CAO"}]
+        nameReport = reportType;
+    }
+    const dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
+    
+    var val = [];
+    
+    // val.url = 'https://central.homeos.vn/service_XD/service.svc/' + "GenerateReportOther";
+    val.url = linkbase + "GenerateReportOther";
+    // this.generateCondition();
+    val.data = {
+        // Uid: 'admin',
+        // Sid: 'cb880c13-5465-4a1d-a598-28e06be43982',
+        Uid: dataUser[0].StateName,
+        Sid: dataUser[0].StateId,
+        PRid: nameReport,
+        Rid: nameReport,
+        Sd: DateFormatServerToLocal(startDate, 'yyyy/mm/dd'),
+        Ed: DateFormatServerToLocal(endDate, 'yyyy/mm/dd'),
+        // St: this.txtFromTime.Value(),
+        // Et: this.txtToTime.Value(),
+        c: JSON.stringify(c),
+        type: type
+    };
+    val.type = "POST";
+    val.dataType = "jsonp";
+    val.crossDomain = true;
+    val.contentType = "application/json; charset=utf-8";
+    val.complete = function (data) {
+        // finishLoading();
+    };
+    val.error = function (e, b) {
+        alert(b);
+        // finishLoading();
+    };
+    val.success = function (msg) {
+        var state = msg;
+        console.log(state);
+        
+        try {
+            state = JSON.parse(msg);
+            $('#submitExport').css({
+                'background-color': '#2c697b',
+                'border': 'solid 1px #2c697b'
+            });
+        
+            // Đổi nội dung text
+            $('#submitExport').text('Xuất dữ liệu báo cáo (excel)');
+
+            toastr.error("Xuất báo cáo lỗi, vui lòng kiểm tra lại");
+            console.log(state);
+            // this.MessageBox(state.StateName, "danger", "")
+            return;
+        } catch (e) {
+            state = msg;
+        }
+        if (state != 'error') {
+            if (this.IsViewer) {
+                var link = HomeOS.linkbase().toLowerCase().replace('service.svc/', '') + '' + msg;
+                link = link.replace('service.svc/', '');
+                
+                // this.transOutput.LinkDocument = link;
+                if (!this.transOutput.is_Initial) {
+                    this.transOutput.Form_Loaded = function () {
+                        // this.transOutput.fullScreen();
+                        // this.transOutput.SetUrl();
+                    }.bind(this);
+                    this.transOutput.initial(function () {
+                        this.transOutput.Show();
+                    }.bind(this));
+                }
+                else {
+                    this.transOutput.SetUrl(link);
+                    this.transOutput.Show();
+                }
+                $('#submitExport').css({
+                    'background-color': '#2c697b',
+                    'border': 'solid 1px #2c697b'
+                });
+                // Đổi nội dung text
+                $('#submitExport').text('Xuất dữ liệu báo cáo (excel)');
+            }
+            else {
+                const urlservice = linkbase
+                // const urlservice = 'https://central.homeos.vn/service_XD/service.svc/'
+                var link = urlservice.replace('service.svc/', '') + '' + msg;
+                link = link.replace('service.svc/', '');
+                link = link.replace('Service.svc/', '');
+                // link = link.replace('pdf', 'xls');
+                if(window.downloadFileToDevice){
+                    window.downloadFileToDevice(link);
+                    
+                    toastr.success("download file thành công ");
+                } else {
+                    // window.open(link, "download");
+                    const a = document.createElement('a');
+                    a.href = link;
+                    a.download = link.split('/').pop(); // tự lấy tên file từ URL
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    console.log(1);
+                }
+                $('#submitExport').css({
+                    'background-color': '#2c697b',
+                    'border': 'solid 1px #2c697b'
+                });
+                // Đổi nội dung text
+                $('#submitExport').text('Xuất dữ liệu báo cáo (excel)');
+                HOMEOSAPP.callBackExport(link);
+                console.log(link);
+            }
+        }
+        else {
+            this.checkError(msg);
+        }
+        this.IsViewer = false;
+    }.bind(this);
+    $.ajax(val);
+}
+
+$('#submitExport').click(function () {
+    $('#submitExport').css({
+        'background-color': '#f39c12',
+        'border': 'solid 1px #f39c12'
+    });
+
+    // Đổi nội dung text
+    $('#submitExport').text('Đang xuất dữ liệu...');
+    
+    let reportType;
+    let checkReport;
+    if(HOMEOSAPP.checkTabHistory == 1){
+        reportType = $('#KTTV_Report').val();
+        checkReport = 'KTTV'
+    } else if(HOMEOSAPP.checkTabHistory == 2){
+        reportType = $('#nameReport').val();
+        checkReport = 'CONTROL'
+    }
+    const startDate = $('#startDate').val();
+    const endDate = $('#endDate').val();
+
+    HOMEOSAPP.exportRepost(checkReport, 'E', startDate, endDate, reportType);
+    // Bạn có thể xử lý tiếp ở đây, ví dụ:
+    // Gọi API, tạo URL báo cáo, hiển thị kết quả...
+});
+
 HOMEOSAPP.callBackExport = function (link) {
     
 }

@@ -7,8 +7,7 @@ var currentCamera;
 $(".start").click(function () {
     const dataId = $(this).data("id");
     $("#result-form").addClass("d-none");
-    console.log(dataId);
-    typeQR = dataId;
+    typeQR = HOMEOSAPP.checkTabHistory;
 
     if (dataId == 3) {
         const lotNumber = $("#lot-number").val();
@@ -976,7 +975,11 @@ $("#result-truycap").click(function () {
 });
 
 $("#PickApp-button-pick").click(function () {
-    HOMEOSAPP.goBack();
+    if(HOMEOSAPP.checkTabHistory == 2){
+        HOMEOSAPP.handleControlApp("OUT");
+    } else {
+        HOMEOSAPP.goBack();
+    }
 });
 
 $("#tab-scan-qr").click(function (event) {
@@ -1000,8 +1003,6 @@ $("#tab-scan-qr").click(function (event) {
             openTab(event, 'tab1')
         }
     }
-    
-    
 });
 $("#tab-text").click(function (event) {
     openTab(event, 'tab2')

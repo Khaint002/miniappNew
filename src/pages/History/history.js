@@ -1568,7 +1568,7 @@ function addItemWarranty() {
 
                 // Gắn sự kiện click cho phần tử chính
                 element.on('click', function () {
-                    HOMEOSAPP.itemControl = item.CodeCondition;
+                    HOMEOSAPP.CodeCondition = item.CodeCondition;
                     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
                 });
 

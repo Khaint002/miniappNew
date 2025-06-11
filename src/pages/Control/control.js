@@ -192,8 +192,11 @@ var renderReray = async function (data) {
     return new Promise((resolve) => {
         const typeMatch = data.match(/(\d+)K-(\d+)TB/i);
         const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
-        const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
-
+        if(numberOfRelays == 0){
+            $("#schedule-condition").addClass("d-none");
+            $("#schedule-condition").removeClass("d-flex");
+        }
+        renderCheckboxes('sltDeviceForSchedule', numberOfRelays)
         const container = document.getElementById('relay-container');
         container.innerHTML = '';
 
@@ -228,6 +231,42 @@ var renderReray = async function (data) {
     });
 };
 
+function renderCheckboxes(containerId, count) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear old content
+
+    // Tính số cột Bootstrap hợp lý
+    let colClass = 'col-2'; // default fallback
+    if (count <= 12) {
+        const colSize = Math.floor(12 / count);
+        colClass = `col-${colSize}`;
+    } else {
+        // Nếu quá 12 checkbox → dùng col-2 hoặc col-3 cho đẹp
+        colClass = 'col-2';
+    }
+
+    // Sinh các checkbox
+    for (let i = 1; i <= count; i++) {
+        const colDiv = document.createElement('div');
+        colDiv.className = `${colClass} form-group content-detail`;
+
+        const label = document.createElement('label');
+        label.className = 'form-label content-label';
+        label.setAttribute('for', `checkboxK${i}`);
+        label.innerText = `K${i}:`;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `checkboxK${i}`;
+        checkbox.placeholder = 'Nhập tên lịch...';
+        checkbox.setAttribute('data-relayId', i);
+
+        colDiv.appendChild(label);
+        colDiv.appendChild(checkbox);
+
+        container.appendChild(colDiv);
+    }
+}
 
 var noDataReceived = function () {
     $('#online').css('background', '#000000');
@@ -287,17 +326,10 @@ $("#error-condition").click(function () {
 
 $("#export-condition").click(function () {
     checkReport = 'condition';
+    HOMEOSAPP.renderOptions();
     $("#filter-kttv").addClass("d-none");
     $("#filter-condition").removeClass("d-none");
     HOMEOSAPP.loadPage("export-condition-popup");
-});
-
-$("#export-kttv").click(function () {
-    checkReport = 'KTTV';
-    getDevicefilter("KTTV");
-    $("#filter-kttv").removeClass("d-none");
-    $("#filter-condition").addClass("d-none");
-    $("#export-condition-popup").show();
 });
 
 $("#settingAlert").click(function () {
