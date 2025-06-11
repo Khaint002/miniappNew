@@ -284,24 +284,27 @@ $("#online").click(function () {
     $('#online').css('box-shadow', '0px 0px 30px 5px' + '#ceac30');
     $('#btn-online').prop('disabled', true);
     icon.innerHTML = `
-    <svg class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-    </svg>
+        <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+        </svg>
     `;
-    $('#icon-' + id).addClass("spin-loading");
-    // ws.send('12929152:SEND CAN(17 0 0 0 41 '+ (checkID+6) +');')
-    relayTimeouts[id] = setTimeout(() => {
-        if ($('#' + id).css('background-color') == 'rgb(206, 172, 48)') {
+    $('#load-online').addClass("spin-loading");
+    setTimeout(() => {
+        if ($('#online').css('background-color') == 'rgb(206, 172, 48)') {
             $('#online').css('background', '#ceac30');
             $('#online').css('box-shadow', '0px 0px 30px 5px' + '#ceac30');
             $('#btn-online').prop('disabled', false)
         }
-        resetIcon(icon);
+        icon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
+            </svg>
+        `;
     }, 5000);
     let cmd = [{ CHIP_ID: cabinetID, COMMAND: 'REFRESH;' }];
     wss.send(JSON.stringify(cmd));
-})
+});
 
 function formatCustomDate(date) {
     const pad = (num) => num.toString().padStart(2, '0');
