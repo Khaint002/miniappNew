@@ -677,15 +677,13 @@ HOMEOSAPP.formatDateTime = function(date) {
 }
 
 HOMEOSAPP.handleControlApp = function(check) {
-    // showElement("LoadScreen", "img-station");
-    $('#loading-popup').show();
-    hideElement("pickApp");
+    showElement("LoadScreen", "LogoLoadScreen");
+    
     if(check == 'IN'){
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
         setTimeout(() => {
-            // hideElement("LoadScreen", "img-station");
-            $('#loading-popup').hide();
-            showElement("history");
+            hideElement("LoadScreen", "LogoLoadScreen");
+            
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
             $('#listTabMap').addClass("d-none");
@@ -1196,3 +1194,17 @@ $("#share-workStation").click(function () {
 
     }
 });
+
+HOMEOSAPP.openTabSchedule = function(evt, tabName) {
+    // Ẩn tất cả nội dung tab và bỏ class 'active'
+    $('.tab-content-schedule').removeClass('active');
+    $('.tablinkSchedule').removeClass('active');
+
+    // Hiển thị tab được chọn và thêm class 'active' cho nút đã nhấn
+    $('#' + tabName).addClass('active');
+    $(evt.currentTarget).addClass('active');
+
+    if (typeof map !== 'undefined' && map) {
+        map.invalidateSize();
+    }
+}

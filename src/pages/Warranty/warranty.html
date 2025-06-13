@@ -1,0 +1,149 @@
+<div class="container-homePage" style="padding: 0; width: 100%;">
+    <div class="homePage-header history-header" style="background-color: #282d31;">
+        <div style="line-height: 50px; justify-content: flex-start;" class="d-flex">
+            <button class="WarrantyScanNext" style="height: 40px; border: none; background-color: #282d31;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                </svg>
+            </button>
+            <p id="header-productName" style="width: 250px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">-</p>
+        </div>
+        <div class="d-flex" style="line-height: 50px;">
+            <button id="errorWarranty"
+                style="height: 40px; border: none; background-color: #282d31; padding: 0;margin-right: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #fff;"
+                    fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                    <path
+                        d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+                </svg>
+            </button>
+            <button class="homepage-Pre-pickApp"
+                style="height: 40px; border: none; background-color: #282d31; padding: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" style="color: #fff;"
+                    fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                    <path
+                        d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div id="warranty-body">
+        <div class="content">
+            <!-- Tab Content -->
+            <div id="tab-0" class="tab-content">
+                <div>
+                    <div class="d-flex" style="color: #fff; padding-left: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            class="bi bi-clock-history" viewBox="0 0 16 16">
+                            <path
+                                d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" />
+                            <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
+                            <path
+                                d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
+                        </svg>
+                        <h6 style="padding-left: 10px; padding-left: 10px;">Lịch sử bảo hành sản phẩm:</h6>
+                    </div>
+                </div>
+                <ul id="history-warranty-detail"
+                    style="overflow-y: auto; max-height: 538px; padding: 10px 0 0px;">
+                    <h5 style="color: #fff;">Sản phẩm chưa từng bảo hành</h5>
+                </ul>
+            </div>
+
+            <div id="tab-1" class="tab-content active">
+                <div class="row">
+                    <div class=" col-12 p-2">
+                        <div class="box-value" style="height: 150px; margin: 0;">
+                            <div class="d-flex justify-content-center">
+                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-moisture" viewBox="0 0 16 16">
+                                    <path d="M13.5 0a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V7.5h-1.5a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V15h-1.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5zM7 1.5l.364-.343a.5.5 0 0 0-.728 0l-.002.002-.006.007-.022.023-.08.088a29 29 0 0 0-1.274 1.517c-.769.983-1.714 2.325-2.385 3.727C2.368 7.564 2 8.682 2 9.733 2 12.614 4.212 15 7 15s5-2.386 5-5.267c0-1.05-.368-2.169-.867-3.212-.671-1.402-1.616-2.744-2.385-3.727a29 29 0 0 0-1.354-1.605l-.022-.023-.006-.007-.002-.001zm0 0-.364-.343zm-.016.766L7 2.247l.016.019c.24.274.572.667.944 1.144.611.781 1.32 1.776 1.901 2.827H4.14c.58-1.051 1.29-2.046 1.9-2.827.373-.477.706-.87.945-1.144zM3 9.733c0-.755.244-1.612.638-2.496h6.724c.395.884.638 1.741.638 2.496C11 12.117 9.182 14 7 14s-4-1.883-4-4.267" />
+                                </svg> -->
+                                <p style="padding-left: 5px;">Thông tin sản phẩm</p>
+                            </div>
+                            <h6 id="productName">Sản phẩm: -</h6>
+                            <h6 id="productCode">Mã định danh: -</h6>
+                            <h6 id="productSeri">Số seri: -</h6>
+                        </div>
+                    </div>
+                    <div class=" col-6 p-2">
+                        <div class="box-value" style="height: 116px; margin: 0;">
+                            <div class="d-flex justify-content-center">
+                                <p style="padding-left: 5px;">Bảo hành</p>
+                            </div>
+                            <h6 id="warrantyActive">-</h6>
+                            <h6 id="warrantyTimeActive"></h6>
+                        </div>
+                    </div>
+                    <div class=" col-6 p-2">
+                        <div class="box-value" style="height: 116px; margin: 0;">
+                            <div class="d-flex justify-content-center">
+                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-moisture" viewBox="0 0 16 16">
+                                    <path d="M13.5 0a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V7.5h-1.5a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V15h-1.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5zM7 1.5l.364-.343a.5.5 0 0 0-.728 0l-.002.002-.006.007-.022.023-.08.088a29 29 0 0 0-1.274 1.517c-.769.983-1.714 2.325-2.385 3.727C2.368 7.564 2 8.682 2 9.733 2 12.614 4.212 15 7 15s5-2.386 5-5.267c0-1.05-.368-2.169-.867-3.212-.671-1.402-1.616-2.744-2.385-3.727a29 29 0 0 0-1.354-1.605l-.022-.023-.006-.007-.002-.001zm0 0-.364-.343zm-.016.766L7 2.247l.016.019c.24.274.572.667.944 1.144.611.781 1.32 1.776 1.901 2.827H4.14c.58-1.051 1.29-2.046 1.9-2.827.373-.477.706-.87.945-1.144zM3 9.733c0-.755.244-1.612.638-2.496h6.724c.395.884.638 1.741.638 2.496C11 12.117 9.182 14 7 14s-4-1.883-4-4.267" />
+                                </svg> -->
+                                <p style="padding-left: 5px;">Thời gian Bảo hành</p>
+                            </div>
+                            <h6 id="warrantyTime">-</h6>
+                        </div>
+                    </div>
+                    <div class=" col-12 p-2">
+                        <div class="box-value" style="height: 250px; margin: 0; padding: 0;">
+                            <img id="deviceImg"
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;"
+                                src="" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-2" class="tab-content">
+                <h3 style="color: #fff; margin-top: 50px;">Tạo nhiều QR Code</h3>
+                <!-- <input type="number" class="form-control"  id="startValue" placeholder="Nhập số lượng mã QR cần in"> -->
+                <input id="startValue" type="text" placeholder="Nhập số lượng mã QR cần in"
+                    style="width: 100%; border-radius: 4px; height: 50px; color: #fff; padding-left: 20px; margin-top: 10px; background-color: #343a40; border: none; border-bottom: 1px solid #626262;">
+                <button id="generateQRCodes" class="btn btn-warning"
+                    style="background-color: #f39c12;margin-top: 20px; border: solid 1px #f39c12; width: 100%; height: 35px; color: #fff;">Tạo
+                    QR</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div id="menu-warranty" class="bottom-navigation d-none">
+            <button id="btn-tab1" data-tab="1">
+                <!-- <img src="https://cdn-icons-png.flaticon.com/512/3409/3409588.png" alt="Quét QR"> -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-list-ul" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                </svg>
+                Chi tiết
+            </button>
+            <button id="btn-tab1" data-tab="0">
+                <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Tạo QR"> -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-clock-history" viewBox="0 0 16 16">
+                    <path
+                        d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" />
+                    <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
+                    <path
+                        d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
+                </svg>
+                Lịch sử
+            </button>
+            <button id="btn-tab1" data-tab="2" class="d-none">
+                <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Tạo nhiều QR"> -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-qr-code" viewBox="0 0 16 16">
+                    <path d="M2 2h2v2H2z" />
+                    <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z" />
+                    <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z" />
+                    <path
+                        d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z" />
+                    <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z" />
+                </svg>
+                Tạo QR
+            </button>
+        </div>
+    </div>
+</div>
+<!-- <script src="https://sonlahpc.hymetco.com/singlepage/SONLAHPC/pages/Warranty/warranty.js"></script> -->
+<script src="./src/pages/Warranty/warranty.js"></script>

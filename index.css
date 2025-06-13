@@ -391,30 +391,12 @@ h1 {
     border-bottom: none;
 }
 
-.tab-content {
+.tab-content,.tab-content-guarantee,.tab-content-history,.tab-content-schedule {
     display: none;
     border-top: none;
 }
 
-.tab-content-guarantee {
-    display: none;
-    border-top: none;
-}
-
-.tab-content-history {
-    display: none;
-    border-top: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.tab-content-guarantee.active {
-    display: block;
-}
-
-.tab-content-history.active {
+.tab-content.active,.tab-content-guarantee.active,.tab-content-history.active,.tab-content-schedule.active {
     display: block;
 }
 
@@ -1671,4 +1653,13 @@ h1 {
 }
 .leaflet-control-attribution {
     display: none !important;
+}
+
+.editable-input {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    padding: 4px 8px;
+    display: inline-block;
 }

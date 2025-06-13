@@ -4,7 +4,7 @@ var devices = [];  // Danh sách các camera
 var isScannerRunning = false;  // Biến theo dõi trạng thái quét
 var currentCamera;
 
-$(".start").click(function () {
+$(".start").off("click").click(function () {
     const dataId = $(this).data("id");
     $("#result-form").addClass("d-none");
     typeQR = HOMEOSAPP.checkTabHistory;
@@ -28,7 +28,7 @@ $(".start").click(function () {
     startQRcode();
 });
 
-$("#toggle-camera").click(function () {
+$("#toggle-camera").off("click").click(function () {
     if (currentCameraIndex == devices.length) {
         currentCamera = 0
     } else {
@@ -41,7 +41,7 @@ $("#toggle-camera").click(function () {
     }
 });
 
-$("#close-scanner").click(function () {
+$("#close-scanner").off("click").click(function () {
     if (isScannerRunning) {
         html5QrCode.stop().then(ignore => {
             isScannerRunning = false;  // Đánh dấu scanner đã dừng
@@ -432,7 +432,7 @@ function onScanFailure(error) {
 }
 
 // Khi nhấn nút upload QR từ hình ảnh
-$("#upload-qr").click(function () {
+$("#upload-qr").off("click").click(function () {
     $("#file-input").click();  // Mở hộp thoại chọn file
 });
 
@@ -866,13 +866,15 @@ function getCurrentTime(time) {
 }
 
 function openTab(evt, tabName) {
+    console.log("chạy:");
+    
     $('.tab-content').removeClass('active');
     $('.tablinks').removeClass('active');
     $('#' + tabName).addClass('active');
     $(evt.currentTarget).addClass('active');
 }
 
-$("#truycap").click(function () {
+$("#truycap").off("click").click(function () {
     if(HOMEOSAPP.checkTabHistory == 1){
         getInputValue()
     } else if(HOMEOSAPP.checkTabHistory == 2){
@@ -950,7 +952,7 @@ async function CheckWorkStation(workstationID) {
     }
 }
 
-$("#result-scanagain").click(function () {
+$("#result-scanagain").off("click").click(function () {
     document.getElementById("result-form-total").classList.add("d-none");
     document.getElementById("result-form-loading").classList.remove("d-none");
     document.getElementById("result-form-title").classList.add("d-none");
@@ -968,13 +970,13 @@ function scanAgain() {
     startQRcode();
 }
 
-$("#result-truycap").click(function () {
+$("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 });
 
-$("#PickApp-button-pick").click(function () {
+$("#PickApp-button-pick").off("click").click(function () {
     if(HOMEOSAPP.checkTabHistory == 2){
         HOMEOSAPP.handleControlApp("OUT");
     } else {
@@ -982,7 +984,7 @@ $("#PickApp-button-pick").click(function () {
     }
 });
 
-$("#tab-scan-qr").click(function (event) {
+$("#tab-scan-qr").off("click").click(function (event) {
     if(HOMEOSAPP.checkTabHistory == 1){
         if(window.workstationID && window.workstationID != "done"){
             openTab(event, 'tab1');
@@ -1004,7 +1006,7 @@ $("#tab-scan-qr").click(function (event) {
         }
     }
 });
-$("#tab-text").click(function (event) {
+$("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
 });
 $("#tab-scan-qr").click();

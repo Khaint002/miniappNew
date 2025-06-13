@@ -20,9 +20,10 @@ async function pickApp(type) {
             hideElement("homePage");
             break;
 
-        case 'warranty':
+        case 'WARRANTY':
             HOMEOSAPP.application = "warranty";
-            await handleWarrantyApp();
+            checkTabHistory = 2;
+            addItemWarranty('warranty');
             break;
 
         case 'CONTROL':
@@ -522,10 +523,10 @@ function getDisplayValue(item, type) {
     }
 }
 
-$("#tab-historys").click(function (event) {
+$("#tab-historys").off("click").click(function (event) {
     openTabHistory(event, 'tabHistory')
 });
-$("#tab-map").click(function (event) {
+$("#tab-map").off("click").click(function (event) {
     openTabHistory(event, 'tabMap');
 });
 
@@ -1113,7 +1114,7 @@ function WarningEnergy(value) {
 }
 
 // QR code 
-$("#PickApp-button-scanQR").click(function () {
+$("#PickApp-button-scanQR").off("click").click(function () {
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
@@ -1285,7 +1286,7 @@ menuItems.forEach((item) => {
             $(".history-avt").removeClass("d-none");
             document.getElementById("category-back").classList.add("d-none");
             showCategory()
-            // document.querySelector(".tablink-history").click();
+            // document.querySelector(".tablink-history").off("click").click();
         } else if (menuText == "Truy cập Trạm") {
             document.getElementById("history-setting").classList.add("d-none");
             document.getElementById("history-homePage").classList.remove("d-none");
@@ -1338,7 +1339,7 @@ menuItems.forEach((item) => {
     });
 });
 // danh mục
-$("#addCategory").click(function () {
+$("#addCategory").off("click").click(function () {
     OpenAddCategory()
 });
 
@@ -1402,7 +1403,7 @@ function handleItemCategoryClick(item) {
     showHistoryCategory()
 }
 
-$("#saveCategory").click(function () {
+$("#saveCategory").off("click").click(function () {
     saveCategory()
 });
 
@@ -1473,7 +1474,7 @@ function saveCategory() {
     }
 }
 
-$("#btnAddCategory").click(function () {
+$("#btnAddCategory").off("click").click(function () {
     OpenAddCategory()
 });
 
@@ -1501,7 +1502,7 @@ $('#search-category').on('change', function () {
     showHistoryCategory(searchValue)
 });
 
-$("#backCategory").click(function () {
+$("#backCategory").off("click").click(function () {
     $(".history-avt").removeClass("d-none");
     document.getElementById("category-back").classList.add("d-none");
     document.getElementById("list-category").classList.remove("d-none");
@@ -1513,6 +1514,8 @@ $("#backCategory").click(function () {
 
 //history control
 function addItemWarranty() {
+    console.log("oke");
+    
     if (HOMEOSAPP.application == 'CONTROL') {
         let ConditionItems = JSON.parse(localStorage.getItem('dataCondition'));
 
@@ -1579,12 +1582,10 @@ function addItemWarranty() {
         }
     } else {
         warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
-
         console.log(warrantyItems);
         if (warrantyItems && warrantyItems.length > 0) {
             historyListDetail.empty()
             warrantyItems.forEach(item => {
-
                 const element = $(
                     '<div class="iconApp">' +
                     '<div id="App' + item.CodeWarranty + '" class="icon" style="background-color: #28a745 !important; display: block">' +

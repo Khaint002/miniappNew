@@ -405,13 +405,13 @@ function handleNoRainVisual() {
     }
 }
 
-$(".homepage-Pre-pickApp").click(function () {
+$(".homepage-Pre-pickApp").off("click").click(function () {
     HOMEOSAPP.stopInterval();
     stopIntervalMonitoring();
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
 });
 
-$("#share-qrcode-workstation").click(function () {
+$("#share-qrcode-workstation").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     HOMEOSAPP.loadPage("share-popup");
 
@@ -443,25 +443,25 @@ $("#share-qrcode-workstation").click(function () {
     });
 });
 
-$("#BackCodeQR").click(function () {
+$("#BackCodeQR").off("click").click(function () {
     HOMEOSAPP.goBack();
 });
 
-$(".ScanQRNext").click(function () {
+$(".ScanQRNext").off("click").click(function () {
     stopIntervalMonitoring()
     HOMEOSAPP.goBack();
 });
 
-$("#button-list-ngay").click(function () {
+$("#button-list-ngay").off("click").click(function () {
     clickGetData('NGAY')
 });
-$("#button-list-tuan").click(function () {
+$("#button-list-tuan").off("click").click(function () {
     clickGetData('TUAN')
 });
-$("#button-list-thang").click(function () {
+$("#button-list-thang").off("click").click(function () {
     clickGetData('THANG')
 });
-$("#button-list-nam").click(function () {
+$("#button-list-nam").off("click").click(function () {
     clickGetData('NAM')
 });
 
@@ -473,10 +473,10 @@ buttons.forEach((button) => {
     });
 });
 
-$("#button-list-ngay").click(() => clickGetData("NGAY"));
-$("#button-list-tuan").click(() => clickGetData("TUAN"));
-$("#button-list-thang").click(() => clickGetData("THANG"));
-$("#button-list-nam").click(() => clickGetData("NAM"));
+$("#button-list-ngay").off("click").click(() => clickGetData("NGAY"));
+$("#button-list-tuan").off("click").click(() => clickGetData("TUAN"));
+$("#button-list-thang").off("click").click(() => clickGetData("THANG"));
+$("#button-list-nam").off("click").click(() => clickGetData("NAM"));
 
 async function clickGetData(type) {
     if (lineBarChart != null) {
@@ -504,7 +504,7 @@ async function clickGetData(type) {
     }
 }
 
-$("#export-kttv").click(function () {
+$("#export-kttv").off("click").click(function () {
     getDevicefilter('KTTV');
     HOMEOSAPP.renderOptions();
     $("#filter-kttv").removeClass("d-none");
@@ -548,11 +548,11 @@ function processCode(code) {
     return prefix;
 }
 
-$("#BackExportCondition").click(function () {
+$("#BackExportCondition").off("click").click(function () {
     HOMEOSAPP.goBack();
 });
 
-$("#settingAlert").click(function () {
+$("#settingAlert").off("click").click(function () {
     // if(DataUser){
         getDevicefilter();
         HOMEOSAPP.loadPage("alert-kttv-popup");
