@@ -1514,8 +1514,6 @@ $("#backCategory").off("click").click(function () {
 
 //history control
 function addItemWarranty() {
-    console.log("oke");
-    
     if (HOMEOSAPP.application == 'CONTROL') {
         let ConditionItems = JSON.parse(localStorage.getItem('dataCondition'));
 
@@ -1633,8 +1631,8 @@ function addItemWarranty() {
 
                 // Gắn sự kiện click cho phần tử chính
                 element.on('click', function () {
-                    accessDevice(item.CodeWarranty.substring(2));
-                    document.getElementById("history").classList.add("hidden");
+                    HOMEOSAPP.CodeWarranty = item.CodeWarranty;
+                    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
                 });
 
                 // Thêm phần tử vào danh sách lịch sử
