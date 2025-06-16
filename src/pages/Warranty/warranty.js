@@ -264,6 +264,7 @@ async function addItemHistoryWarranty(QRID, dataQR) {
     }
 
 }
+
 function DetailProduct() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
@@ -276,4 +277,53 @@ function DetailProduct() {
     $('#loading-popup').hide()
     console.log('hide');
 }
+
+$('.bottom-navigation button').off("click").click(function () {
+    value = $(this).data('tab');
+    $('.bottom-navigation button').removeClass('menuWarranty');
+    $(this).addClass('menuWarranty');
+    $('.tab-content').removeClass('active');
+    $('#tab-' + value).addClass('active');
+});
+
+$("#errorWarranty").off("click").click(function () {
+    HOMEOSAPP.loadPage('error-popup');
+});
+
+$("#BackWarranty").off("click").click(function () {
+    HOMEOSAPP.goBack();
+    $("#errorInput").val("");
+    $("#errorType").val("");
+    $("#errorDesc").val("");
+});
+
+$("#submitError").click(function () {
+    // Lấy giá trị từ các trường
+    const errorInput = $("#errorInput").val();
+    const errorType = $("#errorType").val();
+    const errorDesc = $("#errorDesc").val();
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    console.log(dataWarranty);
+    const willInsertData = {
+        TYPE: 'ERROR',
+        ERROR_TYPE: errorType,
+        ERROR_NAME: errorInput,
+        DESCRIPTION: errorDesc,
+        DATE_CREATE: new Date(),
+        ERROR_STATUS: 1,
+        QRCODE_ID: dataWarranty[0].PR_KEY,
+        USER_ID: UserID,
+        DATASTATE: "ADD",
+    };
+    HOMEOSAPP.add('WARRANTY_ERROR', willInsertData).then(async data => {
+        try {
+            toastr.success("Báo lỗi thành công!");
+            addItemHistoryWarranty(dataWarranty[0].PR_KEY, dataWarranty);
+            $("#BackWarranty").click();
+        } catch (e) { }
+    }).catch(err => {
+        console.error('Error:', err);
+    });
+});
+
 accessDeviceWarranty();
