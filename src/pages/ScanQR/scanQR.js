@@ -28,8 +28,11 @@ $(".start").off("click").click(function () {
             return toastr.error("Vui lòng nhập số lượng cần quét hợp lệ (lớn hơn 0)!");
         }
     }
-
-    startQRcode();
+    if(window.ScanQR){
+        ScanQRcodeByZalo();
+    } else {
+        startQRcode();
+    }
 });
 
 $("#toggle-camera").off("click").click(function () {
@@ -978,7 +981,18 @@ function scanAgain() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("file-input").value = '';
-    startQRcode();
+    if(window.ScanQR){
+        ScanQRcodeByZalo();
+    } else {
+        startQRcode();
+    }
+}
+
+async function ScanQRcodeByZalo() {
+    const testDataScan = await window.ScanQR();
+    if(testDataScan){
+        onScanSuccess(testDataScan);
+    }
 }
 
 $("#result-truycap").off("click").click(function () {
