@@ -894,8 +894,16 @@ $("#truycap").off("click").click(function () {
     }
 });
 
-async function checkDevice() {
-    var inputValue = document.getElementById("device_name").value;
+async function checkDevice(type) {
+    var inputValue;
+    if(type == 'QRcodeControl'){
+        inputValue = document.getElementById("result-form-conditionCode").value;
+    } else if(type == 'QRcodeWarranty'){
+        inputValue = document.getElementById("result-form-productCode").value;
+    } else {
+        inputValue = document.getElementById("device_name").value;
+    }
+    
     
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã thiết bị!");
@@ -1004,6 +1012,18 @@ $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
+});
+
+$("#result-condition-truycap").click(function () {
+    document.getElementById("result-condition-truycap").disabled = true;
+    $("#loading-popup").show();
+    checkDevice("QRcodeControl")
+});
+
+$("#result-product-truycap").click(function () {
+    document.getElementById("result-product-truycap").disabled = true;
+    $("#loading-popup").show();
+    checkDevice("QRcodeWarranty");
 });
 
 $("#PickApp-button-pick").off("click").click(function () {
