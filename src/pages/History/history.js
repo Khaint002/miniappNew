@@ -1297,7 +1297,6 @@ menuItems.forEach((item) => {
             $("#history").addClass("hidden");
             $("#ScanQRWarranty").removeClass("hidden");
             $(".warrantyDetailProduct").removeClass("d-none");
-            document.querySelector(".tablinkGuarantee").click();
             $("#ScanAllQRcode").addClass("d-none");
             $("#lotProduct").addClass("d-none");
             checkTab = false;
