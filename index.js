@@ -754,9 +754,9 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
             
             $('.workstation_access').addClass("d-none");
             $('.workstation_category').addClass("d-none");
-            $('.warranty_scansQRcode').addClass("d-none");
-            $('.warranty_lot').addClass("d-none");
-            $('.warranty_scanQRcode').addClass("d-none");
+            $('.warranty_scansQRcode').removeClass("d-none");
+            $('.warranty_lot').removeClass("d-none");
+            $('.warranty_scanQRcode').removeClass("d-none");
         }, 2000);
     } else {
         HOMEOSAPP.goBack();
