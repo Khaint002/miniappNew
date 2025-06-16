@@ -1123,11 +1123,11 @@ $("#PickApp-button-scanQR").off("click").click(function () {
 // danh mục
 var listCategory = $('#history-setting-detail');
 
-// document.getElementById("historySelect").addEventListener("change", function () {
-//     const selectedValue = this.value; // Lấy giá trị đã chọn
-//     const selectedText = this.options[this.selectedIndex].text; // Lấy văn bản đã chọn
-//     showHistory(selectedValue);
-// });
+document.getElementById("historySelect").addEventListener("change", function () {
+    const selectedValue = this.value; // Lấy giá trị đã chọn
+    const selectedText = this.options[this.selectedIndex].text; // Lấy văn bản đã chọn
+    showHistory(selectedValue);
+});
 
 function showCategory(type) {
     DataCategory = JSON.parse(localStorage.getItem('dataCategory'));
