@@ -1020,6 +1020,7 @@ $("#PickApp-button-pick").off("click").click(function () {
 
 $("#tab-scan-qr").off("click").click(function (event) {
     if(HOMEOSAPP.checkTabHistory == 1){
+        $("#ScanQRcode").removeClass("d-none");
         if(window.workstationID && window.workstationID != "done"){
             openTab(event, 'tab1');
             getInputValue(window.workstationID);
@@ -1028,6 +1029,7 @@ $("#tab-scan-qr").off("click").click(function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 2){
+        $("#ScanQRcode").removeClass("d-none");
         document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
         if(typeof window.cabinetID === 'function' && window.cabinetID != "done"){
@@ -1041,6 +1043,7 @@ $("#tab-scan-qr").off("click").click(function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
+        $("#ScanQRcode").removeClass("d-none");
         document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
 

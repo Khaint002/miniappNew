@@ -1294,12 +1294,13 @@ menuItems.forEach((item) => {
         } else if (menuText == "Thông tin công ty") {
             window.location.href = "https://homeos.com.vn/";
         } else if (menuText == "Thông tin sản phẩm") {
-            $("#history").addClass("hidden");
-            $("#ScanQRWarranty").removeClass("hidden");
-            $(".warrantyDetailProduct").removeClass("d-none");
-            $("#ScanAllQRcode").addClass("d-none");
-            $("#lotProduct").addClass("d-none");
-            checkTab = false;
+            // $("#history").addClass("hidden");
+            // $("#ScanQRWarranty").removeClass("hidden");
+            // $(".warrantyDetailProduct").removeClass("d-none");
+            // $("#ScanAllQRcode").addClass("d-none");
+            // $("#lotProduct").addClass("d-none");
+            // checkTab = false;
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQRWarranty/scanQRWarranty.html");
         } else if (menuText == "Quét lô sản phẩm") {
             $("#history").addClass("hidden");
             $("#ScanQRWarranty").removeClass("hidden");
