@@ -254,7 +254,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                             document.getElementById("result-condition-truycap").disabled = false;
                             document.getElementById("result-form-conditionName").value = checkQRcode[1];
                             document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                            document.getElementById("header-conditionName").textContent = data[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
                             data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
                             localStorage.setItem("itemCondition", JSON.stringify(data));
                         }
@@ -271,7 +270,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                 document.getElementById("result-condition-truycap").disabled = false;
                 document.getElementById("result-form-conditionName").value = checkQRcode[1];
                 document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                document.getElementById("header-conditionName").textContent = data[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
                 localStorage.setItem("itemCondition", JSON.stringify(data));
             }
         } else {
@@ -477,11 +475,13 @@ $("#file-input").change(function (event) {
                             if (typeQR == 2 || typeQR == 3) {
                                 data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                 console.log("Kiểm tra"+checkQRcode.length);
+                                console.log(data);
                                 
-                                if (data.length > 0) {
+                                if (checkQRcode.length == 3) {
                                     if (checkTab) {
+                                        
                                         if (data[0].LOT_ID == 0) {
-                                            const dataQRCODE = await getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
+                                            const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                             if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                                                 const willInsertData = {
                                                     PR_KEY: data[0].PR_KEY,
@@ -520,7 +520,7 @@ $("#file-input").change(function (event) {
                                     }
 
                                 } else if (checkQRcode.length == 4) {
-                                    data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                    data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                     // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
                                     if (data.length == 0) {
                                         const willInsertData = {
@@ -546,7 +546,6 @@ $("#file-input").change(function (event) {
                                                     document.getElementById("result-condition-truycap").disabled = false;
                                                     document.getElementById("result-form-conditionName").value = checkQRcode[1];
                                                     document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                                                    document.getElementById("header-conditionName").textContent = data[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
                                                     data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                                     localStorage.setItem("itemCondition", JSON.stringify(data));
                                                 }
@@ -563,14 +562,14 @@ $("#file-input").change(function (event) {
                                         document.getElementById("result-condition-truycap").disabled = false;
                                         document.getElementById("result-form-conditionName").value = checkQRcode[1];
                                         document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                                        document.getElementById("header-conditionName").textContent = data[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
                                         localStorage.setItem("itemCondition", JSON.stringify(data));
                                     }
                                 } else {
+                                    console.log("Trường hợp 3");
                                     if (typeQR == 3 && checkQRcode[0].substring(0, 3) == "T20") {
                                         console.log(1);
 
-                                        const dataQRCODE = await getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
+                                        const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                         if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                                             const willInsertData = {
                                                 QR_CODE: decodedText,
@@ -585,7 +584,7 @@ $("#file-input").change(function (event) {
                                             await HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
                                                 try {
                                                     toastr.success("Quét QR và lưu thông tin thành công!");
-                                                    const dataEdit = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                                    const dataEdit = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                                     const willInsert = {
                                                         TYPE: "ADD",
                                                         ERROR_NAME: "Hoàn thành sản phẩm",
@@ -610,7 +609,7 @@ $("#file-input").change(function (event) {
                                             console.log(1);
                                         }
                                     } else {
-                                        const dataLot = await getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_LOT", "1=1")
+                                        const dataLot = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_LOT", "1=1")
                                         console.log(dataLot);
                                         const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
                                         if (checkValue) {
@@ -637,8 +636,7 @@ $("#file-input").change(function (event) {
                                                         document.getElementById("result-product-truycap").disabled = false;
                                                         document.getElementById("result-form-productName").value = checkQRcode[1];
                                                         document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                                                        document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
-                                                        data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                                        data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                                         const willInsertData = {
                                                             TYPE: "ADD",
                                                             ERROR_NAME: "Hoàn thành sản phẩm",

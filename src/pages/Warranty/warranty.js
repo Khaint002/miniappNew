@@ -1,6 +1,7 @@
 var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
+    $('#qr-popup').hide();
     const inputValue = HOMEOSAPP.CodeWarranty;
 
     if (inputValue == null || inputValue == "") {

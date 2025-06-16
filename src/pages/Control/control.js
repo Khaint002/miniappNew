@@ -13,6 +13,7 @@ var ctx_E = document.getElementById("chartEnergy").getContext("2d");
 var ChartU, ChartI, ChartP, ChartE;
 // xác định thiết bị cần truy cập
 async function accessDevice() {
+    $('#qr-popup').hide();
     const inputValue = HOMEOSAPP.CodeCondition;
 
     if (inputValue == null || inputValue == "") {
