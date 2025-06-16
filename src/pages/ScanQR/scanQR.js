@@ -913,7 +913,6 @@ async function checkDevice(type) {
         const matchedItem = dataQRcode.data.find(item =>
             item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
         );
-        console.log(matchedItem);
         if (matchedItem != undefined) {
             dataDevice.push(matchedItem);
         }
