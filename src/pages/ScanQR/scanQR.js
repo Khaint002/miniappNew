@@ -519,7 +519,7 @@ $("#file-input").change(function (event) {
                                         changeDataWarranty(data);
                                     }
 
-                                } if (checkQRcode.length == 4) {
+                                } else if (checkQRcode.length == 4) {
                                     data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                     // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
                                     if (data.length == 0) {
