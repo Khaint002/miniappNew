@@ -139,7 +139,7 @@ async function pickApp(type) {
 
         case 'WARRANTY':
             HOMEOSAPP.application = "WARRANTY";
-            await handleWarrantyApp();
+            await HOMEOSAPP.handleWarrantyApp("IN");
             break;
 
         case 'LOGIN':
@@ -179,32 +179,6 @@ function handleMuaApp() {
         $('.warranty_scanQRcode').addClass("d-none");
 
         HOMEOSAPP.checkTabHistory = 1;
-    }, 2000);
-}
-
-
-
-async function handleWarrantyApp() {
-    checkApp = 'GUA';
-    
-    showElement("LoadScreen", "LogoLoadScreen");
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
-    setTimeout(() => {
-        HOMEOSAPP.checkTabHistory = 2;
-        hideElement("LoadScreen", "LogoLoadScreen");
-
-        $('#nameHistory').removeClass("d-none");
-        $('#nameHistory').addClass("d-flex");
-        $('#listTabMap').addClass("d-none");
-        $('#NameHistoryPage').text("Sản phâm:");
-        $('#descHistoryPage').text("Lịch sử sản phẩm đã xem:");
-        $('#historySelect').addClass("d-none");
-        
-        $('.workstation_access').addClass("d-none");
-        $('.workstation_category').addClass("d-none");
-        $('.warranty_scansQRcode').addClass("d-none");
-        $('.warranty_lot').addClass("d-none");
-        $('.warranty_scanQRcode').addClass("d-none");
     }, 2000);
 }
 

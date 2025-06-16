@@ -709,9 +709,9 @@ HOMEOSAPP.handleControlApp = function(check) {
     } else {
         HOMEOSAPP.goBack();
         setTimeout(() => {
-            // hideElement("LoadScreen", "img-station");
-            $('#loading-popup').hide();
-            showElement("history");
+            hideElement("LoadScreen", "LogoLoadScreen");
+            
+
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
             $('#listTabMap').addClass("d-none");
@@ -733,7 +733,51 @@ HOMEOSAPP.handleControlApp = function(check) {
             // pickApp('MUA');
         }, 200);
     }
+}
+
+HOMEOSAPP.handleWarrantyApp = async function(check) {
+    checkApp = 'GUA';
     
+    showElement("LoadScreen", "LogoLoadScreen");
+    if(check == 'IN'){
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        setTimeout(() => {
+            HOMEOSAPP.checkTabHistory = 3;
+            hideElement("LoadScreen", "LogoLoadScreen");
+
+            $('#nameHistory').removeClass("d-none");
+            $('#nameHistory').addClass("d-flex");
+            $('#listTabMap').addClass("d-none");
+            $('#NameHistoryPage').text("Sản phâm:");
+            $('#descHistoryPage').text("Lịch sử sản phẩm đã xem:");
+            $('#historySelect').addClass("d-none");
+            
+            $('.workstation_access').addClass("d-none");
+            $('.workstation_category').addClass("d-none");
+            $('.warranty_scansQRcode').addClass("d-none");
+            $('.warranty_lot').addClass("d-none");
+            $('.warranty_scanQRcode').addClass("d-none");
+        }, 2000);
+    } else {
+        HOMEOSAPP.goBack();
+        setTimeout(() => {
+            HOMEOSAPP.checkTabHistory = 3;
+            hideElement("LoadScreen", "LogoLoadScreen");
+
+            $('#nameHistory').removeClass("d-none");
+            $('#nameHistory').addClass("d-flex");
+            $('#listTabMap').addClass("d-none");
+            $('#NameHistoryPage').text("Sản phâm:");
+            $('#descHistoryPage').text("Lịch sử sản phẩm đã xem:");
+            $('#historySelect').addClass("d-none");
+            
+            $('.workstation_access').addClass("d-none");
+            $('.workstation_category').addClass("d-none");
+            $('.warranty_scansQRcode').addClass("d-none");
+            $('.warranty_lot').addClass("d-none");
+            $('.warranty_scanQRcode').addClass("d-none");
+        }, 200);
+    }
 }
 
 var reportOptions = [

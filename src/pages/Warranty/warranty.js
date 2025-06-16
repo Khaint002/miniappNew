@@ -326,4 +326,8 @@ $("#submitError").click(function () {
     });
 });
 
+$(".WarrantyScanNext").off("click").click(function () {
+    HOMEOSAPP.handleWarrantyApp();
+});
+
 accessDeviceWarranty();

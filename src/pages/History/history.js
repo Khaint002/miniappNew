@@ -21,7 +21,7 @@ async function pickApp(type) {
             break;
 
         case 'WARRANTY':
-            HOMEOSAPP.application = "warranty";
+            HOMEOSAPP.application = "WARRANTY";
             checkTabHistory = 2;
             addItemWarranty('warranty');
             break;
@@ -1117,10 +1117,8 @@ function WarningEnergy(value) {
 $("#PickApp-button-scanQR").off("click").click(function () {
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
-    } else if (HOMEOSAPP.checkTabHistory == 2) {
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     }
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
 });
 // danh mục
 var listCategory = $('#history-setting-detail');

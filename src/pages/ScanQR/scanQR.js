@@ -3,11 +3,16 @@ var currentCameraIndex = 0;  // Index camera hiện tại
 var devices = [];  // Danh sách các camera
 var isScannerRunning = false;  // Biến theo dõi trạng thái quét
 var currentCamera;
-
+var typeQR;
 $(".start").off("click").click(function () {
     const dataId = $(this).data("id");
     $("#result-form").addClass("d-none");
-    typeQR = HOMEOSAPP.checkTabHistory;
+    if(HOMEOSAPP.checkTabHistory == 1){
+        typeQR = HOMEOSAPP.checkTabHistory;
+    } else if(HOMEOSAPP.checkTabHistory == 2 || HOMEOSAPP.checkTabHistory == 3){
+        typeQR = 2;
+    }
+    
 
     if (dataId == 3) {
         const lotNumber = $("#lot-number").val();
@@ -877,7 +882,7 @@ function openTab(evt, tabName) {
 $("#truycap").off("click").click(function () {
     if(HOMEOSAPP.checkTabHistory == 1){
         getInputValue()
-    } else if(HOMEOSAPP.checkTabHistory == 2){
+    } else if(HOMEOSAPP.checkTabHistory == 2 || HOMEOSAPP.checkTabHistory == 3){
         checkDevice();
     }
 });
@@ -888,21 +893,28 @@ async function checkDevice() {
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã thiết bị!");
     } else {
-        let dataWarranty = [];
+        let dataDevice = [];
         const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
         const matchedItem = dataQRcode.data.find(item =>
             item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
         );
         console.log(matchedItem);
         if (matchedItem != undefined) {
-            dataWarranty.push(matchedItem);
+            dataDevice.push(matchedItem);
         }
-        if (dataWarranty.length == 1) {
-            $("#loading-popup").show()
-            let checkQRcode = dataWarranty[0].QR_CODE.split(',');
-            console.log(checkQRcode);
-            HOMEOSAPP.CodeCondition = checkQRcode[3];
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+        if (dataDevice.length == 1) {
+            $("#loading-popup").show();
+            if(HOMEOSAPP.checkTabHistory == 2){
+                let checkQRcode = dataDevice[0].QR_CODE.split(',');
+                console.log(checkQRcode);
+                HOMEOSAPP.CodeCondition = checkQRcode[3];
+                HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+            } else if(HOMEOSAPP.checkTabHistory == 3){
+                let checkQRcode = dataDevice[0].QR_CODE.split(',');
+                console.log(checkQRcode);
+                HOMEOSAPP.CodeWarranty = checkQRcode[2];
+                HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
+            }
         } else {
             toastr.error("Sản phẩm không tồn tại hoặc chưa được thêm vào hệ thống")
         }
@@ -1004,6 +1016,11 @@ $("#tab-scan-qr").off("click").click(function (event) {
         } else {
             openTab(event, 'tab1')
         }
+    } else if(HOMEOSAPP.checkTabHistory == 3){
+        document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
+        document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
+
+        openTab(event, 'tab1')
     }
 });
 $("#tab-text").off("click").click(function (event) {
