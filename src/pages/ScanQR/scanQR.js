@@ -4,7 +4,8 @@ var devices = [];  // Danh sách các camera
 var isScannerRunning = false;  // Biến theo dõi trạng thái quét
 var currentCamera;
 var typeQR;
-var checkTab = false
+var checkTab = false;
+var listLotProduct = $('#lot-warranty-detail');
 $(".start").off("click").click(function () {
     const dataId = $(this).data("id");
     $("#result-form").addClass("d-none");
@@ -992,6 +993,249 @@ async function ScanQRcodeByZalo() {
     }
 }
 
+async function addItemLotproduct() {
+    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+    listLotProduct.empty();
+    data.data.forEach(item => {
+        let element = '';
+        const [dateALL, timeALL] = item.DATE_CREATE.split('T');
+        element += '<div class="col-12" style="padding: 5px 10px;">' +
+            '<div id="PickApp-button-mua" class="iconApp">' +
+            '<div class="info-box-content">' +
+            '<div class="d-flex justify-content-between">' +
+            '<span class="app-text-number">' + item.LOT_NUMBER + '</span>' +
+            '</div>' +
+            '<span class="app-text">' + dateALL + ' ' + timeALL + '</span>' +
+            '</div>' +
+            '<button class="icon QRlot-button" style="background-color: #17a2b8; margin-right: 10px; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2); border: none; ">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" style="color: #fff" fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">' +
+            '<path d="M2 2h2v2H2z"/>' +
+            '<path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>' +
+            '<path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>' +
+            '<path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>' +
+            '<path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>' +
+            '</svg>' +
+            '</button>' +
+            '<button class="icon print-button" style="background-color: #17a2b8; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2); border: none; ">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" style="color: #fff" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">' +
+            '<path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>' +
+            '<path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>' +
+            '</svg>' +
+            '</button>' +
+            '</div>' +
+            '</div>'
+
+        const $element = $(element);
+
+        $element.find('.print-button').on('click', function (e) {
+            e.preventDefault();
+            generateVoucher(item);
+        });
+
+        $element.find('.QRlot-button').on('click', function (e) {
+            e.preventDefault();
+            generateLotQRCodes(item);
+        });
+        listLotProduct.append($element);
+    });
+}
+
+async function generateLotQRCodes(item) {
+    const newTab = window.open('', '_blank');
+    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+        alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
+        return;
+    }
+
+    let htmlContent = `
+        <html>
+        <head>
+            <style>
+                body {
+                    text-align: center;
+                    padding: 5px;
+                }
+                p{
+
+                }
+            </style>
+        </head>
+        <body>
+            <div class="qr-grid">
+                <h4>Khi nhận hàng sử dụng zalo miniapp</h4>
+                <h4>HomeOS IoT Smart để xác nhận</h4>
+    `;
+
+    try {
+        // Tạo QR code dưới dạng canvas
+        const canvas = document.createElement('canvas');
+        await QRCode.toCanvas(canvas, item.LOT_NUMBER, { width: 300 });
+
+        // Chuyển canvas thành ảnh base64
+        const image = canvas.toDataURL('image/png');
+
+        // Thêm thẻ <img> chứa ảnh QR vào htmlContent
+        htmlContent += `<img src="${image}" alt="QR Code">
+            <p>${item.LOT_NUMBER}</p>
+        `;
+
+        // Chèn nội dung HTML vào tab mới
+        newTab.document.write(htmlContent);
+        newTab.document.close();
+
+        // Thêm script để in sau khi nội dung được tải
+        const script = newTab.document.createElement("script");
+        script.textContent = "window.onload = function() { window.print(); }";
+        newTab.document.body.appendChild(script);
+    } catch (error) {
+        console.error("Lỗi khi tạo mã QR:", error);
+        alert('Lỗi khi tạo mã QR!');
+    }
+}
+
+async function generateVoucher(item) {
+    console.log(item);
+    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + item.PR_KEY + "'")
+    let uniqueClasses = [...new Set(data.data.map(item => item.LOT_CLASS))];
+    uniqueClasses.sort();
+    console.log(uniqueClasses);
+
+    const groupedData = uniqueClasses.map(cls => {
+        return {
+            LOT_CLASS: cls,
+            items: data.data.filter(item => item.LOT_CLASS === cls)
+        };
+    });
+    console.log(groupedData);
+    const newTab = window.open('', '_blank');
+    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+        alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
+        return;
+    }
+    let htmlContent = `
+        <html>
+        <head>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                body {
+                    font-family: 'Times New Roman', Times, serif;
+                }
+                .header-logo {
+                    width: 80px;
+                }
+                .table-bordered td, .table-bordered th {
+                    vertical-align: middle;
+                }
+                .text-small {
+                    font-size: 0.85rem;
+                }
+                .text-start {
+                    font-size: 13px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="my-4">
+                <div class="row">
+                    <div class="col-8 text-center">
+                        <img src="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" style="width: 150px;" alt="Logo" class="header-logo">
+                        <p class="mt-2">
+                            <strong>CÔNG TY CỔ PHẦN CÔNG NGHỆ HOMEOS VIỆT NAM</strong><br>
+                            Địa chỉ: Số 24, Ngõ 22, Đường Kim Giang, Q. Thanh Xuân, TP Hà Nội
+                        </p>
+                    </div>
+                    <div class="col-4 text-center" style="margin-top: 30px;">
+                        <p class="text-small"><b>Mẫu số 02 - VT</b></p>
+                        <p class="text-small">(Ban hành theo Thông tư số: 200/2014/TT-BTC ngày 22/12/2014 của Bộ Tài Chính)</p>
+                    </div>
+                </div>
+
+                <div class="text-center my-4">
+                    <h4><strong>PHIẾU XUẤT KHO</strong></h4>
+                    <p class="text-small m-0"><b>(Kiêm bảo hành)</b></p>
+                    <p class="m-0"><strong>Số phiếu: `+ item.LOT_NUMBER + `</strong></p>
+                    <p class="m-0"><b><i>Ngày ... tháng ... năm 2025</i></b></p>
+                </div>
+
+                <p class="m-0" style="font-size: 14px;">- Họ và tên người nhận hàng: CÔNG TY TNHH ĐIỆN CÔNG NGHIỆP KHỞI MINH</p>
+                <p class="m-0" style="font-size: 14px;">- Lý do xuất kho: Xuất bán</p>
+                <p class="m-0" style="font-size: 14px;">- Xuất tại địa điểm: J04 - L02, An Phú Shop Villa, Dương Kinh, Hà Đông, Hà Nội.</p>
+
+                <table class="table table-bordered text-center mt-2">
+                    <thead>
+                        <tr style="font-size: 14px;">
+                            <th>STT</th>
+                            <th>DANH MỤC HÀNG HÓA</th>
+                            <th>ĐVT</th>
+                            <th>SL</th>
+                            <th style="width: 30px;">GHI CHÚ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" style="text-align: start;"><b>Thiết bị rơ le an toàn phao nước</b></td>
+                        </tr>
+    `;
+    for (let i = 0; i < groupedData.length; i++) {
+        let danhMuc = '';
+        let number = 0;
+        groupedData[i].items.forEach(element => {
+            number++;
+            const checkQRcode = element.QR_CODE.split(',');
+
+            if (number == groupedData[i].items.length) {
+                danhMuc += checkQRcode[2].substring(3).replace(/\./g, "");
+            } else {
+                danhMuc += checkQRcode[2].substring(3).replace(/\./g, "") + ', ';
+            }
+        });
+        console.log(danhMuc);
+        htmlContent += `
+        <tr>
+            <td style="font-size: 15px;">`+ groupedData[i].LOT_CLASS + `</td>
+            <td class="text-start">
+                `+ danhMuc + `
+            </td>
+            <td style="font-size: 15px;">Bộ</td>
+            <td style="font-size: 15px;">`+ groupedData[i].items.length + `</td>
+            <td></td>
+        </tr>
+        `
+
+    }
+    htmlContent += `
+        </tbody>
+        </table>
+        <p style="font-size: 14px;">Số chứng từ gốc kèm theo:.....................................................................................</p>
+        <div class="row text-center" style="font-size: 14px;">
+            <div class="col-3">
+                <b>Người lập phiếu</b>
+            </div>
+            <div class="col-3">
+                <b>Người nhận hàng</b>
+            </div>
+            <div class="col-3">
+                <b>Thủ kho</b>
+            </div>
+            <div class="col-3">
+                <b>Kế toán</b>
+            </div>
+        </div>
+    `
+
+
+    // Chèn nội dung HTML vào tab mới
+    newTab.document.write(htmlContent);
+    newTab.document.close();
+
+    const script = newTab.document.createElement("script");
+    script.textContent = "window.onload = function() { window.print(); }";
+    const script1 = newTab.document.createElement("script");
+    script1.src = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js";
+    newTab.document.body.appendChild(script1);
+    newTab.document.body.appendChild(script);
+}
+
 $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
@@ -1013,12 +1257,16 @@ $("#result-product-truycap").click(function () {
 $("#PickApp-button-pick").off("click").click(function () {
     if(HOMEOSAPP.checkTabHistory == 2){
         HOMEOSAPP.handleControlApp("OUT");
+    } else if(HOMEOSAPP.checkTabHistory == 3){
+        HOMEOSAPP.handleWarrantyApp("OUT");
     } else {
         HOMEOSAPP.goBack();
     }
 });
 
-$("#tab-scan-qr").off("click").click(function (event) {
+$("#tab-scan-qr").off("click").click(async function (event) {
+    ['ScanQRcode', 'ScanAllQRcode', 'lotProduct'].forEach(id => document.getElementById(id).classList.add('d-none'));
+
     if(HOMEOSAPP.checkTabHistory == 1){
         $("#ScanQRcode").removeClass("d-none");
         if(window.workstationID && window.workstationID != "done"){
@@ -1043,11 +1291,45 @@ $("#tab-scan-qr").off("click").click(function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
-        $("#ScanQRcode").removeClass("d-none");
-        document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
-        document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
+        switch (HOMEOSAPP.checkTabMenu) {
+            case "DetailDevice":
+                console.log();
+                
+                $("#ScanQRcode").removeClass("d-none");
+                document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
+                document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
 
-        openTab(event, 'tab1')
+                openTab(event, 'tab1')
+                break;
+            case "ScanLotDevice":
+                $("#ScanAllQRcode").removeClass("d-none");
+                $('#lot-number').empty();
+                const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+                const newOption = $('<option>', {
+                    value: '0', // Giá trị của option
+                    text: 'Chọn lô sản phẩm' // Nội dung hiển thị
+                });
+                // Thêm vào select
+                $('#lot-number').append(newOption);
+                Data.data.forEach(item => {
+                    console.log(item);
+                    const newOption = $('<option>', {
+                        value: item.PR_KEY, // Giá trị của option
+                        text: item.LOT_NAME // Nội dung hiển thị
+                    });
+                    // Thêm vào select
+                    $('#lot-number').append(newOption);
+                });
+                checkTab = true;
+                break;
+            case "ManageDevice":
+                $("#lotProduct").removeClass("d-none");
+                addItemLotproduct();
+                break;
+            default:
+                break;
+        }
+        
     }
 });
 $("#tab-text").off("click").click(function (event) {

@@ -1118,6 +1118,7 @@ $("#PickApp-button-scanQR").off("click").click(function () {
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
     }
+    HOMEOSAPP.checkTabMenu = "DetailDevice";
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
 });
 // danh mục
@@ -1294,44 +1295,14 @@ menuItems.forEach((item) => {
         } else if (menuText == "Thông tin công ty") {
             window.location.href = "https://homeos.com.vn/";
         } else if (menuText == "Thông tin sản phẩm") {
-            // $("#history").addClass("hidden");
-            // $("#ScanQRWarranty").removeClass("hidden");
-            // $(".warrantyDetailProduct").removeClass("d-none");
-            // $("#ScanAllQRcode").addClass("d-none");
-            // $("#lotProduct").addClass("d-none");
-            // checkTab = false;
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQRWarranty/scanQRWarranty.html");
+            HOMEOSAPP.checkTabMenu = "DetailDevice";
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (menuText == "Quét lô sản phẩm") {
-            $("#history").addClass("hidden");
-            $("#ScanQRWarranty").removeClass("hidden");
-            $(".warrantyDetailProduct").addClass("d-none");
-            $("#ScanAllQRcode").removeClass("d-none");
-            $("#lotProduct").addClass("d-none");
-            $('#lot-number').empty();
-            const Data = await getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
-            const newOption = $('<option>', {
-                value: '0', // Giá trị của option
-                text: 'Chọn lô sản phẩm' // Nội dung hiển thị
-            });
-            // Thêm vào select
-            $('#lot-number').append(newOption);
-            Data.data.forEach(item => {
-                console.log(item);
-                const newOption = $('<option>', {
-                    value: item.PR_KEY, // Giá trị của option
-                    text: item.LOT_NAME // Nội dung hiển thị
-                });
-                // Thêm vào select
-                $('#lot-number').append(newOption);
-            });
-            checkTab = true;
+            HOMEOSAPP.checkTabMenu = "ScanLotDevice";
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (menuText == "Quản lý và xuất lô hàng") {
-            $("#history").addClass("hidden");
-            $("#ScanQRWarranty").removeClass("hidden");
-            $(".warrantyDetailProduct").addClass("d-none");
-            $("#ScanAllQRcode").addClass("d-none");
-            $("#lotProduct").removeClass("d-none");
-            addItemLotproduct();
+            HOMEOSAPP.checkTabMenu = "ManageDevice";
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
         // Close the sidebar after selection (optional)
         sidebar.removeClass("open");

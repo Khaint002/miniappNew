@@ -737,7 +737,6 @@ HOMEOSAPP.handleControlApp = function(check) {
 
 HOMEOSAPP.handleWarrantyApp = async function(check) {
     checkApp = 'GUA';
-    
     showElement("LoadScreen", "LogoLoadScreen");
     if(check == 'IN'){
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
