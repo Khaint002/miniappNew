@@ -477,7 +477,7 @@ $("#file-input").change(function (event) {
                             if (typeQR == 2 || typeQR == 3) {
                                 data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                 console.log("Kiểm tra"+checkQRcode.length);
-
+                                
                                 if (data.length > 0) {
                                     if (checkTab) {
                                         if (data[0].LOT_ID == 0) {
