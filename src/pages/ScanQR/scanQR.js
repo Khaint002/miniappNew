@@ -473,13 +473,10 @@ $("#file-input").change(function (event) {
                             let domain;
                             let workstation;
                             let checkQRcode = decodedText.split(',');
-                            console.log(1);
-                            
                             // if(checkQRcode[0].substring(0, 3) == "T20"){
                             if (typeQR == 2 || typeQR == 3) {
-                                console.log(2);
                                 data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
-                                console.log(data);
+                                console.log("Kiểm tra"+checkQRcode.length);
 
                                 if (data.length > 0) {
                                     if (checkTab) {
