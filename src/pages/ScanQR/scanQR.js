@@ -4,6 +4,7 @@ var devices = [];  // Danh sách các camera
 var isScannerRunning = false;  // Biến theo dõi trạng thái quét
 var currentCamera;
 var typeQR;
+var checkTab = false
 $(".start").off("click").click(function () {
     const dataId = $(this).data("id");
     $("#result-form").addClass("d-none");
@@ -189,7 +190,7 @@ async function onScanSuccess(decodedText, decodedResult) {
         if (data.length > 0 && checkQRcode.length == 3) {
             if (checkTab) {
                 if (data[0].LOT_ID == 0) {
-                    const dataQRCODE = await getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
+                    const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                     if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                         const willInsertData = {
                             PR_KEY: data[0].PR_KEY,
@@ -223,12 +224,10 @@ async function onScanSuccess(decodedText, decodedResult) {
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
-                changeDataWarranty(data);
             }
 
         } else if (checkQRcode.length == 4) {
-            data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+            data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
             // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
             if (data.length == 0) {
                 const willInsertData = {
@@ -254,7 +253,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                             document.getElementById("result-condition-truycap").disabled = false;
                             document.getElementById("result-form-conditionName").value = checkQRcode[1];
                             document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                            data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                            data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                             localStorage.setItem("itemCondition", JSON.stringify(data));
                         }
                     } catch (e) { }
@@ -273,7 +272,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             }
         } else {
             if (typeQR == 3 && checkQRcode[0].substring(0, 3) == "T20") {
-                const dataQRCODE = await getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
+                const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                 if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                     const willInsertData = {
                         QR_CODE: decodedText,
@@ -288,7 +287,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                     await HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
                         try {
                             toastr.success("Quét QR và lưu thông tin thành công!");
-                            const dataEdit = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                            const dataEdit = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                             const willInsert = {
                                 TYPE: "ADD",
                                 ERROR_NAME: "Hoàn thành sản phẩm",
@@ -338,8 +337,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                                 document.getElementById("result-product-truycap").disabled = false;
                                 document.getElementById("result-form-productName").value = checkQRcode[1];
                                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                                document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
-                                data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                 const willInsertData = {
                                     TYPE: "ADD",
                                     ERROR_NAME: "Hoàn thành sản phẩm",
@@ -351,7 +349,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                                     DATASTATE: "ADD",
                                 };
                                 await HOMEOSAPP.add('WARRANTY_ERROR', willInsertData)
-                                changeDataWarranty(data);
                             }
                         } catch (e) { }
                     }).catch(err => {
@@ -472,13 +469,12 @@ $("#file-input").change(function (event) {
                             let checkQRcode = decodedText.split(',');
                             // if(checkQRcode[0].substring(0, 3) == "T20"){
                             if (typeQR == 2 || typeQR == 3) {
-                                data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                 console.log("Kiểm tra"+checkQRcode.length);
-                                console.log(data);
+                                
                                 
                                 if (checkQRcode.length == 3) {
                                     if (checkTab) {
-                                        
                                         if (data[0].LOT_ID == 0) {
                                             const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                             if (dataQRCODE.data.length < $('#classProductNumber').val()) {
@@ -507,15 +503,13 @@ $("#file-input").change(function (event) {
                                         }
                                         scanAgain()
                                     } else {
+                                        console.log(data);
                                         document.getElementById("result-product").classList.remove("d-none");
                                         document.getElementById("result-form-loading").classList.add("d-none");
                                         document.getElementById("result-form").classList.remove("d-none");
-                                        // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
                                         document.getElementById("result-product-truycap").disabled = false;
                                         document.getElementById("result-form-productName").value = checkQRcode[1];
                                         document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                                        document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
-                                        changeDataWarranty(data);
                                     }
 
                                 } else if (checkQRcode.length == 4) {
@@ -545,7 +539,7 @@ $("#file-input").change(function (event) {
                                                     document.getElementById("result-condition-truycap").disabled = false;
                                                     document.getElementById("result-form-conditionName").value = checkQRcode[1];
                                                     document.getElementById("result-form-conditionCode").value = checkQRcode[3];
-                                                    data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+                                                    data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
                                                     localStorage.setItem("itemCondition", JSON.stringify(data));
                                                 }
                                             } catch (e) { }
@@ -566,8 +560,6 @@ $("#file-input").change(function (event) {
                                 } else {
                                     console.log("Trường hợp 3");
                                     if (typeQR == 3 && checkQRcode[0].substring(0, 3) == "T20") {
-                                        console.log(1);
-
                                         const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                         if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                                             const willInsertData = {
@@ -647,7 +639,6 @@ $("#file-input").change(function (event) {
                                                             DATASTATE: "ADD",
                                                         };
                                                         await HOMEOSAPP.add('WARRANTY_ERROR', willInsertData)
-                                                        changeDataWarranty(data);
                                                     }
                                                 } catch (e) { }
                                             }).catch(err => {
