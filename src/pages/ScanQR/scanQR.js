@@ -167,14 +167,19 @@ function getDataMDQRcode(QRcode) {
 async function onScanSuccess(decodedText, decodedResult) {
     // Hiển thị kết quả trên trang chính
     //$("#result").text("Kết quả quét: " + decodedText);
-
-    html5QrCode.stop().then(ignore => {
-        isScannerRunning = false;  // Đánh dấu scanner đã dừng
+    if (isScannerRunning) {
+        html5QrCode.stop().then(ignore => {
+            isScannerRunning = false;  // Đánh dấu scanner đã dừng
+            document.getElementById("result-form").classList.remove("d-none");
+            // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+        }).catch(err => {
+            console.error("Lỗi khi dừng camera sau khi quét thành công: ", err);
+        });
+    } else {
+        $("#qr-popup").show();
         document.getElementById("result-form").classList.remove("d-none");
-        // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
-    }).catch(err => {
-        console.error("Lỗi khi dừng camera sau khi quét thành công: ", err);
-    });
+    }
+    
     let data;
     let domain;
     let workstation;
