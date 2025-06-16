@@ -227,7 +227,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                 changeDataWarranty(data);
             }
 
-        } if (checkQRcode.length == 4) {
+        } else if (checkQRcode.length == 4) {
             data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
             // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
             if (data.length == 0) {
@@ -266,7 +266,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                 document.getElementById("result-condition").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
-                // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
                 document.getElementById("result-condition-truycap").disabled = false;
                 document.getElementById("result-form-conditionName").value = checkQRcode[1];
                 document.getElementById("result-form-conditionCode").value = checkQRcode[3];
@@ -1040,7 +1039,9 @@ $("#tab-scan-qr").off("click").click(function (event) {
     } else if(HOMEOSAPP.checkTabHistory == 2){
         document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
-        if(window.cabinetID && window.cabinetID != "done"){
+        if(typeof window.cabinetID === 'function' && window.cabinetID != "done"){
+            console.log("đã chạy vào");
+            
             openTab(event, 'tab1');
             HOMEOSAPP.CodeCondition = window.workstationID;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
