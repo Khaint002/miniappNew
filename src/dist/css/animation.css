@@ -78,6 +78,7 @@
     z-index: 1;
     position: relative;
     height: 100%;
+    box-sizing: border-box;
   }
   
   .tab button.active {
@@ -85,10 +86,10 @@
     font-weight: bold;
   }
   
-  /* Nền trượt */
+  /* CHỈNH LẠI .indicator */
   .tab .indicator {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 50%;
     height: 100%;
@@ -98,4 +99,7 @@
     border-radius: 5px 5px 0 0;
     transition: left 0.3s ease;
     z-index: 0;
+    box-sizing: border-box; /* ✅ NGĂN CHẶN PHÓNG TO DO BORDER */
+    pointer-events: none; /* ✅ Không che nút */
   }
+  

@@ -395,6 +395,7 @@ h1 {
     border-top: none;
 }
 .tab-content-history {
+    /* display: none; */
     position: absolute;
     top: 120px; /* hoặc tùy chỉnh */
     left: 0;
