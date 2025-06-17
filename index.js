@@ -92,6 +92,7 @@ setTimeout(() => {
 HOMEOSAPP.handleUser = async function (type) {
     if (UserID) {
         try {
+            
             if (DataUser && DataUser.id === UserID) {
                 if(type == "home"){
                     document.getElementById("PickApp-button-login").classList.add("d-none");
@@ -747,7 +748,7 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
             $('#listTabMap').addClass("d-none");
-            $('#NameHistoryPage').text("Sản phâm:");
+            $('#NameHistoryPage').text("Sản phẩm:");
             $('#descHistoryPage').text("Lịch sử sản phẩm đã xem:");
             $('#historySelect').addClass("d-none");
             
@@ -762,11 +763,10 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
         setTimeout(() => {
             HOMEOSAPP.checkTabHistory = 3;
             hideElement("LoadScreen", "LogoLoadScreen");
-
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
             $('#listTabMap').addClass("d-none");
-            $('#NameHistoryPage').text("Sản phâm:");
+            $('#NameHistoryPage').text("Sản phẩm:");
             $('#descHistoryPage').text("Lịch sử sản phẩm đã xem:");
             $('#historySelect').addClass("d-none");
             

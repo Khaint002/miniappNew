@@ -1,57 +1,6 @@
 var UserID = localStorage.getItem("userID");
 var DataUser = JSON.parse(localStorage.getItem("userInfo"));
 
-async function handleUser() {
-    if (UserID) {
-        try {
-            if (DataUser && DataUser.id === UserID) {
-                $(".userName").text(DataUser.name);
-                document.getElementById("PickApp-button-login").classList.add("d-none");
-                $(".userAvt").attr("src", DataUser.avatar);
-                // document.getElementById("LogoPickScreen").style.paddingTop = "10vh";
-                const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                console.log(dataUserResponse.data);
-                if (dataUserResponse.data.length == 0) {
-                    const willInsertData = {
-                        USER_ID: DataUser.id,
-                        USER_NAME: DataUser.name,
-                        USER_ROLE: "GUEST",
-                        DATE_CREATE: new Date(),
-                        DATASTATE: "ADD",
-                    };
-                    add('WARRANTY_USER', willInsertData);
-                    localStorage.setItem('RoleUser', "GUEST");
-                } else {
-                    console.log(dataUserResponse);
-                    localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
-                }
-            } else if (DataUser != undefined) {
-                const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                console.log(dataUserResponse.data);
-                if (dataUserResponse.data.length == 0) {
-                    const willInsertData = {
-                        USER_ID: DataUser.id,
-                        USER_NAME: DataUser.name,
-                        USER_ROLE: "GUEST",
-                        DATE_CREATE: new Date(),
-                        DATASTATE: "ADD",
-                    };
-                    add('WARRANTY_USER', willInsertData);
-                }
-            } else {
-                localStorage.setItem('RoleUser', 'GUEST');
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
-    } else {
-        // localStorage.setItem('RoleUser', 'GUEST');
-        document.getElementById("QUYEN").classList.add("d-none");
-        document.getElementById("download-QRcode").classList.add("d-none");
-        // document.getElementById("LogoPickScreen").style.paddingTop = "10vh";
-    }
-    WarrantyCheckUser(localStorage.getItem("RoleUser"));
-}
 function WarrantyCheckUser(ROLE) {
     switch (ROLE) {
         case "GUEST":
