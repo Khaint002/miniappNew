@@ -363,7 +363,7 @@ h1 {
 }
 
 /* tab chức năng */
-.tab {
+/* .tab {
     cursor: pointer;
     border-bottom: 1px solid #535353;
 }
@@ -380,7 +380,6 @@ h1 {
 }
 
 .tab button:hover {
-    /* border: 1px solid #626262; */
     border-bottom: none;
 }
 
@@ -389,15 +388,30 @@ h1 {
     color: #fff;
     border: 1px solid #626262;
     border-bottom: none;
-}
+} */
 
-.tab-content,.tab-content-guarantee,.tab-content-history,.tab-content-schedule {
+.tab-content,.tab-content-guarantee,.tab-content-schedule {
     display: none;
     border-top: none;
 }
-
-.tab-content.active,.tab-content-guarantee.active,.tab-content-history.active,.tab-content-schedule.active {
+.tab-content-history {
+    position: absolute;
+    top: 120px; /* hoặc tùy chỉnh */
+    left: 0;
+    width: 100%;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+    transform: translateX(100%);
+    z-index: 0;
+}
+.tab-content.active,.tab-content-guarantee.active,.tab-content-schedule.active {
     display: block;
+}
+.tab-content-history.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+    z-index: 1;
 }
 
 .modal {
@@ -1663,3 +1677,4 @@ h1 {
     padding: 4px 8px;
     display: inline-block;
 }
+

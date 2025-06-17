@@ -530,18 +530,41 @@ $("#tab-map").off("click").click(function (event) {
     openTabHistory(event, 'tabMap');
 });
 
-function openTabHistory(evt, tabName) {
-    // Ẩn tất cả nội dung tab và bỏ class 'active'
-    $('.tab-content-history').removeClass('active');
+var currentTab = 'tabHistory'; // tab đang hiển thị hiện tại
+
+function openTabHistory(evt, nextTabId) {
+    if (currentTab === nextTabId) return;
+
+    const $current = $('#' + currentTab);
+    const $next = $('#' + nextTabId);
+    const $tabHeader = $('#listTabMap .tab');
+
+    // Xác định hướng
+    const direction = (nextTabId === 'tabMap') ? 'left' : 'right';
+
+    // Reset tab content class
+    $('.tab-content-history').removeClass('active slide-out-left slide-out-right');
     $('.tablinkHistory').removeClass('active');
 
-    // Hiển thị tab được chọn và thêm class 'active' cho nút đã nhấn
-    $('#' + tabName).addClass('active');
-    $(evt.currentTarget).addClass('active');
+    // Animate phần tab header
+    $tabHeader.removeClass('slide-left slide-right show');
+    void $tabHeader[0].offsetWidth; // force reflow
+    $tabHeader.addClass(direction === 'left' ? 'slide-left' : 'slide-right');
 
-    if (typeof map !== 'undefined' && map) {
-        map.invalidateSize();
-    }
+    // Animate tab content
+    $current.addClass(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
+
+    // Delay rồi show cái mới
+    setTimeout(() => {
+        $tabHeader.removeClass('slide-left slide-right').addClass('show');
+        $next.addClass('active');
+        $(evt.currentTarget).addClass('active');
+        currentTab = nextTabId;
+
+        if (typeof map !== 'undefined' && map) {
+            map.invalidateSize();
+        }
+    }, 400); // đồng bộ với thời gian transition
 }
 
 function checkHeight() {

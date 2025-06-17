@@ -1,0 +1,101 @@
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out forwards;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  .slide-in-right {
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+  
+  @keyframes slideInRight {
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .zoom-out {
+    transform: scale(0.7);
+    transition: transform 0.3s ease;
+  }
+
+  .tab-content-history.slide-out-left {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  
+  .tab-content-history.slide-out-right {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  .tablinks {
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  
+  .tablinks.slide-left {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  
+  .tablinks.slide-right {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  
+  .tablinks.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .tab {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #535353;
+    background-color: #1E2833;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 5px 5px 0 0;
+  }
+  
+  .tab button {
+    flex: 1;
+    background-color: transparent;
+    color: #c2c7d0;
+    border: none;
+    z-index: 1;
+    position: relative;
+    height: 100%;
+  }
+  
+  .tab button.active {
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  /* Nền trượt */
+  .tab .indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #222;
+    border: 1px solid #626262;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    transition: left 0.3s ease;
+    z-index: 0;
+  }
