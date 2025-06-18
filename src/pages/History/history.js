@@ -581,7 +581,8 @@ function openTabHistory(evt, nextTabId) {
 
 function checkHeight() {
     const vh = $(window).height();
-    $('#history-detail').height(vh - 180);
+    $('#history-detail').height(vh - 160);
+    $('#total-history-loading').height(vh - 180);
     $('#tabWrapper').height(vh - 130);
     $('#tabMap').height(vh - 130);
     $('#list-history-detail').height(vh - 530);
