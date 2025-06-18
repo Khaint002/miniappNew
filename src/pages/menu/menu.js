@@ -129,7 +129,7 @@ function handleMuaApp() {
         $('#nameHistory').addClass("d-none");
         $('#nameHistory').removeClass("d-flex");
         $('#NameHistoryPage').text("Quan trắc:")
-        $('#descHistoryPage').text("Lịch sử truy cập")
+        // $('#descHistoryPage').text("Lịch sử truy cập")
         $('#historySelect').removeClass("d-none");
         $('#footerHistoryPage').text("thêm mới mã trạm hoặc chọn trạm đã lưu");
 
