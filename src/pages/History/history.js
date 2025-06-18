@@ -248,6 +248,8 @@ async function startInterval() {
             }
         }
     }, 10000);
+    $("#history-value").removeClass("d-none")
+    $("#history-loading").addClass("d-none")
 }
 
 function rotateProperties() {

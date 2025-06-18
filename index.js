@@ -87,7 +87,7 @@ setTimeout(() => {
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
     }
-}, 2000);
+}, 1000);
 
 HOMEOSAPP.handleUser = async function (type) {
     if (UserID) {

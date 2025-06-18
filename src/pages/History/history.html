@@ -135,29 +135,52 @@
             </div>
             <div id="tabWrapper" style="position: relative; overflow: hidden;">
                 <div id="tabHistory" class="tab-content-history active">
-                    <div id="nameHistory" class="d-none" style="color: #fff; padding-left: 10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-pc-horizontal" viewBox="0 0 16 16">
-                            <path d="M1 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm11.5 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1m2 0a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1M1 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5M1.25 9h5.5a.25.25 0 0 1 0 .5h-5.5a.25.25 0 0 1 0-.5" />
-                        </svg>
-                        <h5 id="NameHistoryPage" style="padding-left: 10px; padding-left: 10px;">Quan trắc:</h5>
-                    </div>
-                    <div class="d-flex justify-content-between" style="width: 100%; padding-left: 10px;">
-                        <p id="descHistoryPage" style="color: #fff; text-align: left;">Lịch sử truy cập:</p>
-                        <div>
-                            <select id="historySelect" class="form-select bg-dark text-white border-secondary" style="font-size: 14px;" aria-label="Default select example">
-                                <option selected>Hiển thị tất cả...</option>
-                            </select>
+                    <div id="history-value" class="d-none">
+                        <div id="nameHistory" class="d-none" style="color: #fff; padding-left: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-pc-horizontal" viewBox="0 0 16 16">
+                                <path d="M1 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm11.5 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1m2 0a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1M1 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5M1.25 9h5.5a.25.25 0 0 1 0 .5h-5.5a.25.25 0 0 1 0-.5" />
+                            </svg>
+                            <h5 id="NameHistoryPage" style="padding-left: 10px; padding-left: 10px;">Quan trắc:</h5>
+                        </div>
+                        <div class="d-flex justify-content-between" style="width: 100%; padding-left: 10px;">
+                            <p id="descHistoryPage" style="color: #fff; text-align: left;">Lịch sử truy cập:</p>
+                            <div>
+                                <select id="historySelect" class="form-select bg-dark text-white border-secondary" style="font-size: 14px;" aria-label="Default select example">
+                                    <option selected>Hiển thị tất cả...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="history-detail" style="overflow-y: auto; height: 450px; padding: 10px 10px 0 10px;">
+                            
                         </div>
                     </div>
-                    <div id="history-detail" style="overflow-y: auto; height: 450px; padding: 10px 10px 0 10px;">
-                        <!-- <div style="margin-top: 10px; display: flex; justify-content: center; align-items: center;">
-                            <button id="addWorkStation" style="width: 200px; height: 200px; border-radius: 50%; border: 1px dashed #fff; background-color: #1E2833; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-size: 14px; text-align: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" style="color: #fff; margin-bottom: 8px;" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                </svg>
-                                Thêm mới
-                            </button>
-                        </div> -->
+                    <div id="history-loading">
+                        <div style="overflow-y: auto; height: 450px; padding: 10px 10px 0 10px;">
+                            <div class="skeleton-item">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton-lines">
+                                <div class="skeleton skeleton-line" style="width: 60%"></div>
+                                <div class="skeleton skeleton-line" style="width: 80%"></div>
+                                <div class="skeleton skeleton-line" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-item">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton-lines">
+                                <div class="skeleton skeleton-line" style="width: 60%"></div>
+                                <div class="skeleton skeleton-line" style="width: 80%"></div>
+                                <div class="skeleton skeleton-line" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-item">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="skeleton-lines">
+                                <div class="skeleton skeleton-line" style="width: 60%"></div>
+                                <div class="skeleton skeleton-line" style="width: 80%"></div>
+                                <div class="skeleton skeleton-line" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="tabMap" class="tab-content-history">
