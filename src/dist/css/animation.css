@@ -32,13 +32,11 @@
 
   .tab-content-history.slide-out-left {
     transform: translateX(-100%);
-    opacity: 0;
-  }
-  
-  .tab-content-history.slide-out-right {
+}
+
+.tab-content-history.slide-out-right {
     transform: translateX(100%);
-    opacity: 0;
-  }
+}
 
   .tablinks {
     transition: transform 0.4s ease, opacity 0.4s ease;
@@ -99,7 +97,7 @@
     border-radius: 5px 5px 0 0;
     transition: left 0.3s ease;
     z-index: 0;
-    box-sizing: border-box; /* ✅ NGĂN CHẶN PHÓNG TO DO BORDER */
-    pointer-events: none; /* ✅ Không che nút */
+    box-sizing: border-box; 
+    pointer-events: none; 
   }
   

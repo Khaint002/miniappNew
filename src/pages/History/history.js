@@ -3,6 +3,7 @@ var historyListCategoryDetail = $('#list-history-detail');
 var historyListCategoryAdd = $('#list-history-add');
 var checkTabHistory;
 var intervalId;
+var checkMap = true;
 var store = {};
 async function pickApp(type) {
     showAddWorkStationButton();
@@ -539,29 +540,35 @@ function openTabHistory(evt, nextTabId) {
 
     const $current = $('#' + currentTab);
     const $next = $('#' + nextTabId);
-
-    // Xác định hướng trượt
     const direction = (nextTabId === 'tabMap') ? 'left' : 'right';
 
-    // Reset class
     $('.tab-content-history').removeClass('active slide-out-left slide-out-right');
     $('.tablinkHistory').removeClass('active');
 
-    // Thêm animation cho tab hiện tại để trượt ra
+    // Thêm animation trượt ra
     $current.addClass(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
-    $next.removeClass('d-none');
-    // Delay một chút rồi hiển thị tab mới
+
+    // Lắng nghe khi kết thúc animation rồi co lại width
+    $current.one('transitionend', () => {
+        $current.css('width', '0');
+    });
+
+    // Hiện tab mới
+    $next.css('width', '100%').removeClass('d-none');
     setTimeout(() => {
-        $current.addClass('d-none');
         $next.addClass('active');
         $(evt.currentTarget).addClass('active');
         currentTab = nextTabId;
-
-        if (typeof map !== 'undefined' && map) {
+        console.log(checkMap);
+            
+        if (typeof map !== 'undefined' && map && checkMap) {
             map.invalidateSize();
+            
+            checkMap = false;
         }
-    }, 50); // delay nhỏ để CSS animation có hiệu lực
+    }, 50);
 }
+
 
 function checkHeight() {
     const vh = $(window).height();
@@ -579,6 +586,7 @@ var map = null;
 var markerMap = new Map();
 // ✅ Hàm thêm các marker từ danh sách
 function addMarkers(locations, mapContainerId) {
+    checkMap = true;
     if (map) {
         map.remove(); // Xóa bản đồ cũ
     }
@@ -598,22 +606,11 @@ function addMarkers(locations, mapContainerId) {
             map.panInsideBounds(bounds, { animate: true });
         }
     });
-
-    // map.on('zoomend', function () {
-    //     if (!bounds.contains(map.getBounds().getNorthWest()) || !bounds.contains(map.getBounds().getSouthEast())) {
-    //         map.fitBounds(bounds, { animate: true });
-    //     }
-    // });
-
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     // const tiles = L.tileLayer('http://somebits.com:8001/rivers/{z}/{x}/{y}.json', {
         maxZoom: 19
     }).addTo(map);
-    // fetch(`http://somebits.com:8001/rivers/${10}/${512}/${314}.json`)
-    // .then(response => response.json())
-    // .then(data => {
-    //     L.geoJSON(data).addTo(map);
-    // });
+
     locations.forEach(loc => {
         let typeName = '';
         if(loc.type == "N"){

@@ -395,12 +395,11 @@ h1 {
     border-top: none;
 }
 .tab-content-history {
-    /* display: none; */
     position: absolute;
     top: 120px; /* hoặc tùy chỉnh */
     left: 0;
     width: 100%;
-    transition: transform 0.4s ease, opacity 0.4s ease;
+    transition: transform 0.4s ease, opacity 0.4s ease, width 0.4s ease;
     opacity: 0;
     transform: translateX(100%);
     z-index: 0;
@@ -410,8 +409,10 @@ h1 {
 }
 .tab-content-history.active {
     display: block;
+    width: 100%;
     opacity: 1;
     transform: translateX(0);
+    pointer-events: auto;
     z-index: 1;
 }
 
