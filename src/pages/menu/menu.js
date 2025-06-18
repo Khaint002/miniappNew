@@ -79,22 +79,8 @@ async function pickApp(type) {
             window.location.href = "http://devices.homeos.vn/";
             break;
 
-        case 'PICK':
-            showElement("history");
-            hideElement("ScanQR", "history-setting");
-            showElement("history-homePage", false); // remove d-none
-            break;
-
-        case 'PRE':
-            hideElement("history", "homePage", "guarantee", "ScanQRWarranty");
-            showElement("pickApp", false);
-            hideElement("menu-warranty", "footer-instruct-warranty");
-            break;
-
         case 'HISTORY':
             showHistory();
-            showElement("history");
-            hideElement("homePage");
             break;
 
         case 'WARRANTY':
@@ -109,10 +95,6 @@ async function pickApp(type) {
         case 'CONTROL':
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.handleControlApp("IN");
-            // checkApp = type;
-            // showElement("history");
-            // hideElement("pickApp");
-            // runLed7();
             break;
     }
 }, 200);
@@ -120,11 +102,11 @@ async function pickApp(type) {
 
 // ✅ Các hàm xử lý riêng
 function handleMuaApp() {
-    showElement("LoadScreen", "img-station");
+    HOMEOSAPP.showElement("LoadScreen", "img-station");
 
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
     setTimeout(() => {
-        hideElement("LoadScreen", "img-station");
+        HOMEOSAPP.hideElement("LoadScreen", "img-station");
 
         $('#nameHistory').addClass("d-none");
         $('#nameHistory').removeClass("d-flex");
@@ -167,14 +149,3 @@ async function handleLogin() {
 }
 
 // ✅ Helper hàm hiển thị / ẩn
-function showElement(...ids) {
-    ids.forEach(id => {
-        document.getElementById(id)?.classList.remove("hidden", "d-none");
-    });
-}
-
-function hideElement(...ids) {
-    ids.forEach(id => {
-        document.getElementById(id)?.classList.add("hidden", "d-none");
-    });
-}

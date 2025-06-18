@@ -17,8 +17,6 @@ async function pickApp(type) {
 
         case 'HISTORY':
             showHistory();
-            showElement("history");
-            hideElement("homePage");
             break;
 
         case 'WARRANTY':
@@ -1285,12 +1283,14 @@ var sidebar = $(".sidebar");
 menuToggle.on("click", (e) => {
     e.stopPropagation(); // Ngăn chặn sự kiện click lan ra ngoài
     sidebar.toggleClass("open");
+    $(".overlay").toggleClass("show");
 });
 
 // Detect clicks outside the sidebar
 $(document).on("click", (e) => {
     if (sidebar.hasClass("open") && !$(e.target).closest(".sidebar").length) {
         sidebar.removeClass("open");
+        $(".overlay").toggleClass("show");
     }
 });
 
@@ -1299,7 +1299,6 @@ var menuItems = document.querySelectorAll(".menu-item, .submenu li");
 menuItems.forEach((item) => {
     item.addEventListener("click", async (e) => {
         e.stopPropagation(); // Prevent the click from propagating to the document
-
         // Detect which menu item was clicked
         const menuText = item.innerText.trim(); // Get the text of the menu item
 
@@ -1334,6 +1333,7 @@ menuItems.forEach((item) => {
         }
         // Close the sidebar after selection (optional)
         sidebar.removeClass("open");
+        $(".overlay").toggleClass("show");
     });
 });
 // danh mục

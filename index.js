@@ -47,10 +47,8 @@ HOMEOSAPP.goBack = function () {
 }
 
 setTimeout(() => {
-    document.getElementById("LoadScreen").classList.add("d-none");
-    document.getElementById("LogoLoadScreen").classList.add("hidden");
-    // document.getElementById("pickApp").classList.remove("hidden");
-    // document.getElementById("guarantee").classList.remove("hidden");
+    HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
+
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
     if (!historyItems){
         historyItems = [{
@@ -685,12 +683,12 @@ HOMEOSAPP.formatDateTime = function(date) {
 }
 
 HOMEOSAPP.handleControlApp = function(check) {
-    showElement("LoadScreen", "LogoLoadScreen");
+    HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     
     if(check == 'IN'){
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
         setTimeout(() => {
-            hideElement("LoadScreen", "LogoLoadScreen");
+            HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
             
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
@@ -715,7 +713,7 @@ HOMEOSAPP.handleControlApp = function(check) {
     } else {
         HOMEOSAPP.goBack();
         setTimeout(() => {
-            hideElement("LoadScreen", "LogoLoadScreen");
+            HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
             
 
             $('#nameHistory').removeClass("d-none");
@@ -743,12 +741,12 @@ HOMEOSAPP.handleControlApp = function(check) {
 
 HOMEOSAPP.handleWarrantyApp = async function(check) {
     checkApp = 'GUA';
-    showElement("LoadScreen", "LogoLoadScreen");
+    HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     if(check == 'IN'){
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
         setTimeout(() => {
             HOMEOSAPP.checkTabHistory = 3;
-            hideElement("LoadScreen", "LogoLoadScreen");
+            HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
 
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
@@ -767,7 +765,7 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
         HOMEOSAPP.goBack();
         setTimeout(() => {
             HOMEOSAPP.checkTabHistory = 3;
-            hideElement("LoadScreen", "LogoLoadScreen");
+            HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
             $('#nameHistory').removeClass("d-none");
             $('#nameHistory').addClass("d-flex");
             $('#listTabMap').addClass("d-none");
@@ -1257,4 +1255,22 @@ HOMEOSAPP.openTabSchedule = function(evt, tabName) {
     if (typeof map !== 'undefined' && map) {
         map.invalidateSize();
     }
+}
+
+HOMEOSAPP.showElement = function(...ids) {
+    ids.forEach(id => {
+        document.getElementById(id)?.classList.remove("hidden", "d-none");
+    });
+}
+
+HOMEOSAPP.hideElement = function(...ids) {
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.add("fade-out"); // thêm hiệu ứng mờ dần
+            setTimeout(() => {
+                el.classList.add("hidden", "d-none");
+            }, 500); // chờ animation xong rồi mới ẩn
+        }
+    });
 }
