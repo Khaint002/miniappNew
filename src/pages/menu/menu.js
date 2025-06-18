@@ -35,19 +35,21 @@ function renderApps(apps, containerId) {
         delay += 0.1;
         const visibilityClass = app.visible ? "" : "d-none";
         const html = `
-        <div class="col-12 zoom-box slide-in-right ${visibilityClass}" style="padding: 5px 10px; animation-delay: ${delay}s; transition: transform 0.3s ease;">
-          <div id="PickApp-button-${app.id}" class="iconApp" onclick="pickApp('${app.id.toUpperCase()}')">
-            <div class="icon d-flex align-items-center justify-content-center" style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
-              <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
+        <div class="col-12 ${visibilityClass} m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
+            <div class="zoom-box slide-in-right" style="animation-delay: ${delay}s;">
+                <div id="PickApp-button-${app.id}" class="iconApp" onclick="pickApp('${app.id.toUpperCase()}')">
+                    <div class="icon d-flex align-items-center justify-content-center" style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
+                        <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
+                    </div>
+                    <div class="info-box-content">
+                        <div class="d-flex justify-content-between">
+                            <span class="app-text">${app.name}</span>
+                            <span class="app-text">${app.version}</span>
+                        </div>
+                        <span class="app-text-number">${app.description}</span>
+                    </div>
+                </div>
             </div>
-            <div class="info-box-content">
-              <div class="d-flex justify-content-between">
-                <span class="app-text">${app.name}</span>
-                <span class="app-text">${app.version}</span>
-              </div>
-              <span class="app-text-number">${app.description}</span>
-            </div>
-          </div>
         </div>
       `;
         container.innerHTML += html;

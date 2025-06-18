@@ -550,11 +550,11 @@ function openTabHistory(evt, nextTabId) {
 
     // Lắng nghe khi kết thúc animation rồi co lại width
     $current.one('transitionend', () => {
-        $current.css('width', '0');
+        // $current.css('width', '0');
     });
 
     // Hiện tab mới
-    $next.css('width', '100%').removeClass('d-none');
+    // $next.css('width', '100%').removeClass('d-none');
     setTimeout(() => {
         $next.addClass('active');
         $(evt.currentTarget).addClass('active');
@@ -573,6 +573,7 @@ function openTabHistory(evt, nextTabId) {
 function checkHeight() {
     const vh = $(window).height();
     $('#history-detail').height(vh - 180);
+    $('#tabWrapper').height(vh - 130);
     $('#tabMap').height(vh - 130);
     $('#list-history-detail').height(vh - 530);
     $('#history-setting-detail').css('max-height', vh - 200);
@@ -663,6 +664,7 @@ function addMarkers(locations, mapContainerId) {
 
     setTimeout(() => {
         map.invalidateSize();
+        // $("#tabMap").css('width', '0');
     }, 10);
 }
 // setInterval(() => {

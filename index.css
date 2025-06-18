@@ -394,6 +394,7 @@ h1 {
     display: none;
     border-top: none;
 }
+
 .tab-content-history {
     position: absolute;
     top: 120px; /* hoặc tùy chỉnh */
@@ -407,6 +408,7 @@ h1 {
 .tab-content.active,.tab-content-guarantee.active,.tab-content-schedule.active {
     display: block;
 }
+
 .tab-content-history.active {
     display: block;
     width: 100%;
