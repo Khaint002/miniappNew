@@ -248,8 +248,8 @@ async function startInterval() {
             }
         }
     }, 10000);
-    $("#history-value").removeClass("d-none")
-    $("#history-loading").addClass("d-none")
+    $("#history-value").removeClass("d-none");
+    $("#history-loading").addClass("d-none");
 }
 
 function rotateProperties() {
@@ -384,7 +384,11 @@ async function showHistory(type) {
         }
     }
 
-    if (!historyItems || historyItems.length === 0) return;
+    if (!historyItems || historyItems.length === 0) {
+        $("#history-value").removeClass("d-none");
+        $("#history-loading").addClass("d-none");
+        return;
+    };
 
     // Làm sạch và hiển thị danh sách
     historyListDetail.empty();
@@ -1634,6 +1638,8 @@ function addItemWarranty() {
             });
         }
     }
+    $("#history-value").removeClass("d-none");
+    $("#history-loading").addClass("d-none");
 }
 
 

@@ -1679,3 +1679,16 @@ h1 {
     padding: 4px 8px;
     display: inline-block;
 }
+
+
+#historySelect{
+    height: 40px;
+    border-radius: 15px;
+    padding-right: 20px;
+}
+
+#historySelect:focus {
+    outline: none;
+    box-shadow: none;
+    border: none; /* nếu bạn muốn bỏ cả viền luôn */
+}
