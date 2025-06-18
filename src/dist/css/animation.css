@@ -69,11 +69,11 @@
     position: relative;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #535353;
-    background-color: #1E2833;
+    border: 1px solid #535353;
+    background-color: #282d31;
     height: 40px;
     overflow: hidden;
-    border-radius: 5px 5px 0 0;
+    border-radius: 50px;
   }
   
   .tab button {
@@ -100,17 +100,10 @@
     width: 50%;
     height: 100%;
     background-color: #222;
-    border: 1px solid #626262;
     border-bottom: none;
-    border-radius: 5px 5px 0 0;
+    border-radius: 50px;
     transition: left 0.3s ease;
     z-index: 0;
     box-sizing: border-box; 
     pointer-events: none; 
   }
-  
-
-  /* #tabHistory, #tabMap {
-    position: relative; 
-    overflow: hidden;
-  } */

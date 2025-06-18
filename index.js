@@ -182,7 +182,6 @@ async function getListDomain() {
     }
 }
 
-
 HOMEOSAPP.getDM = async function (url, table_name, c, check) {
     let user_id_getDm = 'admin';
     let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
@@ -222,7 +221,13 @@ HOMEOSAPP.getDM = async function (url, table_name, c, check) {
             success: function (msg) {
                 try {
                     let state = JSON.parse(msg);
-                    resolve(state);  // Trả về dữ liệu khi thành công
+                    if(state.StateId == "NOT_EXIST_SESSION"){
+                        const targetUrl = url + "/";
+                        const dataSS = JSON.parse(localStorage.getItem('dataSession'));
+                        const result = dataSS.filter(item => item.url !== targetUrl);
+                        localStorage.setItem('dataSession', JSON.stringify(result));
+                    }
+                    resolve(state);  
                 } catch (error) {
                     reject(error);  // Bắt lỗi nếu JSON parse thất bại
                 }

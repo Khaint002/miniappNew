@@ -395,6 +395,9 @@ async function showHistory(type) {
             "WORKSTATION_ID = '" + item.CodeWorkStation + "'",
             "NotCentral"
         );
+        if(dataWorkstation.StateId == "NOT_EXIST_SESSION"){
+            showHistory();
+        }
         addDataLocation(dataWorkstation.data[0], dataWorkstation.dataSet.DM_TOOLTIP_TEMPLATE, item);
         if (!arrayCategory.includes(item.workstationType)) {
             arrayCategory.push(item.workstationType);

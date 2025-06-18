@@ -32,7 +32,7 @@ body {
 .container {
     height: 100vh;
     text-align: center;
-    background: #1E2833;
+    background: #282d31;
     padding: 0 20px 0 20px;
     /* border-radius: 10px; */
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
@@ -397,9 +397,10 @@ h1 {
 
 .tab-content-history {
     position: absolute;
-    top: 120px; /* hoặc tùy chỉnh */
+    top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
     transition: transform 0.4s ease, opacity 0.4s ease, width 0.4s ease;
     opacity: 0;
     transform: translateX(100%);
@@ -1681,4 +1682,3 @@ h1 {
     padding: 4px 8px;
     display: inline-block;
 }
-
