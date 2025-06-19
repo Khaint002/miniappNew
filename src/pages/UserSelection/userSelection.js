@@ -1,4 +1,7 @@
-
+var selectedApps = localStorage.getItem("selectedApps");
+if (!selectedApps) {
+    $("#BackSelection").addClass("d-none")
+}
 var apps = [
     { id: "KTTV", name: "Môi trường", version: "v1.1.5", description: "Khí tượng thuỷ văn", bgColor: "#17a2b8", icon: "bi-cloud-sun", visible: true },
     { id: "IOT", name: "Web OS", version: "v4.56 Pro", description: "IIoT", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: false },
@@ -86,7 +89,7 @@ function saveSelectedAppsToLocal() {
     // Lưu vào localStorage
     localStorage.setItem("selectedApps", JSON.stringify(selectedApps));
     let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-    if(historyStack.length == 0){
+    if(historyStack.length != 0){
         HOMEOSAPP.goBack();
     } else {
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
