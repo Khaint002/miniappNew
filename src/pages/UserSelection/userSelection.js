@@ -92,6 +92,9 @@ function saveSelectedAppsToLocal() {
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
     }
 }
+$("#BackSelection").click( () => {
+    HOMEOSAPP.goBack();
+})
 
 
 renderApps(apps, "app-list");
