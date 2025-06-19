@@ -11,15 +11,22 @@ function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
+    let visibleIndex = 0; // chỉ đếm các app visible
+
     apps.forEach(app => {
         if (!app.visible) return;
 
+        // Padding trái/phải xen kẽ
+        const paddingStyle = (visibleIndex % 2 === 0)
+            ? 'padding-right: 6px; padding-left: 0;'
+            : 'padding-left: 6px; padding-right: 0;';
+
         const html = `
-        <div class="col-6 col-md-4 col-lg-3">
+        <div class="col-6 col-md-4 col-lg-3" style="${paddingStyle} margin-bottom: 12px;">
             <div class="card text-center border-0 p-2 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')" style="cursor: pointer;">
                 <input type="checkbox" id="checkbox-${app.id}" class="d-none" />
                 <div class="card-body d-flex flex-column align-items-center">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" 
+                    <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
                          style="background-color: ${app.bgColor}; width: 60px; height: 60px;">
                         <i class="bi ${app.icon} text-white fs-3"></i>
                     </div>
@@ -30,16 +37,19 @@ function renderApps(apps, containerId) {
             </div>
         </div>
         `;
+
         container.innerHTML += html;
+        visibleIndex++;
     });
 }
+
 
 
 function toggleAppSelection(appId) {
     const card = document.getElementById(`app-${appId}`);
     const checkbox = document.getElementById(`checkbox-${appId}`);
 
-    card.classList.toggle("selected-card"); // dùng class custom
+    card.classList.toggle("selected-card");
     checkbox.checked = !checkbox.checked;
 }
 
