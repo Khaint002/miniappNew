@@ -1,6 +1,7 @@
 var matram;
 var setIntervalMonitoring;
 var keyItem;
+var checkRD = false;
 function truyCap() {
     document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
@@ -245,7 +246,6 @@ function changeDataHomePage(data) {
     const filteredItems = data.filter(item => item.ZONE_ADDRESS === matram);
     console.log(filteredItems);
 
-    let checkRD = false;
     let checkRT = false;
 
     filteredItems.forEach(item => {
@@ -282,7 +282,6 @@ function changeDataHomePage(data) {
                 break;
 
             case "RN":
-                checkRD = true;
                 if(itemw.workstationType == 'TD'){
                     updateText("RN", ZONE_VALUE / 100 + " m");
                 } else if(itemw.workstationType == 'NMLLTD'){
@@ -293,32 +292,25 @@ function changeDataHomePage(data) {
                 break;
 
             case "SS":
-                checkRD = true;
                 updateText("SS", (ZONE_VALUE / 10000).toFixed(2) + " ppt");
                 break;
 
             case "EC":
-                checkRD = true;
                 updateText("EC", (ZONE_VALUE / 1000).toFixed(2) + " μs/cm");
                 break;
             case "TN":
-                checkRD = true;
                 updateText("TN", (ZONE_VALUE / 100).toFixed(2) + " tr.m³");
                 break;
             case "QV":
-                checkRD = true;
                 updateText("QV", (ZONE_VALUE / 100).toFixed(2) + " m³/s");
                 break;
             case "QR":
-                checkRD = true;
                 updateText("QR", (ZONE_VALUE / 100).toFixed(2) + " m³/s");
                 break;
             case "QN":
-                checkRD = true;
                 updateText("QN", (ZONE_VALUE / 100).toFixed(2) + " m³/s");
                 break;
             case "VN":
-                checkRD = true;
                 updateText("VN", (ZONE_VALUE / 100).toFixed(2) + " m/s");
                 break;
         }
@@ -411,13 +403,36 @@ $(".homepage-Pre-pickApp").off("click").click(function () {
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
 });
 
-$("#BackCodeQR").off("click").click(function () {
-    const modal = document.getElementById("share-popup");
-    modal.classList.add("closing");
-    setTimeout(() => {
-        modal.classList.remove("closing");
-        HOMEOSAPP.goBack();
-    }, 300);
+$("#share-qrcode-workstation").off("click").click(function () {
+    // Hiển thị popup với hiệu ứng modal
+    HOMEOSAPP.loadPage("share-popup");
+
+    // Xóa nội dung mã QR cũ
+    $('#qrcode').empty();
+
+    // Dữ liệu để tạo mã QR
+    const text = localStorage.getItem("URL") + "$" + localStorage.getItem("MATRAM");
+    document.getElementById("text-content-QRcode").textContent =
+        localStorage.getItem("MATRAM") + " - " + JSON.parse(localStorage.getItem('itemHistory')).NameWorkStation;
+    // Tạo mã QR
+    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
+        if (error) {
+            console.error("Lỗi khi tạo mã QR:", error);
+            alert('Lỗi khi tạo mã QR!');
+            return;
+        }
+
+        // Thêm canvas QR vào DOM
+        $('#qrcode').append(canvas);
+
+        // Tạo ảnh ẩn từ canvas (tùy chọn)
+        const image = canvas.toDataURL('image/png');
+        const img = $('<img>')
+            .attr('src', image)
+            .css({ display: 'none' }) // Ẩn ảnh đi
+            .attr('id', 'hidden-image');
+        $('#qrcode').append(img);
+    });
 });
 
 $(".ScanQRNext").off("click").click(function () {

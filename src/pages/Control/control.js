@@ -4,6 +4,7 @@ var timeoutHandle;
 var intervalId = null;
 var relayTimeouts = {};
 var cabinetID;
+HOMEOSAPP.itemlinkQR;
 
 var ctx_U = document.getElementById("chartVoltage").getContext("2d");
 var ctx_I = document.getElementById("chartCurrent").getContext("2d");
@@ -67,7 +68,7 @@ getWebSocket = async function (value) {
             "ZALO_LINKED_QRCODE",
             "ACTIVE = 1 AND QRCODE_ID = " + dataItemCabinet[0].PR_KEY
         );
-
+        HOMEOSAPP.itemlinkQR = dataDevice.data;
         // Set header
         document.getElementById(
             "header-conditionName"
@@ -148,15 +149,14 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             collectedLines.push(txt);
         }
 
-        if (txt.includes("Command: REFRESH") && txt.includes("process: Done")) {
-            updateIndicator("#online", "#ceac30");
-            $("#btn-online").prop("disabled", false);
-            document.getElementById("btn-online").innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
-            </svg>
-        `;
-        }
+        // if (txt.includes("Command: REFRESH") && txt.includes("process: Done")) {
+        //     $("#btn-online").prop("disabled", false);
+        //     document.getElementById("btn-online").innerHTML = `
+        //     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
+        //         <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
+        //     </svg>
+        // `;
+        // }
         // Update power indicator
         updateIndicator("#power", "#d41c1f");
 
@@ -170,7 +170,6 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
                     clearInterval(intervalId);
                     intervalId = null;
                 }
-
                 const temp = txt.split(",");
                 document.getElementById("setDateTimeCondition").textContent =
                     temp[0].substring(cabinetID.length + 3);
@@ -407,8 +406,8 @@ $("#online")
     .off("click")
     .click(function () {
         const icon = document.getElementById("btn-online");
-        $("#online").css("background", "#ceac30");
-        $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
+        // $("#online").css("background", "#ceac30");
+        // $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
         $("#btn-online").prop("disabled", true);
         icon.innerHTML = `
         <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
@@ -421,8 +420,8 @@ $("#online")
             if ($("#online").css("background-color") == "rgb(206, 172, 48)") {
                 $("#online").css("background", "#ceac30");
                 $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
-                $("#btn-online").prop("disabled", false);
             }
+            $("#btn-online").prop("disabled", false);
             icon.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
@@ -445,6 +444,41 @@ function formatCustomDate(date) {
 
     return `${year}-${month}-${day}T${hour}$${minute}$${second}`;
 }
+
+$("#share-control").off("click").click(function () {
+    // Hiển thị popup với hiệu ứng modal
+    const dataItemLink = HOMEOSAPP.itemlinkQR;
+    HOMEOSAPP.loadPage("share-popup");
+
+    // Xóa nội dung mã QR cũ
+    $('#qrcode').empty();
+
+    // Dữ liệu để tạo mã QR
+
+    const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
+    const text = dataItemCabinet[0].QR_CODE;
+    document.getElementById("text-content-QRcode").textContent = dataItemLink[0].NAME_DEVICE + " - " + dataItemLink[0].WORKSTATION_ID;
+    // Tạo mã QR
+    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
+        if (error) {
+            console.error("Lỗi khi tạo mã QR:", error);
+            alert('Lỗi khi tạo mã QR!');
+            return;
+        }
+
+        // Thêm canvas QR vào DOM
+        $('#qrcode').append(canvas);
+
+        // Tạo ảnh ẩn từ canvas (tùy chọn)
+        const image = canvas.toDataURL('image/png');
+        const img = $('<img>')
+            .attr('src', image)
+            .css({ display: 'none' }) // Ẩn ảnh đi
+            .attr('id', 'hidden-image');
+        $('#qrcode').append(img);
+    });
+});
+
 
 $("#schedule-condition")
     .off("click")
@@ -1228,11 +1262,13 @@ $("#tab-schedule")
     .off("click")
     .click(function (event) {
         HOMEOSAPP.openTabSchedule(event, "tabSchedule");
+        $("#tabIndicator-schedule").css("left", "0%");
     });
 $("#tab-list-schedule")
     .off("click")
     .click(function (event) {
         HOMEOSAPP.openTabSchedule(event, "tabListSchedule");
+        $("#tabIndicator-schedule").css("left", "50%");
     });
 
 function getDataSchedule() { }

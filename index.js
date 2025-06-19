@@ -74,7 +74,12 @@ setTimeout(() => {
     }
     if(window.workstationID){
         HOMEOSAPP.application = "KTTV";
-        HOMEOSAPP.checkTabHistory = 1;
+        if(window.workstationID.startsWith("CABINET")){
+            HOMEOSAPP.checkTabHistory = 2;
+        } else {
+            HOMEOSAPP.checkTabHistory = 1;
+        }
+        
         let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
         historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
         historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
@@ -1237,7 +1242,12 @@ function sha1Encode(message) {
 $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
     if(window.shareWorkStation){
-        window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
+        if(HOMEOSAPP.checkTabHistory == 1){
+            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
+        } else if(HOMEOSAPP.checkTabHistory == 1) {
+            const dataItemLink = HOMEOSAPP.itemlinkQR;
+            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CABINET"+dataItemLink[0].WORKSTATION_ID);
+        }
     } else {
 
     }
@@ -1276,42 +1286,13 @@ HOMEOSAPP.hideElement = function(...ids) {
     });
 }
 
-$("#share-qrcode-workstation").click(function () {
-    // Hiển thị popup với hiệu ứng modal
-    HOMEOSAPP.loadPage("share-popup");
-
-    // Xóa nội dung mã QR cũ
-    $('#qrcode').empty();
-
-    // Dữ liệu để tạo mã QR
-    let text = "";
-    if(HOMEOSAPP.checkTabHistory == 1){
-        text = localStorage.getItem("URL") + "$" + localStorage.getItem("MATRAM");
-        document.getElementById("text-content-QRcode").textContent =
-        localStorage.getItem("MATRAM") + " - " + JSON.parse(localStorage.getItem('itemHistory')).NameWorkStation;
-    } else if(HOMEOSAPP.checkTabHistory == 2){
-        
-    }
-    
-    // Tạo mã QR
-    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
-        if (error) {
-            console.error("Lỗi khi tạo mã QR:", error);
-            alert('Lỗi khi tạo mã QR!');
-            return;
-        }
-
-        // Thêm canvas QR vào DOM
-        $('#qrcode').append(canvas);
-
-        // Tạo ảnh ẩn từ canvas (tùy chọn)
-        const image = canvas.toDataURL('image/png');
-        const img = $('<img>')
-            .attr('src', image)
-            .css({ display: 'none' }) // Ẩn ảnh đi
-            .attr('id', 'hidden-image');
-        $('#qrcode').append(img);
-    });
+$("#BackCodeQR").off("click").click(function () {
+    const modal = document.getElementById("share-popup");
+    modal.classList.add("closing");
+    setTimeout(() => {
+        modal.classList.remove("closing");
+        HOMEOSAPP.goBack();
+    }, 300);
 });
 
 $("#BackExportCondition").click(function () {

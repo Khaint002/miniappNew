@@ -374,8 +374,8 @@
                 </div>
             </div>
         </div>
-        <div id="schedule-condition-popup" class="modal">
-            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833">
+        <div id="schedule-condition-popup" class="modal modal-animation">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
                 <div class="d-flex" style="line-height: 50px">
                     <button id="BackSchedule" style="height: 40px; border: none; background-color: #1e2833">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
@@ -390,6 +390,7 @@
                 </div>
                 <div id="listTabSchedule" style="margin-bottom: 10px;">
                     <div class="tab">
+                        <div class="indicator" id="tabIndicator-schedule"></div>
                         <button id="tab-schedule" class="tablinks tablinkSchedule active">Lập lịch</button>
                         <button id="tab-list-schedule" class="tablinks tablinkSchedule">Danh sách</button>
                     </div>
