@@ -1704,7 +1704,7 @@ h1 {
     margin-bottom: 10px;
 }
 
-#historySelect:focus {
+#historySelect:focus, #BackCodeQR:focus, #share-qrcode-workstation:focus, #menuToggle:focus, #PickApp-button-scanQR:focus, #PickApp-button-pick:focus, #ScanQRNext:focus {
     outline: none;
     box-shadow: none;
     border: none; /* nếu bạn muốn bỏ cả viền luôn */

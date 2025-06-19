@@ -480,11 +480,11 @@ $("#BackSchedule")
         HOMEOSAPP.goBack();
     });
 
-$("#BackExportCondition")
-    .off("click")
-    .click(function () {
-        HOMEOSAPP.goBack();
-    });
+// $("#BackExportCondition")
+//     .off("click")
+//     .click(function () {
+//         HOMEOSAPP.goBack();
+//     });
 
 onOffRelay = function (id, color) {
     const icon = document.getElementById("icon-" + id);

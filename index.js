@@ -1270,7 +1270,55 @@ HOMEOSAPP.hideElement = function(...ids) {
             el.classList.add("fade-out"); // thêm hiệu ứng mờ dần
             setTimeout(() => {
                 el.classList.add("hidden", "d-none");
+                el.classList.remove("fade-out");
             }, 500); // chờ animation xong rồi mới ẩn
         }
     });
 }
+
+$("#share-qrcode-workstation").click(function () {
+    // Hiển thị popup với hiệu ứng modal
+    HOMEOSAPP.loadPage("share-popup");
+
+    // Xóa nội dung mã QR cũ
+    $('#qrcode').empty();
+
+    // Dữ liệu để tạo mã QR
+    let text = "";
+    if(HOMEOSAPP.checkTabHistory == 1){
+        text = localStorage.getItem("URL") + "$" + localStorage.getItem("MATRAM");
+        document.getElementById("text-content-QRcode").textContent =
+        localStorage.getItem("MATRAM") + " - " + JSON.parse(localStorage.getItem('itemHistory')).NameWorkStation;
+    } else if(HOMEOSAPP.checkTabHistory == 2){
+        
+    }
+    
+    // Tạo mã QR
+    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
+        if (error) {
+            console.error("Lỗi khi tạo mã QR:", error);
+            alert('Lỗi khi tạo mã QR!');
+            return;
+        }
+
+        // Thêm canvas QR vào DOM
+        $('#qrcode').append(canvas);
+
+        // Tạo ảnh ẩn từ canvas (tùy chọn)
+        const image = canvas.toDataURL('image/png');
+        const img = $('<img>')
+            .attr('src', image)
+            .css({ display: 'none' }) // Ẩn ảnh đi
+            .attr('id', 'hidden-image');
+        $('#qrcode').append(img);
+    });
+});
+
+$("#BackExportCondition").click(function () {
+    const modal = document.getElementById("export-condition-popup");
+    modal.classList.add("closing");
+    setTimeout(() => {
+        modal.classList.remove("closing");
+        HOMEOSAPP.goBack();
+    }, 300);
+});

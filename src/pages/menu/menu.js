@@ -66,9 +66,6 @@ $("#PickApp-button-login").off("click").click(function () {
     pickApp('LOGIN');
 });
 async function pickApp(type) {
-    setTimeout(async () => {
-        
-    
     switch (type) {
         case 'KTTV':
             HOMEOSAPP.application = "KTTV";
@@ -97,7 +94,6 @@ async function pickApp(type) {
             HOMEOSAPP.handleControlApp("IN");
             break;
     }
-}, 200);
 }
 
 // ✅ Các hàm xử lý riêng

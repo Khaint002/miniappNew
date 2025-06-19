@@ -411,44 +411,17 @@ $(".homepage-Pre-pickApp").off("click").click(function () {
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
 });
 
-$("#share-qrcode-workstation").off("click").click(function () {
-    // Hiển thị popup với hiệu ứng modal
-    HOMEOSAPP.loadPage("share-popup");
-
-    // Xóa nội dung mã QR cũ
-    $('#qrcode').empty();
-
-    // Dữ liệu để tạo mã QR
-    const text = localStorage.getItem("URL") + "$" + localStorage.getItem("MATRAM");
-    document.getElementById("text-content-QRcode").textContent =
-        localStorage.getItem("MATRAM") + " - " + JSON.parse(localStorage.getItem('itemHistory')).NameWorkStation;
-    // Tạo mã QR
-    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
-        if (error) {
-            console.error("Lỗi khi tạo mã QR:", error);
-            alert('Lỗi khi tạo mã QR!');
-            return;
-        }
-
-        // Thêm canvas QR vào DOM
-        $('#qrcode').append(canvas);
-
-        // Tạo ảnh ẩn từ canvas (tùy chọn)
-        const image = canvas.toDataURL('image/png');
-        const img = $('<img>')
-            .attr('src', image)
-            .css({ display: 'none' }) // Ẩn ảnh đi
-            .attr('id', 'hidden-image');
-        $('#qrcode').append(img);
-    });
-});
-
 $("#BackCodeQR").off("click").click(function () {
-    HOMEOSAPP.goBack();
+    const modal = document.getElementById("share-popup");
+    modal.classList.add("closing");
+    setTimeout(() => {
+        modal.classList.remove("closing");
+        HOMEOSAPP.goBack();
+    }, 300);
 });
 
 $(".ScanQRNext").off("click").click(function () {
-    stopIntervalMonitoring()
+    stopIntervalMonitoring();
     HOMEOSAPP.goBack();
 });
 
@@ -547,10 +520,6 @@ function processCode(code) {
     }
     return prefix;
 }
-
-$("#BackExportCondition").off("click").click(function () {
-    HOMEOSAPP.goBack();
-});
 
 $("#settingAlert").off("click").click(function () {
     // if(DataUser){

@@ -1141,11 +1141,11 @@ function WarningEnergy(value) {
 
 // QR code 
 $("#PickApp-button-scanQR").off("click").click(function () {
+    HOMEOSAPP.checkTabMenu = "DetailDevice";
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
     }
-    HOMEOSAPP.checkTabMenu = "DetailDevice";
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
 });
 // danh mục
 var listCategory = $('#history-setting-detail');
@@ -1568,6 +1568,7 @@ function addItemWarranty() {
                 // Gắn sự kiện click cho phần tử chính
                 element.on('click', function () {
                     HOMEOSAPP.CodeCondition = item.CodeCondition;
+                    $("#loading-popup").show();
                     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
                 });
 
