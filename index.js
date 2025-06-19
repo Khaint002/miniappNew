@@ -88,7 +88,8 @@ setTimeout(() => {
         // $("#content-block").load();
     } else {
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        // HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
     }
 }, 1000);
 

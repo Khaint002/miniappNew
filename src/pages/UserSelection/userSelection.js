@@ -15,21 +15,17 @@ function renderApps(apps, containerId) {
         if (!app.visible) return;
 
         const html = `
-        <div class="col-6">
-            <div class="card h-100 shadow-sm border-0 rounded-3 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')">
-                <div class="card-body d-flex">
-                    <div class="me-3 d-flex align-items-center justify-content-center rounded bg-primary" 
-                         style="width: 50px; height: 50px; background-color: ${app.bgColor};">
-                        <i class="bi ${app.icon} text-white fs-4"></i>
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card text-center border-0 p-2 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')" style="cursor: pointer;">
+                <input type="checkbox" id="checkbox-${app.id}" class="d-none" />
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" 
+                         style="background-color: ${app.bgColor}; width: 60px; height: 60px;">
+                        <i class="bi ${app.icon} text-white fs-3"></i>
                     </div>
-                    <div class="flex-grow-1">
-                        <h6 class="card-title mb-1">${app.name}</h6>
-                        <p class="card-subtitle small text-muted mb-1">${app.description}</p>
-                        <span class="badge bg-secondary">${app.version}</span>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input mt-2" type="checkbox" id="checkbox-${app.id}" onclick="event.stopPropagation();">
-                    </div>
+                    <h6 class="mb-1">${app.name}</h6>
+                    <p class="text-muted mb-1 small">${app.description}</p>
+                    <span class="badge bg-secondary">${app.version}</span>
                 </div>
             </div>
         </div>
@@ -38,17 +34,20 @@ function renderApps(apps, containerId) {
     });
 }
 
+
 function toggleAppSelection(appId) {
     const card = document.getElementById(`app-${appId}`);
     const checkbox = document.getElementById(`checkbox-${appId}`);
 
-    card.classList.toggle("border-primary");
-    card.classList.toggle("bg-light");
+    card.classList.toggle("selected-card"); // dùng class custom
     checkbox.checked = !checkbox.checked;
 }
 
+
 $("#appSelection").click(()=>{
-    getSelectedApps();
+    const dataSelection = getSelectedApps();
+    console.log(dataSelection);
+    
 })
 
 function getSelectedApps() {

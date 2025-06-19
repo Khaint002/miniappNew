@@ -203,3 +203,14 @@
       opacity: 0;
   }
 }
+
+.app-card {
+  transition: outline 0.25s ease, box-shadow 0.25s ease;
+  outline: 0px solid transparent;
+}
+
+.app-card.selected-card {
+  outline: 2px solid rgba(40, 167, 69, 0.4); /* xanh lá mờ */
+  box-shadow: 0 2px 18px rgba(40, 167, 69, 0.3); /* bóng xanh mờ */
+  border-radius: 0.5rem;
+}
