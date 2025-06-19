@@ -11,21 +11,30 @@ function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
-    let visibleIndex = 0; // chỉ đếm các app visible
+    let visibleIndex = 0;
+
+    // ✅ Lấy selectedApps từ localStorage
+    const selectedAppsRaw = localStorage.getItem("selectedApps");
+    const selectedApps = selectedAppsRaw ? JSON.parse(selectedAppsRaw).map(app => app.id) : [];
 
     apps.forEach(app => {
         if (!app.visible) return;
 
-        // Padding trái/phải xen kẽ
         const paddingStyle = (visibleIndex % 2 === 0)
             ? 'padding-right: 10px; padding-left: 0;'
             : 'padding-left: 10px; padding-right: 0;';
 
+        // ✅ Nếu app.id có trong selectedApps → thêm class selected-card
+        const isSelected = selectedApps.includes(app.id);
+        const selectedClass = isSelected ? 'selected-card' : '';
+
         const html = `
         <div class="col-6 col-md-4 col-lg-3" style="${paddingStyle} margin-bottom: 10px;">
-            <div class="card text-center border-0 p-2 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')" style="cursor: pointer; border-radius: 0.5rem;">
-                <input type="checkbox" id="checkbox-${app.id}" class="d-none" />
-                <div class="card-body d-flex flex-column align-items-center">
+            <div class="card text-center border-0 p-2 app-card ${selectedClass}" 
+                 id="app-${app.id}" onclick="toggleAppSelection('${app.id}')"
+                 style="cursor: pointer; border-radius: 0.5rem;">
+                <input type="checkbox" id="checkbox-${app.id}" class="d-none" ${isSelected ? 'checked' : ''} />
+                <div class="card-body d-flex flex-column align-items-center" style="padding: 1.25rem 0;">
                     <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
                          style="background-color: ${app.bgColor}; width: 60px; height: 60px;">
                         <i class="bi ${app.icon} text-white fs-3" style="font-size: 25px"></i>
@@ -43,8 +52,6 @@ function renderApps(apps, containerId) {
     });
 }
 
-
-
 function toggleAppSelection(appId) {
     const card = document.getElementById(`app-${appId}`);
     const checkbox = document.getElementById(`checkbox-${appId}`);
@@ -55,13 +62,35 @@ function toggleAppSelection(appId) {
 
 
 $("#appSelection").click(()=>{
-    const dataSelection = getSelectedApps();
-    console.log(dataSelection);
-    
+    saveSelectedAppsToLocal();
 })
 
-function getSelectedApps() {
-    return Array.from(document.querySelectorAll('input.form-check-input:checked')).map(cb => cb.id.replace("checkbox-", ""));
+function saveSelectedAppsToLocal() {
+    const selectedAppIds = [];
+
+    apps.forEach(app => {
+        const checkbox = document.getElementById(`checkbox-${app.id}`);
+        if (checkbox && checkbox.checked) {
+            selectedAppIds.push(app.id);
+        }
+    });
+
+    if (selectedAppIds.length === 0) {
+        toastr.error("Vui lòng chọn ít nhấn 1 ứng dụng!");
+        return;
+    }
+
+    // Lọc ra các app từ mảng gốc theo ID đã chọn
+    const selectedApps = apps.filter(app => selectedAppIds.includes(app.id));
+
+    // Lưu vào localStorage
+    localStorage.setItem("selectedApps", JSON.stringify(selectedApps));
+    let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+    if(historyStack.length == 0){
+        HOMEOSAPP.goBack();
+    } else {
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+    }
 }
 
 

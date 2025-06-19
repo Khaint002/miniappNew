@@ -31,6 +31,7 @@ function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
     let delay = 0;
+
     apps.forEach(app => {
         delay += 0.1;
         const visibilityClass = app.visible ? "" : "d-none";
@@ -38,7 +39,8 @@ function renderApps(apps, containerId) {
         <div class="col-12 ${visibilityClass} m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
             <div class="zoom-box slide-in-right" style="animation-delay: ${delay}s;">
                 <div id="PickApp-button-${app.id}" class="iconApp" onclick="pickApp('${app.id.toUpperCase()}')">
-                    <div class="icon d-flex align-items-center justify-content-center" style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
+                    <div class="icon d-flex align-items-center justify-content-center"
+                         style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
                         <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
                     </div>
                     <div class="info-box-content">
@@ -51,17 +53,56 @@ function renderApps(apps, containerId) {
                 </div>
             </div>
         </div>
-      `;
+        `;
         container.innerHTML += html;
     });
+
+    // 👉 Ô "Thêm mới ứng dụng"
+    const addNewHTML = `
+    <div class="col-12 m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
+    <div class="zoom-box slide-in-right" style="animation-delay: ${delay + 0.1}s;">
+        <div class="iconApp add-app-box text-center" onclick="onAddNewApp()">
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">
+            <i class="bi bi-plus-lg add-icon-plus"></i>
+            <span class="add-text-label">Thêm hoặc ẩn ứng dụng</span>
+        </div>
+        </div>
+    </div>
+    </div>
+    `;
+    container.innerHTML += addNewHTML;
+
+    // Sự kiện hiệu ứng
     document.querySelectorAll('.zoom-box').forEach((box) => {
         box.addEventListener('click', () => {
-           box.classList.toggle('zoom-out');
+            box.classList.toggle('zoom-out');
         });
     });
 }
+
+function onAddNewApp() {
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
+}
+
+function getSelectedAppsOrDefault() {
+    const saved = localStorage.getItem("selectedApps");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            // kiểm tra hợp lệ
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
+        } catch (e) {
+            console.error("Lỗi parse localStorage:", e);
+        }
+    }
+    return apps; // fallback
+}
+
 HOMEOSAPP.handleUser("home");
-renderApps(apps, "app-list");
+var appData = getSelectedAppsOrDefault();
+renderApps(appData, "app-list");
 $("#PickApp-button-login").off("click").click(function () {
     pickApp('LOGIN');
 });

@@ -448,6 +448,8 @@ function formatCustomDate(date) {
 $("#share-control").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     const dataItemLink = HOMEOSAPP.itemlinkQR;
+    console.log(dataItemLink);
+    
     HOMEOSAPP.loadPage("share-popup");
 
     // Xóa nội dung mã QR cũ

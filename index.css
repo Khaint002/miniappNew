@@ -1709,3 +1709,30 @@ h1 {
     box-shadow: none;
     border: none; /* nếu bạn muốn bỏ cả viền luôn */
 }
+
+.add-app-box {
+    height: 100%;
+    width: 100%;
+    border: 2px dashed rgb(134, 134, 134);
+    border-radius: 10px;
+    background-color: #2b2f36;
+    transition: all 0.25s ease;
+  }
+  
+  .add-app-box:hover {
+    background-color: #353b45;
+    border-color: #28a745;
+  }
+  
+  .add-icon-plus {
+    font-size: 1.5rem;
+    color: rgb(152, 152, 152);
+    margin-bottom: 4px;
+  }
+  
+  .add-text-label {
+    font-size: 0.85rem;
+    color: rgb(152, 152, 152);
+    font-weight: 500;
+    opacity: 0.85;
+  }
