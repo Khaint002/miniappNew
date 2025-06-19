@@ -18,17 +18,17 @@ function renderApps(apps, containerId) {
 
         // Padding trái/phải xen kẽ
         const paddingStyle = (visibleIndex % 2 === 0)
-            ? 'padding-right: 6px; padding-left: 0;'
-            : 'padding-left: 6px; padding-right: 0;';
+            ? 'padding-right: 10px; padding-left: 0;'
+            : 'padding-left: 10px; padding-right: 0;';
 
         const html = `
-        <div class="col-6 col-md-4 col-lg-3" style="${paddingStyle} margin-bottom: 12px;">
-            <div class="card text-center border-0 p-2 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')" style="cursor: pointer;">
+        <div class="col-6 col-md-4 col-lg-3" style="${paddingStyle} margin-bottom: 10px;">
+            <div class="card text-center border-0 p-2 app-card" id="app-${app.id}" onclick="toggleAppSelection('${app.id}')" style="cursor: pointer; border-radius: 0.5rem;">
                 <input type="checkbox" id="checkbox-${app.id}" class="d-none" />
                 <div class="card-body d-flex flex-column align-items-center">
                     <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
                          style="background-color: ${app.bgColor}; width: 60px; height: 60px;">
-                        <i class="bi ${app.icon} text-white fs-3"></i>
+                        <i class="bi ${app.icon} text-white fs-3" style="font-size: 25px"></i>
                     </div>
                     <h6 class="mb-1">${app.name}</h6>
                     <p class="text-muted mb-1 small">${app.description}</p>
