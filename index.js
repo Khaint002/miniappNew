@@ -46,57 +46,69 @@ HOMEOSAPP.goBack = function () {
     }
 }
 
-setTimeout(() => {
-    HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
 
-    historyItems = JSON.parse(localStorage.getItem('dataHistory'));
-    if (!historyItems){
-        historyItems = [{
-                "CodeWorkStation": "025001",
-                "NameWorkStation": "Kẻng Mỏ",
-                "domain": "sonlahpc.hymetco.com",
-                "date": "22/05/2025 10:18:18",
-                "workstationType": "NMLLTD"
+
+HOMEOSAPP.getDM = async function (url, table_name, c, check) {
+    let user_id_getDm = 'admin';
+    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
+    if(check == "NotCentral"){
+        let dataUser;
+        if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
+            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        } else {
+            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+        }
+         
+        user_id_getDm = dataUser[0].StateName;
+        Sid_getDM = dataUser[0].StateId;
+    }
+    const d = {
+        // Uid: 'vannt',
+        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
+        Uid: user_id_getDm,
+        Sid: Sid_getDM,
+        tablename: table_name,
+        c: c,
+        other: '',
+        cmd: ''
+    };
+    
+    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url+"/getDm?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    if(state.StateId == "NOT_EXIST_SESSION"){
+                        const targetUrl = url + "/";
+                        const dataSS = JSON.parse(localStorage.getItem('dataSession'));
+                        const result = dataSS.filter(item => item.url !== targetUrl);
+                        localStorage.setItem('dataSession', JSON.stringify(result));
+                    }
+                    resolve(state);  
+                } catch (error) {
+                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                }
             },
-            {
-                "CodeWorkStation": "025002",
-                "NameWorkStation": "Nậm Mu",
-                "domain": "sonlahpc.hymetco.com",
-                "date": "22/05/2025 14:29:47",
-                "workstationType": "NMLLTD"
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                HomeOS.Service.SetActionControl(true);
+                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+                reject(e);  // Trả về lỗi nếu thất bại
             }
-        ];
-    }
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    if(urlParams){
-        window.workstationID = urlParams.get('workstationID');
-    }
-    if(window.workstationID){
-        HOMEOSAPP.application = "KTTV";
-        if(window.workstationID.startsWith("CABINET")){
-            HOMEOSAPP.checkTabHistory = 2;
-        } else {
-            HOMEOSAPP.checkTabHistory = 1;
-        }
-        
-        let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
-        localStorage.setItem('historyStack', JSON.stringify(historyStack));
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
-        // $("#content-block").load();
-    } else {
-        localStorage.setItem('dataHistory', JSON.stringify(historyItems));
-        
-        const saved = localStorage.getItem("selectedApps");
-        if (saved) {
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
-        } else {
-            $("#content-block").load("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
-        }
-    }
-}, 1000);
+        });
+    });
+}
 
 HOMEOSAPP.handleUser = async function (type) {
     if (UserID) {
@@ -190,67 +202,7 @@ async function getListDomain() {
     }
 }
 
-HOMEOSAPP.getDM = async function (url, table_name, c, check) {
-    let user_id_getDm = 'admin';
-    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
-    if(check == "NotCentral"){
-        let dataUser;
-        if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        }
-         
-        user_id_getDm = dataUser[0].StateName;
-        Sid_getDM = dataUser[0].StateId;
-    }
-    const d = {
-        // Uid: 'vannt',
-        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
-        Uid: user_id_getDm,
-        Sid: Sid_getDM,
-        tablename: table_name,
-        c: c,
-        other: '',
-        cmd: ''
-    };
-    
-    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
 
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url+"/getDm?callback=?",
-            type: "GET",
-            dataType: "jsonp",
-            data: d,
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    if(state.StateId == "NOT_EXIST_SESSION"){
-                        const targetUrl = url + "/";
-                        const dataSS = JSON.parse(localStorage.getItem('dataSession'));
-                        const result = dataSS.filter(item => item.url !== targetUrl);
-                        localStorage.setItem('dataSession', JSON.stringify(result));
-                    }
-                    resolve(state);  
-                } catch (error) {
-                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
-            },
-            error: function (e, t, x) {
-                HomeOS.Service.SetActionControl(true);
-                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
-                reject(e);  // Trả về lỗi nếu thất bại
-            }
-        });
-    });
-}
 
 getListDomain();
 
@@ -1402,3 +1354,55 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
         });
     });
 }
+
+setTimeout(() => {
+    HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
+
+    historyItems = JSON.parse(localStorage.getItem('dataHistory'));
+    if (!historyItems){
+        historyItems = [{
+                "CodeWorkStation": "025001",
+                "NameWorkStation": "Kẻng Mỏ",
+                "domain": "sonlahpc.hymetco.com",
+                "date": "22/05/2025 10:18:18",
+                "workstationType": "NMLLTD"
+            },
+            {
+                "CodeWorkStation": "025002",
+                "NameWorkStation": "Nậm Mu",
+                "domain": "sonlahpc.hymetco.com",
+                "date": "22/05/2025 14:29:47",
+                "workstationType": "NMLLTD"
+            }
+        ];
+    }
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if(urlParams){
+        window.workstationID = urlParams.get('workstationID');
+    }
+    if(window.workstationID){
+        HOMEOSAPP.application = "KTTV";
+        if(window.workstationID.startsWith("CABINET")){
+            HOMEOSAPP.checkTabHistory = 2;
+        } else {
+            HOMEOSAPP.checkTabHistory = 1;
+        }
+        
+        let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+        historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        localStorage.setItem('historyStack', JSON.stringify(historyStack));
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+        // $("#content-block").load();
+    } else {
+        localStorage.setItem('dataHistory', JSON.stringify(historyItems));
+        
+        const saved = localStorage.getItem("selectedApps");
+        if (saved) {
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        } else {
+            $("#content-block").load("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
+        }
+    }
+}, 1000);
