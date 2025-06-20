@@ -101,11 +101,10 @@ setTimeout(() => {
 HOMEOSAPP.handleUser = async function (type) {
     if (UserID) {
         try {
-            
             if (DataUser && DataUser.id === UserID) {
                 if(type == "home"){
                     document.getElementById("PickApp-button-login").classList.add("d-none");
-                    document.getElementById("LogoPickScreen").style.paddingTop = "10vh";
+                    document.getElementById("LogoPickScreen").style.paddingTop = "4vh";
                 } else {
                     $(".userName").text(DataUser.name);
                     $(".userAvt").attr("src", DataUser.avatar);
