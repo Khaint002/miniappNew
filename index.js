@@ -131,14 +131,14 @@ HOMEOSAPP.handleUser = async function (type) {
                         DATE_CREATE: new Date(),
                         DATASTATE: "ADD",
                     };
-                    add('WARRANTY_USER', willInsertData);
+                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
                     localStorage.setItem('RoleUser', "GUEST");
                 } else {
                     console.log(dataUserResponse);
                     localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
                 }
             } else if (DataUser != undefined) {
-                const dataUserResponse = await getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
+                const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
                 console.log(dataUserResponse.data);
                 if (dataUserResponse.data.length == 0) {
                     const willInsertData = {
@@ -148,7 +148,7 @@ HOMEOSAPP.handleUser = async function (type) {
                         DATE_CREATE: new Date(),
                         DATASTATE: "ADD",
                     };
-                    add('WARRANTY_USER', willInsertData);
+                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
                 }
             } else {
                 localStorage.setItem('RoleUser', 'GUEST');
@@ -1283,77 +1283,6 @@ $("#BackExportCondition").click(function () {
         HOMEOSAPP.goBack();
     }, 300);
 });
-
-
-HOMEOSAPP.getDataMDQRcode = function(QRcode) {
-    const url = "https://central.homeos.vn/service_XD/service.svc/";
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url + "ApiServicePublic/" + "GetDataQRcode" + "/" + "QRCODEINPUT=" + QRcode,
-            type: "GET",
-            dataType: "jsonp",
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    resolve(state); // Trả về dữ liệu khi thành công
-                } catch (error) {
-                    reject(error); // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
-            },
-            error: function (e, t, x) {
-                // document.getElementById("result-form").classList.remove("d-none");
-                // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
-                // toastr.error("Vui lòng quét đúng mã QR của trạm mưa");
-                document.getElementById("result-form").classList.remove("d-none");
-                // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
-                document.getElementById("result-form-total").classList.remove("d-none");
-                document.getElementById("result-condition").classList.add("d-none");
-                document.getElementById("result-form-loading").classList.add("d-none");
-                document.getElementById("result-form-title").classList.remove("d-none");
-                document.getElementById("result-form-stationID").classList.add("d-none");
-                document.getElementById("result-form-stationName").classList.add("d-none");
-                document.getElementById("result-truycap").classList.add("d-none");
-                toastr.error("Vui lòng quét đúng mã QR!");
-            },
-        });
-    });
-}
-
-HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADDRESS, DEVICE_ID){
-
-    // const url = "https://DEV.HOMEOS.vn/service/service.svc/";
-    const url = "https://central.homeos.vn/service_XD/service.svc/";
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url + "ApiServicePublic/" + "GetdataChart/STARTDATE='" + startDate + "',ENDDATE='" + endDate + "',ZONE_ID=" + ZONE_ID + ",ZONE_ADDRESS=" + ZONE_ADDRESS + ",DEVICE_ID=" + DEVICE_ID ,
-            type: "GET",
-            dataType: "jsonp",
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    console.log("dữ liệu", state);
-
-                    resolve(state); // Trả về dữ liệu khi thành công
-                } catch (error) {
-                    reject(error); // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
-            },
-            error: function (e, t, x) {
-
-            },
-        });
-    });
-}
 
 setTimeout(() => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
