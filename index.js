@@ -1201,7 +1201,7 @@ $("#share-workStation").click(function () {
     if(window.shareWorkStation){
         if(HOMEOSAPP.checkTabHistory == 1){
             window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
-        } else if(HOMEOSAPP.checkTabHistory == 1) {
+        } else if(HOMEOSAPP.checkTabHistory == 2) {
             const dataItemLink = HOMEOSAPP.itemlinkQR;
             window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CABINET"+dataItemLink[0].WORKSTATION_ID);
         }
