@@ -1,0 +1,49 @@
+
+.app-card {
+    transition: outline 0.25s ease, box-shadow 0.25s ease;
+    outline: 0px solid transparent;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .app-card .icon-wrapper {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .app-card.selected-card .icon-wrapper {
+    transform: scale(1.2); /* Icon phóng to */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* Vòng tròn sáng */
+  }
+  
+  .app-card.selected-card {
+    outline: 2px solid rgba(40, 167, 69, 0.4); /* xanh lá mờ */
+    box-shadow: 0 10px 16px rgba(40, 167, 69, 0.3); /* bóng xanh mờ */
+    border-radius: 0.5rem;
+  }
+  .app-card .icon-wrapper i {
+    transition: transform 0.3s ease;
+  }
+  .app-card.selected-card .icon-wrapper i {
+    transform: scale(1.2); /* ✅ chỉ icon to hơn */
+  }
+  
+  #section-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+    border-left: 4px solid #28a745; /* thanh dọc màu xanh lá */
+  }
+
+  #appSelection {
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+  }

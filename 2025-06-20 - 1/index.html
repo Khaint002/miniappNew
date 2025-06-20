@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./src/dist/css/animation.css" />
+    <link rel="stylesheet" href="./src/dist/css/UserSelection.css" />
+</head>
+
+<body>
+    <div class="app h-100">
+        <div id="LoadScreen">
+            <img id="LogoLoadScreen" src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt=""width="200">
+            <img id="img-station" class="hidden full-screen-img"
+                src="https://central.homeos.vn/images/MiniAppLoadingScreen.png" alt="Full Screen" />
+            <div id="" class="dots-container">
+                <div class="dot">.</div>
+                <div class="dot">.</div>
+                <div class="dot">.</div>
+            </div>
+        </div>
+
+        <div id="content-block" class="h-100" style="animation-duration: 0.3s; animation-fill-mode: forwards;"></div>
+
+        <div id="qr-popup" class="modal">
+            <div id="qr-reader"></div>
+            <button id="close-scanner">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                </svg>
+            </button>
+            <button id="toggle-camera">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                    <path
+                        d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+                    <path fill-rule="evenodd"
+                        d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+                </svg>
+            </button>
+            <div id="result-form" class="d-none" style="width: 95vh; height: 200px">
+                <div id="result-form-group">
+                    <div id="result-form-total" class="d-none">
+                        <div id="result-form-title" class="d-none" style="width: 100%; text-align: center">
+                            <p style="color: #fff">Mã truy cập lỗi, vui lòng thử lại.</p>
+                        </div>
+                        <input id="result-form-stationID" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <input id="result-form-stationName" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <div class="d-flex justify-content-center pt-2">
+                            <button id="result-scanagain" class="btn mx-2" style="
+                    background-color: #c44133;
+                    border: solid 1px #c44133;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                Quét lại
+                            </button>
+                            <button id="result-truycap" disabled class="btn mx-2" style="
+                    background-color: #f39c12;
+                    border: solid 1px #f39c12;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                Truy cập
+                            </button>
+                        </div>
+                    </div>
+                    <div id="result-product" class="d-none">
+                        <div id="result-product-title" class="d-none" style="width: 100%; text-align: center">
+                            <p style="color: #fff">Mã sản phẩm lỗi, vui lòng thử lại.</p>
+                        </div>
+                        <p></p>
+                        <input id="result-form-productName" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <input id="result-form-productCode" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <div class="d-flex justify-content-between pt-2">
+                            <button id="result-product-scanagain" class="btn" style="
+                    background-color: #c44133;
+                    border: solid 1px #c44133;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                Quét lại
+                            </button>
+                            <button id="result-product-truycap" disabled class="btn" style="
+                    background-color: #f39c12;
+                    border: solid 1px #f39c12;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                Xem chi tiết
+                            </button>
+                        </div>
+                        <button id="result-product-warranty" class="btn mt-2" style="
+                  background-color: #f39c12;
+                  border: solid 1px #f39c12;
+                  width: 100%;
+                  color: #fff;
+                ">
+                            Kích hoạt bảo hành
+                        </button>
+                    </div>
+                    <div id="result-condition" class="d-none">
+                        <div id="result-condition-title" class="d-none" style="width: 100%; text-align: center">
+                            <p style="color: #fff">Mã sản phẩm lỗi, vui lòng thử lại.</p>
+                        </div>
+                        <p></p>
+                        <input id="result-form-conditionName" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <input id="result-form-conditionCode" disabled type="text" style="
+                  width: 100%;
+                  height: 50px;
+                  color: #fff;
+                  padding-left: 20px;
+                  margin-top: 10px;
+                  background-color: #343a40;
+                  border: none;
+                  border-bottom: 1px solid #626262;
+                " />
+                        <div class="d-flex justify-content-between pt-2">
+                            <button id="result-condition-scanagain" class="btn" style="
+                    background-color: #c44133;
+                    border: solid 1px #c44133;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                Quét lại
+                            </button>
+                            <button id="result-condition-truycap" disabled class="btn" style="
+                    background-color: #f39c12;
+                    border: solid 1px #f39c12;
+                    width: 47%;
+                    color: #fff;
+                  ">
+                                truy cập
+                            </button>
+                        </div>
+                    </div>
+                    <div id="result-form-loading">
+                        <div style="width: 100%; text-align: center">
+                            <p style="color: #fff">Đang kiểm tra dữ liệu.</p>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%"
+                                aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="upload-qr">
+                <p>Di chuyển camera đến mã QR để quét hoặc</p>
+                <div class="d-flex justify-content-center">
+                    <button style="margin-right: 5px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
+                            <path
+                                d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383m.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+                        </svg>
+                    </button>
+                    <p style="margin-top: 10px">Tải hình ảnh lên</p>
+                </div>
+            </div>
+            <div id="footer-instruct-scanQR" class="d-none footer-instruct">
+                <div class="step">
+                    <div class="circle">04</div>
+                </div>
+                <p>Truy cập xem thông tin hoặc nhấn quét lại</p>
+            </div>
+            <input type="file" id="file-input" accept="image/*" />
+        </div>
+        <div id="loading-popup" class="modal">
+            <div class="modal-content" style="width: 80%; margin-top: 50px; margin-left: 10%">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Đang tải dữ liệu...
+                    </h5>
+                    <button id="button-modal-close" type="button" class="btn-close d-none" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%"
+                            aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="share-popup" class="modal modal-animation">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackCodeQR" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style="
+                width: 250px;
+                font-size: 20px;
+                color: #fff;
+                text-align: left;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              ">
+                        Chia sẻ trạm
+                    </p>
+                </div>
+                <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200"
+                    style="padding-bottom: 2rem" />
+                <div>
+                    <p id="text-content-QRcode" style="color: #fff"></p>
+                </div>
+                <div id="qrcode"></div>
+                <button id="share-workStation" class="btn btn-warning" style="
+              margin-top: 20px;
+              background-color: #1f87a3;
+              border: solid 1px #1f87a3;
+              width: 100%;
+              height: 35px;
+              color: #fff;
+              padding: 3px 10px;
+            ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-share" viewBox="0 0 16 16">
+                        <path
+                            d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                    </svg>
+                    Chia sẻ trạm cho bạn bè
+                </button>
+            </div>
+        </div>
+        <div id="chartCondition-popup" class="modal">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackCondition" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p id="title-condition-popup" style="width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">-</p>
+                </div>
+                <div class="row" style="overflow-y: auto; height: 90%;">
+                    <div class="col-md-12 mb-4">
+                        <canvas id="chartVoltage"></canvas>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <canvas id="chartCurrent"></canvas>
+                    </div>
+                    <div class="col-md-12 mb-4"><canvas id="chartPower"></canvas></div>
+                    <div class="col-md-12 mb-4"><canvas id="chartEnergy"></canvas></div>
+                </div>
+            </div>
+        </div>
+        <div id="error-popup" class="modal">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackWarranty" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style="
+                width: 250px;
+                font-size: 20px;
+                color: #fff;
+                text-align: left;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              ">
+                        Khai báo lỗi
+                    </p>
+                </div>
+                <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200"
+                    style="padding-bottom: 3rem" />
+                <div>
+                    <div class="content-form" style="background-color: #1e2833; padding: 0">
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="errorInput">Lỗi:</label>
+                            <input type="text" id="errorInput" class="form-control content-input"
+                                placeholder="Nhập lỗi..." />
+                        </div>
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="ap_ssid">Loại lỗi:</label>
+                            <!-- <input type="text" id="ap_ssid" class="form-control content-input" placeholder="Nhập tên điểm truy cập..."> -->
+                            <select name="" id="errorType" class="form-control content-input">
+                                <option value="1">Lỗi thiết bị</option>
+                                <option value="2">Lỗi người dùng</option>
+                            </select>
+                        </div>
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="ap_password">Mô tả:</label>
+                            <!-- <input type="tex" id="ap_password" class="form-control content-input" placeholder="Nhập mật khẩu điểm truy cập..."> -->
+                            <textarea id="errorDesc" class="form-control content-input" style="height: 120px"
+                                placeholder="Mô tả lỗi"></textarea>
+                        </div>
+                    </div>
+                    <button id="submitError" class="btn btn-warning" style="
+                margin-top: 20px;
+                background-color: #f39c12;
+                border: solid 1px #f39c12;
+                width: 100%;
+                height: 35px;
+                color: #fff;
+                padding: 3px 10px;
+              ">
+                        Xác nhận lỗi
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="schedule-condition-popup" class="modal modal-animation">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackSchedule" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Lập lịch bật tắt
+                    </p>
+                </div>
+                <div id="listTabSchedule" style="margin-bottom: 10px;">
+                    <div class="tab">
+                        <div class="indicator" id="tabIndicator-schedule"></div>
+                        <button id="tab-schedule" class="tablinks tablinkSchedule active">Lập lịch</button>
+                        <button id="tab-list-schedule" class="tablinks tablinkSchedule">Danh sách</button>
+                    </div>
+                </div>
+                <div id="tabSchedule" class="tab-content-schedule active">
+                    <div class="content-form" style="background-color: #1e2833; padding: 0">
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="txtScheduleName">Tên lịch:</label>
+                            <input type="text" id="txtScheduleName" class="form-control content-input" placeholder="Nhập tên lịch..." />
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <label for="sltDeviceForSchedule">Relay được áp dụng</label>
+                                <div id="sltDeviceForSchedule" class="row">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row flex-row" style="justify-content: space-between">
+                            <div class="col-12 d-flex flex-row pr-0" style="align-items: center">
+                                <div class="mr-3 d-flex flex-column w-100">
+                                    <label for="">Kịch bản áp dụng</label>
+                                    <div class="card mw-100 mh-100 m-0 p-3">
+                                        <div class="form-group content-detail">
+                                            <label class="form-label content-label" for="startTime">Thời điểm:</label>
+                                            <input type="time" id="startTime" class="form-control content-input w-100" />
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="form-group content-detail">
+                                                <label class="form-label content-label" for="cboScriptsCabinet">Kịch
+                                                    bản:</label>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 form-group content-detail">
+                                                    <label class="form-label content-label" for="radioOn">Bật:</label>
+                                                    <input type="radio" name="cboScripts" id="radioOn"
+                                                        placeholder="Nhập tên lịch..." checked />
+                                                </div>
+                                                <div class="col-6 form-group content-detail">
+                                                    <label class="form-label content-label" for="radioOff">Tắt:</label>
+                                                    <input type="radio" name="cboScripts" id="radioOff"
+                                                        placeholder="Nhập tên lịch..." />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button id="submitCalendar" class="btn btn-warning" style="
+                    margin-top: 20px;
+                    background-color: #2c697b;
+                    border: solid 1px #2c697b;
+                    width: 100%;
+                    height: 35px;
+                    color: #fff;
+                    padding: 3px 10px;
+                    ">
+                                Áp dụng kịch bản
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tabListSchedule" class="tab-content-schedule">
+                    <div style="color: #fff; padding: 10px;">
+                        <h5>Danh sách các lịch đã lập</h5>
+                        <ul id="createdScheduleList">
+                        </ul>
+                    </div>
+                </div>
+                  
+                
+            </div>
+        </div>
+        <div id="error-condition-popup" class="modal">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackConditionError" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style="
+                width: 250px;
+                font-size: 20px;
+                color: #fff;
+                text-align: left;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              ">
+                        Khai báo lỗi
+                    </p>
+                </div>
+                <!-- <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 3rem;"> -->
+                <div>
+                    <div class="content-form" style="background-color: #1e2833; padding: 0">
+                        <div class="d-flex row">
+                            <div class="col-6 form-group content-detail">
+                                <label class="form-label content-label" for="ap_ssid">Ca làm việc:</label>
+                                <!-- <input type="text" id="ap_ssid" class="form-control content-input" placeholder="Nhập tên điểm truy cập..."> -->
+                                <select name="" id="errorCaType" class="form-control content-input">
+                                    <option value="1">Ca 1</option>
+                                    <option value="2">Ca 2</option>
+                                    <option value="3">Ca 3</option>
+                                </select>
+                            </div>
+                            <div class="col-6 form-group content-detail">
+                                <label class="form-label content-label" for="ap_ssid">Loại lỗi:</label>
+                                <!-- <input type="text" id="ap_ssid" class="form-control content-input" placeholder="Nhập tên điểm truy cập..."> -->
+                                <select name="" id="errorConditionType" class="form-control content-input">
+                                    <option value="1">Lỗi thiết bị</option>
+                                    <option value="2">Lỗi người dùng</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="textCondition">Lệnh sản xuất:</label>
+                            <input type="text" id="LSXCondition" class="form-control content-input"
+                                placeholder="Nhập lệnh sản xuất..." />
+                        </div>
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="ap_password">Mô tả:</label>
+                            <!-- <input type="tex" id="ap_password" class="form-control content-input" placeholder="Nhập mật khẩu điểm truy cập..."> -->
+                            <textarea id="errorConditionDesc" class="form-control content-input" style="height: 120px"
+                                placeholder="Mô tả lỗi"></textarea>
+                        </div>
+                        <div class="form-group content-detail">
+                            <label class="form-label content-label" for="textCondition">Số lượng thiệt hại:</label>
+                            <input type="text" id="textCondition" class="form-control content-input"
+                                placeholder="Nhập lỗi..." />
+                        </div>
+                        <div class="d-flex row">
+                            <div class="col-6 form-group content-detail">
+                                <label class="form-label content-label" for="errorStartTime">Thời gian bắt đầu:</label>
+                                <input type="datetime-local" id="errorStartTime" class="form-control content-input"
+                                    placeholder="Nhập lỗi..." />
+                            </div>
+                            <div class="col-6 form-group content-detail">
+                                <label class="form-label content-label" for="errorEndTime">Thời gian kết thúc:</label>
+                                <input type="datetime-local" id="errorEndTime" class="form-control content-input"
+                                    placeholder="Nhập lỗi..." />
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submitConditionError" class="btn btn-warning" style="
+                margin-top: 20px;
+                background-color: #f39c12;
+                border: solid 1px #f39c12;
+                width: 100%;
+                height: 35px;
+                color: #fff;
+                padding: 3px 10px;
+              ">
+                        Xác nhận lỗi
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="export-condition-popup" class="modal modal-animation">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackExportCondition" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style="
+                width: 250px;
+                font-size: 20px;
+                color: #fff;
+                text-align: left;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              ">
+                        Xuất báo cáo
+                    </p>
+                </div>
+                <div class="content-form" style="background-color: #1e2833; padding: 0">
+                    <div class="row flex-row" style="justify-content: space-between">
+                        <div class="col-12 d-flex flex-row pr-0" style="align-items: center">
+                            <div class="mr-3 d-flex flex-column w-100">
+                                <div class="card mw-100 mh-100 m-0 p-3">
+                                    <div class="form-group content-detail">
+                                        <label class="form-label content-label" for="startTime">Kì báo cáo:</label>
+                                        <select name="" class="form-control content-input" id="dateTimeReport"></select>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group content-detail col-6">
+                                            <label class="form-label content-label" for="startTime">Ngày bắt
+                                                đầu:</label>
+                                            <input type="date" id="startDate"
+                                                class="form-control content-input w-100" />
+                                        </div>
+                                        <div class="form-group content-detail col-6">
+                                            <label class="form-label content-label" for="startTime">Ngày kết
+                                                thúc:</label>
+                                            <input type="date" id="endDate" class="form-control content-input w-100" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter-kttv" class="form-group content-detail">
+                        <div class="card mw-100 mh-100 m-0 mt-2 p-3">
+                            <label class="form-label content-label" for="txtScheduleName">Loại báo cáo:</label>
+                            <!-- <input type="text" id="txtScheduleName" class="form-control content-input" placeholder="Nhập tên lịch..."> -->
+                            <select name="" class="form-control content-input" id="KTTV_Report"></select>
+                            <!-- <div id="KTTV_Report" style="overflow-y: auto; height: 160px;">
+
+                            </div> -->
+                        </div>
+                        <!-- <div class="card mw-100 mh-100 m-0 mt-2 p-3">
+                            <label class="form-label content-label" for="txtScheduleName">Yếu tố đã chọn:</label> -->
+                        <!-- <input type="text" id="txtScheduleName" class="form-control content-input" placeholder="Nhập tên lịch..."> -->
+                        <!-- <select name="" class="form-control content-input" id="KTTV_Report">
+                            </select> -->
+                        <!-- <div id="KTTV_Report" style="overflow-y: auto; height: 160px;">
+
+                            </div>
+                        </div> -->
+                    </div>
+                    <div id="filter-condition" class="form-group content-detail">
+                        <label class="form-label content-label" for="txtScheduleName">Báo cáo:</label>
+                        <!-- <input type="text" id="txtScheduleName" class="form-control content-input" placeholder="Nhập tên lịch..."> -->
+                        <select name="" class="form-control content-input" id="nameReport">
+                            <option value="RPT_BAO_CAO_GIO">
+                                Báo cáo điện năng theo giờ
+                            </option>
+                            <option value="RPT_BAO_CAO_NGAY">
+                                Báo cáo điện năng theo ngày
+                            </option>
+                            <option value="RPT_BAO_CAO">Báo cáo điện năng</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button id="submitExport" class="btn btn-warning" style="
+                  margin-top: 20px;
+                  background-color: #2c697b;
+                  border: solid 1px #2c697b;
+                  width: 100%;
+                  height: 35px;
+                  color: #fff;
+                  padding: 3px 10px;
+                ">
+                            Xuất dữ liệu báo cáo (excel)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/Draggable.min.js"></script>
+    <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- <script src="https://miniapp-new.vercel.app/index.js"></script> -->
+    <script src="./index.js"></script>
+    <!-- <script src="https://miniapp-new.vercel.app/src/api/ajax.js"></script> -->
+    <script src="/src/api/ajax.js"></script>
+</body>
+
+</html>
