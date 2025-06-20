@@ -32,6 +32,7 @@ async function pickApp(type) {
             // runLed7();
             break;
     }
+    HOMEOSAPP.addMenuElement();
 }
 
 function showAddWorkStationButton() {

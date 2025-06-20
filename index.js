@@ -700,6 +700,14 @@ HOMEOSAPP.handleControlApp = function(check) {
     }
 }
 
+HOMEOSAPP.callBackExport = function (link) {
+    
+}
+
+HOMEOSAPP.addMenuElement = function () {
+
+}
+
 HOMEOSAPP.handleWarrantyApp = async function(check) {
     checkApp = 'GUA';
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
@@ -1063,10 +1071,6 @@ $('#submitExport').click(function () {
     // Bạn có thể xử lý tiếp ở đây, ví dụ:
     // Gọi API, tạo URL báo cáo, hiển thị kết quả...
 });
-
-HOMEOSAPP.callBackExport = function (link) {
-    
-}
 
 function sha1Encode(message) {
     function rotate_left(n, s) {
