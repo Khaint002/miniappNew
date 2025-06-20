@@ -1381,10 +1381,12 @@ setTimeout(() => {
         window.workstationID = urlParams.get('workstationID');
     }
     if(window.workstationID){
-        HOMEOSAPP.application = "KTTV";
+        
         if(window.workstationID.startsWith("CABINET")){
+            HOMEOSAPP.application = "WARRANTY";
             HOMEOSAPP.checkTabHistory = 2;
         } else {
+            HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
         }
         
