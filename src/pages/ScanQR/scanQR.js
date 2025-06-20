@@ -30,7 +30,7 @@ $(".start").off("click").click(function () {
             return toastr.error("Vui lòng nhập số lượng cần quét hợp lệ (lớn hơn 0)!");
         }
     }
-    if(window.ScanQR){
+    if(typeof window.ScanQR == "function"){
         ScanQRcodeByZalo();
     } else {
         startQRcode();
@@ -979,7 +979,7 @@ function scanAgain() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("file-input").value = '';
-    if(window.ScanQR){
+    if(typeof window.ScanQR == "function"){
         ScanQRcodeByZalo();
     } else {
         startQRcode();
