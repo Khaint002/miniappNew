@@ -1292,8 +1292,6 @@ $("#tab-scan-qr").off("click").click(async function (event) {
     } else if(HOMEOSAPP.checkTabHistory == 3){
         switch (HOMEOSAPP.checkTabMenu) {
             case "DetailDevice":
-                console.log();
-                
                 $("#ScanQRcode").removeClass("d-none");
                 document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
                 document.getElementById("nameTabInput").textContent = "Mã thiết bị:";

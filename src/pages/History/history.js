@@ -51,10 +51,9 @@ function showAddWorkStationButton() {
             HOMEOSAPP.stopInterval();
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 2) {
-            
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 3) {
-            
+            HOMEOSAPP.checkTabMenu = "DetailDevice";
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
     });
