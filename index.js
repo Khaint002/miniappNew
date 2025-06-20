@@ -159,7 +159,6 @@ HOMEOSAPP.handleUser = async function (type) {
     } else {
         document.getElementById("QUYEN")?.classList.add("d-none");
     }
-    WarrantyCheckUser(localStorage.getItem("RoleUser"));
 }
 
 let observer = new MutationObserver((mutations) => {
