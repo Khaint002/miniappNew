@@ -1280,12 +1280,12 @@ $("#tab-scan-qr").off("click").click(async function (event) {
         $("#ScanQRcode").removeClass("d-none");
         document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
-        if(typeof window.cabinetID === 'function' && window.cabinetID != "done"){
+        if(window.workstationID && window.workstationID != "done"){
             const result = window.cabinetID.slice("CABINET".length);
             openTab(event, 'tab1');
             HOMEOSAPP.CodeCondition = result;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
-            window.cabinetID = "done";
+            window.workstationID = "done";
         } else {
             openTab(event, 'tab1')
         }
