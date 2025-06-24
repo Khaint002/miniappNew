@@ -243,7 +243,6 @@ async function startInterval() {
                 historyItems[i].key = lastItem.PR_KEY;
             }
             if(data.D && data.D.length > 0){
-                console.log(data.D);
                 processAndUpdate(data);
                 await updateWorkstationUI(station, data);
             }
@@ -569,7 +568,6 @@ function openTabHistory(evt, nextTabId) {
         $next.addClass('active');
         $(evt.currentTarget).addClass('active');
         currentTab = nextTabId;
-        console.log(checkMap);
             
         if (typeof map !== 'undefined' && map && checkMap) {
             map.invalidateSize();
@@ -656,7 +654,6 @@ function addMarkers(locations, mapContainerId) {
             iconAnchor: [20, 40],
             popupAnchor: [0, -40]
         });
-        console.log(loc);
 
         const marker = L.marker(loc.coords, { icon, customData: loc }).addTo(map);
         marker.options.customData = {
@@ -722,7 +719,6 @@ function generatePopupHTML(name, code, type, item, coords) {
     const fields = getFieldsByType(type);
 
     let dynamicRows = '';
-    console.log(item);
     
     fields.forEach(field => {
         let label = '';
@@ -879,7 +875,6 @@ function generatePopupValueHTML(loc) {
 }
 
 function ClickGGMap(coords) {
-    console.log(coords);
     window.location.href = "https://www.google.com/maps/place/"+ coords[0] +","+ coords[1]
 }
 
@@ -1517,8 +1512,6 @@ $("#backCategory").off("click").click(function () {
 function addItemWarranty() {
     if (HOMEOSAPP.application == 'CONTROL') {
         let ConditionItems = JSON.parse(localStorage.getItem('dataCondition'));
-
-        console.log('1:', ConditionItems);
         if (ConditionItems && ConditionItems.length > 0) {
             historyListDetail.empty()
             ConditionItems.forEach(item => {
@@ -1582,7 +1575,6 @@ function addItemWarranty() {
         }
     } else {
         warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
-        console.log(warrantyItems);
         if (warrantyItems && warrantyItems.length > 0) {
             historyListDetail.empty()
             warrantyItems.forEach(item => {

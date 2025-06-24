@@ -6,7 +6,6 @@ function truyCap() {
     document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     $('#qr-popup').hide();
-    console.log(HOMEOSAPP.itemHistory);
     
     document.getElementById("footer-stationName").textContent = HOMEOSAPP.itemHistory.CodeWorkStation + " - " + HOMEOSAPP.itemHistory.NameWorkStation;
     matram = localStorage.getItem("MATRAM");
@@ -244,7 +243,6 @@ function changeDataHomePage(data) {
     const matram = localStorage.getItem('MATRAM');
     const itemw = JSON.parse(localStorage.getItem("itemHistory"));
     const filteredItems = data.filter(item => item.ZONE_ADDRESS === matram);
-    console.log(filteredItems);
 
     let checkRT = false;
 

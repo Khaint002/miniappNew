@@ -2,6 +2,7 @@ var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
     $('#qr-popup').hide();
+    
     const inputValue = HOMEOSAPP.CodeWarranty;
 
     if (inputValue == null || inputValue == "") {
@@ -33,7 +34,12 @@ async function accessDeviceWarranty() {
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
+                if(DataQRcode.length == 4){
+                    document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[3];
+                } else {
+                    document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
+                }
+                
                 changeDataWarranty(dataQRProduct);
                 DetailProduct();
             }
@@ -47,17 +53,19 @@ function changeDataWarranty(data) {
     let DataQRcode = data[0].QR_CODE.split(',');
     localStorage.setItem("productWarranty", JSON.stringify(data));
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    console.log(dataWarranty);
     document.getElementById('productName').textContent = "Tên sản phẩm: " + data[0].PRODUCT_NAME;
     document.getElementById('productCode').textContent = "Mã định danh: " + data[0].PRODUCT_CODE;
-    document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
+    if(DataQRcode.length == 4){
+        document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[3];
+    } else {
+        document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
+    }
     document.getElementById("deviceImg").src = data[0].PRODUCT_IMG;
     if (data[0].ACTIVATE_WARRANTY == "1999-01-01T00:00:00") {
         document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
         document.getElementById('warrantyTimeActive').textContent = " ";
         const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
         const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-        console.log(WarrantyAct, data);
         document.getElementById('warrantyTime').textContent = time;
         document.getElementById('result-product-warranty').classList.remove("d-none");
     } else {
@@ -88,8 +96,6 @@ function calculateWarrantyRemaining(startDate, timeWarranty) {
     const warrantyEndDate = new Date(startDateObj);
     warrantyEndDate.setMonth(warrantyEndDate.getMonth() + warrantyPeriodMonths);
 
-    console.log(warrantyEndDate);
-
     // Ngày hiện tại
     const currentDate = new Date();
 
@@ -118,17 +124,21 @@ function calculateWarrantyRemaining(startDate, timeWarranty) {
 }
 
 function saveWarranty(data) {
-    console.log(data);
     const DataQRcode = data[0].QR_CODE.split(',');
+    let codeDevice;
+    if(DataQRcode.length == 4){
+        codeDevice = DataQRcode[3];
+    } else {
+        codeDevice = DataQRcode[2];
+    }
     const itemW = {
-        'CodeWarranty': DataQRcode[2].substring(1),
+        'CodeWarranty': codeDevice,
         'NameWarranty': data[0].PRODUCT_NAME,
         'imgWarranty': data[0].PRODUCT_IMG,
         'date': HOMEOSAPP.getCurrentTime()
     }
 
     waranntyItems = JSON.parse(localStorage.getItem('dataWarranty'));
-    console.log(waranntyItems, itemW.CodeWarranty);
 
     if (waranntyItems) {
         waranntyItems = waranntyItems.filter(item => item.CodeWarranty !== itemW.CodeWarranty);
@@ -276,7 +286,6 @@ function DetailProduct() {
     $('#qr-popup').hide()
     document.getElementById("menu-warranty").classList.remove("d-none");
     $('#loading-popup').hide()
-    console.log('hide');
 }
 
 $('.bottom-navigation button').off("click").click(function () {
@@ -304,7 +313,6 @@ $("#submitError").click(function () {
     const errorType = $("#errorType").val();
     const errorDesc = $("#errorDesc").val();
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    console.log(dataWarranty);
     const willInsertData = {
         TYPE: 'ERROR',
         ERROR_TYPE: errorType,

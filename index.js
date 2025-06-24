@@ -122,7 +122,6 @@ HOMEOSAPP.handleUser = async function (type) {
                     $(".userAvt").attr("src", DataUser.avatar);
                 }
                 const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                console.log(dataUserResponse.data);
                 if (dataUserResponse.data.length == 0) {
                     const willInsertData = {
                         USER_ID: DataUser.id,
@@ -134,12 +133,10 @@ HOMEOSAPP.handleUser = async function (type) {
                     HOMEOSAPP.add('WARRANTY_USER', willInsertData);
                     localStorage.setItem('RoleUser', "GUEST");
                 } else {
-                    console.log(dataUserResponse);
                     localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
                 }
             } else if (DataUser != undefined) {
                 const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                console.log(dataUserResponse.data);
                 if (dataUserResponse.data.length == 0) {
                     const willInsertData = {
                         USER_ID: DataUser.id,
@@ -534,8 +531,6 @@ HOMEOSAPP.createChartData = function(data, type, typeData) {
 
         if (zone === 'RD' || item.AverageValue !== 0) {
             let value;
-            console.log(zone);
-            
             if(zone == 'SS'){
                 value = config.divideBy10 ? item.AverageValue / 10000 : item.AverageValue;
             } else if(zone == 'EC'){
@@ -557,7 +552,6 @@ HOMEOSAPP.createChartData = function(data, type, typeData) {
         if(cfg.id == "ChartRN72H") {
                         
         } else {
-            console.log(cfg.id);
             let ctx = document.getElementById(cfg.id).getContext('2d');
             let dataSet = [{
                 type: cfg.type,
@@ -777,7 +771,6 @@ var reportOptions = [
 
 // Hàm khởi tạo các option trong select
 HOMEOSAPP.renderOptions = function() {
-    console.log(1);
     const $select = $("#dateTimeReport");
     $select.empty(); // Xóa tất cả option hiện có
 
@@ -908,10 +901,7 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
     if (isViewer)
         this.IsViewer = isViewer;
     const data = JSON.parse(localStorage.getItem("itemHistory"));
-    console.log(data);
-    
     // const datetesst =  DateFormatServerToLocal(Sdate.toISOString(), 'dd/mm/yy');
-    // console.log(datetesst, ":--", new Date(datetesst));
     // var c = [{"ID":"091840","NAME":"Trực Ninh","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_API_MOBILE"},{"ID":"RT","NAME":"Thiết bị đo nhiệt độ","IDFIELD":"ZONE_PROPERTY","NAMETABLE":"VW_COMMAND","REPORT_ID":"RPT_API_MOBILE"}]
     var c = [];
     var linkbase;
@@ -962,7 +952,6 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
     };
     val.success = function (msg) {
         var state = msg;
-        console.log(state);
         
         try {
             state = JSON.parse(msg);
@@ -1026,7 +1015,6 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    console.log(1);
                 }
                 $('#submitExport').css({
                     'background-color': '#2c697b',
@@ -1035,7 +1023,6 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
                 // Đổi nội dung text
                 $('#submitExport').text('Xuất dữ liệu báo cáo (excel)');
                 HOMEOSAPP.callBackExport(link);
-                console.log(link);
             }
         }
         else {
@@ -1340,7 +1327,6 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
             success: function (msg) {
                 try {
                     let state = JSON.parse(msg);
-                    console.log("dữ liệu", state);
 
                     resolve(state); // Trả về dữ liệu khi thành công
                 } catch (error) {

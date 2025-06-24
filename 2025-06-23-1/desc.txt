@@ -1,0 +1,4 @@
+Update app ngày 23/6/2025 lần 1:
+- Chỉnh sửa thì gian refresh
+- Sửa hiển thị tủ điều khiển trong bảo hành
+- Sửa tỉ lệ thu gọn của tiêu đề ứng dụng

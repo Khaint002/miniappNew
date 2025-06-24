@@ -886,7 +886,7 @@ async function checkDevice(type) {
             if(HOMEOSAPP.checkTabHistory == 2){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
                 HOMEOSAPP.CodeCondition = checkQRcode[3];
-                HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+                HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
             } else if(HOMEOSAPP.checkTabHistory == 3){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
                 if(checkQRcode.length == 4){
@@ -895,7 +895,7 @@ async function checkDevice(type) {
                     HOMEOSAPP.CodeWarranty = checkQRcode[2];
                 }
                 
-                HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
+                HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
             }
         } else {
             toastr.error("Sản phẩm không tồn tại hoặc chưa được thêm vào hệ thống")
@@ -941,7 +941,7 @@ async function CheckWorkStation(workstationID) {
         // document.getElementById("footer-stationName").textContent = data[0].WORKSTATION_ID + " - " + data[0].WORKSTATION_NAME;
         localStorage.setItem("MATRAM", data[0].WORKSTATION_ID);
         toastr.success("Truy cập thành công!");
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/KTTV/kttv.html");
     }
 }
 
@@ -1215,7 +1215,7 @@ async function generateVoucher(item) {
 $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/KTTV/kttv.html");
 });
 
 $("#result-condition-truycap").click(function () {
@@ -1260,7 +1260,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             const result = window.workstationID.slice("CABINET".length);
             openTab(event, 'tab1');
             HOMEOSAPP.CodeCondition = result;
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
             window.workstationID = "done";
         } else {
             openTab(event, 'tab1')
