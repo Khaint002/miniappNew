@@ -14,11 +14,11 @@ async function accessDeviceWarranty() {
             "DM_QRCODE",
             "1=1"
         );
-        const matchedItem = dataQRcode.data.find(
-            (item) =>
-                item.QR_CODE.slice(-inputValue.length).replace(/\./g, "") ===
-                inputValue.replace(/\./g, "")
+        const inputClean = inputValue.replace(/\./g, "");
+        const matchedItem = dataQRcode.data.find((item) =>
+            item.QR_CODE.split(",").pop().replace(/\./g, "").endsWith(inputClean)
         );
+
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
