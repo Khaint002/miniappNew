@@ -34,7 +34,7 @@ async function accessDeviceWarranty() {
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                if(DataQRcode.length == 4){
+                if(checkQRcode.length == 4){
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[3];
                 } else {
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);

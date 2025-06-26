@@ -1374,6 +1374,10 @@ setTimeout(() => {
         if(window.workstationID.startsWith("CABINET")){
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
+        } else if(window.workstationID.startsWith("W")){
+            HOMEOSAPP.application = "WARRANTY";
+            HOMEOSAPP.checkTabHistory = 3;
+            HOMEOSAPP.checkTabMenu = "DetailDevice";
         } else {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;

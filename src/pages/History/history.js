@@ -1581,7 +1581,7 @@ function addItemWarranty() {
                 const element = $(
                     '<div class="iconApp">' +
                     '<div id="App' + item.CodeWarranty + '" class="icon" style="background-color: #28a745 !important; display: block">' +
-                    '<img style="width: 100%; height: 100%; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgWarranty + '" alt="">' +
+                    '<img style="width: 70px; height: 70px; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgWarranty + '" alt="">' +
                     '</div>' +
                     '<div class="info-box-content" style="padding-right: 0">' +
                     '<div class="d-flex justify-content-between">' +
