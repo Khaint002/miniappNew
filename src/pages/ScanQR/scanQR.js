@@ -891,8 +891,11 @@ async function checkDevice(type) {
     } else {
         let dataDevice = [];
         const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
+        const inputClean = inputValue.replace(/[^\d]/g, "");
+
         const matchedItem = dataQRcode.data.find(item =>
-            item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
+            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+            inputClean.length >= 6
         );
         if (matchedItem != undefined) {
             dataDevice.push(matchedItem);
