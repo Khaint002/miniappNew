@@ -14,11 +14,14 @@ async function accessDeviceWarranty() {
             "DM_QRCODE",
             "1=1"
         );
-        const matchedItem = dataQRcode.data.find(
-            (item) =>
-                item.QR_CODE.slice(-inputValue.length).replace(/\./g, "") ===
-                inputValue.replace(/\./g, "")
+        const inputClean = inputValue.replace(/[^\d]/g, "");
+
+        const matchedItem = dataQRcode.data.find(item =>
+            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+            inputClean.length >= 6
         );
+
+
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
@@ -34,7 +37,7 @@ async function accessDeviceWarranty() {
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                if(DataQRcode.length == 4){
+                if(checkQRcode.length == 4){
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[3];
                 } else {
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);

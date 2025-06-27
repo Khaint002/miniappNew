@@ -167,8 +167,6 @@ function getDataMDQRcode(QRcode) {
 
 // Hàm xử lý khi quét thành công
 async function onScanSuccess(decodedText, decodedResult) {
-    // Hiển thị kết quả trên trang chính
-    //$("#result").text("Kết quả quét: " + decodedText);
     ['result-form-total', 'result-product', 'result-condition'].forEach(id => document.getElementById(id).classList.add('d-none'));
     if (isScannerRunning) {
         html5QrCode.stop().then(ignore => {
@@ -186,9 +184,9 @@ async function onScanSuccess(decodedText, decodedResult) {
     let domain;
     let workstation;
     let checkQRcode = decodedText.split(',');
-    if (typeQR == 2 || typeQR == 3) {
+    if (typeQR == 2 || typeQR == 3 ) {
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
-        if (data.length > 0 && checkQRcode.length == 3) {
+        if (data.length > 0 && checkQRcode.length == 3 && checkTab) {
             if (checkTab) {
                 if (data[0].LOT_ID == 0) {
                     const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
@@ -221,12 +219,10 @@ async function onScanSuccess(decodedText, decodedResult) {
                 document.getElementById("result-product").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
-                // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
             }
-
         } else if (checkQRcode.length == 4) {
             data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
             // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
@@ -456,15 +452,34 @@ $("#file-input").change(function (event) {
                         // Quét QR từ hình ảnh đã tải lên
                         html5QrCode.scanFile(file).then(async decodedText => {  // Sửa tại đây
                             document.getElementById("result-form").classList.remove("d-none");
-                            // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+                            const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
                             let data;
                             let domain;
                             let workstation;
-                            let checkQRcode = decodedText.split(',');
+                            let checkQRcode;
+                            
+                            if (urlPattern.test(decodedText)) {
+                                const url = new URL(decodedText);
+                                const workstationID = url.searchParams.get("workstationID");
+                                const QRcode = url.searchParams.get("QRcode");
+                                decodedText = QRcode
+                                console.log(decodedText);
+                                checkQRcode = QRcode.split(',');
+                                console.log(checkQRcode);
+                                
+                            } else {
+                                checkQRcode = decodedText.split(',');
+                            }
+                            console.log(checkQRcode);
+                            
+                            // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+                            
+
                             // if(checkQRcode[0].substring(0, 3) == "T20"){
                             if (typeQR == 2 || typeQR == 3) {
                                 data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
-                                if (checkQRcode.length == 3) {
+
+                                if (checkQRcode.length == 3 && checkTab) {
                                     if (checkTab) {
                                         if (data[0].LOT_ID == 0) {
                                             const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
@@ -546,6 +561,7 @@ $("#file-input").change(function (event) {
                                         localStorage.setItem("itemCondition", JSON.stringify(data));
                                     }
                                 } else {
+                                    console.log(checkQRcode);
                                     if (typeQR == 3 && checkQRcode[0].substring(0, 3) == "T20") {
                                         const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                         if (dataQRCODE.data.length < $('#classProductNumber').val()) {
@@ -875,8 +891,11 @@ async function checkDevice(type) {
     } else {
         let dataDevice = [];
         const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
+        const inputClean = inputValue.replace(/[^\d]/g, "");
+
         const matchedItem = dataQRcode.data.find(item =>
-            item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
+            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+            inputClean.length >= 6
         );
         if (matchedItem != undefined) {
             dataDevice.push(matchedItem);
@@ -1266,40 +1285,48 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
-        switch (HOMEOSAPP.checkTabMenu) {
-            case "DetailDevice":
-                $("#ScanQRcode").removeClass("d-none");
-                document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
-                document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
+        if(window.workstationID && window.workstationID != "done"){
+            const result = window.workstationID.slice("w".length);
+            openTab(event, 'tab1');
+            HOMEOSAPP.CodeWarranty = result;
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
+            window.workstationID = "done";
+        } else {
+            switch (HOMEOSAPP.checkTabMenu) {
+                case "DetailDevice":
+                    $("#ScanQRcode").removeClass("d-none");
+                    document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
+                    document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
 
-                openTab(event, 'tab1')
-                break;
-            case "ScanLotDevice":
-                $("#ScanAllQRcode").removeClass("d-none");
-                $('#lot-number').empty();
-                const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
-                const newOption = $('<option>', {
-                    value: '0', // Giá trị của option
-                    text: 'Chọn lô sản phẩm' // Nội dung hiển thị
-                });
-                // Thêm vào select
-                $('#lot-number').append(newOption);
-                Data.data.forEach(item => {
+                    openTab(event, 'tab1')
+                    break;
+                case "ScanLotDevice":
+                    $("#ScanAllQRcode").removeClass("d-none");
+                    $('#lot-number').empty();
+                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
                     const newOption = $('<option>', {
-                        value: item.PR_KEY, // Giá trị của option
-                        text: item.LOT_NAME // Nội dung hiển thị
+                        value: '0', // Giá trị của option
+                        text: 'Chọn lô sản phẩm' // Nội dung hiển thị
                     });
                     // Thêm vào select
                     $('#lot-number').append(newOption);
-                });
-                checkTab = true;
-                break;
-            case "ManageDevice":
-                $("#lotProduct").removeClass("d-none");
-                addItemLotproduct();
-                break;
-            default:
-                break;
+                    Data.data.forEach(item => {
+                        const newOption = $('<option>', {
+                            value: item.PR_KEY, // Giá trị của option
+                            text: item.LOT_NAME // Nội dung hiển thị
+                        });
+                        // Thêm vào select
+                        $('#lot-number').append(newOption);
+                    });
+                    checkTab = true;
+                    break;
+                case "ManageDevice":
+                    $("#lotProduct").removeClass("d-none");
+                    addItemLotproduct();
+                    break;
+                default:
+                    break;
+            }
         }
         
     }
