@@ -998,7 +998,13 @@ $("#result-product-scanagain").off("click").click(function () {
 });
 
 $("#warranty-permission").off("click").click(function () {
+    $("#qr-popup").hide();
     $("#permission-popup").show();
+});
+
+$("#BackPermission").off("click").click(function () {
+    $("#qr-popup").show();
+    $("#permission-popup").hide();
 });
 
 function scanAgain() {
