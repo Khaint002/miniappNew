@@ -199,7 +199,7 @@ async function onScanSuccess(decodedText, decodedResult) {
 
     if (typeQR == 2 || typeQR == 3 ) {
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
-        if (data.length > 0 && checkQRcode.length == 3 && checkTab) {
+        if (data.length > 0 && checkQRcode.length == 3) {
             if (checkTab) {
                 if (data[0].LOT_ID == 0) {
                     const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
