@@ -997,6 +997,10 @@ $("#result-product-scanagain").off("click").click(function () {
     scanAgain();
 });
 
+$("#warranty-permission").off("click").click(function () {
+    $("#permission-popup").show();
+});
+
 function scanAgain() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
