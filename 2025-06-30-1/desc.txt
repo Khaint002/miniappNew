@@ -1,0 +1,2 @@
+Update app ngày 30/6/2025 lần 1:
+- bổ sung quét code quét QR bị thiếu.

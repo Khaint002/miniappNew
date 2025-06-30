@@ -179,11 +179,24 @@ async function onScanSuccess(decodedText, decodedResult) {
         $("#qr-popup").show();
         document.getElementById("result-form").classList.remove("d-none");
     }
-
+    const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
     let data;
     let domain;
     let workstation;
-    let checkQRcode = decodedText.split(',');
+    let checkQRcode;
+
+    if (urlPattern.test(decodedText)) {
+        const url = new URL(decodedText);
+        const workstationID = url.searchParams.get("workstationID");
+        const QRcode = url.searchParams.get("QRcode");
+        decodedText = QRcode
+        console.log(decodedText);
+        checkQRcode = QRcode.split(',');
+        console.log(checkQRcode);
+    } else {
+        checkQRcode = decodedText.split(',');
+    }
+
     if (typeQR == 2 || typeQR == 3 ) {
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
         if (data.length > 0 && checkQRcode.length == 3 && checkTab) {
@@ -448,7 +461,6 @@ $("#file-input").change(function (event) {
                 reader.onload = function (e) {
                     var img = new Image();
                     img.onload = function () {
-                        
                         // Quét QR từ hình ảnh đã tải lên
                         html5QrCode.scanFile(file).then(async decodedText => {  // Sửa tại đây
                             document.getElementById("result-form").classList.remove("d-none");
@@ -470,7 +482,6 @@ $("#file-input").change(function (event) {
                             } else {
                                 checkQRcode = decodedText.split(',');
                             }
-                            console.log(checkQRcode);
                             
                             // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
                             

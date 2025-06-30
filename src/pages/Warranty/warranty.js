@@ -21,7 +21,6 @@ async function accessDeviceWarranty() {
             inputClean.length >= 6
         );
 
-
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
