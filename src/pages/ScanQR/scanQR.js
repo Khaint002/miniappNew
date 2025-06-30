@@ -982,10 +982,13 @@ $("#result-scanagain").off("click").click(function () {
     document.getElementById("result-form-stationID").classList.remove("d-none");
     document.getElementById("result-form-stationName").classList.remove("d-none");
     document.getElementById("result-truycap").classList.remove("d-none");
+    console.log("Chạy: oke");
+    
     scanAgain();
 });
 
 function scanAgain() {
+    console.log("Chạy: vào");
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("file-input").value = '';
@@ -994,6 +997,7 @@ function scanAgain() {
     } else {
         startQRcode();
     }
+    console.log("Chạy: xong");
 }
 
 async function ScanQRcodeByZalo() {
