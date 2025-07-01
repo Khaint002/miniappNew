@@ -322,7 +322,7 @@ var renderReray = async function (data, control) {
                         style="background: #000000;box-shadow: 0px 0px 30px 5px #000000;border: 1px solid;width: 70px;height: 70px;border-radius: 50%;">
                         <button id="btn-Relay_${i}" class="btn btn-primary buttonClickWater p-0 m-0"
                             onclick="onOffRelay('Relay_${i}', '#08ed0a')" type="button"
-                            style="background-color: initial;border: none;font-size: 35px; outline: none; box-shadow: none;">
+                            style="background-color: initial;border: none;font-size: 40px; outline: none; box-shadow: none;">
                             <svg id="icon-Relay_${i}" class="bi bi-power" xmlns="http://www.w3.org/2000/svg"
                                 width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M7.5 1v7h1V1z"></path>
