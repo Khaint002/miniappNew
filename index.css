@@ -1278,6 +1278,9 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
 }
 
 .bottom-navigation button:focus {
