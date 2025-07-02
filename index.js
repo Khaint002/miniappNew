@@ -1348,7 +1348,9 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     let tokenPhone = await window.getPhoneNum();
+    let token = await window.getUserAccessToken();
     console.log(tokenPhone);
+    console.log(token);
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
     if (!historyItems){
         historyItems = [{
