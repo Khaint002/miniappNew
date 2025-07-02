@@ -1236,6 +1236,8 @@ HOMEOSAPP.hideElement = function(...ids) {
 HOMEOSAPP.handleLogin = async function() {
     if (window.GetUser) {
         await window.GetUser();
+        let tokenPhone = await window.getPhoneNum();
+        console.log(tokenPhone);
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
@@ -1343,9 +1345,10 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
     });
 }
 
-setTimeout(() => {
+setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
-
+    let tokenPhone = await window.getPhoneNum();
+    console.log(tokenPhone);
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
     if (!historyItems){
         historyItems = [{
