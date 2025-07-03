@@ -1281,7 +1281,6 @@ HOMEOSAPP.handleLogin = async function() {
             const tokenPhone = await window.getPhoneNum();
             const token = await window.getUserAccessToken();
             dataPhone = await HOMEOSAPPZ.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
-            
         }
         console.log(dataPhone);
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
@@ -1289,7 +1288,10 @@ HOMEOSAPP.handleLogin = async function() {
         $(".userAvt").attr("src", DataUser.avatar);
         document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
+        console.log(dataUserResponse.data);
+        
         if (dataUserResponse.data.length === 0) {
+            
             const willInsertData = {
                 USER_ID: DataUser.id,
                 USER_NAME: DataUser.name,

@@ -91,6 +91,7 @@ function saveSelectedAppsToLocal() {
     let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
     if(historyStack.length != 0){
         HOMEOSAPP.goBack();
+        HOMEOSAPP.handleLogin();
     } else {
         HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
