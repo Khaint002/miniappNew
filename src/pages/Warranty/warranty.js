@@ -56,43 +56,86 @@ async function accessDeviceWarranty() {
     }
 }
 
+// function changeDataWarranty(data) {
+//     let DataQRcode = data[0].QR_CODE.split(',');
+//     localStorage.setItem("productWarranty", JSON.stringify(data));
+//     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+//     document.getElementById('productName').textContent = "Tên sản phẩm: " + data[0].PRODUCT_NAME;
+//     document.getElementById('productCode').textContent = "Mã định danh: " + data[0].PRODUCT_CODE;
+//     if(DataQRcode.length == 4){
+//         document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[3];
+//     } else {
+//         document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
+//     }
+//     document.getElementById("deviceImg").src = data[0].PRODUCT_IMG;
+//     if (data[0].ACTIVATE_WARRANTY == "1999-01-01T00:00:00") {
+//         document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
+//         document.getElementById('warrantyTimeActive').textContent = " ";
+//         const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
+//         const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
+//         document.getElementById('warrantyTime').textContent = time;
+//         document.getElementById('result-product-warranty').classList.remove("d-none");
+//     } else {
+//         document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
+//         const now = new Date(data[0].ACTIVATE_WARRANTY);
+
+//         const year = now.getFullYear();
+//         const month = String(now.getMonth() + 1).padStart(2, '0');
+//         const day = String(now.getDate()).padStart(2, '0');
+//         document.getElementById('warrantyTimeActive').textContent = `${year}-${month}-${day}`;
+//         document.getElementById('result-product-warranty').classList.add("d-none");
+//         const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
+//         const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
+//         document.getElementById('warrantyTime').textContent = time;
+//     }
+//     // const item = { 'CodeWorkStation': workstationID, 'NameWorkStation': state[0].WORKSTATION_NAME, 'domain': domain, 'date': getCurrentTime(), 'workstationType': state[0].TEMPLATE_TOOLTIP }
+//     // localStorage.setItem('itemHistory', JSON.stringify(item));
+//     saveWarranty(data);
+//     addItemHistoryWarranty(data[0].PR_KEY, data);
+// }
+
 function changeDataWarranty(data) {
-    let DataQRcode = data[0].QR_CODE.split(',');
+    const item = data[0];
+    const qrParts = item.QR_CODE.split(',');
+    
+    // Lưu vào localStorage
     localStorage.setItem("productWarranty", JSON.stringify(data));
-    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    document.getElementById('productName').textContent = "Tên sản phẩm: " + data[0].PRODUCT_NAME;
-    document.getElementById('productCode').textContent = "Mã định danh: " + data[0].PRODUCT_CODE;
-    if(DataQRcode.length == 4){
-        document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[3];
-    } else {
-        document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
-    }
-    document.getElementById("deviceImg").src = data[0].PRODUCT_IMG;
-    if (data[0].ACTIVATE_WARRANTY == "1999-01-01T00:00:00") {
+    
+    // Đổ dữ liệu cơ bản
+    document.getElementById('productName').textContent = "Tên sản phẩm: " + item.PRODUCT_NAME;
+    document.getElementById('productCode').textContent = "Mã định danh: " + item.PRODUCT_CODE;
+    document.getElementById("deviceImg").src = item.PRODUCT_IMG;
+
+    // Hiển thị số seri
+    const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
+    document.getElementById('productSeri').textContent = "Số seri: " + seri;
+
+    // Tính ngày bắt đầu bảo hành từ QR
+    const warrantyStart = qrParts[0].substring(1, 5) + "-" + qrParts[0].substring(5, 7) + "-" + qrParts[0].substring(7, 9);
+    
+    // Tính thời gian còn lại
+    const timeLeft = calculateWarrantyRemaining(item.DATE_CREATE, Number(item.TIME_WARRANTY));
+    document.getElementById('warrantyTime').textContent = timeLeft;
+
+    const isNotActivated = item.ACTIVATE_WARRANTY === "1999-01-01T00:00:00";
+
+    if (isNotActivated) {
         document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
-        document.getElementById('warrantyTimeActive').textContent = " ";
-        const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-        const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-        document.getElementById('warrantyTime').textContent = time;
+        document.getElementById('warrantyTimeActive').textContent = "";
         document.getElementById('result-product-warranty').classList.remove("d-none");
     } else {
+        const activatedDate = new Date(item.ACTIVATE_WARRANTY);
+        const formattedDate = activatedDate.toISOString().split('T')[0]; // yyyy-mm-dd
         document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
-        const now = new Date(data[0].ACTIVATE_WARRANTY);
-
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        document.getElementById('warrantyTimeActive').textContent = `${year}-${month}-${day}`;
+        document.getElementById('warrantyTimeActive').textContent = formattedDate;
         document.getElementById('result-product-warranty').classList.add("d-none");
-        const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-        const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-        document.getElementById('warrantyTime').textContent = time;
     }
-    // const item = { 'CodeWorkStation': workstationID, 'NameWorkStation': state[0].WORKSTATION_NAME, 'domain': domain, 'date': getCurrentTime(), 'workstationType': state[0].TEMPLATE_TOOLTIP }
-    // localStorage.setItem('itemHistory', JSON.stringify(item));
+
+    // Ghi log + lịch sử
     saveWarranty(data);
-    addItemHistoryWarranty(data[0].PR_KEY, data);
+    addItemHistoryWarranty(item.PR_KEY, data);
 }
+
 
 function calculateWarrantyRemaining(startDate, timeWarranty) {
     const warrantyPeriodMonths = timeWarranty; // Thời gian bảo hành là 12 tháng
@@ -384,6 +427,29 @@ $('#result-product-warranty').click(function () {
 $(".WarrantyScanNext").off("click").click(function () {
     HOMEOSAPP.handleWarrantyApp();
 });
+
+
+
+// Gán sự kiện cho nút
+document.getElementById("btnPermission").addEventListener("click", function () {
+    const phoneInput = document.getElementById("phoneNumberInput");
+    const phoneValue = phoneInput.value.trim();
+
+    if (!phoneValue) {
+        alert("Vui lòng nhập số điện thoại.");
+        phoneInput.focus();
+        return;
+    }
+
+    // Nếu đã có dữ liệu, thực hiện xử lý tại đây
+    yourFunction(phoneValue); // gọi hàm xử lý
+});
+
+function yourFunction(phoneNumber) {
+    // Xử lý số điện thoại ở đây
+    console.log("Đang xử lý với số điện thoại:", phoneNumber);
+    // Ví dụ: gửi lên server hoặc xử lý khác
+}
 
 
 accessDeviceWarranty();
