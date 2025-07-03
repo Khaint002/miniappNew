@@ -397,6 +397,46 @@ HOMEOSAPP.getDataChart = function(typeTime, start, end, type, zone, url) {
     });
 }
 
+HOMEOSAPP.getPhoneNumberByUserZalo = async function(url, token, code) {
+    let user_id_getDm = 'admin';
+    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
+    const d = {
+        // Uid: 'vannt',
+        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
+        Uid: user_id_getDm,
+        Sid: Sid_getDM,
+        userAccessToken: token,
+        userCode: code
+    };
+    
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url+"/GetZaloUserPhoneNumber?callback=?",
+            type: "GET",
+            dataType: "jsonp",
+            data: d,
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    console.log(state);
+                    resolve(state);  // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                HomeOS.Service.SetActionControl(true);
+                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+                reject(e);  // Trả về lỗi nếu thất bại
+            }
+        });
+    });
+}
+
 HOMEOSAPP.getDataReport = function(active, url) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -1346,6 +1386,12 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
 }
 
 setTimeout(async () => {
+    if(window.getPhoneNum){
+        let tokenPhone = await window.getPhoneNum();
+        let token = await window.getUserAccessToken();
+        let dataPhone = await getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+    }
+    
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
     if (!historyItems){
