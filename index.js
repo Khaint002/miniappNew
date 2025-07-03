@@ -1280,7 +1280,7 @@ HOMEOSAPP.handleLogin = async function() {
         if(window.getPhoneNum){
             const tokenPhone = await window.getPhoneNum();
             const token = await window.getUserAccessToken();
-            dataPhone = await HOMEOSAPPZ.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
         }
         console.log(dataPhone);
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
