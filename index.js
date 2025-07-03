@@ -1280,10 +1280,8 @@ HOMEOSAPP.handleLogin = async function() {
         if(window.getPhoneNum){
             const tokenPhone = await window.getPhoneNum();
             const token = await window.getUserAccessToken();
-            // dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
-            // console.log(token);
+            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
         }
-        
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
@@ -1292,6 +1290,7 @@ HOMEOSAPP.handleLogin = async function() {
         console.log(dataUserResponse.data);
         
         if (dataUserResponse.data.length === 0) {
+            
             const willInsertData = {
                 USER_ID: DataUser.id,
                 USER_NAME: DataUser.name,
@@ -1302,13 +1301,18 @@ HOMEOSAPP.handleLogin = async function() {
             };
             HOMEOSAPP.add('WARRANTY_USER', willInsertData);
         } else if(dataUserResponse.data[0].USER_PHONE_NUM == null) {
+            if(window.getPhoneNum){
+                const tokenPhone = await window.getPhoneNum();
+                const token = await window.getUserAccessToken();
+                dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            }
             const data = dataUserResponse.data[0];
             const willInsertData = {
                 PR_KEY: data.PR_KEY,
                 USER_ID: data.USER_ID,
                 USER_NAME: data.USER_NAME,
                 USER_ROLE: data.USER_ROLE,
-                USER_PHONE_NUM: "0354754628",
+                USER_PHONE_NUM: dataPhone.PHONE,
                 DATE_CREATE: data.DATE_CREATE,
                 DATASTATE: "EDIT",
             };
