@@ -127,7 +127,7 @@ async function pickApp(type) {
             break;
 
         case 'LOGIN':
-            await handleLogin();
+            await HOMEOSAPP.handleLogin();
             break;
 
         case 'CONTROL':

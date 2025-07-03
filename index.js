@@ -1276,14 +1276,18 @@ HOMEOSAPP.hideElement = function(...ids) {
 HOMEOSAPP.handleLogin = async function() {
     if (window.GetUser) {
         await window.GetUser();
-        let tokenPhone = await window.getPhoneNum();
-        console.log(tokenPhone);
+        let dataPhone;
+        if(window.getPhoneNum){
+            const tokenPhone = await window.getPhoneNum();
+            const token = await window.getUserAccessToken();
+            dataPhone = await HOMEOSAPPZ.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            
+        }
+        console.log(dataPhone);
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
         document.getElementById("PickApp-button-login").classList.add("d-none");
-        // document.getElementById("LogoPickScreen").style.paddingTop = '10vh';
-
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
         if (dataUserResponse.data.length === 0) {
             const willInsertData = {
@@ -1386,14 +1390,6 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
 }
 
 setTimeout(async () => {
-    if(window.getPhoneNum){
-        let tokenPhone = await window.getPhoneNum();
-        let token = await window.getUserAccessToken();
-        let dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
-        console.log(dataPhone);
-        
-    }
-    
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
     if (!historyItems){
