@@ -1301,7 +1301,19 @@ HOMEOSAPP.handleLogin = async function() {
                 DATASTATE: "ADD",
             };
             HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-        } else {
+        } else if(dataUserResponse.data[0].USER_PHONE_NUM == null) {
+            const data = dataUserResponse.data[0];
+            const willInsertData = {
+                PR_KEY: data.PR_KEY,
+                USER_ID: data.USER_ID,
+                USER_NAME: data.USER_NAME,
+                USER_ROLE: data.USER_ROLE,
+                USER_PHONE_NUM: "0354754628",
+                DATE_CREATE: data.DATE_CREATE,
+                DATASTATE: "EDIT",
+            };
+            HOMEOSAPP.add('WARRANTY_USER', willInsertData);
+            console.log(willInsertData);
             
         }
     }
