@@ -1390,6 +1390,8 @@ setTimeout(async () => {
         let tokenPhone = await window.getPhoneNum();
         let token = await window.getUserAccessToken();
         let dataPhone = await getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        console.log(dataPhone);
+        
     }
     
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
