@@ -419,8 +419,8 @@ HOMEOSAPP.getPhoneNumberByUserZalo = async function(url, token, code) {
             success: function (msg) {
                 try {
                     let state = JSON.parse(msg);
-                    console.log(state);
-                    resolve(state);  // Trả về dữ liệu khi thành công
+                    console.log(state.data.number);
+                    resolve(state.data.number);  // Trả về dữ liệu khi thành công
                 } catch (error) {
                     reject(error);  // Bắt lỗi nếu JSON parse thất bại
                 }
@@ -1273,6 +1273,13 @@ HOMEOSAPP.hideElement = function(...ids) {
     });
 }
 
+function formatPhoneNumber(phone) {
+    if (phone.startsWith("84")) {
+        return "0" + phone.slice(2);
+    }
+    return phone;
+}
+
 HOMEOSAPP.handleLogin = async function() {
     if (window.GetUser) {
         await window.GetUser();
@@ -1281,13 +1288,14 @@ HOMEOSAPP.handleLogin = async function() {
             const tokenPhone = await window.getPhoneNum();
             const token = await window.getUserAccessToken();
             dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            
         }
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
         document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-        console.log(dataUserResponse.data);
+        console.log(dataPhone, "đã forrmat:"+formatPhoneNumber(dataPhone));
         
         if (dataUserResponse.data.length === 0) {
             
@@ -1295,7 +1303,7 @@ HOMEOSAPP.handleLogin = async function() {
                 USER_ID: DataUser.id,
                 USER_NAME: DataUser.name,
                 USER_ROLE: "GUEST",
-                USER_PHONE_NUM: dataPhone.PHONE,
+                USER_PHONE_NUM: formatPhoneNumber(dataPhone),
                 DATE_CREATE: new Date(),
                 DATASTATE: "ADD",
             };
@@ -1312,7 +1320,7 @@ HOMEOSAPP.handleLogin = async function() {
                 USER_ID: data.USER_ID,
                 USER_NAME: data.USER_NAME,
                 USER_ROLE: data.USER_ROLE,
-                USER_PHONE_NUM: dataPhone.PHONE,
+                USER_PHONE_NUM: formatPhoneNumber(dataPhone),
                 DATE_CREATE: data.DATE_CREATE,
                 DATASTATE: "EDIT",
             };
