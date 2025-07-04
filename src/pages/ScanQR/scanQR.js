@@ -1325,8 +1325,10 @@ $("#tab-scan-qr").off("click").click(async function (event) {
                 "CK_CODE='"+window.paramObjects.CK+"'"
             );
             console.log(dataQRcode);
-            
-            const result = window.workstationID.slice("w".length);
+            const lastPart = dataQRcode.data[0].QR_CODE.split(',').pop();
+
+            const result = lastPart.substring(1).replace('.', '');
+            //window.workstationID.slice("w".length);
             openTab(event, 'tab1');
             HOMEOSAPP.CodeWarranty = result;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
