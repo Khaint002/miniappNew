@@ -1443,7 +1443,7 @@ setTimeout(async () => {
     if(urlParams){
         window.workstationID = urlParams.get('workstationID');
     }
-    console.log(window.workstationID);
+    console.log(window.paramObjects);
     
     if(window.workstationID){
         
