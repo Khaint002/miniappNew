@@ -104,15 +104,15 @@ function changeDataWarranty(data) {
     // Đổ dữ liệu cơ bản
     document.getElementById('productName').textContent = "Tên sản phẩm: " + item.PRODUCT_NAME;
     document.getElementById('productCode').textContent = "Mã định danh: " + item.PRODUCT_CODE;
-    if (item.PRODUCT_CODE) {
-        document.getElementById('productCodeInput').value = item.PRODUCT_CODE;
-        document.getElementById('productCodeInput').setAttribute("readonly", true);
-    }
+    
     document.getElementById("deviceImg").src = item.PRODUCT_IMG;
     // Hiển thị số seri
     const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
     document.getElementById('productSeri').textContent = "Số seri: " + seri;
-
+    if (seri) {
+        document.getElementById('productCodeInput').value = seri;
+        document.getElementById('productCodeInput').setAttribute("readonly", true);
+    }
     // Tính ngày bắt đầu bảo hành từ QR
     const warrantyStart = qrParts[0].substring(1, 5) + "-" + qrParts[0].substring(5, 7) + "-" + qrParts[0].substring(7, 9);
     
