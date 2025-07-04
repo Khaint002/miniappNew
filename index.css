@@ -1739,3 +1739,9 @@ h1 {
     font-weight: 500;
     opacity: 0.85;
   }
+
+  .required-star {
+    color: red;
+    margin-left: 4px;
+    font-weight: bold;
+}
