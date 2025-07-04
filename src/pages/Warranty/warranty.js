@@ -9,7 +9,9 @@ async function accessDeviceWarranty() {
     $('#qr-popup').hide();
     
     const inputValue = HOMEOSAPP.CodeWarranty;
-
+    if(window.followOA){
+        window.followOA("btnfollowOA", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#ffffff");
+    }
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
     } else {
