@@ -1443,6 +1443,8 @@ setTimeout(async () => {
     if(urlParams){
         window.workstationID = urlParams.get('workstationID');
     }
+    console.log(window.workstationID);
+    
     if(window.workstationID){
         
         if(window.workstationID.startsWith("CABINET")){
