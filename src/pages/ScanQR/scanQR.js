@@ -1321,8 +1321,8 @@ $("#tab-scan-qr").off("click").click(async function (event) {
         if(window.paramObjects && window.paramObjects.CK != "done"){
             const dataQRcode = await HOMEOSAPP.getDM(
                 "https://central.homeos.vn/service_XD/service.svc",
-                "DM_QRCODE", "1=1"
-                //"CK_CODE='"+window.paramObjects.CK+"'"
+                "DM_QRCODE",
+                "CK_CODE='"+window.paramObjects.CK+"'"
             );
             console.log(dataQRcode);
             
