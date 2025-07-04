@@ -1445,12 +1445,12 @@ setTimeout(async () => {
     }
     console.log(window.paramObjects);
     
-    if(window.workstationID){
-        
-        if(window.workstationID.startsWith("CABINET")){
-            HOMEOSAPP.application = "CONTROL";
-            HOMEOSAPP.checkTabHistory = 2;
-        } else if(window.workstationID.startsWith("W")){
+    if(window.paramObjects){
+        // if(window.workstationID.startsWith("CABINET")){
+        //     HOMEOSAPP.application = "CONTROL";
+        //     HOMEOSAPP.checkTabHistory = 2;
+        // } else 
+        if(window.paramObjects.CK){
             HOMEOSAPP.application = "WARRANTY";
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.checkTabMenu = "DetailDevice";

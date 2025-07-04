@@ -1318,7 +1318,14 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
-        if(window.workstationID && window.workstationID != "done"){
+        if(window.paramObjects && window.paramObjects.CK != "done"){
+            const dataQRcode = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "CK_CODE='"+window.paramObjects.CK+"'"
+            );
+            console.log(dataQRcode);
+            
             const result = window.workstationID.slice("w".length);
             openTab(event, 'tab1');
             HOMEOSAPP.CodeWarranty = result;
@@ -1330,7 +1337,6 @@ $("#tab-scan-qr").off("click").click(async function (event) {
                     $("#ScanQRcode").removeClass("d-none");
                     document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
                     document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
-
                     openTab(event, 'tab1')
                     break;
                 case "ScanLotDevice":
