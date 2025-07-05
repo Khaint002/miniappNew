@@ -1230,10 +1230,10 @@ $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
     if(window.shareWorkStation){
         if(HOMEOSAPP.checkTabHistory == 1){
-            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', "workstationID="+item.CodeWorkStation);
+            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', "WID="+item.CodeWorkStation);
         } else if(HOMEOSAPP.checkTabHistory == 2) {
             const dataItemLink = HOMEOSAPP.itemlinkQR;
-            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "workstationID=CABINET"+dataItemLink[0].WORKSTATION_ID);
+            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CID="+dataItemLink[0].WORKSTATION_ID);
         }
     } else {
 
@@ -1441,33 +1441,34 @@ setTimeout(async () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     if(urlParams){
-        window.workstationID = urlParams.get('workstationID');
+        const paramObject = {};
+        urlParams.forEach((value, key) => {
+        paramObject[key] = value;
+        });
+        window.paramObjects = paramObject;
     }
-    console.log(window.paramObjects);
-    
-    if(window.workstationID){
-        if(window.workstationID.startsWith("CABINET")){
+    let checkparam = false;
+    if(window.paramObjects){
+        if(window.paramObjects.CID){
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
-        } else if(window.workstationID.startsWith("W")){
+            checkparam = true
+        } else if(window.paramObjects.CK){
             HOMEOSAPP.application = "WARRANTY";
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.checkTabMenu = "DetailDevice";
-        } else {
+            checkparam = true
+        } else if(window.paramObjects.WID) {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
         }
-        // if(window.paramObjects.CK){
-        //     HOMEOSAPP.application = "WARRANTY";
-        //     HOMEOSAPP.checkTabHistory = 3;
-        //     HOMEOSAPP.checkTabMenu = "DetailDevice";
-        // }
-        
-        let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
-        localStorage.setItem('historyStack', JSON.stringify(historyStack));
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+        if(checkparam){
+            let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+            historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+            historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
+            localStorage.setItem('historyStack', JSON.stringify(historyStack));
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+        }
     } else {
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
         
