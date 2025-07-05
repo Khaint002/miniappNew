@@ -83,6 +83,8 @@ async function changeDataWarranty(data) {
     }
     userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     if (userLogin.USER_PHONE_NUM != null){
+        console.log(1);
+        
         document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
         document.getElementById('phoneNumberInput').setAttribute("readonly", true);
     } else if(window.getPhoneNum){
