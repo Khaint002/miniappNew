@@ -1449,6 +1449,9 @@ setTimeout(async () => {
     }
     let checkparam = false;
     if(window.paramObjects){
+        console.log(window.paramObjects);
+        console.log(window.paramObjects.WID);
+        
         if(window.paramObjects.CID){
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
