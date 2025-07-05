@@ -681,7 +681,7 @@ HOMEOSAPP.handleControlApp = function(check) {
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     
     if(check == 'IN'){
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
         setTimeout(() => {
             HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
             
@@ -746,7 +746,7 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
     checkApp = 'GUA';
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     if(check == 'IN'){
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
         setTimeout(() => {
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
@@ -1230,10 +1230,10 @@ $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
     if(window.shareWorkStation){
         if(HOMEOSAPP.checkTabHistory == 1){
-            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', "workstationID="+item.CodeWorkStation);
+            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
         } else if(HOMEOSAPP.checkTabHistory == 2) {
             const dataItemLink = HOMEOSAPP.itemlinkQR;
-            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "workstationID=CABINET"+dataItemLink[0].WORKSTATION_ID);
+            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CABINET"+dataItemLink[0].WORKSTATION_ID);
         }
     } else {
 
@@ -1464,18 +1464,18 @@ setTimeout(async () => {
         // }
         
         let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
-        historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
+        historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
         localStorage.setItem('historyStack', JSON.stringify(historyStack));
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
     } else {
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
         
         const saved = localStorage.getItem("selectedApps");
         if (saved) {
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
         } else {
-            $("#content-block").load("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
+            $("#content-block").load("https://central.homeos.vn/singlepage/workstation/src/pages/UserSelection/userSelection.html");
         }
     }
 }, 1000);

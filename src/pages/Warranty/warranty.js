@@ -58,44 +58,6 @@ async function accessDeviceWarranty() {
     }
 }
 
-// function changeDataWarranty(data) {
-//     let DataQRcode = data[0].QR_CODE.split(',');
-//     localStorage.setItem("productWarranty", JSON.stringify(data));
-//     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-//     document.getElementById('productName').textContent = "Tên sản phẩm: " + data[0].PRODUCT_NAME;
-//     document.getElementById('productCode').textContent = "Mã định danh: " + data[0].PRODUCT_CODE;
-//     if(DataQRcode.length == 4){
-//         document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[3];
-//     } else {
-//         document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
-//     }
-//     document.getElementById("deviceImg").src = data[0].PRODUCT_IMG;
-//     if (data[0].ACTIVATE_WARRANTY == "1999-01-01T00:00:00") {
-//         document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
-//         document.getElementById('warrantyTimeActive').textContent = " ";
-//         const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-//         const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-//         document.getElementById('warrantyTime').textContent = time;
-//         document.getElementById('result-product-warranty').classList.remove("d-none");
-//     } else {
-//         document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
-//         const now = new Date(data[0].ACTIVATE_WARRANTY);
-
-//         const year = now.getFullYear();
-//         const month = String(now.getMonth() + 1).padStart(2, '0');
-//         const day = String(now.getDate()).padStart(2, '0');
-//         document.getElementById('warrantyTimeActive').textContent = `${year}-${month}-${day}`;
-//         document.getElementById('result-product-warranty').classList.add("d-none");
-//         const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-//         const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-//         document.getElementById('warrantyTime').textContent = time;
-//     }
-//     // const item = { 'CodeWorkStation': workstationID, 'NameWorkStation': state[0].WORKSTATION_NAME, 'domain': domain, 'date': getCurrentTime(), 'workstationType': state[0].TEMPLATE_TOOLTIP }
-//     // localStorage.setItem('itemHistory', JSON.stringify(item));
-//     saveWarranty(data);
-//     addItemHistoryWarranty(data[0].PR_KEY, data);
-// }
-
 function changeDataWarranty(data) {
     const item = data[0];
     const qrParts = item.QR_CODE.split(',');

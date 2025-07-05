@@ -1,0 +1,2 @@
+Update app ngày 04/07/2025 lần 1:
+- bổ sung xin cấp quyền lấy sđt để duyệt zalo mini app
