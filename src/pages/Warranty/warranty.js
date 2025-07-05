@@ -415,7 +415,8 @@ $(".WarrantyScanNext").off("click").click(function () {
 document.getElementById("btnPermission").addEventListener("click", function () {
     const phoneInput = document.getElementById("phoneNumberInput");
     const phoneValue = phoneInput.value.trim();
-
+    const productInput = document.getElementById("productCodeInput");
+    const productValue = productInput.value.trim();
     if (!phoneValue) {
         alert("Vui lòng nhập số điện thoại.");
         phoneInput.focus();
@@ -423,12 +424,15 @@ document.getElementById("btnPermission").addEventListener("click", function () {
     }
 
     // Nếu đã có dữ liệu, thực hiện xử lý tại đây
-    yourFunction(phoneValue); // gọi hàm xử lý
+    yourFunction(phoneValue, productValue); // gọi hàm xử lý
 });
 
-function yourFunction(phoneNumber) {
+function yourFunction(phoneNumber, productValue) {
     // Xử lý số điện thoại ở đây
-    console.log("Đang xử lý với số điện thoại:", phoneNumber);
+    console.log("Đang xử lý với số điện thoại:", productValue, phoneNumber);
+    var P_KEY = HOMEOSAPP.sha1Encode(productValue + phoneNumber + "@1B2c3D4e5F6g7H8").toString()
+    console.log(P_KEY);
+    
     // Ví dụ: gửi lên server hoặc xử lý khác
 }
 

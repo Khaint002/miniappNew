@@ -53,11 +53,11 @@ HOMEOSAPP.getDM = async function (url, table_name, c, check) {
     if(check == "NotCentral"){
         let dataUser;
         if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
          
         user_id_getDm = dataUser[0].StateName;
@@ -230,11 +230,11 @@ HOMEOSAPP.add = async function (table, data, URL, check) {
         url = URL;
         let dataUser;
         if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
         
         user_id_getDm = dataUser[0].StateName;
@@ -273,11 +273,11 @@ HOMEOSAPP.WorkstationStatistics = async function(url, c, check, code) {
     if(check == "NotCentral"){
         let dataUser;
         if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
         
         user_id_getDm = dataUser[0].StateName;
@@ -977,7 +977,7 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
         // c = [{"ID":"12929172","NAME":"Tủ chị Hà tầng 1","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_BAO_CAO"}]
         nameReport = reportType;
     }
-    const dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
+    const dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
     
     var val = [];
     
@@ -1118,7 +1118,7 @@ $('#submitExport').click(function () {
     // Gọi API, tạo URL báo cáo, hiển thị kết quả...
 });
 
-function sha1Encode(message) {
+HOMEOSAPP.sha1Encode = function(message) {
     function rotate_left(n, s) {
         return (n << s) | (n >>> (32 - s));
     }
