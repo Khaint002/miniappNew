@@ -91,13 +91,13 @@ function changeDataWarranty(data) {
     if (isNotActivated) {
         document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
         document.getElementById('warrantyTimeActive').textContent = "";
-        document.getElementById('result-product-warranty').classList.remove("d-none");
+        // document.getElementById('result-product-warranty').classList.remove("d-none");
     } else {
         const activatedDate = new Date(item.ACTIVATE_WARRANTY);
         const formattedDate = activatedDate.toISOString().split('T')[0]; // yyyy-mm-dd
         document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
         document.getElementById('warrantyTimeActive').textContent = formattedDate;
-        document.getElementById('result-product-warranty').classList.add("d-none");
+        // document.getElementById('result-product-warranty').classList.add("d-none");
     }
 
     // Ghi log + lịch sử
