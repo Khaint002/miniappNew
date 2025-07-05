@@ -186,9 +186,10 @@ async function onScanSuccess(decodedText, decodedResult) {
     let checkQRcode;
 
     if (urlPattern.test(decodedText)) {
-        const url = new URLSearchParams(decodedText);
+        const url = new url(decodedText)
+        const param = new URLSearchParams(url);
         const paramObject = {};
-        url.forEach((value, key) => {
+        param.forEach((value, key) => {
             paramObject[key] = value;
         });
         console.log(paramObject);
