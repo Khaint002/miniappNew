@@ -202,6 +202,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             );
             console.log(dataQRcode);
             decodedText = dataQRcode.data[0].QR_CODE
+            checkQRcode = dataQRcode.data[0].QR_CODE.split(',');
         } 
         // else if(paramObject.CID){
         //     decodedText = QRcode
