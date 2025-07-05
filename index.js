@@ -47,8 +47,6 @@ HOMEOSAPP.goBack = function () {
     }
 }
 
-
-
 HOMEOSAPP.getDM = async function (url, table_name, c, check) {
     let user_id_getDm = 'admin';
     let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';

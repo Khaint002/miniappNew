@@ -6,9 +6,6 @@ var currentCamera;
 var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
-    userLogin = JSON.parse(localStorage.getItem('UserLogin'));
-    console.log(userLogin);
-    
     $('#qr-popup').hide();
     if(HOMEOSAPP.checkTabWarranty == 1){
         $('#btn-tab1').click();
@@ -65,7 +62,7 @@ async function accessDeviceWarranty() {
     }
 }
 
-function changeDataWarranty(data) {
+async function changeDataWarranty(data) {
     const item = data[0];
     const qrParts = item.QR_CODE.split(',');
     
@@ -83,6 +80,17 @@ function changeDataWarranty(data) {
     if (seri) {
         document.getElementById('productCodeInput').value = seri;
         document.getElementById('productCodeInput').setAttribute("readonly", true);
+    }
+    userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    if (userLogin.USER_PHONE_NUM != null){
+        document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
+        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+    } else if(window.getPhoneNum){
+        const tokenPhone = await window.getPhoneNum();
+        const token = await window.getUserAccessToken();
+        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        document.getElementById('phoneNumberInput').value = dataPhone;
+        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
     }
     // Tính ngày bắt đầu bảo hành từ QR
     const warrantyStart = qrParts[0].substring(1, 5) + "-" + qrParts[0].substring(5, 7) + "-" + qrParts[0].substring(7, 9);
