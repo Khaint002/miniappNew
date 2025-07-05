@@ -7,7 +7,9 @@ var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
     $('#qr-popup').hide();
-    if(HOMEOSAPP.checkTabWarranty == 2){
+    if(HOMEOSAPP.checkTabWarranty == 1){
+        $('#btn-tab1').click();
+    } else if(HOMEOSAPP.checkTabWarranty == 2){
         $('#warranty-permission').click();
     }
     const inputValue = HOMEOSAPP.CodeWarranty;
@@ -301,7 +303,6 @@ function DetailProduct() {
     document.getElementById("result-product").classList.add("d-none");
     document.getElementById("tab-0").classList.remove("active");
     document.getElementById("tab-1").classList.add("active");
-    document.getElementById("btn-tab1").classList.add("menuWarranty");
     $('#qr-popup').hide()
     document.getElementById("menu-warranty").classList.remove("d-none");
     $('#loading-popup').hide()
