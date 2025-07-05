@@ -195,8 +195,9 @@ async function onScanSuccess(decodedText, decodedResult) {
             const dataQRcode = await HOMEOSAPP.getDM(
                 "https://central.homeos.vn/service_XD/service.svc",
                 "DM_QRCODE",
-                "CK_CODE='"+window.paramObjects.CK+"'"
+                "CK_CODE='"+paramObject.CK+"'"
             );
+            console.log(dataQRcode);
             decodedText = dataQRcode.data[0].QR_CODE
         } 
         // else if(paramObject.CID){
