@@ -1461,6 +1461,7 @@ setTimeout(async () => {
         } else if(window.paramObjects.WID) {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
+            checkparam = true
         }
         if(checkparam){
             let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
