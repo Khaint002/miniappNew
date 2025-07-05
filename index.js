@@ -1473,7 +1473,8 @@ setTimeout(async () => {
             localStorage.setItem('historyStack', JSON.stringify(historyStack));
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
-    } else {
+    }
+    if(!checkparam){
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
         
         const saved = localStorage.getItem("selectedApps");
