@@ -944,7 +944,6 @@ async function checkDevice(type) {
                 } else {
                     HOMEOSAPP.CodeWarranty = checkQRcode[2];
                 }
-                
                 HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
             }
         } else {
@@ -1017,10 +1016,7 @@ $("#result-product-scanagain").off("click").click(function () {
     scanAgain();
 });
 
-$("#warranty-permission").off("click").click(function () {
-    $("#qr-popup").hide();
-    $("#permission-popup").show();
-});
+
 
 $("#BackPermission").off("click").click(function () {
     $("#qr-popup").show();
@@ -1300,6 +1296,14 @@ $("#result-product-truycap").click(function () {
     document.getElementById("result-product-truycap").disabled = true;
     $("#loading-popup").show();
     checkDevice("QRcodeWarranty");
+    HOMEOSAPP.checkTabWarranty = 1;
+});
+
+$("#warranty-permission").off("click").click(function () {
+    document.getElementById("result-product-truycap").disabled = true;
+    $("#loading-popup").show();
+    checkDevice("QRcodeWarranty");
+    HOMEOSAPP.checkTabWarranty = 2;
 });
 
 $("#PickApp-button-pick").off("click").click(function () {

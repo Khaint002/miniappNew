@@ -3,6 +3,7 @@ HOMEOSAPP.application = "";
 var typeQR;
 HOMEOSAPP.listDomain = [];
 HOMEOSAPP.checkTabHistory = 0;
+HOMEOSAPP.checkTabWarranty = 1;
 HOMEOSAPP.UserID = localStorage.getItem("userID");
 var checkReport = '';
 let historyStack = ['pickApp'];

@@ -7,7 +7,9 @@ var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
     $('#qr-popup').hide();
-    
+    if(HOMEOSAPP.checkTabWarranty == 2){
+        $('#warranty-permission').click();
+    }
     const inputValue = HOMEOSAPP.CodeWarranty;
     if(window.followOA){
         window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
