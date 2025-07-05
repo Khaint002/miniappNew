@@ -133,6 +133,24 @@ HOMEOSAPP.handleUser = async function (type) {
                     };
                     HOMEOSAPP.add('WARRANTY_USER', willInsertData);
                     localStorage.setItem('RoleUser', "GUEST");
+                } else if(dataUserResponse.data[0].USER_PHONE_NUM == null) {
+                    if(window.getPhoneNum){
+                        const tokenPhone = await window.getPhoneNum();
+                        const token = await window.getUserAccessToken();
+                        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+                    }
+                    const data = dataUserResponse.data[0];
+                    const willInsertData = {
+                        PR_KEY: data.PR_KEY,
+                        USER_ID: data.USER_ID,
+                        USER_NAME: data.USER_NAME,
+                        USER_ROLE: data.USER_ROLE,
+                        USER_PHONE_NUM: formatPhoneNumber(dataPhone),
+                        DATE_CREATE: data.DATE_CREATE,
+                        DATASTATE: "EDIT",
+                    };
+                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
+                    localStorage.setItem('UserLogin', willInsertData);
                 } else {
                     localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
                     localStorage.setItem('UserLogin', dataUserResponse.data[0]);
