@@ -135,6 +135,7 @@ HOMEOSAPP.handleUser = async function (type) {
                     localStorage.setItem('RoleUser', "GUEST");
                 } else {
                     localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
+                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
                 }
             } else if (DataUser != undefined) {
                 const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
@@ -147,6 +148,7 @@ HOMEOSAPP.handleUser = async function (type) {
                         DATASTATE: "ADD",
                     };
                     HOMEOSAPP.add('WARRANTY_USER', willInsertData);
+                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
                 }
             } else {
                 localStorage.setItem('RoleUser', 'GUEST');
@@ -1285,21 +1287,24 @@ HOMEOSAPP.handleLogin = async function() {
     if (window.GetUser) {
         await window.GetUser();
         let dataPhone;
-        if(window.getPhoneNum){
-            const tokenPhone = await window.getPhoneNum();
-            const token = await window.getUserAccessToken();
-            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        // if(window.getPhoneNum){
+        //     const tokenPhone = await window.getPhoneNum();
+        //     const token = await window.getUserAccessToken();
+        //     dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
             
-        }
+        // }
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
         document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-        console.log(dataPhone, "đã forrmat:"+formatPhoneNumber(dataPhone));
         
         if (dataUserResponse.data.length === 0) {
-            
+            if(window.getPhoneNum){
+                const tokenPhone = await window.getPhoneNum();
+                const token = await window.getUserAccessToken();
+                dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            }
             const willInsertData = {
                 USER_ID: DataUser.id,
                 USER_NAME: DataUser.name,
@@ -1326,8 +1331,8 @@ HOMEOSAPP.handleLogin = async function() {
                 DATASTATE: "EDIT",
             };
             HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-            console.log(willInsertData);
-            
+        } else {
+            localStorage.setItem('UserLogin', dataUserResponse.data[0]);
         }
     }
 }

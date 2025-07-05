@@ -6,6 +6,9 @@ var currentCamera;
 var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
+    userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    console.log(userLogin);
+    
     $('#qr-popup').hide();
     if(HOMEOSAPP.checkTabWarranty == 1){
         $('#btn-tab1').click();
