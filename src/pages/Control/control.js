@@ -15,7 +15,7 @@ var ChartU, ChartI, ChartP, ChartE;
 // xác định thiết bị cần truy cập
 async function accessDevice() {
     $('#qr-popup').hide();
-    const inputValue = HOMEOSAPP.controlID;
+    const inputValue = HOMEOSAPP.CodeCondition;
 
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");

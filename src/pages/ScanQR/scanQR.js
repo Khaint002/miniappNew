@@ -1310,6 +1310,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
         if(HOMEOSAPP.controlID && HOMEOSAPP.controlID != "done"){
             openTab(event, 'tab1');
+            HOMEOSAPP.CodeCondition = HOMEOSAPP.controlID;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
             HOMEOSAPP.controlID = "done";
         } else {
