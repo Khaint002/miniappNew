@@ -301,8 +301,6 @@ function DetailProduct() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("result-product").classList.add("d-none");
-    document.getElementById("tab-0").classList.remove("active");
-    document.getElementById("tab-1").classList.add("active");
     $('#qr-popup').hide()
     document.getElementById("menu-warranty").classList.remove("d-none");
     $('#loading-popup').hide()
