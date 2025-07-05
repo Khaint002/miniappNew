@@ -1455,6 +1455,7 @@ setTimeout(async () => {
         if(window.paramObjects.CID){
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
+            HOMEOSAPP.controlID = window.paramObjects.CID;
             checkparam = true
         } else if(window.paramObjects.CK){
             HOMEOSAPP.application = "WARRANTY";
@@ -1464,6 +1465,7 @@ setTimeout(async () => {
         } else if(window.paramObjects.WID) {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
+            HOMEOSAPP.workstationID = window.paramObjects.WID;
             checkparam = true
         }
         if(checkparam){
