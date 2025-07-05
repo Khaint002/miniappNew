@@ -187,12 +187,27 @@ async function onScanSuccess(decodedText, decodedResult) {
 
     if (urlPattern.test(decodedText)) {
         const url = new URL(decodedText);
-        const workstationID = url.searchParams.get("workstationID");
-        const QRcode = url.searchParams.get("QRcode");
-        decodedText = QRcode
-        console.log(decodedText);
-        checkQRcode = QRcode.split(',');
-        console.log(checkQRcode);
+        const paramObject = {};
+        url.forEach((value, key) => {
+            paramObject[key] = value;
+        });
+        if(paramObject.CK){
+            const dataQRcode = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "CK_CODE='"+window.paramObjects.CK+"'"
+            );
+            decodedText = dataQRcode.data[0].QR_CODE
+        } 
+        // else if(paramObject.CID){
+        //     decodedText = QRcode
+        //     const workstationID = url.searchParams.get("workstationID");
+        //     const QRcode = url.searchParams.get("QRcode");
+        //     decodedText = QRcode
+        //     console.log(decodedText);
+        //     checkQRcode = QRcode.split(',');
+        // }
+        
     } else {
         checkQRcode = decodedText.split(',');
     }
