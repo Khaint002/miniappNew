@@ -191,6 +191,8 @@ async function onScanSuccess(decodedText, decodedResult) {
         url.forEach((value, key) => {
             paramObject[key] = value;
         });
+        console.log(paramObject);
+        
         if(paramObject.CK){
             const dataQRcode = await HOMEOSAPP.getDM(
                 "https://central.homeos.vn/service_XD/service.svc",
