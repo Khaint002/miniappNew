@@ -1332,7 +1332,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
-        if(window.paramObjects && window.paramObjects.CK != "done"){
+        if(window.paramObjects.CK && window.paramObjects.CK != "done"){
             const dataQRcode = await HOMEOSAPP.getDM(
                 "https://central.homeos.vn/service_XD/service.svc",
                 "DM_QRCODE",
