@@ -522,11 +522,10 @@ $("#share-warranty").off("click").click(function () {
     }
     if(dataWarranty[0].CK_CODE != ''){
         textAdmin = "https://zalo.me/s/4560528012046048397/?Q=ADMIN&CK="+dataWarranty[0].CK_CODE;
-        textAdmin = "https://zalo.me/s/4560528012046048397/?Q=GUEST&CK="+dataWarranty[0].CK_CODE;
+        textGuest = "https://zalo.me/s/4560528012046048397/?Q=GUEST&CK="+dataWarranty[0].CK_CODE;
     }
     
-    document.getElementById("text-content-admin").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
-    document.getElementById("text-content-guest").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
+    document.getElementById("text-content-warranty").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
     // Tạo mã QR
     HOMEOSAPP.generateQRCode(textAdmin, "qrcode-admin");
     HOMEOSAPP.generateQRCode(textGuest, "qrcode-guest");

@@ -1246,7 +1246,7 @@ h1 {
     background-color: #f39c12;
 }
 
-#qrcode canvas {
+#qrcode canvas,#qrcode-admin canvas, #qrcode-guest canvas {
     border-radius: 15px;
     /* Bo góc cho canvas */
     border: 2px solid #000;
