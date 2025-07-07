@@ -1461,7 +1461,7 @@ HOMEOSAPP.checkPermissionDevice = async function(data) {
             if (dataPermission.data.some(item => item.USER_PHONE_NUMBER === dataPhone)) {
                 // Lọc ra các phần tử phù hợp nếu cần dùng
                 const matchedItems = dataPermission.data.filter(item => item.USER_PHONE_NUMBER === dataPhone);
-                let checkQRcode = dataWarranty[0].QR_CODE.split(',');
+                let checkQRcode = data.QR_CODE.split(',');
                 
                 var P_KEY = HOMEOSAPP.sha1Encode(checkQRcode[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
                 console.log(matchedItems);
