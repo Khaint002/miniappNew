@@ -394,7 +394,7 @@ $('#result-product-warranty').click(function () {
                     USER_ID: UserID,
                     DATASTATE: "ADD",
                 };
-                add('WARRANTY_ERROR', InsertData)
+                HOMEOSAPP.add('WARRANTY_ERROR', InsertData)
 
                 data = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
                 changeDataWarranty(data);
@@ -424,15 +424,26 @@ document.getElementById("btnPermission").addEventListener("click", function () {
     }
 
     // Nếu đã có dữ liệu, thực hiện xử lý tại đây
-    yourFunction(phoneValue, productValue); // gọi hàm xử lý
+    savePermission(phoneValue, productValue); // gọi hàm xử lý
 });
 
-function yourFunction(phoneNumber, productValue) {
-    // Xử lý số điện thoại ở đây
-    console.log("Đang xử lý với số điện thoại:", productValue, phoneNumber);
+function savePermission(phoneNumber, productValue) {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    const DataUser = JSON.parse(localStorage.getItem("userInfo"));
     var P_KEY = HOMEOSAPP.sha1Encode(productValue + phoneNumber + "@1B2c3D4e5F6g7H8").toString()
-    console.log(P_KEY);
     
+    const InsertData = {
+        PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
+        Z_USER_ID: DataUser.id,
+        USER_PHONE_NUMBER: phoneNumber,
+        P_KEY: P_KEY,
+        DATE_CREATE: new Date(),
+        OWNER_SHIP_LEVEL: 1,
+        ACTIVE: 1,
+        DATASTATE: "ADD",
+    };
+
+    HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
     // Ví dụ: gửi lên server hoặc xử lý khác
 }
 
