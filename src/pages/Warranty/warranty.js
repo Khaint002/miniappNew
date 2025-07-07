@@ -97,7 +97,7 @@ async function changeDataWarranty(data) {
         document.getElementById('productCodeInput').setAttribute("readonly", true);
     }
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
-    if(userLogin){
+    if(!userLogin){
         await HOMEOSAPP.handleLogin();
         userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     }
