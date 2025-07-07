@@ -1499,7 +1499,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
             const InsertData = {
                 PR_KEY_QRCODE: data.PR_KEY,
                 Z_USER_ID: DataUser.id,
-                USER_PHONE_NUMBER: dataPhone,
+                USER_PHONE_NUMBER: formatPhoneNumber(dataPhone),
                 DATE_CREATE: new Date(),
                 OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
                 ACTIVE: 1,
