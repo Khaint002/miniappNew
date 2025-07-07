@@ -558,5 +558,18 @@ function openTab(evt, tabName) {
     $(evt.currentTarget).addClass('active');
 }
 
+$("#share-warranty-admin").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    if(window.shareWorkStation){
+        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, 'PRODUCT_IMG', "Q=ADMIN&CK="+dataWarranty[0].CK_CODE);
+    }
+});
+
+$("#share-warranty-guest").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    if(window.shareWorkStation){
+        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, 'PRODUCT_IMG', "Q=GUEST&CK="+dataWarranty[0].CK_CODE);
+    }
+});
 
 accessDeviceWarranty();
