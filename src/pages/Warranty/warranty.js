@@ -501,6 +501,9 @@ async function savePermission(phoneNumber, productValue) {
 
                 data = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
                 changeDataWarranty(data);
+                $('#btn-tab1').click();
+                $("#isPermission").removeClass("d-none");
+                $("#notPermission").addClass("d-none");
             } catch (e) { }
         }).catch(err => {
             console.error('Error:', err);
