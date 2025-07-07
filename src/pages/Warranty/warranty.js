@@ -505,6 +505,7 @@ async function savePermission(phoneNumber, productValue) {
 $("#share-warranty").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    console.log(dataWarranty);
     
     HOMEOSAPP.loadPage("share-warranty-popup");
 
@@ -518,27 +519,12 @@ $("#share-warranty").off("click").click(function () {
     } else {
         codeProduct = qrParts[2].substring(1)
     }
-
-    document.getElementById("text-content-QRcode").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
+    
+    document.getElementById("text-content-admin").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
+    document.getElementById("text-content-guest").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
     // Tạo mã QR
-    // QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
-    //     if (error) {
-    //         console.error("Lỗi khi tạo mã QR:", error);
-    //         alert('Lỗi khi tạo mã QR!');
-    //         return;
-    //     }
-
-    //     // Thêm canvas QR vào DOM
-    //     $('#qrcode').append(canvas);
-
-    //     // Tạo ảnh ẩn từ canvas (tùy chọn)
-    //     const image = canvas.toDataURL('image/png');
-    //     const img = $('<img>')
-    //         .attr('src', image)
-    //         .css({ display: 'none' }) // Ẩn ảnh đi
-    //         .attr('id', 'hidden-image');
-    //     $('#qrcode').append(img);
-    // });
+    HOMEOSAPP.generateQRCode(textAdmin, "qrcode-admin");
+    HOMEOSAPP.generateQRCode(textGuest, "qrcode-guest");
 });
 
 $("#tab-permission-admin").off("click").click(function (event) {

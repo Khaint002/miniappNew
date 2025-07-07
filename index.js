@@ -1496,6 +1496,31 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     return true;
 };
 
+HOMEOSAPP.generateQRCode = function(text, targetId) {
+    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
+        if (error) {
+            console.error("Lỗi khi tạo mã QR:", error);
+            alert('Lỗi khi tạo mã QR!');
+            return;
+        }
+
+        // Xóa nội dung cũ (nếu cần)
+        $('#' + targetId).empty();
+
+        // Thêm canvas vào DOM
+        $('#' + targetId).append(canvas);
+
+        // Tạo ảnh từ canvas (ẩn đi nếu cần dùng)
+        const image = canvas.toDataURL('image/png');
+        const img = $('<img>')
+            .attr('src', image)
+            .css({ display: 'none' })
+            .attr('id', 'hidden-image');
+        
+        $('#' + targetId).append(img);
+    });
+}
+
 
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
