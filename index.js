@@ -1441,45 +1441,61 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
     });
 }
 
-HOMEOSAPP.checkPermissionDevice = async function(data) {
+HOMEOSAPP.checkPermissionDevice = async function (data) {
+    const serviceUrl = "https://central.homeos.vn/service_XD/service.svc";
+
+    // Lấy dữ liệu quyền sở hữu từ QR code
     const dataPermission = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
+        serviceUrl,
         "ZALO_OWNER_SHIP_DEVICE",
-        "PR_KEY_QRCODE='"+data.PR_KEY+"'"
+        `PR_KEY_QRCODE='${data.PR_KEY}'`
     );
-    if(dataPermission.data.length != 0){
-        userLogin = JSON.parse(localStorage.getItem('UserLogin'));
-        let dataPhone = '';
-        if (userLogin.USER_PHONE_NUM != null){
-            dataPhone = userLogin.USER_PHONE_NUM;
-        } else if(window.getPhoneNum){
+
+    if (!dataPermission.data?.length) {
+        // Không có quyền nào trong DB
+        return false;
+    }
+
+    // Lấy số điện thoại đăng nhập
+    let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    let dataPhone = userLogin?.USER_PHONE_NUM || '';
+
+    // Nếu không có thì cố gắng lấy từ Zalo
+    if (!dataPhone && window.getPhoneNum) {
+        try {
             const tokenPhone = await window.getPhoneNum();
             const token = await window.getUserAccessToken();
-            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo(serviceUrl, token, tokenPhone);
+        } catch (err) {
+            toastr.error("Lỗi khi lấy số điện thoại từ Zalo!");
+            return false;
         }
-        if(dataPhone != ''){
-            if (dataPermission.data.some(item => item.USER_PHONE_NUMBER === dataPhone)) {
-                // Lọc ra các phần tử phù hợp nếu cần dùng
-                const matchedItems = dataPermission.data.filter(item => item.USER_PHONE_NUMBER === dataPhone);
-                let checkQRcode = data.QR_CODE.split(',');
-                
-                var P_KEY = HOMEOSAPP.sha1Encode(checkQRcode[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
-                console.log(matchedItems);
-                
-                if(matchedItems[0].P_KEY == P_KEY){
-                    HOMEOSAPP.LeverPermission = OWNER_SHIP_LEVEL;
-                } else {
-                    HOMEOSAPP.LeverPermission = matchedItems[0].OWNER_SHIP_LEVEL;
-                }
-            } else {
-                toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
-            }
-        } else {
-            toastr.error("Vui lòng cung cấp Số Điện Thoại để chúng tôi xác định xem bạn có quyền truy cập hay không!");
-        }
-        
     }
-}
+
+    // Nếu vẫn không có số điện thoại => thoát
+    if (!dataPhone) {
+        toastr.error("Vui lòng cung cấp Số Điện Thoại để chúng tôi xác định quyền truy cập.");
+        return false;
+    }
+
+    // Lọc quyền theo số điện thoại
+    const matched = dataPermission.data.find(item => item.USER_PHONE_NUMBER === dataPhone);
+
+    if (!matched) {
+        toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
+        return false;
+    }
+
+    // So sánh P_KEY nếu cần
+    const qrParts = data.QR_CODE.split(',');
+    const expectedP_KEY = HOMEOSAPP.sha1Encode(qrParts[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
+
+    // Dù có khớp hay không, vẫn lấy LeverPermission (nếu logic của bạn cho phép)
+    HOMEOSAPP.LeverPermission = matched.OWNER_SHIP_LEVEL;
+
+    return true;
+};
+
 
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");

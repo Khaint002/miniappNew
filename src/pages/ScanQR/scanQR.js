@@ -1351,11 +1351,14 @@ $("#tab-scan-qr").off("click").click(async function (event) {
 
             const result = lastPart.substring(1).replace('.', '');
 
+            const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataQRcode.data[0]);
+            if (!isAllowed) return;
+            
             openTab(event, 'tab1');
             HOMEOSAPP.CodeWarranty = result;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
             window.workstationID = "done";
-            HOMEOSAPP.checkPermissionDevice(dataQRcode.data[0]);
+            
         } else {
             switch (HOMEOSAPP.checkTabMenu) {
                 case "DetailDevice":

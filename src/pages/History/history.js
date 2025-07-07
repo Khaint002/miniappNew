@@ -1636,7 +1636,8 @@ function addItemWarranty() {
                         item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
                         inputClean.length >= 6
                     );
-                    HOMEOSAPP.checkPermissionDevice(matchedItem);
+                    const isAllowed = await HOMEOSAPP.checkPermissionDevice(matchedItem);
+                    if (!isAllowed) return;
                     HOMEOSAPP.CodeWarranty = item.CodeWarranty;
                     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
                 });
