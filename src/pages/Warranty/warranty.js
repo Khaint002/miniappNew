@@ -541,5 +541,22 @@ $("#share-warranty").off("click").click(function () {
     // });
 });
 
+$("#tab-permission-admin").off("click").click(function (event) {
+    openTab(event, 'tab-admin')
+    $("#tabIndicator-warranty").css("left", "0%");
+});
+
+$("#tab-permission-guest").off("click").click(function (event) {
+    openTab(event, 'tab-guest')
+    $("#tabIndicator-warranty").css("left", "50%");
+});
+
+function openTab(evt, tabName) {
+    $('.tab-content').removeClass('active');
+    $('.tablinks').removeClass('active');
+    $('#' + tabName).addClass('active');
+    $(evt.currentTarget).addClass('active');
+}
+
 
 accessDeviceWarranty();
