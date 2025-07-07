@@ -506,7 +506,8 @@ $("#share-warranty").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
     console.log(dataWarranty);
-    
+    let textAdmin;
+    let textGuest;
     HOMEOSAPP.loadPage("share-warranty-popup");
 
     // Xóa nội dung mã QR cũ
@@ -518,6 +519,10 @@ $("#share-warranty").off("click").click(function () {
         codeProduct = qrParts[3];
     } else {
         codeProduct = qrParts[2].substring(1)
+    }
+    if(dataWarranty[0].CK_CODE != ''){
+        textAdmin = "https://zalo.me/s/4560528012046048397/?Q=ADMIN&CK="+dataWarranty[0].CK_CODE;
+        textAdmin = "https://zalo.me/s/4560528012046048397/?Q=GUEST&CK="+dataWarranty[0].CK_CODE;
     }
     
     document.getElementById("text-content-admin").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
