@@ -1315,7 +1315,7 @@ HOMEOSAPP.handleLogin = async function() {
         $(".userAvt").attr("src", DataUser.avatar);
         // document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-        
+        console.log(dataUserResponse);
         if (dataUserResponse.data.length === 0) {
             if(window.getPhoneNum){
                 const tokenPhone = await window.getPhoneNum();
