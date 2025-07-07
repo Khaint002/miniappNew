@@ -7,15 +7,26 @@ var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
     $('#qr-popup').hide();
+    if(HOMEOSAPP.LeverPermission == 1){
+        $("#isPermission").removeClass("d-none");
+        $("#notPermission").addClass("d-none");
+        if(window.followOA){
+            window.followOA("oa1Widget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
+        }
+    } else if(HOMEOSAPP.LeverPermission != 0) {
+        $("#warranty-permission").addClass("d-none");
+    } else {
+        if(window.followOA){
+            window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
+        }
+    }
     if(HOMEOSAPP.checkTabWarranty == 1){
         $('#btn-tab1').click();
     } else if(HOMEOSAPP.checkTabWarranty == 2){
         $('#warranty-permission').click();
     }
     const inputValue = HOMEOSAPP.CodeWarranty;
-    if(window.followOA){
-        window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
-    }
+    
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
     } else {

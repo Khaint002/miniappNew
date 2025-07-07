@@ -1453,7 +1453,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
 
     if (!dataPermission.data?.length) {
         // Không có quyền nào trong DB
-        return false;
+        return true;
     }
 
     // Lấy số điện thoại đăng nhập
