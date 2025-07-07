@@ -537,6 +537,8 @@ $("#share-warranty").off("click").click(function () {
         textGuest = "https://zalo.me/s/4560528012046048397/?Q=GUEST&CK="+dataWarranty[0].CK_CODE;
     }
     
+    console.log(textAdmin);
+    
     document.getElementById("text-content-warranty").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
     // Tạo mã QR
     HOMEOSAPP.generateQRCode(textAdmin, "qrcode-admin");
@@ -559,6 +561,7 @@ $("#BackShareWarranty").off("click").click(function () {
     setTimeout(() => {
         modal.classList.remove("closing");
         HOMEOSAPP.goBack();
+        $('#btn-tab1').click();
     }, 300);
 });
 
