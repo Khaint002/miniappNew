@@ -234,13 +234,13 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                 element += '<li class="parent-item">' +
                     '<button class="toggle-button">' +
                     '<div>' +
-                    '<h4 style="margin: 0;">' +
+                    '<h5 style="margin: 0;">' +
                     '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #cd5757;" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">' +
                     '<path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>' +
                     '<path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>' +
                     '</svg>' +
                     ' Bảo hành' +
-                    '</h4>' +
+                    '</h5>' +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dataWarranty[i].ERROR_NAME + '</p>' +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dateALL + ' ' + timeALL + '</p>' +
                     '</div>' +
@@ -267,19 +267,24 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                     '</li>'
             } else {
                 let textLotProduct = '';
+                let textDesc = '';
+                if (dataWarranty[i].TYPE == "ACTIVATE"){
+                    textDesc ='<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dataWarranty[i].DESCRIPTION + '</p>'
+                }
                 if (data_lot?.data?.[0]?.LOT_NUMBER) {
                     textLotProduct = '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">Sản phẩm thuộc: ' + data_lot.data[0].LOT_NUMBER + '</p>';
                 }
                 element += '<li class="parent-item">' +
                     '<button class="toggle-button">' +
                     '<div>' +
-                    '<h4 style="margin: 0;">' +
+                    '<h5 style="margin: 0;">' +
                     '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #27c527;" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">' +
                     '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>' +
                     '<path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>' +
                     '</svg>' +
                     ' ' + dataWarranty[i].ERROR_NAME +
-                    '</h4>' +
+                    '</h5>' +
+                    textDesc +
                     textLotProduct +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dateALL + ' ' + timeALL + '</p>' +
                     '</div>' +
