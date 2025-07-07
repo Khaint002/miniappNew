@@ -1458,6 +1458,9 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
 
     // Lấy số điện thoại đăng nhập
     const DataUser = JSON.parse(localStorage.getItem("userInfo"));
+    if(DataUser){
+        HOMEOSAPP.handleLogin();
+    }
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     let dataPhone = userLogin?.USER_PHONE_NUM || '';
 
