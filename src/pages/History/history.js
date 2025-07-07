@@ -1624,7 +1624,19 @@ function addItemWarranty() {
                 });
 
                 // Gắn sự kiện click cho phần tử chính
-                element.on('click', function () {
+                element.on('click', async function () {
+                    const dataQRcode = await HOMEOSAPP.getDM(
+                        "https://central.homeos.vn/service_XD/service.svc",
+                        "DM_QRCODE",
+                        "1=1"
+                    );
+                    const inputClean = item.CodeWarranty.replace(/[^\d]/g, "");
+            
+                    const matchedItem = dataQRcode.data.find(item =>
+                        item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+                        inputClean.length >= 6
+                    );
+                    HOMEOSAPP.checkPermissionDevice(matchedItem);
                     HOMEOSAPP.CodeWarranty = item.CodeWarranty;
                     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
                 });

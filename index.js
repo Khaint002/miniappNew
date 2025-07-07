@@ -1440,6 +1440,33 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
     });
 }
 
+HOMEOSAPP.checkPermissionDevice = async function(data) {
+    console.log(data);
+    
+    const dataPermission = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "ZALO_OWNER_SHIP_DEVICE",
+        "PR_KEY_QRCODE='"+data.PR_KEY+"'"
+    );
+    if(dataPermission.data.length != 0){
+        userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+        let dataPhone;
+        if (userLogin.USER_PHONE_NUM != null){
+            console.log(userLogin.USER_PHONE_NUM);
+            
+            document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
+            document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+        } else if(window.getPhoneNum){
+            const tokenPhone = await window.getPhoneNum();
+            const token = await window.getUserAccessToken();
+            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            document.getElementById('phoneNumberInput').value = dataPhone;
+            document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+        }
+
+    }
+}
+
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));

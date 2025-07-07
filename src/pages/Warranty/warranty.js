@@ -316,7 +316,6 @@ async function addItemHistoryWarranty(QRID, dataQR) {
             listWarrantyHistory.append($element);
         }
     }
-
 }
 
 function DetailProduct() {
