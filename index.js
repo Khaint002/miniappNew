@@ -1487,7 +1487,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     }
 
     // Lọc quyền theo số điện thoại
-    const matched = dataPermission.data.find(item => item.USER_PHONE_NUMBER === dataPhone);
+    const matched = dataPermission.data.find(item => item.USER_PHONE_NUMBER === formatPhoneNumber(dataPhone));
 
     if (!matched) {
         if(window.paramObjects.Q){
