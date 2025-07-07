@@ -504,6 +504,7 @@ async function savePermission(phoneNumber, productValue) {
 
 $("#share-warranty").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
+    $("#tab-permission-admin").click();
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
     console.log(dataWarranty);
     let textAdmin;
