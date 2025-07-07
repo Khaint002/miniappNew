@@ -1461,6 +1461,8 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     if(DataUser){
         HOMEOSAPP.handleLogin();
     }
+    console.log(DataUser);
+    
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     let dataPhone = userLogin?.USER_PHONE_NUM || '';
 
