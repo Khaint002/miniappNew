@@ -15,6 +15,10 @@ async function accessDeviceWarranty() {
         }
     } else if(HOMEOSAPP.LeverPermission != 0) {
         $("#warranty-permission").addClass("d-none");
+        if(HOMEOSAPP.LeverPermission == 3){
+            $("#share-warranty").addClass("d-none");
+            $("#errorWarranty").addClass("d-none");
+        }
     } else {
         if(window.followOA){
             window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
