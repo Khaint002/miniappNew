@@ -1443,7 +1443,7 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
 
 HOMEOSAPP.checkPermissionDevice = async function (data) {
     const serviceUrl = "https://central.homeos.vn/service_XD/service.svc";
-
+    let OWNER_SHIP_LEVEL = 0;
     // Lấy dữ liệu quyền sở hữu từ QR code
     const dataPermission = await HOMEOSAPP.getDM(
         serviceUrl,
@@ -1482,8 +1482,29 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     const matched = dataPermission.data.find(item => item.USER_PHONE_NUMBER === dataPhone);
 
     if (!matched) {
-        toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
-        return false;
+        if(window.paramObjects.Q){
+            if(window.paramObjects.Q = 'ADMIN'){
+                OWNER_SHIP_LEVEL = 2;
+            } else if(window.paramObjects.Q = 'GUEST'){
+                OWNER_SHIP_LEVEL = 3;
+            }
+            const InsertData = {
+                PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
+                Z_USER_ID: DataUser.id,
+                USER_PHONE_NUMBER: dataPhone,
+                DATE_CREATE: new Date(),
+                OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
+                ACTIVE: 1,
+                DATASTATE: "ADD",
+            };
+
+            await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+        } else {
+            toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
+            return false;
+        }
+        
+        
     }
 
     // So sánh P_KEY nếu cần
@@ -1491,8 +1512,11 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     const expectedP_KEY = HOMEOSAPP.sha1Encode(qrParts[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
 
     // Dù có khớp hay không, vẫn lấy LeverPermission (nếu logic của bạn cho phép)
-    HOMEOSAPP.LeverPermission = matched.OWNER_SHIP_LEVEL;
-
+    if(OWNER_SHIP_LEVEL == 0){
+        HOMEOSAPP.LeverPermission = matched.OWNER_SHIP_LEVEL;
+    } else {
+        HOMEOSAPP.LeverPermission = OWNER_SHIP_LEVEL;
+    }
     return true;
 };
 
