@@ -20,6 +20,8 @@ async function accessDeviceWarranty() {
             $("#errorWarranty").addClass("d-none");
         }
     } else {
+        $("#share-warranty").addClass("d-none");
+        $("#errorWarranty").addClass("d-none");
         if(window.followOA){
             window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
         }
@@ -507,6 +509,8 @@ async function savePermission(phoneNumber, productValue) {
                 $('#btn-tab1').click();
                 $("#isPermission").removeClass("d-none");
                 $("#notPermission").addClass("d-none");
+                $("#share-warranty").addClass("d-none");
+                $("#errorWarranty").addClass("d-none");
             } catch (e) { }
         }).catch(err => {
             console.error('Error:', err);
