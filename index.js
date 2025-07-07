@@ -1511,8 +1511,6 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
             toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
             return false;
         }
-        
-        
     }
 
     // So sánh P_KEY nếu cần
