@@ -1457,6 +1457,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     }
 
     // Lấy số điện thoại đăng nhập
+    const DataUser = JSON.parse(localStorage.getItem("userInfo"));
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     let dataPhone = userLogin?.USER_PHONE_NUM || '';
 
@@ -1489,7 +1490,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
                 OWNER_SHIP_LEVEL = 3;
             }
             const InsertData = {
-                PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
+                PR_KEY_QRCODE: data.PR_KEY,
                 Z_USER_ID: DataUser.id,
                 USER_PHONE_NUMBER: dataPhone,
                 DATE_CREATE: new Date(),
