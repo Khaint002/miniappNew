@@ -96,7 +96,11 @@ async function changeDataWarranty(data) {
         document.getElementById('productCodeInput').value = seri;
         document.getElementById('productCodeInput').setAttribute("readonly", true);
     }
-    userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    if(userLogin){
+        await HOMEOSAPP.handleLogin();
+        userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    }
     if (userLogin.USER_PHONE_NUM != null){
         console.log(userLogin.USER_PHONE_NUM);
         
