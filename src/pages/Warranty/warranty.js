@@ -553,7 +553,7 @@ $("#tab-permission-guest").off("click").click(function (event) {
     $("#tabIndicator-warranty").css("left", "50%");
 });
 
-$("#BackWarranty").off("click").click(function () {
+$("#BackShareWarranty").off("click").click(function () {
     const modal = document.getElementById("share-warranty-popup");
     modal.classList.add("closing");
     setTimeout(() => {
