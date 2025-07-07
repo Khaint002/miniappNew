@@ -266,6 +266,10 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                     '</ul>' +
                     '</li>'
             } else {
+                let textLotProduct = '';
+                if (data_lot?.data?.[0]?.LOT_NUMBER) {
+                    textLotProduct = '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">Sản phẩm thuộc: ' + data_lot.data[0].LOT_NUMBER + '</p>';
+                }
                 element += '<li class="parent-item">' +
                     '<button class="toggle-button">' +
                     '<div>' +
@@ -276,7 +280,7 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                     '</svg>' +
                     ' ' + dataWarranty[i].ERROR_NAME +
                     '</h4>' +
-                    '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">Sản phẩm thuộc: ' + data_lot.data[0].LOT_NUMBER + '</p>' +
+                    textLotProduct +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dateALL + ' ' + timeALL + '</p>' +
                     '</div>' +
                     '</button>' +
