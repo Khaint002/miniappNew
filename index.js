@@ -1313,7 +1313,7 @@ HOMEOSAPP.handleLogin = async function() {
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
-        document.getElementById("PickApp-button-login").classList.add("d-none");
+        // document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
         
         if (dataUserResponse.data.length === 0) {
@@ -1458,7 +1458,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
 
     // Lấy số điện thoại đăng nhập
     const DataUser = JSON.parse(localStorage.getItem("userInfo"));
-    if(DataUser){
+    if(!DataUser){
         HOMEOSAPP.handleLogin();
     }
     console.log(DataUser);
