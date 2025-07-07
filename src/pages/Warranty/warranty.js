@@ -427,24 +427,60 @@ document.getElementById("btnPermission").addEventListener("click", function () {
     savePermission(phoneValue, productValue); // gọi hàm xử lý
 });
 
-function savePermission(phoneNumber, productValue) {
-    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    const DataUser = JSON.parse(localStorage.getItem("userInfo"));
-    var P_KEY = HOMEOSAPP.sha1Encode(productValue + phoneNumber + "@1B2c3D4e5F6g7H8").toString()
-    
-    const InsertData = {
-        PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
-        Z_USER_ID: DataUser.id,
-        USER_PHONE_NUMBER: phoneNumber,
-        P_KEY: P_KEY,
-        DATE_CREATE: new Date(),
-        OWNER_SHIP_LEVEL: 1,
-        ACTIVE: 1,
-        DATASTATE: "ADD",
-    };
+async function savePermission(phoneNumber, productValue) {
+    try{
+        const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+        const DataUser = JSON.parse(localStorage.getItem("userInfo"));
+        var P_KEY = HOMEOSAPP.sha1Encode(productValue + phoneNumber + "@1B2c3D4e5F6g7H8").toString()
+        
+        const InsertData = {
+            PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
+            Z_USER_ID: DataUser.id,
+            USER_PHONE_NUMBER: phoneNumber,
+            P_KEY: P_KEY,
+            DATE_CREATE: new Date(),
+            OWNER_SHIP_LEVEL: 1,
+            ACTIVE: 1,
+            DATASTATE: "ADD",
+        };
 
-    HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
-    // Ví dụ: gửi lên server hoặc xử lý khác
+        await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+
+        // Chỉ chạy sau khi add ZALO_OWNER_SHIP_DEVICE xong
+        const willInsertData = {
+            PR_KEY: dataWarranty[0].PR_KEY,
+            QR_CODE: dataWarranty[0].QR_CODE,
+            MA_SAN_PHAM: dataWarranty[0].MA_SAN_PHAM,
+            DATE_CREATE: dataWarranty[0].DATE_CREATE,
+            ACTIVATE_WARRANTY: new Date(),
+            USER_ID: dataWarranty[0].USER_ID,
+            DATASTATE: "EDIT",
+        };
+
+        HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
+            try {
+                toastr.success("Xác nhận chủ sở hữu và Kích hoạt bảo hành của sản phẩm thành công!");
+                const InsertData = {
+                    TYPE: "ACTIVATE",
+                    ERROR_NAME: "Kích hoạt bảo hành và chủ sở hữu",
+                    DESCRIPTION: DataUser.name + " đã kích hoạt",
+                    DATE_CREATE: new Date(),
+                    ERROR_STATUS: 0,
+                    QRCODE_ID: dataWarranty[0].PR_KEY,
+                    USER_ID: UserID,
+                    DATASTATE: "ADD",
+                };
+                HOMEOSAPP.add('WARRANTY_ERROR', InsertData)
+
+                data = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
+                changeDataWarranty(data);
+            } catch (e) { }
+        }).catch(err => {
+            console.error('Error:', err);
+        });
+    } catch (e) {
+        console.error("Error during activation:", e);
+    }
 }
 
 

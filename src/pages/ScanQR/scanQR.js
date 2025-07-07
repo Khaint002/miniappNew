@@ -1347,11 +1347,10 @@ $("#tab-scan-qr").off("click").click(async function (event) {
                 "DM_QRCODE",
                 "CK_CODE='"+window.paramObjects.CK+"'"
             );
-            console.log(dataQRcode);
             const lastPart = dataQRcode.data[0].QR_CODE.split(',').pop();
 
             const result = lastPart.substring(1).replace('.', '');
-            //window.workstationID.slice("w".length);
+
             openTab(event, 'tab1');
             HOMEOSAPP.CodeWarranty = result;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
@@ -1396,6 +1395,23 @@ $("#tab-scan-qr").off("click").click(async function (event) {
     }
     $("#tabIndicator-Scan").css("left", "0%");
 });
+
+async function checkPermissionDevice(params) {
+    userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    if (userLogin.USER_PHONE_NUM != null){
+        console.log(userLogin.USER_PHONE_NUM);
+        
+        document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
+        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+    } else if(window.getPhoneNum){
+        const tokenPhone = await window.getPhoneNum();
+        const token = await window.getUserAccessToken();
+        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        document.getElementById('phoneNumberInput').value = dataPhone;
+        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+    }
+}
+
 $("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
     $("#tabIndicator-Scan").css("left", "50%");
