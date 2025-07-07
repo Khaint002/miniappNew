@@ -4,6 +4,7 @@ var typeQR;
 HOMEOSAPP.listDomain = [];
 HOMEOSAPP.checkTabHistory = 0;
 HOMEOSAPP.checkTabWarranty = 1;
+HOMEOSAPP.LeverPermission = 0;
 HOMEOSAPP.UserID = localStorage.getItem("userID");
 var checkReport = '';
 let historyStack = ['pickApp'];
@@ -1448,7 +1449,7 @@ HOMEOSAPP.checkPermissionDevice = async function(data) {
     );
     if(dataPermission.data.length != 0){
         userLogin = JSON.parse(localStorage.getItem('UserLogin'));
-        let dataPhone;
+        let dataPhone = '';
         if (userLogin.USER_PHONE_NUM != null){
             dataPhone = userLogin.USER_PHONE_NUM;
         } else if(window.getPhoneNum){
@@ -1456,7 +1457,26 @@ HOMEOSAPP.checkPermissionDevice = async function(data) {
             const token = await window.getUserAccessToken();
             dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
         }
-        console.log(dataPermission);
+        if(dataPhone != ''){
+            if (dataPermission.data.some(item => item.USER_PHONE_NUMBER === phoneToFind)) {
+                // Lọc ra các phần tử phù hợp nếu cần dùng
+                const matchedItems = dataPermission.data.filter(item => item.USER_PHONE_NUMBER === phoneToFind);
+                let checkQRcode = dataWarranty[0].QR_CODE.split(',');
+                
+                var P_KEY = HOMEOSAPP.sha1Encode(checkQRcode[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
+                console.log(matchedItems);
+                
+                if(matchedItems[0].P_KEY == P_KEY){
+                    HOMEOSAPP.LeverPermission = OWNER_SHIP_LEVEL;
+                } else {
+                    HOMEOSAPP.LeverPermission = matchedItems[0].OWNER_SHIP_LEVEL;
+                }
+            } else {
+                toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
+            }
+        } else {
+            toastr.error("Vui lòng cung cấp Số Điện Thoại để chúng tôi xác định xem bạn có quyền truy cập hay không!");
+        }
         
     }
 }
