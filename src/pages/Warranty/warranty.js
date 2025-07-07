@@ -479,6 +479,7 @@ async function savePermission(phoneNumber, productValue) {
         const willInsertData = {
             PR_KEY: dataWarranty[0].PR_KEY,
             QR_CODE: dataWarranty[0].QR_CODE,
+            CK_CODE: dataWarranty[0].CK_CODE,
             MA_SAN_PHAM: dataWarranty[0].MA_SAN_PHAM,
             DATE_CREATE: dataWarranty[0].DATE_CREATE,
             ACTIVATE_WARRANTY: new Date(),
