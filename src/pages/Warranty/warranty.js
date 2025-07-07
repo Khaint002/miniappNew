@@ -506,7 +506,7 @@ $("#share-warranty").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
     
-    HOMEOSAPP.loadPage("share-popup");
+    HOMEOSAPP.loadPage("share-warranty-popup");
 
     // Xóa nội dung mã QR cũ
     $('#qrcode').empty();
@@ -549,6 +549,15 @@ $("#tab-permission-admin").off("click").click(function (event) {
 $("#tab-permission-guest").off("click").click(function (event) {
     openTab(event, 'tab-guest')
     $("#tabIndicator-warranty").css("left", "50%");
+});
+
+$("#BackWarranty").off("click").click(function () {
+    const modal = document.getElementById("share-warranty-popup");
+    modal.classList.add("closing");
+    setTimeout(() => {
+        modal.classList.remove("closing");
+        HOMEOSAPP.goBack();
+    }, 300);
 });
 
 function openTab(evt, tabName) {
