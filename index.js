@@ -1444,6 +1444,7 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
 HOMEOSAPP.checkPermissionDevice = async function (data) {
     const serviceUrl = "https://central.homeos.vn/service_XD/service.svc";
     let OWNER_SHIP_LEVEL = 0;
+    let DataUser;
     // Lấy dữ liệu quyền sở hữu từ QR code
     const dataPermission = await HOMEOSAPP.getDM(
         serviceUrl,
@@ -1457,10 +1458,11 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     }
 
     // Lấy số điện thoại đăng nhập
-    const DataUser = JSON.parse(localStorage.getItem("userInfo"));
+    DataUser = JSON.parse(localStorage.getItem("userInfo"));
     if(!DataUser){
         HOMEOSAPP.handleLogin();
     }
+    DataUser = JSON.parse(localStorage.getItem("userInfo"));
     console.log(DataUser);
     
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
