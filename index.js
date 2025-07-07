@@ -1460,7 +1460,7 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     // Lấy số điện thoại đăng nhập
     DataUser = JSON.parse(localStorage.getItem("userInfo"));
     if(!DataUser){
-        HOMEOSAPP.handleLogin();
+        await HOMEOSAPP.handleLogin();
     }
     DataUser = JSON.parse(localStorage.getItem("userInfo"));
     console.log(DataUser);
@@ -1491,9 +1491,9 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
 
     if (!matched) {
         if(window.paramObjects.Q){
-            if(window.paramObjects.Q = 'ADMIN'){
+            if(window.paramObjects.Q == 'ADMIN'){
                 OWNER_SHIP_LEVEL = 2;
-            } else if(window.paramObjects.Q = 'GUEST'){
+            } else if(window.paramObjects.Q == 'GUEST'){
                 OWNER_SHIP_LEVEL = 3;
             }
             const InsertData = {
