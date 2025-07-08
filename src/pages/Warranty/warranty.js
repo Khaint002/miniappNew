@@ -13,6 +13,7 @@ async function accessDeviceWarranty() {
         if(window.followOA){
             window.followOA("oa1Widget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
         }
+        toastr.success
     } else if(HOMEOSAPP.LeverPermission != 0) {
         $("#warranty-permission").addClass("d-none");
         if(HOMEOSAPP.LeverPermission == 3){
@@ -105,7 +106,7 @@ async function changeDataWarranty(data) {
         await HOMEOSAPP.handleLogin();
         userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     }
-    if (userLogin.USER_PHONE_NUM != null){
+    if (userLogin.length == 0){
         console.log(userLogin.USER_PHONE_NUM);
         
         document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
@@ -509,8 +510,8 @@ async function savePermission(phoneNumber, productValue) {
                 $('#btn-tab1').click();
                 $("#isPermission").removeClass("d-none");
                 $("#notPermission").addClass("d-none");
-                $("#share-warranty").addClass("d-none");
-                $("#errorWarranty").addClass("d-none");
+                $("#share-warranty").removeClass("d-none");
+                $("#errorWarranty").removeClass("d-none");
             } catch (e) { }
         }).catch(err => {
             console.error('Error:', err);
