@@ -595,4 +595,10 @@ $("#share-warranty-guest").off("click").click(function () {
     }
 });
 
+$("#product-guide").off("click").click(function () {
+    document.getElementById("pdfViewer").src = "";
+    var modal = new bootstrap.Modal(document.getElementById('pdfModal'));
+    
+})
+
 accessDeviceWarranty();
