@@ -1753,3 +1753,23 @@ h1 {
     margin-left: 4px;
     font-weight: bold;
 }
+
+#product-buyagain, #product-guide {
+    background-color: rgba(0, 0, 0, 0.6);
+    /* border: solid 1px #17a2b8; */
+    color: #fff;
+    width: 47%;
+    height: 40px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+    transition: all 0.2s ease-in-out;
+}
+  
+#product-buyagain:hover {
+    background-color: #17a2b8;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
+}
+
+#product-guide:hover {
+    background-color: #f39c12;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
+}
