@@ -105,12 +105,11 @@ async function changeDataWarranty(data) {
     if(!userLogin){
         await HOMEOSAPP.handleLogin();
         userLogin = JSON.parse(localStorage.getItem('UserLogin'));
-    }
-    if (userLogin.length == 0){
-        console.log(userLogin.USER_PHONE_NUM);
+        if(userLogin){
+            document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
+            document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+        }
         
-        document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
-        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
     } else if(window.getPhoneNum){
         const tokenPhone = await window.getPhoneNum();
         const token = await window.getUserAccessToken();
