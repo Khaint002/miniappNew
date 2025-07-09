@@ -595,7 +595,10 @@ $("#share-warranty-guest").off("click").click(function () {
 });
 
 $("#product-buyagain").off("click").click(function () {
-    window.location.href = "https://zalo.me/s/27446577457755184/product/123?env=TESTING&version=15&zshareId=4ddff54d-a5d2-42c3-9210-cd9e3b80758e";
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    if(dataWarranty[0].PRODUCT_DESC == null){
+        window.location.href = dataWarranty[0].PRODUCT_DESC;
+    }
 })
 
 $("#product-guide").off("click").click(function () {
