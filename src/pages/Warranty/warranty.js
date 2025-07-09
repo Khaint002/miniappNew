@@ -581,8 +581,7 @@ function openTab(evt, tabName) {
 
 $("#share-warranty-admin").off("click").click(function () {
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    console.log(dataWarranty);
-    
+
     if(window.shareWorkStation){
         window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=ADMIN&CK="+dataWarranty[0].CK_CODE);
     }
@@ -594,6 +593,10 @@ $("#share-warranty-guest").off("click").click(function () {
         window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=GUEST&CK="+dataWarranty[0].CK_CODE);
     }
 });
+
+$("#product-buyagain").off("click").click(function () {
+    window.location.href = "https://zalo.me/s/27446577457755184/product/123?env=TESTING&version=15&zshareId=4ddff54d-a5d2-42c3-9210-cd9e3b80758e";
+})
 
 $("#product-guide").off("click").click(function () {
     document.getElementById("pdfViewer").src = "";
