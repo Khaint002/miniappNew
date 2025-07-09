@@ -596,7 +596,7 @@ $("#share-warranty-guest").off("click").click(function () {
 
 $("#product-buyagain").off("click").click(function () {
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    if(dataWarranty[0].PRODUCT_DESC == null){
+    if(dataWarranty[0].PRODUCT_DESC != null){
         window.location.href = dataWarranty[0].PRODUCT_DESC;
     }
 })
