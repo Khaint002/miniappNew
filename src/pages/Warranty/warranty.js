@@ -602,9 +602,9 @@ $("#product-buyagain").off("click").click(function () {
 })
 
 $("#product-guide").off("click").click(function () {
-    document.getElementById("pdfViewer").src = "";
-    var modal = new bootstrap.Modal(document.getElementById('pdfModal'));
-    
+    HOMEOSAPP.loadPage("permission-popup");
+    const iframe = document.getElementById("pdfViewer");
+    iframe.src = "https://miniapp-new.vercel.app/src/dist/file/ASS.F2200.Datasheet.2025-07.pdf";
 })
 
 accessDeviceWarranty();
