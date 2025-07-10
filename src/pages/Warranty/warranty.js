@@ -92,25 +92,27 @@ async function changeDataWarranty(data) {
     // Đổ dữ liệu cơ bản
     document.getElementById('productName').textContent = "Tên sản phẩm: " + item.PRODUCT_NAME;
     document.getElementById('productCode').textContent = "Mã định danh: " + item.PRODUCT_CODE;
-    
-    // document.getElementById("deviceImg").src = item.PRODUCT_IMG;
-    const imageList = item.PRODUCT_IMG_SLIDE.split(",").map(url => url.trim());
+    if(item.PRODUCT_IMG_SLIDE != null){
+        const imageList = item.PRODUCT_IMG_SLIDE.split(",").map(url => url.trim());
 
-// Xóa toàn bộ nội dung cũ trong #deviceImg
-    $("#deviceImg").empty();
+        // Xóa toàn bộ nội dung cũ trong #deviceImg
+        $("#deviceImg").empty();
 
-    // Duyệt từng ảnh và thêm vào
-    imageList.forEach((src, index) => {
-        const $item = $(`
-            <div class="carousel-item h-100 ${index === 0 ? "active" : ""}">
-            <img src="${src}" class="d-block w-100 h-100"
-                style="object-fit: cover; object-position: center center;" 
-                alt="Slide ${index + 1}">
-            </div>
-    `);
+        // Duyệt từng ảnh và thêm vào
+        imageList.forEach((src, index) => {
+            const $item = $(`
+                <div class="carousel-item h-100 ${index === 0 ? "active" : ""}">
+                <img src="${src}" class="d-block w-100 h-100"
+                    style="object-fit: cover; object-position: center center;" 
+                    alt="Slide ${index + 1}">
+                </div>
+        `);
 
-    $("#deviceImg").append($item);
-    });
+        $("#deviceImg").append($item);
+        });
+    } else {
+        document.getElementById("deviceImg").src = item.PRODUCT_IMG;
+    }
     // Hiển thị số seri
     const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
     document.getElementById('productSeri').textContent = "Số seri: " + seri;
