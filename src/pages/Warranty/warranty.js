@@ -163,38 +163,28 @@ async function changeDataWarranty(data) {
 
 
 function calculateWarrantyRemaining(startDate, timeWarranty) {
-    const warrantyPeriodMonths = timeWarranty; // Thời gian bảo hành là 12 tháng
+    const warrantyPeriodMonths = timeWarranty;
 
-    // Chuyển ngày bắt đầu bảo hành sang đối tượng Date
     const startDateObj = new Date(startDate);
-    // Ngày kết thúc bảo hành
     const warrantyEndDate = new Date(startDateObj);
     warrantyEndDate.setMonth(warrantyEndDate.getMonth() + warrantyPeriodMonths);
 
-    // Ngày hiện tại
     const currentDate = new Date();
 
-    // Tính thời gian còn lại
     if (currentDate > warrantyEndDate) {
         return "Thời gian bảo hành đã hết.";
     } else {
-        // Tính tổng số tháng còn lại
-        let totalMonthsRemaining =
-            (warrantyEndDate.getFullYear() - currentDate.getFullYear()) * 12 +
-            (warrantyEndDate.getMonth() - currentDate.getMonth());
+        // Tính phần chênh lệch thời gian theo mili giây
+        const diffTime = warrantyEndDate.getTime() - currentDate.getTime();
 
-        // Tính số ngày còn lại
-        let daysRemaining = warrantyEndDate.getDate() - currentDate.getDate();
+        // Tổng số ngày chênh lệch
+        const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-        // Điều chỉnh nếu số ngày âm
-        if (daysRemaining < 0) {
-            // Lấy số ngày của tháng trước
-            const lastMonth = new Date(warrantyEndDate.getFullYear(), warrantyEndDate.getMonth(), 0);
-            daysRemaining += lastMonth.getDate();
-            totalMonthsRemaining -= 1;
-        }
-        // ${daysRemaining} ngày.
-        return `Còn lại: ${totalMonthsRemaining} tháng`;
+        // Tính số tháng và số ngày còn lại
+        const approxMonths = Math.floor(totalDays / 30); // gần đúng
+        const remainingDays = totalDays % 30;
+
+        return `Còn lại: ${approxMonths} tháng ${remainingDays} ngày.`;
     }
 }
 
