@@ -120,6 +120,9 @@ async function changeDataWarranty(data) {
         document.getElementById('productCodeInput').value = seri;
         document.getElementById('productCodeInput').setAttribute("readonly", true);
     }
+    if(item.USER_NAME != null){
+        document.getElementById('productOwner').textContent = "Chủ sở hữu: " + item.USER_NAME;
+    }
     let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
     if(!userLogin){
         await HOMEOSAPP.handleLogin();
