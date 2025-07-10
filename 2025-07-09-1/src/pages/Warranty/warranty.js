@@ -1,9 +1,39 @@
+var html5QrCode;
+var currentCameraIndex = 0;  // Index camera hiện tại
+var devices = [];  // Danh sách các camera
+var isScannerRunning = false;  // Biến theo dõi trạng thái quét
+var currentCamera;
 var listWarrantyHistory = $('#history-warranty-detail');
 
 async function accessDeviceWarranty() {
     $('#qr-popup').hide();
+    if(HOMEOSAPP.LeverPermission == 1){
+        $("#isPermission").removeClass("d-none");
+        $("#notPermission").addClass("d-none");
+        if(window.followOA){
+            window.followOA("oa1Widget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
+        }
+        toastr.success
+    } else if(HOMEOSAPP.LeverPermission != 0) {
+        $("#warranty-permission").addClass("d-none");
+        if(HOMEOSAPP.LeverPermission == 3){
+            $("#share-warranty").addClass("d-none");
+            $("#errorWarranty").addClass("d-none");
+        }
+    } else {
+        $("#share-warranty").addClass("d-none");
+        $("#errorWarranty").addClass("d-none");
+        if(window.followOA){
+            window.followOA("oaWidget", "Quan tâm để nhận các thông báo đến từ hệ thống!", "#343a40");
+        }
+    }
+    if(HOMEOSAPP.checkTabWarranty == 1){
+        $('#btn-tab1').click();
+    } else if(HOMEOSAPP.checkTabWarranty == 2){
+        $('#warranty-permission').click();
+    }
     const inputValue = HOMEOSAPP.CodeWarranty;
-
+    
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
     } else {
@@ -13,11 +43,13 @@ async function accessDeviceWarranty() {
             "DM_QRCODE",
             "1=1"
         );
-        const matchedItem = dataQRcode.data.find(
-            (item) =>
-                item.QR_CODE.slice(-inputValue.length).replace(/\./g, "") ===
-                inputValue.replace(/\./g, "")
+        const inputClean = inputValue.replace(/[^\d]/g, "");
+
+        const matchedItem = dataQRcode.data.find(item =>
+            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+            inputClean.length >= 6
         );
+
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
@@ -26,6 +58,8 @@ async function accessDeviceWarranty() {
                 $("#loading-popup").show();
                 let checkQRcode = dataWarranty[0].QR_CODE.split(',');
                 const dataQRProduct = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
+                console.log(dataQRProduct);
+                
                 document.getElementById("result-product").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
@@ -33,7 +67,12 @@ async function accessDeviceWarranty() {
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
-                document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
+                if(checkQRcode.length == 4){
+                    document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[3];
+                } else {
+                    document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
+                }
+                
                 changeDataWarranty(dataQRProduct);
                 DetailProduct();
             }
@@ -43,41 +82,66 @@ async function accessDeviceWarranty() {
     }
 }
 
-function changeDataWarranty(data) {
-    let DataQRcode = data[0].QR_CODE.split(',');
+async function changeDataWarranty(data) {
+    const item = data[0];
+    const qrParts = item.QR_CODE.split(',');
+    
+    // Lưu vào localStorage
     localStorage.setItem("productWarranty", JSON.stringify(data));
-    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    console.log(dataWarranty);
-    document.getElementById('productName').textContent = "Tên sản phẩm: " + data[0].PRODUCT_NAME;
-    document.getElementById('productCode').textContent = "Mã định danh: " + data[0].PRODUCT_CODE;
-    document.getElementById('productSeri').textContent = "Số seri: " + DataQRcode[2].substring(1);
-    document.getElementById("deviceImg").src = data[0].PRODUCT_IMG;
-    if (data[0].ACTIVATE_WARRANTY == "1999-01-01T00:00:00") {
-        document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
-        document.getElementById('warrantyTimeActive').textContent = " ";
-        const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-        const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-        console.log(WarrantyAct, data);
-        document.getElementById('warrantyTime').textContent = time;
-        document.getElementById('result-product-warranty').classList.remove("d-none");
-    } else {
-        document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
-        const now = new Date(data[0].ACTIVATE_WARRANTY);
-
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        document.getElementById('warrantyTimeActive').textContent = `${year}-${month}-${day}`;
-        document.getElementById('result-product-warranty').classList.add("d-none");
-        const WarrantyAct = DataQRcode[0].substring(1, 5) + "-" + DataQRcode[0].substring(5, 7) + "-" + DataQRcode[0].substring(7, 9);
-        const time = calculateWarrantyRemaining(data[0].DATE_CREATE, Number(data[0].TIME_WARRANTY));
-        document.getElementById('warrantyTime').textContent = time;
+    
+    // Đổ dữ liệu cơ bản
+    document.getElementById('productName').textContent = "Tên sản phẩm: " + item.PRODUCT_NAME;
+    document.getElementById('productCode').textContent = "Mã định danh: " + item.PRODUCT_CODE;
+    
+    document.getElementById("deviceImg").src = item.PRODUCT_IMG;
+    // Hiển thị số seri
+    const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
+    document.getElementById('productSeri').textContent = "Số seri: " + seri;
+    if (seri) {
+        document.getElementById('productCodeInput').value = seri;
+        document.getElementById('productCodeInput').setAttribute("readonly", true);
     }
-    // const item = { 'CodeWorkStation': workstationID, 'NameWorkStation': state[0].WORKSTATION_NAME, 'domain': domain, 'date': getCurrentTime(), 'workstationType': state[0].TEMPLATE_TOOLTIP }
-    // localStorage.setItem('itemHistory', JSON.stringify(item));
+    let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    if(!userLogin){
+        await HOMEOSAPP.handleLogin();
+        userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+        if(userLogin){
+            document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
+            document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+        }
+    } else if(window.getPhoneNum){
+        const tokenPhone = await window.getPhoneNum();
+        const token = await window.getUserAccessToken();
+        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        document.getElementById('phoneNumberInput').value = dataPhone;
+        document.getElementById('phoneNumberInput').setAttribute("readonly", true);
+    }
+    // Tính ngày bắt đầu bảo hành từ QR
+    const warrantyStart = qrParts[0].substring(1, 5) + "-" + qrParts[0].substring(5, 7) + "-" + qrParts[0].substring(7, 9);
+    
+    // Tính thời gian còn lại
+    const timeLeft = calculateWarrantyRemaining(item.DATE_CREATE, Number(item.TIME_WARRANTY));
+    document.getElementById('warrantyTime').textContent = timeLeft;
+
+    const isNotActivated = item.ACTIVATE_WARRANTY === "1999-01-01T00:00:00";
+
+    if (isNotActivated) {
+        document.getElementById('warrantyActive').textContent = "Chưa kích hoạt";
+        document.getElementById('warrantyTimeActive').textContent = "";
+        // document.getElementById('result-product-warranty').classList.remove("d-none");
+    } else {
+        const activatedDate = new Date(item.ACTIVATE_WARRANTY);
+        const formattedDate = activatedDate.toISOString().split('T')[0]; // yyyy-mm-dd
+        document.getElementById('warrantyActive').textContent = "Đã kích hoạt";
+        document.getElementById('warrantyTimeActive').textContent = formattedDate;
+        // document.getElementById('result-product-warranty').classList.add("d-none");
+    }
+
+    // Ghi log + lịch sử
     saveWarranty(data);
-    addItemHistoryWarranty(data[0].PR_KEY, data);
+    addItemHistoryWarranty(item.PR_KEY, data);
 }
+
 
 function calculateWarrantyRemaining(startDate, timeWarranty) {
     const warrantyPeriodMonths = timeWarranty; // Thời gian bảo hành là 12 tháng
@@ -87,8 +151,6 @@ function calculateWarrantyRemaining(startDate, timeWarranty) {
     // Ngày kết thúc bảo hành
     const warrantyEndDate = new Date(startDateObj);
     warrantyEndDate.setMonth(warrantyEndDate.getMonth() + warrantyPeriodMonths);
-
-    console.log(warrantyEndDate);
 
     // Ngày hiện tại
     const currentDate = new Date();
@@ -118,17 +180,21 @@ function calculateWarrantyRemaining(startDate, timeWarranty) {
 }
 
 function saveWarranty(data) {
-    console.log(data);
     const DataQRcode = data[0].QR_CODE.split(',');
+    let codeDevice;
+    if(DataQRcode.length == 4){
+        codeDevice = DataQRcode[3];
+    } else {
+        codeDevice = DataQRcode[2];
+    }
     const itemW = {
-        'CodeWarranty': DataQRcode[2].substring(1),
+        'CodeWarranty': codeDevice,
         'NameWarranty': data[0].PRODUCT_NAME,
         'imgWarranty': data[0].PRODUCT_IMG,
         'date': HOMEOSAPP.getCurrentTime()
     }
 
     waranntyItems = JSON.parse(localStorage.getItem('dataWarranty'));
-    console.log(waranntyItems, itemW.CodeWarranty);
 
     if (waranntyItems) {
         waranntyItems = waranntyItems.filter(item => item.CodeWarranty !== itemW.CodeWarranty);
@@ -190,13 +256,13 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                 element += '<li class="parent-item">' +
                     '<button class="toggle-button">' +
                     '<div>' +
-                    '<h4 style="margin: 0;">' +
+                    '<h5 style="margin: 0;">' +
                     '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #cd5757;" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">' +
                     '<path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>' +
                     '<path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>' +
                     '</svg>' +
                     ' Bảo hành' +
-                    '</h4>' +
+                    '</h5>' +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dataWarranty[i].ERROR_NAME + '</p>' +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dateALL + ' ' + timeALL + '</p>' +
                     '</div>' +
@@ -222,17 +288,26 @@ async function addItemHistoryWarranty(QRID, dataQR) {
                     '</ul>' +
                     '</li>'
             } else {
+                let textLotProduct = '';
+                let textDesc = '';
+                if (dataWarranty[i].TYPE == "ACTIVATE"){
+                    textDesc ='<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dataWarranty[i].DESCRIPTION + '</p>'
+                }
+                if (data_lot?.data?.[0]?.LOT_NUMBER) {
+                    textLotProduct = '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">Sản phẩm thuộc: ' + data_lot.data[0].LOT_NUMBER + '</p>';
+                }
                 element += '<li class="parent-item">' +
                     '<button class="toggle-button">' +
                     '<div>' +
-                    '<h4 style="margin: 0;">' +
+                    '<h5 style="margin: 0;">' +
                     '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #27c527;" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">' +
                     '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>' +
                     '<path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>' +
                     '</svg>' +
                     ' ' + dataWarranty[i].ERROR_NAME +
-                    '</h4>' +
-                    '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">Sản phẩm thuộc: ' + data_lot.data[0].LOT_NUMBER + '</p>' +
+                    '</h5>' +
+                    textDesc +
+                    textLotProduct +
                     '<p style="margin: 1px 0 0 0; font-size: 14px; font-weight: 300;">' + dateALL + ' ' + timeALL + '</p>' +
                     '</div>' +
                     '</button>' +
@@ -263,20 +338,15 @@ async function addItemHistoryWarranty(QRID, dataQR) {
             listWarrantyHistory.append($element);
         }
     }
-
 }
 
 function DetailProduct() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("result-product").classList.add("d-none");
-    document.getElementById("tab-0").classList.remove("active");
-    document.getElementById("tab-1").classList.add("active");
-    document.getElementById("btn-tab1").classList.add("menuWarranty");
     $('#qr-popup').hide()
     document.getElementById("menu-warranty").classList.remove("d-none");
     $('#loading-popup').hide()
-    console.log('hide');
 }
 
 $('.bottom-navigation button').off("click").click(function () {
@@ -304,7 +374,6 @@ $("#submitError").click(function () {
     const errorType = $("#errorType").val();
     const errorDesc = $("#errorDesc").val();
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    console.log(dataWarranty);
     const willInsertData = {
         TYPE: 'ERROR',
         ERROR_TYPE: errorType,
@@ -355,7 +424,7 @@ $('#result-product-warranty').click(function () {
                     USER_ID: UserID,
                     DATASTATE: "ADD",
                 };
-                add('WARRANTY_ERROR', InsertData)
+                HOMEOSAPP.add('WARRANTY_ERROR', InsertData)
 
                 data = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
                 changeDataWarranty(data);
@@ -369,5 +438,174 @@ $('#result-product-warranty').click(function () {
 $(".WarrantyScanNext").off("click").click(function () {
     HOMEOSAPP.handleWarrantyApp();
 });
+
+
+
+// Gán sự kiện cho nút
+document.getElementById("btnPermission").addEventListener("click", function () {
+    const phoneInput = document.getElementById("phoneNumberInput");
+    const phoneValue = phoneInput.value.trim();
+    const productInput = document.getElementById("productCodeInput");
+    const productValue = productInput.value.trim();
+    if (!phoneValue) {
+        alert("Vui lòng nhập số điện thoại.");
+        phoneInput.focus();
+        return;
+    }
+
+    // Nếu đã có dữ liệu, thực hiện xử lý tại đây
+    savePermission(phoneValue, productValue); // gọi hàm xử lý
+});
+
+async function savePermission(phoneNumber, productValue) {
+    try{
+        const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+        const DataUser = JSON.parse(localStorage.getItem("userInfo"));
+        var P_KEY = HOMEOSAPP.sha1Encode(productValue + phoneNumber + "@1B2c3D4e5F6g7H8").toString()
+        
+        const InsertData = {
+            PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
+            Z_USER_ID: DataUser.id,
+            USER_PHONE_NUMBER: phoneNumber,
+            P_KEY: P_KEY,
+            DATE_CREATE: new Date(),
+            OWNER_SHIP_LEVEL: 1,
+            ACTIVE: 1,
+            DATASTATE: "ADD",
+        };
+
+        await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+
+        // Chỉ chạy sau khi add ZALO_OWNER_SHIP_DEVICE xong
+        const willInsertData = {
+            PR_KEY: dataWarranty[0].PR_KEY,
+            QR_CODE: dataWarranty[0].QR_CODE,
+            CK_CODE: dataWarranty[0].CK_CODE,
+            MA_SAN_PHAM: dataWarranty[0].MA_SAN_PHAM,
+            DATE_CREATE: dataWarranty[0].DATE_CREATE,
+            ACTIVATE_WARRANTY: new Date(),
+            USER_ID: dataWarranty[0].USER_ID,
+            DATASTATE: "EDIT",
+        };
+
+        HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
+            try {
+                toastr.success("Xác nhận chủ sở hữu và Kích hoạt bảo hành của sản phẩm thành công!");
+                const InsertData = {
+                    TYPE: "ACTIVATE",
+                    ERROR_NAME: "Kích hoạt bảo hành và chủ sở hữu",
+                    DESCRIPTION: DataUser.name + " đã kích hoạt",
+                    DATE_CREATE: new Date(),
+                    ERROR_STATUS: 0,
+                    QRCODE_ID: dataWarranty[0].PR_KEY,
+                    USER_ID: UserID,
+                    DATASTATE: "ADD",
+                };
+                HOMEOSAPP.add('WARRANTY_ERROR', InsertData)
+
+                data = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
+                changeDataWarranty(data);
+                $('#btn-tab1').click();
+                $("#isPermission").removeClass("d-none");
+                $("#notPermission").addClass("d-none");
+                $("#share-warranty").removeClass("d-none");
+                $("#errorWarranty").removeClass("d-none");
+            } catch (e) { }
+        }).catch(err => {
+            console.error('Error:', err);
+        });
+    } catch (e) {
+        console.error("Error during activation:", e);
+    }
+}
+
+$("#share-warranty").off("click").click(function () {
+    // Hiển thị popup với hiệu ứng modal
+    $("#tab-permission-admin").click();
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    console.log(dataWarranty);
+    let textAdmin;
+    let textGuest;
+    HOMEOSAPP.loadPage("share-warranty-popup");
+
+    // Xóa nội dung mã QR cũ
+    $('#qrcode').empty();
+
+    const qrParts = dataWarranty[0].QR_CODE.split(',');
+    let codeProduct;
+    if(qrParts.length == 4){
+        codeProduct = qrParts[3];
+    } else {
+        codeProduct = qrParts[2].substring(1)
+    }
+    if(dataWarranty[0].CK_CODE != ''){
+        textAdmin = "https://zalo.me/s/4560528012046048397/?Q=ADMIN&CK="+dataWarranty[0].CK_CODE;
+        textGuest = "https://zalo.me/s/4560528012046048397/?Q=GUEST&CK="+dataWarranty[0].CK_CODE;
+    }
+    
+    console.log(textAdmin);
+    
+    document.getElementById("text-content-warranty").textContent = dataWarranty[0].PRODUCT_CODE + " - " + codeProduct;
+    // Tạo mã QR
+    HOMEOSAPP.generateQRCode(textAdmin, "qrcode-admin");
+    HOMEOSAPP.generateQRCode(textGuest, "qrcode-guest");
+});
+
+$("#tab-permission-admin").off("click").click(function (event) {
+    openTab(event, 'tab-admin')
+    $("#tabIndicator-warranty").css("left", "0%");
+});
+
+$("#tab-permission-guest").off("click").click(function (event) {
+    openTab(event, 'tab-guest')
+    $("#tabIndicator-warranty").css("left", "50%");
+});
+
+$("#BackShareWarranty").off("click").click(function () {
+    const modal = document.getElementById("share-warranty-popup");
+    modal.classList.add("closing");
+    setTimeout(() => {
+        modal.classList.remove("closing");
+        HOMEOSAPP.goBack();
+        $('#btn-tab1').click();
+    }, 300);
+});
+
+function openTab(evt, tabName) {
+    $('.tab-content').removeClass('active');
+    $('.tablinks').removeClass('active');
+    $('#' + tabName).addClass('active');
+    $(evt.currentTarget).addClass('active');
+}
+
+$("#share-warranty-admin").off("click").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+
+    if(window.shareWorkStation){
+        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=ADMIN&CK="+dataWarranty[0].CK_CODE);
+    }
+});
+
+$("#share-warranty-guest").off("click").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    if(window.shareWorkStation){
+        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=GUEST&CK="+dataWarranty[0].CK_CODE);
+    }
+});
+
+$("#product-buyagain").off("click").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    if(dataWarranty[0].PRODUCT_DESC != null){
+        window.location.href = dataWarranty[0].PRODUCT_DESC;
+    }
+})
+
+$("#product-guide").off("click").click(function () {
+    HOMEOSAPP.loadPage("permission-popup");
+    const rawPdfUrl = "https://central.homeos.vn/singlepage/workstation/src/dist/file/ASS.F2200.Datasheet.2025-07.pdf";
+    const viewerUrl = "https://docs.google.com/gview?embedded=true&url=" + encodeURIComponent(rawPdfUrl);
+
+    document.getElementById("pdfViewer").src = viewerUrl;
+})
 
 accessDeviceWarranty();

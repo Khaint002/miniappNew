@@ -48,7 +48,7 @@ function renderApps(apps, containerId) {
                             <span class="app-text">${app.name}</span>
                             <span class="app-text">${app.version}</span>
                         </div>
-                        <span class="app-text-number">${app.description}</span>
+                        <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${app.description}</span>
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ async function pickApp(type) {
             break;
 
         case 'LOGIN':
-            await handleLogin();
+            await HOMEOSAPP.handleLogin();
             break;
 
         case 'CONTROL':

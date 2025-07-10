@@ -153,13 +153,22 @@
                                 Xem chi tiết
                             </button>
                         </div>
-                        <button id="result-product-warranty" class="btn mt-2" style="
+                        <!-- <button id="result-product-warranty" class="btn mt-2" style="
                   background-color: #f39c12;
                   border: solid 1px #f39c12;
                   width: 100%;
                   color: #fff;
                 ">
                             Kích hoạt bảo hành
+                        </button> -->
+
+                        <button id="warranty-permission" class="btn mt-2 d-none" style="
+                  background-color: #17a2b8;
+                  border: solid 1px #17a2b8;
+                  width: 100%;
+                  color: #fff;
+                ">
+                            Kích hoạt quyền sở hữu
                         </button>
                     </div>
                     <div id="result-condition" class="d-none">
@@ -205,7 +214,7 @@
                                 truy cập
                             </button>
                         </div>
-                    </div>
+                    </div> 
                     <div id="result-form-loading">
                         <div style="width: 100%; text-align: center">
                             <p style="color: #fff">Đang kiểm tra dữ liệu.</p>
@@ -659,6 +668,71 @@
                             Xuất dữ liệu báo cáo (excel)
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="permission-popup" class="modal modal-animation" style="z-index: 1000;">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackPermission" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Hướng dẫn
+                    </p>
+                </div>
+                <div style="height: 90vh;">
+                    <iframe id="pdfViewer" src="" width="100%" height="100%" style="border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+        <div id="share-warranty-popup" class="modal modal-animation">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackShareWarranty" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Chia sẻ
+                    </p>
+                </div>
+                <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
+                <div>
+                    <p id="text-content-warranty" style="color: #fff"></p>
+                </div>
+                <div style="padding: 20px">
+                    <div class="tab">
+                        <div class="indicator" id="tabIndicator-warranty"></div>
+                        <button id="tab-permission-admin" class="tablinks tablinkW">Toàn quyền</button>
+                        <button id="tab-permission-guest" class="tablinks tablinkW">chỉ xem</button>
+                    </div>
+                </div>
+                <div id="tab-admin" class="tab-content">
+                    <div>
+                        
+                    </div>
+                    <div id="qrcode-admin"></div>
+                    <button id="share-warranty-admin" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                        </svg>
+                        Chia sẻ toàn quyền
+                    </button>
+                </div>
+                <div id="tab-guest" class="tab-content">
+                    <div id="qrcode-guest"></div>
+                    <button id="share-warranty-guest" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                        </svg>
+                        Chia sẻ chỉ xem
+                    </button>
                 </div>
             </div>
         </div>

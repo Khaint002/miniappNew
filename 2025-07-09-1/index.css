@@ -1203,10 +1203,18 @@ h1 {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/54046/rainy_landscape.jpeg) center center / cover no-repeat;
+    background: url(https://central.homeos.vn/singlepage/workstation/src/dist/img/rainy_landscape.jpeg) center center / cover no-repeat;
     filter: blur(10px);
     animation: eye-focus var(--duration) ease-in infinite alternate,
         focus-shift var(--duration) ease-in infinite alternate;
+}
+
+#bgWarranty {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url(https://central.homeos.vn/singlepage/workstation/src/dist/img/bgBH.jpg) center center / cover no-repeat;
+    opacity: 0.5;
 }
 
 /* Lớp nền 2 - Glass */
@@ -1215,7 +1223,7 @@ h1 {
     width: 100%;
     height: 100%;
     /* background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/54046/glass_droplets.jpeg) center center / cover no-repeat; */
-    background: url(https://i.pinimg.com/736x/9d/1e/b3/9d1eb31563d0694c0eccd2724b5410a9.jpg) center center / cover no-repeat;
+    background: url(https://central.homeos.vn/singlepage/workstation/src/dist/img/bgKTTV.jpg) center center / cover no-repeat;
     opacity: 0.5;
     /* animation: eye-focus var(--duration) ease-in var(--pause) infinite alternate,
         focus-shift var(--duration) ease-in var(--pause) infinite alternate; */
@@ -1246,7 +1254,7 @@ h1 {
     background-color: #f39c12;
 }
 
-#qrcode canvas {
+#qrcode canvas,#qrcode-admin canvas, #qrcode-guest canvas {
     border-radius: 15px;
     /* Bo góc cho canvas */
     border: 2px solid #000;
@@ -1278,6 +1286,9 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
 }
 
 .bottom-navigation button:focus {
@@ -1736,3 +1747,37 @@ h1 {
     font-weight: 500;
     opacity: 0.85;
   }
+
+  .required-star {
+    color: red;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+#product-buyagain  {
+    background-color: rgb(23, 162, 184, 0.6);
+    /* border: solid 1px #17a2b8; */
+    color: #fff;
+    width: 47%;
+    height: 40px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+    transition: all 0.2s ease-in-out;
+}
+#product-guide {
+    background-color: rgb(243, 156, 18, 0.6);
+    /* border: solid 1px #17a2b8; */
+    color: #fff;
+    width: 47%;
+    height: 40px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+    transition: all 0.2s ease-in-out;
+}
+#product-buyagain:hover {
+    background-color: rgb(23, 162, 184);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
+}
+
+#product-guide:hover {
+    background-color: rgb(243, 156, 18);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
+}

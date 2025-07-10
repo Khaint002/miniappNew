@@ -106,7 +106,7 @@ getWebSocket = async function (value) {
         setTimeout(() => {
             const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
             wss.send(JSON.stringify(cmd));
-        }, 500);
+        }, 1000);
 
         // Final UI updates
         $("#loading-popup").hide();
@@ -137,14 +137,12 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
 
             // xử lý kết quả:
             const result = collectedLines.join("\n").trim();
-            console.log("===> Đoạn LR SCHEDULE đã lấy được:\n", result);
 
             collectedLines = [];
             return;
         }
 
         if (isCollecting) {
-            console.log(txt);
 
             collectedLines.push(txt);
         }
@@ -226,7 +224,6 @@ async function saveCondition(data, control) {
         "ZALO_LINKED_QRCODE",
         "ACTIVE = 1 AND QRCODE_ID = " + data[0].PR_KEY + ""
     );
-    console.log(Array.from({ length: numberOfMeters }, (_, i) =>  dataDevice.data[0].NAME_CHANNEL + " " + (i + 1)));
     
     let itemW = {
         CodeCondition: DataQRcode[3],
@@ -238,10 +235,8 @@ async function saveCondition(data, control) {
         relayNames: control?.relayNames ? control.relayNames : Array.from({ length: numberOfRelays }, (_, i) => `K${i + 1}`),
         meterNames: control?.meterNames ? control.meterNames : Array.from({ length: numberOfMeters }, (_, i) =>  dataDevice.data[0].NAME_CHANNEL + " " + (i + 1))
     };
-    console.log(itemW);
 
     waranntyItems = JSON.parse(localStorage.getItem("dataCondition"));
-    console.log(waranntyItems, itemW.CodeCondition);
 
     if (waranntyItems) {
         waranntyItems = waranntyItems.filter(
@@ -251,11 +246,9 @@ async function saveCondition(data, control) {
         if (waranntyItems.length > 20) {
             waranntyItems.shift();
         }
-        console.log("chạy:");
     } else {
         waranntyItems = [];
         waranntyItems.push(itemW);
-        console.log(waranntyItems);
     }
 
     localStorage.setItem("dataCondition", JSON.stringify(waranntyItems));
@@ -316,7 +309,6 @@ var renderReray = async function (data, control) {
         container.innerHTML = "";
 
         for (let i = 1; i <= numberOfRelays; i++) {
-            console.log("OK");
             let textButton;
             if(control?.relayNames){
                 textButton = control.relayNames[i-1];
@@ -330,7 +322,7 @@ var renderReray = async function (data, control) {
                         style="background: #000000;box-shadow: 0px 0px 30px 5px #000000;border: 1px solid;width: 70px;height: 70px;border-radius: 50%;">
                         <button id="btn-Relay_${i}" class="btn btn-primary buttonClickWater p-0 m-0"
                             onclick="onOffRelay('Relay_${i}', '#08ed0a')" type="button"
-                            style="background-color: initial;border: none;font-size: 35px; outline: none; box-shadow: none;">
+                            style="background-color: initial;border: none;font-size: 40px; outline: none; box-shadow: none;">
                             <svg id="icon-Relay_${i}" class="bi bi-power" xmlns="http://www.w3.org/2000/svg"
                                 width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M7.5 1v7h1V1z"></path>
@@ -448,7 +440,6 @@ function formatCustomDate(date) {
 $("#share-control").off("click").click(function () {
     // Hiển thị popup với hiệu ứng modal
     const dataItemLink = HOMEOSAPP.itemlinkQR;
-    console.log(dataItemLink);
     
     HOMEOSAPP.loadPage("share-popup");
 
@@ -1050,7 +1041,6 @@ async function createElectricityMeter(data, name, cabinetID, control) {
                         cabinetID,
                         device
                     );
-                    console.log(data);
 
                     createChartDataCondition(data);
                 });
@@ -1170,27 +1160,27 @@ createChartDataCondition = function (data) {
     // Create charts
     ChartU = createChartForCtx(
         ctx_U,
-        "Điện áp (V)",
+        "U-Điện áp (V)",
         "V",
-        createDataSet("Điện áp (V)", dataU, "rgba(75,192,192)")
+        createDataSet("U-Điện áp (V)", dataU, "rgba(75,192,192)")
     );
     ChartI = createChartForCtx(
         ctx_I,
-        "Dòng điện (A)",
+        "I-Dòng điện (A)",
         "A",
-        createDataSet("Dòng điện (A)", dataI, "rgba(255,99,132)")
+        createDataSet("I-Dòng điện (A)", dataI, "rgba(255,99,132)")
     );
     ChartP = createChartForCtx(
         ctx_P,
-        "Công suất (W)",
+        "P-Công suất (W)",
         "W",
-        createDataSet("Công suất (W)", dataP, "rgba(54,162,235)")
+        createDataSet("P-Công suất (W)", dataP, "rgba(54,162,235)")
     );
     ChartE = createChartForCtx(
         ctx_E,
-        "Điện năng (kWh)",
+        "E-Điện năng tiêu thụ (kWh)",
         "kWh",
-        createDataSet("Điện năng (kWh)", dataE, "rgba(255,206,86)")
+        createDataSet("E-Điện năng tiêu thụ (kWh)", dataE, "rgba(255,206,86)")
     );
 
     // Hide spinner (nếu cần)

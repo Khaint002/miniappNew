@@ -243,7 +243,6 @@ async function startInterval() {
                 historyItems[i].key = lastItem.PR_KEY;
             }
             if(data.D && data.D.length > 0){
-                console.log(data.D);
                 processAndUpdate(data);
                 await updateWorkstationUI(station, data);
             }
@@ -569,7 +568,6 @@ function openTabHistory(evt, nextTabId) {
         $next.addClass('active');
         $(evt.currentTarget).addClass('active');
         currentTab = nextTabId;
-        console.log(checkMap);
             
         if (typeof map !== 'undefined' && map && checkMap) {
             map.invalidateSize();
@@ -656,7 +654,6 @@ function addMarkers(locations, mapContainerId) {
             iconAnchor: [20, 40],
             popupAnchor: [0, -40]
         });
-        console.log(loc);
 
         const marker = L.marker(loc.coords, { icon, customData: loc }).addTo(map);
         marker.options.customData = {
@@ -722,7 +719,6 @@ function generatePopupHTML(name, code, type, item, coords) {
     const fields = getFieldsByType(type);
 
     let dynamicRows = '';
-    console.log(item);
     
     fields.forEach(field => {
         let label = '';
@@ -879,7 +875,6 @@ function generatePopupValueHTML(loc) {
 }
 
 function ClickGGMap(coords) {
-    console.log(coords);
     window.location.href = "https://www.google.com/maps/place/"+ coords[0] +","+ coords[1]
 }
 
@@ -1517,8 +1512,6 @@ $("#backCategory").off("click").click(function () {
 function addItemWarranty() {
     if (HOMEOSAPP.application == 'CONTROL') {
         let ConditionItems = JSON.parse(localStorage.getItem('dataCondition'));
-
-        console.log('1:', ConditionItems);
         if (ConditionItems && ConditionItems.length > 0) {
             historyListDetail.empty()
             ConditionItems.forEach(item => {
@@ -1582,14 +1575,13 @@ function addItemWarranty() {
         }
     } else {
         warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
-        console.log(warrantyItems);
         if (warrantyItems && warrantyItems.length > 0) {
             historyListDetail.empty()
             warrantyItems.forEach(item => {
                 const element = $(
                     '<div class="iconApp">' +
                     '<div id="App' + item.CodeWarranty + '" class="icon" style="background-color: #28a745 !important; display: block">' +
-                    '<img style="width: 100%; height: 100%; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgWarranty + '" alt="">' +
+                    '<img style="width: 70px; height: 70px; object-fit: cover; border-radius: .25rem; margin: 0;" src="' + item.imgWarranty + '" alt="">' +
                     '</div>' +
                     '<div class="info-box-content" style="padding-right: 0">' +
                     '<div class="d-flex justify-content-between">' +
@@ -1632,7 +1624,20 @@ function addItemWarranty() {
                 });
 
                 // Gắn sự kiện click cho phần tử chính
-                element.on('click', function () {
+                element.on('click', async function () {
+                    const dataQRcode = await HOMEOSAPP.getDM(
+                        "https://central.homeos.vn/service_XD/service.svc",
+                        "DM_QRCODE",
+                        "1=1"
+                    );
+                    const inputClean = item.CodeWarranty.replace(/[^\d]/g, "");
+            
+                    const matchedItem = dataQRcode.data.find(item =>
+                        item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+                        inputClean.length >= 6
+                    );
+                    const isAllowed = await HOMEOSAPP.checkPermissionDevice(matchedItem);
+                    if (!isAllowed) return;
                     HOMEOSAPP.CodeWarranty = item.CodeWarranty;
                     HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
                 });

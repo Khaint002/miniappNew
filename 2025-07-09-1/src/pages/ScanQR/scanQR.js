@@ -167,8 +167,6 @@ function getDataMDQRcode(QRcode) {
 
 // Hàm xử lý khi quét thành công
 async function onScanSuccess(decodedText, decodedResult) {
-    // Hiển thị kết quả trên trang chính
-    //$("#result").text("Kết quả quét: " + decodedText);
     ['result-form-total', 'result-product', 'result-condition'].forEach(id => document.getElementById(id).classList.add('d-none'));
     if (isScannerRunning) {
         html5QrCode.stop().then(ignore => {
@@ -181,12 +179,45 @@ async function onScanSuccess(decodedText, decodedResult) {
         $("#qr-popup").show();
         document.getElementById("result-form").classList.remove("d-none");
     }
-
+    const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
     let data;
     let domain;
     let workstation;
-    let checkQRcode = decodedText.split(',');
-    if (typeQR == 2 || typeQR == 3) {
+    let checkQRcode;
+
+    if (urlPattern.test(decodedText)) {
+        const urlObj = new URL(decodedText)
+        const param = new URLSearchParams(urlObj.search);
+        const paramObject = {};
+        param.forEach((value, key) => {
+            paramObject[key] = value;
+        });
+        console.log(paramObject);
+        
+        if(paramObject.CK){
+            const dataQRcode = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "CK_CODE='"+paramObject.CK+"'"
+            );
+            console.log(dataQRcode);
+            decodedText = dataQRcode.data[0].QR_CODE
+            checkQRcode = dataQRcode.data[0].QR_CODE.split(',');
+        } 
+        // else if(paramObject.CID){
+        //     decodedText = QRcode
+        //     const workstationID = url.searchParams.get("workstationID");
+        //     const QRcode = url.searchParams.get("QRcode");
+        //     decodedText = QRcode
+        //     console.log(decodedText);
+        //     checkQRcode = QRcode.split(',');
+        // }
+        
+    } else {
+        checkQRcode = decodedText.split(',');
+    }
+
+    if (typeQR == 2 || typeQR == 3 ) {
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
         if (data.length > 0 && checkQRcode.length == 3) {
             if (checkTab) {
@@ -221,12 +252,10 @@ async function onScanSuccess(decodedText, decodedResult) {
                 document.getElementById("result-product").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
-                // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
                 document.getElementById("result-product-truycap").disabled = false;
                 document.getElementById("result-form-productName").value = checkQRcode[1];
                 document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
             }
-
         } else if (checkQRcode.length == 4) {
             data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
             // const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
@@ -239,7 +268,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                     USER_ID: UserID,
                     DATASTATE: "ADD",
                 };
-                console.log(willInsertData);
 
                 HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
                     try {
@@ -262,7 +290,6 @@ async function onScanSuccess(decodedText, decodedResult) {
                     console.error('Error:', err);
                 });
             } else {
-                console.log(data);
                 document.getElementById("result-condition").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
@@ -311,8 +338,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                     scanAgain();
                 }
             } else {
-                const dataLot = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_LOT", "1=1")
-                console.log();
+                const dataLot = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_LOT", "1=1");
                 const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
                 if (checkValue) {
                     console.log(decodedText);
@@ -448,8 +474,6 @@ $("#file-input").change(function (event) {
     var file = event.target.files[0];  // Đảm bảo lấy file đúng
     if (file) {
         // Dừng quét camera trước khi quét file
-        console.log('test');
-        
         if (isScannerRunning) {
             html5QrCode.stop().then(function () {
                 isScannerRunning = false;  // Đánh dấu scanner đã dừng
@@ -457,24 +481,36 @@ $("#file-input").change(function (event) {
                 reader.onload = function (e) {
                     var img = new Image();
                     img.onload = function () {
-                        console.log('oke');
-                        
                         // Quét QR từ hình ảnh đã tải lên
                         html5QrCode.scanFile(file).then(async decodedText => {  // Sửa tại đây
-                            console.log(decodedText);
                             document.getElementById("result-form").classList.remove("d-none");
-                            // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+                            const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
                             let data;
                             let domain;
                             let workstation;
-                            let checkQRcode = decodedText.split(',');
+                            let checkQRcode;
+                            
+                            if (urlPattern.test(decodedText)) {
+                                const url = new URL(decodedText);
+                                const workstationID = url.searchParams.get("workstationID");
+                                const QRcode = url.searchParams.get("QRcode");
+                                decodedText = QRcode
+                                console.log(decodedText);
+                                checkQRcode = QRcode.split(',');
+                                console.log(checkQRcode);
+                                
+                            } else {
+                                checkQRcode = decodedText.split(',');
+                            }
+                            
+                            // document.getElementById("footer-instruct-scanQR").classList.remove("d-none");
+                            
+
                             // if(checkQRcode[0].substring(0, 3) == "T20"){
                             if (typeQR == 2 || typeQR == 3) {
                                 data = await HOMEOSAPP.getDataMDQRcode(decodedText.replaceAll(',', '$'));
-                                console.log("Kiểm tra"+checkQRcode.length);
-                                
-                                
-                                if (checkQRcode.length == 3) {
+
+                                if (checkQRcode.length == 3 && checkTab) {
                                     if (checkTab) {
                                         if (data[0].LOT_ID == 0) {
                                             const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
@@ -504,7 +540,6 @@ $("#file-input").change(function (event) {
                                         }
                                         scanAgain()
                                     } else {
-                                        console.log(data);
                                         document.getElementById("result-product").classList.remove("d-none");
                                         document.getElementById("result-form-loading").classList.add("d-none");
                                         document.getElementById("result-form").classList.remove("d-none");
@@ -525,7 +560,6 @@ $("#file-input").change(function (event) {
                                             USER_ID: UserID,
                                             DATASTATE: "ADD",
                                         };
-                                        console.log(willInsertData);
 
                                         HOMEOSAPP.add('DM_QRCODE', willInsertData).then(async data => {
                                             try {
@@ -548,7 +582,6 @@ $("#file-input").change(function (event) {
                                             console.error('Error:', err);
                                         });
                                     } else {
-                                        console.log(data);
                                         document.getElementById("result-condition").classList.remove("d-none");
                                         document.getElementById("result-form-loading").classList.add("d-none");
                                         document.getElementById("result-form").classList.remove("d-none");
@@ -559,7 +592,7 @@ $("#file-input").change(function (event) {
                                         localStorage.setItem("itemCondition", JSON.stringify(data));
                                     }
                                 } else {
-                                    console.log("Trường hợp 3");
+                                    console.log(checkQRcode);
                                     if (typeQR == 3 && checkQRcode[0].substring(0, 3) == "T20") {
                                         const dataQRCODE = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + $('#lot-number').val() + "' AND LOT_CLASS='" + $('#classProduct').val() + "'")
                                         if (dataQRCODE.data.length < $('#classProductNumber').val()) {
@@ -593,16 +626,13 @@ $("#file-input").change(function (event) {
                                             }).catch(err => {
                                                 console.error('Error:', err);
                                             });
-                                            console.log(2);
 
                                         } else {
                                             toastr.error("Lớp đã quét đủ vui lòng nhập lớp mới!");
                                             scanAgain();
-                                            console.log(1);
                                         }
                                     } else {
                                         const dataLot = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_LOT", "1=1")
-                                        console.log(dataLot);
                                         const checkValue = dataLot.data.some(item => item.LOT_NUMBER == decodedText);
                                         if (checkValue) {
                                             console.log(decodedText);
@@ -645,7 +675,6 @@ $("#file-input").change(function (event) {
                                             }).catch(err => {
                                                 console.error('Error:', err);
                                             });
-                                            console.log(2);
 
                                         } else {
                                             document.getElementById("result-form").classList.remove("d-none");
@@ -663,7 +692,6 @@ $("#file-input").change(function (event) {
 
                                 }
                             } else {
-                                console.log(3);
 
                                 if (decodedText.length > 6) {
                                     var resultArray = decodedText.split("$");
@@ -782,7 +810,6 @@ async function getDomain(workstationID, type) {
         // var listDomain = ["thoitiet.ifee.edu.vn", "namdinh.homeos.vn", "kttvthaibinh.com.vn", "cctl-dongthap.homeos.vn", "angiang.homeos.vn", "pctthn.homeos.vn", "thanthongnhat.homeos.vn", "ninhbinh.homeos.vn"]
         var domain;
         var data;
-        console.log(HOMEOSAPP.listDomain);
         
         for (let i = 0; i < HOMEOSAPP.listDomain.length; i++) {
             data = await getDataStation(workstationID, HOMEOSAPP.listDomain[i]);
@@ -864,8 +891,6 @@ function getCurrentTime(time) {
 }
 
 function openTab(evt, tabName) {
-    console.log("chạy:");
-    
     $('.tab-content').removeClass('active');
     $('.tablinks').removeClass('active');
     $('#' + tabName).addClass('active');
@@ -875,7 +900,9 @@ function openTab(evt, tabName) {
 $("#truycap").off("click").click(function () {
     if(HOMEOSAPP.checkTabHistory == 1){
         getInputValue()
-    } else if(HOMEOSAPP.checkTabHistory == 2 || HOMEOSAPP.checkTabHistory == 3){
+    } else if(HOMEOSAPP.checkTabHistory == 2){
+        checkDevice();
+    } else if(HOMEOSAPP.checkTabHistory == 3){
         checkDevice();
     }
 });
@@ -890,14 +917,16 @@ async function checkDevice(type) {
         inputValue = document.getElementById("device_name").value;
     }
     
-    
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã thiết bị!");
     } else {
         let dataDevice = [];
         const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
+        const inputClean = inputValue.replace(/[^\d]/g, "");
+
         const matchedItem = dataQRcode.data.find(item =>
-            item.QR_CODE.slice(-inputValue.length).replace(/\./g, '') === inputValue.replace(/\./g, '')
+            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+            inputClean.length >= 6
         );
         if (matchedItem != undefined) {
             dataDevice.push(matchedItem);
@@ -906,13 +935,15 @@ async function checkDevice(type) {
             $("#loading-popup").show();
             if(HOMEOSAPP.checkTabHistory == 2){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
-                console.log(checkQRcode);
                 HOMEOSAPP.CodeCondition = checkQRcode[3];
                 HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
             } else if(HOMEOSAPP.checkTabHistory == 3){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
-                console.log(checkQRcode);
-                HOMEOSAPP.CodeWarranty = checkQRcode[2];
+                if(checkQRcode.length == 4){
+                    HOMEOSAPP.CodeWarranty = checkQRcode[3];
+                } else {
+                    HOMEOSAPP.CodeWarranty = checkQRcode[2];
+                }
                 HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
             }
         } else {
@@ -924,7 +955,6 @@ async function checkDevice(type) {
 async function getInputValue(checkW) {
     var inputValue = document.getElementById("device_name").value;
     if(checkW){
-        console.log(checkW);
         $("#loading-popup").show();
         CheckWorkStation(checkW);
     } else {
@@ -971,11 +1001,29 @@ $("#result-scanagain").off("click").click(function () {
     document.getElementById("result-form-stationID").classList.remove("d-none");
     document.getElementById("result-form-stationName").classList.remove("d-none");
     document.getElementById("result-truycap").classList.remove("d-none");
+    
     scanAgain();
 });
 
+$("#result-product-scanagain").off("click").click(function () {
+    document.getElementById("result-form-total").classList.add("d-none");
+    document.getElementById("result-form-loading").classList.remove("d-none");
+    document.getElementById("result-form-title").classList.add("d-none");
+    document.getElementById("result-form-stationID").classList.remove("d-none");
+    document.getElementById("result-form-stationName").classList.remove("d-none");
+    document.getElementById("result-truycap").classList.remove("d-none");
+    
+    scanAgain();
+});
+
+
+
+$("#BackPermission").off("click").click(function () {
+    $("#qr-popup").show();
+    $("#permission-popup").hide();
+});
+
 function scanAgain() {
-    console.log("scan2");
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
     document.getElementById("file-input").value = '';
@@ -1094,11 +1142,9 @@ async function generateLotQRCodes(item) {
 }
 
 async function generateVoucher(item) {
-    console.log(item);
     const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "LOT_ID='" + item.PR_KEY + "'")
     let uniqueClasses = [...new Set(data.data.map(item => item.LOT_CLASS))];
     uniqueClasses.sort();
-    console.log(uniqueClasses);
 
     const groupedData = uniqueClasses.map(cls => {
         return {
@@ -1106,7 +1152,6 @@ async function generateVoucher(item) {
             items: data.data.filter(item => item.LOT_CLASS === cls)
         };
     });
-    console.log(groupedData);
     const newTab = window.open('', '_blank');
     if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
         alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
@@ -1189,7 +1234,6 @@ async function generateVoucher(item) {
                 danhMuc += checkQRcode[2].substring(3).replace(/\./g, "") + ', ';
             }
         });
-        console.log(danhMuc);
         htmlContent += `
         <tr>
             <td style="font-size: 15px;">`+ groupedData[i].LOT_CLASS + `</td>
@@ -1252,6 +1296,14 @@ $("#result-product-truycap").click(function () {
     document.getElementById("result-product-truycap").disabled = true;
     $("#loading-popup").show();
     checkDevice("QRcodeWarranty");
+    HOMEOSAPP.checkTabWarranty = 1;
+});
+
+$("#warranty-permission").off("click").click(function () {
+    document.getElementById("result-product-truycap").disabled = true;
+    $("#loading-popup").show();
+    checkDevice("QRcodeWarranty");
+    HOMEOSAPP.checkTabWarranty = 2;
 });
 
 $("#PickApp-button-pick").off("click").click(function () {
@@ -1269,10 +1321,10 @@ $("#tab-scan-qr").off("click").click(async function (event) {
 
     if(HOMEOSAPP.checkTabHistory == 1){
         $("#ScanQRcode").removeClass("d-none");
-        if(window.workstationID && window.workstationID != "done"){
+        if(HOMEOSAPP.workstationID && HOMEOSAPP.workstationID != "done"){
             openTab(event, 'tab1');
-            getInputValue(window.workstationID);
-            window.workstationID = "done";
+            getInputValue(HOMEOSAPP.workstationID);
+            HOMEOSAPP.workstationID = "done";
         } else {
             openTab(event, 'tab1')
         }
@@ -1280,56 +1332,75 @@ $("#tab-scan-qr").off("click").click(async function (event) {
         $("#ScanQRcode").removeClass("d-none");
         document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
         document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
-        if(window.workstationID && window.workstationID != "done"){
-            const result = window.workstationID.slice("CABINET".length);
+        if(HOMEOSAPP.controlID && HOMEOSAPP.controlID != "done"){
             openTab(event, 'tab1');
-            HOMEOSAPP.CodeCondition = result;
+            HOMEOSAPP.CodeCondition = HOMEOSAPP.controlID;
             HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
-            window.workstationID = "done";
+            HOMEOSAPP.controlID = "done";
         } else {
             openTab(event, 'tab1')
         }
     } else if(HOMEOSAPP.checkTabHistory == 3){
-        switch (HOMEOSAPP.checkTabMenu) {
-            case "DetailDevice":
-                $("#ScanQRcode").removeClass("d-none");
-                document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
-                document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
-
-                openTab(event, 'tab1')
-                break;
-            case "ScanLotDevice":
-                $("#ScanAllQRcode").removeClass("d-none");
-                $('#lot-number').empty();
-                const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
-                const newOption = $('<option>', {
-                    value: '0', // Giá trị của option
-                    text: 'Chọn lô sản phẩm' // Nội dung hiển thị
-                });
-                // Thêm vào select
-                $('#lot-number').append(newOption);
-                Data.data.forEach(item => {
-                    console.log(item);
+        if(window.paramObjects.CK && window.paramObjects.CK != "done"){
+            const dataQRcode = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "CK_CODE='"+window.paramObjects.CK+"'"
+            );
+            const lastPart = dataQRcode.data[0].QR_CODE.split(',').pop();
+            console.log(window.paramObjects);
+            
+            const result = lastPart.substring(1).replace('.', '');
+            openTab(event, 'tab1');
+            const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataQRcode.data[0]);
+            if (!isAllowed) return;
+            HOMEOSAPP.CodeWarranty = result;
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
+            window.workstationID = "done";
+            
+        } else {
+            switch (HOMEOSAPP.checkTabMenu) {
+                case "DetailDevice":
+                    $("#ScanQRcode").removeClass("d-none");
+                    document.getElementById("nameTabScan").textContent = "Thiết bị cần xem";
+                    document.getElementById("nameTabInput").textContent = "Mã thiết bị:";
+                    openTab(event, 'tab1')
+                    break;
+                case "ScanLotDevice":
+                    $("#ScanAllQRcode").removeClass("d-none");
+                    $('#lot-number').empty();
+                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
                     const newOption = $('<option>', {
-                        value: item.PR_KEY, // Giá trị của option
-                        text: item.LOT_NAME // Nội dung hiển thị
+                        value: '0', // Giá trị của option
+                        text: 'Chọn lô sản phẩm' // Nội dung hiển thị
                     });
                     // Thêm vào select
                     $('#lot-number').append(newOption);
-                });
-                checkTab = true;
-                break;
-            case "ManageDevice":
-                $("#lotProduct").removeClass("d-none");
-                addItemLotproduct();
-                break;
-            default:
-                break;
+                    Data.data.forEach(item => {
+                        const newOption = $('<option>', {
+                            value: item.PR_KEY, // Giá trị của option
+                            text: item.LOT_NAME // Nội dung hiển thị
+                        });
+                        // Thêm vào select
+                        $('#lot-number').append(newOption);
+                    });
+                    checkTab = true;
+                    break;
+                case "ManageDevice":
+                    $("#lotProduct").removeClass("d-none");
+                    addItemLotproduct();
+                    break;
+                default:
+                    break;
+            }
         }
         
     }
     $("#tabIndicator-Scan").css("left", "0%");
 });
+
+
+
 $("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
     $("#tabIndicator-Scan").css("left", "50%");

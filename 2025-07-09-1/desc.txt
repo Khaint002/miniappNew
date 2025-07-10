@@ -1,0 +1,4 @@
+Update app ngày 09/07/2025 lần 1:
+- chỉnh sửa ứng dụng Bảo hành,
+- thêm chức năng quyền sở hữu
+- chia sẻ thiết bị, mua lại, xem hướng dẫn
