@@ -477,7 +477,7 @@ async function savePermission(phoneNumber, productValue) {
         
         const InsertData = {
             PR_KEY_QRCODE: dataWarranty[0].PR_KEY,
-            Z_USER_ID: DataUser.id,
+            Z_USER_ID: DataUser?.id,
             USER_PHONE_NUMBER: phoneNumber,
             P_KEY: P_KEY,
             DATE_CREATE: new Date(),
@@ -506,7 +506,7 @@ async function savePermission(phoneNumber, productValue) {
                 const InsertData = {
                     TYPE: "ACTIVATE",
                     ERROR_NAME: "Kích hoạt bảo hành và chủ sở hữu",
-                    DESCRIPTION: DataUser.name + " đã kích hoạt",
+                    DESCRIPTION: DataUser?.name ? `${DataUser.name} đã kích hoạt` : "Người dùng App mobile đã kích hoạt",
                     DATE_CREATE: new Date(),
                     ERROR_STATUS: 0,
                     QRCODE_ID: dataWarranty[0].PR_KEY,
