@@ -128,7 +128,6 @@ async function changeDataWarranty(data) {
             document.getElementById('phoneNumberInput').value = userLogin.USER_PHONE_NUM;
             document.getElementById('phoneNumberInput').setAttribute("readonly", true);
         }
-        
     } else if(window.getPhoneNum){
         const tokenPhone = await window.getPhoneNum();
         const token = await window.getUserAccessToken();
