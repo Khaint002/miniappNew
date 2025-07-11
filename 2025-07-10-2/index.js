@@ -3,6 +3,8 @@ HOMEOSAPP.application = "";
 var typeQR;
 HOMEOSAPP.listDomain = [];
 HOMEOSAPP.checkTabHistory = 0;
+HOMEOSAPP.checkTabWarranty = 1;
+HOMEOSAPP.LeverPermission = 0;
 HOMEOSAPP.UserID = localStorage.getItem("userID");
 var checkReport = '';
 let historyStack = ['pickApp'];
@@ -46,19 +48,17 @@ HOMEOSAPP.goBack = function () {
     }
 }
 
-
-
 HOMEOSAPP.getDM = async function (url, table_name, c, check) {
     let user_id_getDm = 'admin';
     let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
     if(check == "NotCentral"){
         let dataUser;
         if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
          
         user_id_getDm = dataUser[0].StateName;
@@ -132,8 +132,27 @@ HOMEOSAPP.handleUser = async function (type) {
                     };
                     HOMEOSAPP.add('WARRANTY_USER', willInsertData);
                     localStorage.setItem('RoleUser', "GUEST");
+                } else if(dataUserResponse.data[0].USER_PHONE_NUM == null) {
+                    if(window.getPhoneNum){
+                        const tokenPhone = await window.getPhoneNum();
+                        const token = await window.getUserAccessToken();
+                        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+                    }
+                    const data = dataUserResponse.data[0];
+                    const willInsertData = {
+                        PR_KEY: data.PR_KEY,
+                        USER_ID: data.USER_ID,
+                        USER_NAME: data.USER_NAME,
+                        USER_ROLE: data.USER_ROLE,
+                        USER_PHONE_NUM: formatPhoneNumber(dataPhone),
+                        DATE_CREATE: data.DATE_CREATE,
+                        DATASTATE: "EDIT",
+                    };
+                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
+                    localStorage.setItem('UserLogin', willInsertData);
                 } else {
                     localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
+                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
                 }
             } else if (DataUser != undefined) {
                 const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
@@ -146,6 +165,7 @@ HOMEOSAPP.handleUser = async function (type) {
                         DATASTATE: "ADD",
                     };
                     HOMEOSAPP.add('WARRANTY_USER', willInsertData);
+                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
                 }
             } else {
                 localStorage.setItem('RoleUser', 'GUEST');
@@ -211,11 +231,11 @@ HOMEOSAPP.add = async function (table, data, URL, check) {
         url = URL;
         let dataUser;
         if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
         
         user_id_getDm = dataUser[0].StateName;
@@ -254,11 +274,11 @@ HOMEOSAPP.WorkstationStatistics = async function(url, c, check, code) {
     if(check == "NotCentral"){
         let dataUser;
         if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         } else {
-            dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
         }
         
         user_id_getDm = dataUser[0].StateName;
@@ -958,7 +978,7 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
         // c = [{"ID":"12929172","NAME":"Tủ chị Hà tầng 1","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_BAO_CAO"}]
         nameReport = reportType;
     }
-    const dataUser = await checkRoleUser("dev", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
+    const dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
     
     var val = [];
     
@@ -1099,7 +1119,7 @@ $('#submitExport').click(function () {
     // Gọi API, tạo URL báo cáo, hiển thị kết quả...
 });
 
-function sha1Encode(message) {
+HOMEOSAPP.sha1Encode = function(message) {
     function rotate_left(n, s) {
         return (n << s) | (n >>> (32 - s));
     }
@@ -1230,10 +1250,10 @@ $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
     if(window.shareWorkStation){
         if(HOMEOSAPP.checkTabHistory == 1){
-            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', item.CodeWorkStation);
+            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', "WID="+item.CodeWorkStation);
         } else if(HOMEOSAPP.checkTabHistory == 2) {
             const dataItemLink = HOMEOSAPP.itemlinkQR;
-            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CABINET"+dataItemLink[0].WORKSTATION_ID);
+            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CID="+dataItemLink[0].WORKSTATION_ID);
         }
     } else {
 
@@ -1284,21 +1304,24 @@ HOMEOSAPP.handleLogin = async function() {
     if (window.GetUser) {
         await window.GetUser();
         let dataPhone;
-        if(window.getPhoneNum){
-            const tokenPhone = await window.getPhoneNum();
-            const token = await window.getUserAccessToken();
-            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+        // if(window.getPhoneNum){
+        //     const tokenPhone = await window.getPhoneNum();
+        //     const token = await window.getUserAccessToken();
+        //     dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
             
-        }
+        // }
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         $(".userName").text(DataUser.name);
         $(".userAvt").attr("src", DataUser.avatar);
-        document.getElementById("PickApp-button-login").classList.add("d-none");
+        // document.getElementById("PickApp-button-login").classList.add("d-none");
         const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-        console.log(dataPhone, "đã forrmat:"+formatPhoneNumber(dataPhone));
-        
+        console.log(dataUserResponse);
         if (dataUserResponse.data.length === 0) {
-            
+            if(window.getPhoneNum){
+                const tokenPhone = await window.getPhoneNum();
+                const token = await window.getUserAccessToken();
+                dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            }
             const willInsertData = {
                 USER_ID: DataUser.id,
                 USER_NAME: DataUser.name,
@@ -1325,8 +1348,8 @@ HOMEOSAPP.handleLogin = async function() {
                 DATASTATE: "EDIT",
             };
             HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-            console.log(willInsertData);
-            
+        } else {
+            localStorage.setItem('UserLogin', dataUserResponse.data[0]);
         }
     }
 }
@@ -1418,6 +1441,117 @@ HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADD
     });
 }
 
+HOMEOSAPP.checkPermissionDevice = async function (data) {
+    const serviceUrl = "https://central.homeos.vn/service_XD/service.svc";
+    let OWNER_SHIP_LEVEL = 0;
+    let DataUser;
+    // Lấy dữ liệu quyền sở hữu từ QR code
+    const dataPermission = await HOMEOSAPP.getDM(
+        serviceUrl,
+        "ZALO_OWNER_SHIP_DEVICE",
+        `PR_KEY_QRCODE='${data.PR_KEY}'`
+    );
+
+    if (!dataPermission.data?.length) {
+        // Không có quyền nào trong DB
+        return true;
+    }
+
+    // Lấy số điện thoại đăng nhập
+    DataUser = JSON.parse(localStorage.getItem("userInfo"));
+    if(!DataUser){
+        await HOMEOSAPP.handleLogin();
+    }
+    DataUser = JSON.parse(localStorage.getItem("userInfo"));
+    console.log(DataUser);
+    
+    let userLogin = JSON.parse(localStorage.getItem('UserLogin'));
+    let dataPhone = userLogin?.USER_PHONE_NUM || '';
+
+    // Nếu không có thì cố gắng lấy từ Zalo
+    if (!dataPhone && window.getPhoneNum) {
+        try {
+            const tokenPhone = await window.getPhoneNum();
+            const token = await window.getUserAccessToken();
+            dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo(serviceUrl, token, tokenPhone);
+        } catch (err) {
+            toastr.error("Lỗi khi lấy số điện thoại từ Zalo!");
+            return false;
+        }
+    }
+
+    // Nếu vẫn không có số điện thoại => thoát
+    if (!dataPhone) {
+        toastr.error("Vui lòng cung cấp Số Điện Thoại để chúng tôi xác định quyền truy cập.");
+        return false;
+    }
+
+    // Lọc quyền theo số điện thoại
+    const matched = dataPermission.data.find(item => item.USER_PHONE_NUMBER === formatPhoneNumber(dataPhone));
+
+    if (!matched) {
+        if(window.paramObjects.Q){
+            if(window.paramObjects.Q == 'ADMIN'){
+                OWNER_SHIP_LEVEL = 2;
+            } else if(window.paramObjects.Q == 'GUEST'){
+                OWNER_SHIP_LEVEL = 3;
+            }
+            const InsertData = {
+                PR_KEY_QRCODE: data.PR_KEY,
+                Z_USER_ID: DataUser.id,
+                USER_PHONE_NUMBER: formatPhoneNumber(dataPhone),
+                DATE_CREATE: new Date(),
+                OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
+                ACTIVE: 1,
+                DATASTATE: "ADD",
+            };
+
+            await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+        } else {
+            toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
+            return false;
+        }
+    }
+
+    // So sánh P_KEY nếu cần
+    const qrParts = data.QR_CODE.split(',');
+    const expectedP_KEY = HOMEOSAPP.sha1Encode(qrParts[2].substring(1) + dataPhone + "@1B2c3D4e5F6g7H8").toString();
+
+    // Dù có khớp hay không, vẫn lấy LeverPermission (nếu logic của bạn cho phép)
+    if(OWNER_SHIP_LEVEL == 0){
+        HOMEOSAPP.LeverPermission = matched.OWNER_SHIP_LEVEL;
+    } else {
+        HOMEOSAPP.LeverPermission = OWNER_SHIP_LEVEL;
+    }
+    return true;
+};
+
+HOMEOSAPP.generateQRCode = function(text, targetId) {
+    QRCode.toCanvas(text, { width: 200 }, function (error, canvas) {
+        if (error) {
+            console.error("Lỗi khi tạo mã QR:", error);
+            alert('Lỗi khi tạo mã QR!');
+            return;
+        }
+
+        // Xóa nội dung cũ (nếu cần)
+        $('#' + targetId).empty();
+
+        // Thêm canvas vào DOM
+        $('#' + targetId).append(canvas);
+
+        // Tạo ảnh từ canvas (ẩn đi nếu cần dùng)
+        const image = canvas.toDataURL('image/png');
+        const img = $('<img>')
+            .attr('src', image)
+            .css({ display: 'none' })
+            .attr('id', 'hidden-image');
+        
+        $('#' + targetId).append(img);
+    });
+}
+
+
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
@@ -1441,34 +1575,42 @@ setTimeout(async () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     if(urlParams){
-        window.workstationID = urlParams.get('workstationID');
+        const paramObject = {};
+        urlParams.forEach((value, key) => {
+        paramObject[key] = value;
+        });
+        window.paramObjects = paramObject;
     }
-    console.log(window.paramObjects);
-    
-    if(window.workstationID){
-        if(window.workstationID.startsWith("CABINET")){
+    let checkparam = false;
+    if(window.paramObjects){
+        console.log(window.paramObjects);
+        console.log(window.paramObjects.WID);
+        
+        if(window.paramObjects.CID){
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
-        } else if(window.workstationID.startsWith("W")){
+            HOMEOSAPP.controlID = window.paramObjects.CID;
+            checkparam = true
+        } else if(window.paramObjects.CK){
             HOMEOSAPP.application = "WARRANTY";
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.checkTabMenu = "DetailDevice";
-        } else {
+            checkparam = true
+        } else if(window.paramObjects.WID) {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
+            HOMEOSAPP.workstationID = window.paramObjects.WID;
+            checkparam = true
         }
-        // if(window.paramObjects.CK){
-        //     HOMEOSAPP.application = "WARRANTY";
-        //     HOMEOSAPP.checkTabHistory = 3;
-        //     HOMEOSAPP.checkTabMenu = "DetailDevice";
-        // }
-        
-        let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-        historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
-        historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
-        localStorage.setItem('historyStack', JSON.stringify(historyStack));
-        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
-    } else {
+        if(checkparam){
+            let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
+            historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
+            historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
+            localStorage.setItem('historyStack', JSON.stringify(historyStack));
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+        }
+    }
+    if(!checkparam){
         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
         
         const saved = localStorage.getItem("selectedApps");

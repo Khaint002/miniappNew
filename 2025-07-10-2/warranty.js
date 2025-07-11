@@ -590,14 +590,6 @@ function openTab(evt, tabName) {
     $(evt.currentTarget).addClass('active');
 }
 
-$("#outPermission").off("click").click(function () {
-    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-
-    if(window.shareWorkStation){
-        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=OWNER&CK="+dataWarranty[0].CK_CODE);
-    }
-});
-
 $("#share-warranty-admin").off("click").click(function () {
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
 
@@ -622,7 +614,7 @@ $("#product-buyagain").off("click").click(function () {
 
 $("#product-guide").off("click").click(function () {
     HOMEOSAPP.loadPage("permission-popup");
-    const rawPdfUrl = "https://miniapp-new.vercel.app/src/dist/file/ASS.F2200.Datasheet.2025-07.pdf";
+    const rawPdfUrl = "https://central.homeos.vn/singlepage/workstation/src/dist/file/ASS.F2200.Datasheet.2025-07.pdf";
     const viewerUrl = "https://docs.google.com/gview?embedded=true&url=" + encodeURIComponent(rawPdfUrl);
 
     document.getElementById("pdfViewer").src = viewerUrl;

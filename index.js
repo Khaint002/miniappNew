@@ -1491,24 +1491,56 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
 
     if (!matched) {
         if(window.paramObjects.Q){
-            if(window.paramObjects.Q == 'ADMIN'){
+            if(window.paramObjects.Q == 'OWNER'){
+                OWNER_SHIP_LEVEL = 1;
+            } else if(window.paramObjects.Q == 'ADMIN'){
                 OWNER_SHIP_LEVEL = 2;
             } else if(window.paramObjects.Q == 'GUEST'){
                 OWNER_SHIP_LEVEL = 3;
             }
-            const InsertData = {
-                PR_KEY_QRCODE: data.PR_KEY,
-                Z_USER_ID: DataUser.id,
-                USER_PHONE_NUMBER: formatPhoneNumber(dataPhone),
-                DATE_CREATE: new Date(),
-                OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
-                ACTIVE: 1,
-                DATASTATE: "ADD",
-            };
-
-            await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+            if(OWNER_SHIP_LEVEL == 1){
+                const userOwner = dataPermission.data.find(item => item.OWNER_SHIP_LEVEL == 1);
+                const InsertDataEdit = {
+                    PR_KEY: userOwner.PR_KEY,
+                    PR_KEY_QRCODE: userOwner.PR_KEY_QRCODE,
+                    Z_USER_ID: userOwner.Z_USER_ID,
+                    USER_PHONE_NUMBER: userOwner.USER_PHONE_NUMBER,
+                    DATE_CREATE: userOwner.DATE_CREATE,
+                    OWNER_SHIP_LEVEL: 2,
+                    ACTIVE: 1,
+                    DATASTATE: "EDIT",
+                };
+                await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertDataEdit);
+                const qrParts = data.QR_CODE.split(',');
+                const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
+                const P_KEY = HOMEOSAPP.sha1Encode(seri + formatPhoneNumber(dataPhone) + "@1B2c3D4e5F6g7H8").toString()
+                const InsertData = {
+                    PR_KEY_QRCODE: data.PR_KEY,
+                    Z_USER_ID: DataUser.id,
+                    USER_PHONE_NUMBER: formatPhoneNumber(dataPhone),
+                    P_KEY: P_KEY,
+                    DATE_CREATE: new Date(),
+                    OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
+                    ACTIVE: 1,
+                    DATASTATE: "ADD",
+                };
+                await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+            } else {
+                
+                const InsertData = {
+                    PR_KEY_QRCODE: data.PR_KEY,
+                    Z_USER_ID: DataUser.id,
+                    USER_PHONE_NUMBER: formatPhoneNumber(dataPhone),
+                    DATE_CREATE: new Date(),
+                    OWNER_SHIP_LEVEL: OWNER_SHIP_LEVEL,
+                    ACTIVE: 1,
+                    DATASTATE: "ADD",
+                };
+                await HOMEOSAPP.add('ZALO_OWNER_SHIP_DEVICE', InsertData);
+            }
+            
         } else {
-            toastr.error("Bạn chưa có quyền truy cập! Chúng tôi sẽ thông báo đến chủ sở hữu để cấp quyền cho bạn");
+            toastr.error("Bạn chưa có quyền truy cập!");
             return false;
         }
     }
