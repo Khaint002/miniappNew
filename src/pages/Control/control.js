@@ -494,9 +494,7 @@ $("#export-condition")
         HOMEOSAPP.loadPage("export-condition-popup");
     });
 
-$("#settingAlert")
-    .off("click")
-    .click(function () {
+$("#settingAlert").off("click").click(function () {
         getDevicefilter();
         $("#alert-kttv-popup").show();
     });

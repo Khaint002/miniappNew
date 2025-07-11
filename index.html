@@ -693,38 +693,41 @@
                         Chia sẻ
                     </p>
                 </div>
-                <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
-                <div>
-                    <p id="text-content-warranty" style="color: #fff"></p>
-                </div>
-                <div style="padding: 20px">
-                    <div class="tab">
-                        <div class="indicator" id="tabIndicator-warranty"></div>
-                        <button id="tab-permission-admin" class="tablinks tablinkW">Toàn quyền</button>
-                        <button id="tab-permission-guest" class="tablinks tablinkW">chỉ xem</button>
-                    </div>
-                </div>
-                <div id="tab-admin" class="tab-content">
+                <div id="share-user">
+                    <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
                     <div>
-                        
+                        <p id="text-content-warranty" style="color: #fff"></p>
                     </div>
-                    <div id="qrcode-admin"></div>
-                    <button id="share-warranty-admin" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
-                        </svg>
-                        Chia sẻ toàn quyền
-                    </button>
+                    <div style="padding: 20px">
+                        <div class="tab">
+                            <div class="indicator" id="tabIndicator-warranty"></div>
+                            <button id="tab-permission-admin" class="tablinks tablinkW">Toàn quyền</button>
+                            <button id="tab-permission-guest" class="tablinks tablinkW">chỉ xem</button>
+                        </div>
+                    </div>
+                    <div id="tab-admin" class="tab-content">
+                        <div>
+                            
+                        </div>
+                        <div id="qrcode-admin"></div>
+                        <button id="share-warranty-admin" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                            </svg>
+                            Chia sẻ toàn quyền
+                        </button>
+                    </div>
+                    <div id="tab-guest" class="tab-content">
+                        <div id="qrcode-guest"></div>
+                        <button id="share-warranty-guest" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                            </svg>
+                            Chia sẻ chỉ xem
+                        </button>
+                    </div>
                 </div>
-                <div id="tab-guest" class="tab-content">
-                    <div id="qrcode-guest"></div>
-                    <button id="share-warranty-guest" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
-                        </svg>
-                        Chia sẻ chỉ xem
-                    </button>
-                </div>
+                
             </div>
         </div>
         <div class="overlay"></div>

@@ -1356,7 +1356,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             if (!isAllowed) return;
             HOMEOSAPP.CodeWarranty = result;
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
-            window.workstationID = "done";
+            window.paramObjects.CK = "done";
             
         } else {
             switch (HOMEOSAPP.checkTabMenu) {
