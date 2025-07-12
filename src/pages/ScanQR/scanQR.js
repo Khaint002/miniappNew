@@ -1284,7 +1284,6 @@ async function generateVoucher(item) {
 
 $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
-    HOMEOSAPP.checkPermissionDevice(dataCheckPermission);
     $("#loading-popup").show();
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 });
@@ -1297,6 +1296,7 @@ $("#result-condition-truycap").click(function () {
 
 $("#result-product-truycap").click(function () {
     document.getElementById("result-product-truycap").disabled = true;
+    HOMEOSAPP.checkPermissionDevice(dataCheckPermission);
     $("#loading-popup").show();
     checkDevice("QRcodeWarranty");
     HOMEOSAPP.checkTabWarranty = 1;
