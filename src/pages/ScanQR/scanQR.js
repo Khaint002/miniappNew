@@ -5,6 +5,7 @@ var isScannerRunning = false;  // Biến theo dõi trạng thái quét
 var currentCamera;
 var typeQR;
 var checkTab = false;
+var dataCheckPermission;
 var listLotProduct = $('#lot-warranty-detail');
 $(".start").off("click").click(function () {
     const dataId = $(this).data("id");
@@ -219,6 +220,7 @@ async function onScanSuccess(decodedText, decodedResult) {
 
     if (typeQR == 2 || typeQR == 3 ) {
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+        dataCheckPermission = data;
         if (data.length > 0 && checkQRcode.length == 3) {
             if (checkTab) {
                 if (data[0].LOT_ID == 0) {
@@ -1282,6 +1284,7 @@ async function generateVoucher(item) {
 
 $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
+    HOMEOSAPP.checkPermissionDevice(dataCheckPermission);
     $("#loading-popup").show();
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 });
