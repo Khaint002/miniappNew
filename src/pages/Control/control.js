@@ -1431,7 +1431,6 @@ function renderOEEChannels(count, selectedIndex = 1) {
                 .removeClass("d-none")
                 .addClass("slide-OEE-in-right");
                 $("#list-OEE").addClass("d-none");
-                $("#header-control, #footer-control").addClass("d-none");
             }, 200);
         })
 
@@ -1453,8 +1452,10 @@ function renderOEEChannels(count, selectedIndex = 1) {
 
 $("#detail-OEE-back").off("click").click(() => {
     $("#detail-OEE").addClass("slide-out-left");
-    $("#header-control").addClass("hide-up-in");
-    $("#footer-control").addClass("hide-down-in");
+    $("#header-control").removeClass("hide-up");
+    $("#footer-control").removeClass("hide-down");
+    // $("#header-control").addClass("hide-up-in");
+    // $("#footer-control").addClass("hide-down-in");
     // 2. Hiện detail-OEE từ phải trượt vào
     setTimeout(() => {
         $("#list-OEE")
