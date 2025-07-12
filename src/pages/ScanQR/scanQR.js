@@ -1296,7 +1296,7 @@ $("#result-condition-truycap").click(function () {
 
 $("#result-product-truycap").click(async function () {
     document.getElementById("result-product-truycap").disabled = true;
-    await HOMEOSAPP.checkPermissionDevice(dataCheckPermission);
+    await HOMEOSAPP.checkPermissionDevice(dataCheckPermission[0]);
     $("#loading-popup").show();
     checkDevice("QRcodeWarranty");
     HOMEOSAPP.checkTabWarranty = 1;
