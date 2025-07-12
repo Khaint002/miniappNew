@@ -1383,31 +1383,65 @@ function attachEditHandler(span, control) {
     });
 }
 
+{/* <div class="icon d-flex align-items-center justify-content-center"
+                            style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
+                            <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
+                        </div> */}
 function renderOEEChannels(count, selectedIndex = 1) {
     const $container = $("#list-OEE");
     $container.empty();
-
+    let delay = 0;
     for (let i = 1; i <= count; i++) {
-        const isActive = i === selectedIndex;
-
+        delay += 0.1;
+        let status = 'On';
+        if(i == 2){
+            status = 'Off';
+        }
+        // const isActive = i === selectedIndex;
         const $channel = $(`
-            <div class="channel-item ${isActive ? 'active' : ''}" data-index="${i}">
-                <div class="channel-left">
-                    <div class="channel-title">Kênh ${i}</div>
-                    <div class="channel-product">Sản phẩm 01</div>
-                </div>
-                <div class="channel-right">
-                    <div class="status">
-                        <div class="status-dot"></div>
-                        Đang hoạt động
+            <div class="col-12 m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
+                <div class="zoom-box slide-in-right" style="animation-delay: ${delay}s; animation-fill-mode: both;">
+                    <div id="PickApp-button-${i}" class="iconApp">
+                        <div class="info-box-content">
+                            <div class="d-flex justify-content-between">
+                                <span class="app-text">Kênh ${i}</span>
+                                <span class="app-text status${status}"><div class="status-${status}"></div> trạng thái hoạt động</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Thiết bị 1</span>
+                                <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="arrow-icon">➔</div>
                 </div>
             </div>
         `);
 
-        $container.append($channel);
-    }
+        $channel.on('click', async function () {
+            $("#list-OEE").addClass("slide-out-left");
+
+            // 2. Hiện detail-OEE từ phải trượt vào
+            $("#detail-OEE")
+                .removeClass("d-none")
+                .addClass("slide-in-right");
+
+            // // 3. Sau 10ms để trình duyệt áp dụng class, thêm class show
+            // setTimeout(() => {
+            //     $("#detail-OEE").addClass("show-slide-in");
+            // }, 10);
+
+            // 4. Sau khi animation xong (0.5s), ẩn hẳn list-OEE
+            setTimeout(() => {
+                $("#list-OEE").addClass("d-none");
+            }, 200);
+                })
+
+                $container.append($channel);
+            }
 
     // Sự kiện click chọn kênh
     $(".channel-item").on("click", function () {

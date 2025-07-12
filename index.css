@@ -1886,10 +1886,6 @@ h1 {
     cursor: pointer;
 }
 
-.channel-item.active {
-    background-color: #005b96;
-}
-
 .channel-left {
     display: flex;
     flex-direction: column;
@@ -1909,7 +1905,7 @@ h1 {
     text-align: right;
 }
 
-.status {
+.statusOn {
     color: #4caf50;
     font-size: 14px;
     display: flex;
@@ -1917,11 +1913,27 @@ h1 {
     gap: 6px;
 }
 
-.status-dot {
-    width: 10px;
-    height: 10px;
+.statusOff {
+    color: #ff5b5b;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-On {
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     background-color: #4caf50;
+}
+
+
+.status-Off {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #ff5b5b;
 }
 
 .arrow-icon {
