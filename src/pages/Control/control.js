@@ -498,25 +498,32 @@ $("#export-condition")
 
 $("#change-view").on("click", function () {
     isActive = !isActive;
-    if (isActive) {
-        $("#view-EMS").addClass("d-none");
-        $("#view-OEE").removeClass("d-none");
-        $("#view-icon")
-            .attr("class", "bi bi-grid")
-            .html(`
-                <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
-            `);
-        $("#view-text").text("Đã bật");
-    } else {
-        $("#view-EMS").removeClass("d-none");
-        $("#view-OEE").addClass("d-none");
-        $("#view-icon")
-            .attr("class", "bi bi-list-ul")
-            .html(`
-                <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-            `);
-        $("#view-text").text("OEE");
-    }
+    $("#view-icon, #view-text").fadeOut(150, function () {
+        if (isActive) {
+            $("#view-EMS").fadeOut(100, function () {
+                $("#view-OEE").fadeIn(100);
+            });
+            $("#view-icon")
+                .attr("class", "bi bi-grid")
+                .html(`
+                    <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
+                `);
+            $("#view-text").text("EMS");
+        } else {
+            $("#view-OEE").fadeOut(100, function () {
+                $("#view-EMS").fadeIn(100);
+            });
+            $("#view-icon")
+                .attr("class", "bi bi-list-ul")
+                .html(`
+                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                `);
+            $("#view-text").text("OEE");
+        }
+    
+        $("#view-icon, #view-text").fadeIn(100);
+    });
+    
 
     // Gọi hàm xử lý logic nếu cần
     customToggleFunction(isActive);
@@ -1375,6 +1382,46 @@ function attachEditHandler(span, control) {
     });
 }
 
+function renderOEEChannels(count, selectedIndex = 1) {
+    const $container = $("#view-OEE");
+    $container.empty();
+
+    for (let i = 1; i <= count; i++) {
+        const isActive = i === selectedIndex;
+
+        const $channel = $(`
+            <div class="channel-item ${isActive ? 'active' : ''}" data-index="${i}">
+                <div class="channel-left">
+                    <div class="channel-title">Kênh ${i}</div>
+                    <div class="channel-product">Sản phẩm 01</div>
+                </div>
+                <div class="channel-right">
+                    <div class="status">
+                        <div class="status-dot"></div>
+                        Đang hoạt động
+                    </div>
+                    <div class="arrow-icon">➔</div>
+                </div>
+            </div>
+        `);
+
+        $container.append($channel);
+    }
+
+    // Sự kiện click chọn kênh
+    $(".channel-item").on("click", function () {
+        $(".channel-item").removeClass("active");
+        $(this).addClass("active");
+
+        const index = $(this).data("index");
+        console.log("Kênh được chọn:", index);
+        // Gọi hàm xử lý khác nếu cần
+    });
+
+    $container.fadeIn(300);
+}
+
+renderOEEChannels(3, 1);
 // Gắn handler cho tất cả editable span
 
 accessDevice();
