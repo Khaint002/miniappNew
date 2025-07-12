@@ -1423,20 +1423,20 @@ function renderOEEChannels(count, selectedIndex = 1) {
 
         $channel.on('click', async function () {
             $("#list-OEE").addClass("slide-out-left");
-
+            $("#header-control").addClass("hide-up");
+            $("#footer-control").addClass("hide-down");
             // 2. Hiện detail-OEE từ phải trượt vào
-            $("#detail-OEE")
-                .removeClass("d-none")
-                .addClass("slide-in-right");
-
-            // 4. Sau khi animation xong (0.5s), ẩn hẳn list-OEE
             setTimeout(() => {
+                $("#detail-OEE")
+                .removeClass("d-none")
+                .addClass("slide-OEE-in-right");
                 $("#list-OEE").addClass("d-none");
+                $("#header-control, #footer-control").addClass("d-none");
             }, 200);
-                })
+        })
 
-                $container.append($channel);
-            }
+        $container.append($channel);
+    }
 
     // Sự kiện click chọn kênh
     $(".channel-item").on("click", function () {
