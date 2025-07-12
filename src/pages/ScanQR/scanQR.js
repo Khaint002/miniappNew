@@ -934,8 +934,8 @@ async function checkDevice(type) {
             dataDevice.push(matchedItem);
         }
         if (dataDevice.length == 1) {
-            $("#loading-popup").show();
             if(HOMEOSAPP.checkTabHistory == 2){
+                $("#loading-popup").show();
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
                 HOMEOSAPP.CodeCondition = checkQRcode[3];
                 HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
@@ -943,6 +943,7 @@ async function checkDevice(type) {
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
                 const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataDevice[0]);
                 if (!isAllowed) return;
+                $("#loading-popup").show();
                 if(checkQRcode.length == 4){
                     HOMEOSAPP.CodeWarranty = checkQRcode[3];
                 } else {
