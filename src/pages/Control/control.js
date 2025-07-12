@@ -1429,11 +1429,6 @@ function renderOEEChannels(count, selectedIndex = 1) {
                 .removeClass("d-none")
                 .addClass("slide-in-right");
 
-            // // 3. Sau 10ms để trình duyệt áp dụng class, thêm class show
-            // setTimeout(() => {
-            //     $("#detail-OEE").addClass("show-slide-in");
-            // }, 10);
-
             // 4. Sau khi animation xong (0.5s), ẩn hẳn list-OEE
             setTimeout(() => {
                 $("#list-OEE").addClass("d-none");

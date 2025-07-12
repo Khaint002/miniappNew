@@ -208,9 +208,5 @@
 
 
 #list-OEE, #detail-OEE {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   transition: transform 0.5s ease, opacity 0.5s ease;
 }
