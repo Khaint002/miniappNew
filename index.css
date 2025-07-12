@@ -1986,3 +1986,11 @@ h1 {
   .circle-container button:hover {
     background: #0f2e4f;
   }
+
+  .box-OEE{
+    border-radius: 15px;
+    background-color: #2B2B2B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
