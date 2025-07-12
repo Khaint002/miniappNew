@@ -1384,7 +1384,7 @@ function attachEditHandler(span, control) {
 }
 
 function renderOEEChannels(count, selectedIndex = 1) {
-    const $container = $("#view-OEE");
+    const $container = $("#list-OEE");
     $container.empty();
 
     for (let i = 1; i <= count; i++) {
