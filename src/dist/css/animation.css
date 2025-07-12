@@ -222,13 +222,32 @@
   100% { transform: translateY(-100%); opacity: 0; }
 }
 
+@keyframes slideUpFadeIn {
+  0% {transform: translateY(-100%); opacity: 0;}
+  100% {transform: translateY(0); opacity: 1;
+  }
+}
+
 @keyframes slideDownFadeOut {
   0% { transform: translateY(0); opacity: 1; }
   100% { transform: translateY(100%); opacity: 0; }
 }
 
+@keyframes slideDownFadeIn {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
 .hide-up {
   animation: slideUpFadeOut 0.2s forwards;
+}
+
+.hide-up-in{
+  animation: slideUpFadeIn 0.2 forwards;
+}
+
+.hide-down-in{
+  animation: slideDownFadeIn 0.2 forwards;
 }
 
 .hide-down {
