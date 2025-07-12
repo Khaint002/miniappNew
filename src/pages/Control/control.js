@@ -1451,6 +1451,20 @@ function renderOEEChannels(count, selectedIndex = 1) {
     $container.fadeIn(300);
 }
 
+$("#detail-OEE-back").off("click").click(() => {
+    $("#detail-OEE").addClass("slide-out-left");
+    $("#header-control").removeClass("hide-up");
+    $("#footer-control").removeClass("hide-down");
+    // 2. Hiện detail-OEE từ phải trượt vào
+    setTimeout(() => {
+        $("#list-OEE")
+        .removeClass("d-none")
+        .addClass("slide-OEE-in-right");
+        $("#detail-OEE").addClass("d-none");
+        $("#header-control, #footer-control").addClass("d-none");
+    }, 200);
+})
+
 
 // Gắn handler cho tất cả editable span
 
