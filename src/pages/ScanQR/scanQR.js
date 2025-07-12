@@ -941,6 +941,8 @@ async function checkDevice(type) {
                 HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
             } else if(HOMEOSAPP.checkTabHistory == 3){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
+                const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataDevice[0]);
+                if (!isAllowed) return;
                 if(checkQRcode.length == 4){
                     HOMEOSAPP.CodeWarranty = checkQRcode[3];
                 } else {
@@ -1296,7 +1298,8 @@ $("#result-condition-truycap").click(function () {
 
 $("#result-product-truycap").click(async function () {
     document.getElementById("result-product-truycap").disabled = true;
-    await HOMEOSAPP.checkPermissionDevice(dataCheckPermission[0]);
+    const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataCheckPermission[0]);
+    if (!isAllowed) return;
     $("#loading-popup").show();
     checkDevice("QRcodeWarranty");
     HOMEOSAPP.checkTabWarranty = 1;
