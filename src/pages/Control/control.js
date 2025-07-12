@@ -4,6 +4,7 @@ var timeoutHandle;
 var intervalId = null;
 var relayTimeouts = {};
 var cabinetID;
+var isActive = false;
 HOMEOSAPP.itemlinkQR;
 
 var ctx_U = document.getElementById("chartVoltage").getContext("2d");
@@ -494,10 +495,38 @@ $("#export-condition")
         HOMEOSAPP.loadPage("export-condition-popup");
     });
 
-$("#settingAlert").off("click").click(function () {
-        getDevicefilter();
-        $("#alert-kttv-popup").show();
-    });
+
+$("#settingAlert").on("click", function () {
+    isActive = !isActive;
+    if (isActive) {
+        $("#view-EMS").addClass("d-none");
+        $("#view-OEE").removeClass("d-none");
+        $("#alertIcon")
+            .attr("class", "bi bi-check-circle")
+            .html(`
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.354 11.354l-3.182-3.182a.5.5 0 1 1 .708-.708l2.474 2.474 5.292-5.292a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0z"/>
+            `);
+        $("#alertText").text("Đã bật");
+    } else {
+        $("#view-EMS").removeClass("d-none");
+        $("#view-OEE").addClass("d-none");
+        $("#alertIcon")
+            .attr("class", "bi bi-exclamation-circle")
+            .html(`
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
+            `);
+        $("#alertText").text("OEE");
+    }
+
+    // Gọi hàm xử lý logic nếu cần
+    customToggleFunction(isActive);
+});
+
+function customToggleFunction(status) {
+    console.log("Trạng thái:", status ? "Đã bật" : "Tắt");
+    // Thêm xử lý tùy theo trạng thái
+}
 
 $("#BackSchedule")
     .off("click")
