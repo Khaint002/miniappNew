@@ -1,4 +1,3 @@
-
 body {
     font-family: 'Roboto', sans-serif;
     align-items: center;
@@ -387,7 +386,9 @@ h1 {
     border-bottom: none;
 } */
 
-.tab-content,.tab-content-guarantee,.tab-content-schedule {
+.tab-content,
+.tab-content-guarantee,
+.tab-content-schedule {
     display: none;
     border-top: none;
 }
@@ -403,7 +404,10 @@ h1 {
     transform: translateX(100%);
     z-index: 0;
 }
-.tab-content.active,.tab-content-guarantee.active,.tab-content-schedule.active {
+
+.tab-content.active,
+.tab-content-guarantee.active,
+.tab-content-schedule.active {
     display: block;
 }
 
@@ -986,7 +990,7 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 998;
     display: none;
 }
@@ -1254,7 +1258,9 @@ h1 {
     background-color: #f39c12;
 }
 
-#qrcode canvas,#qrcode-admin canvas, #qrcode-guest canvas {
+#qrcode canvas,
+#qrcode-admin canvas,
+#qrcode-guest canvas {
     border-radius: 15px;
     /* Bo góc cho canvas */
     border: 2px solid #000;
@@ -1545,122 +1551,156 @@ h1 {
     transform-origin: bottom center;
 }
 
-    .marker-label {
-        min-width: 40px;
-        min-height: 12px;
-        font-size: 14px;
-        font-weight: bold;
-        color: black;
-        margin-bottom: 4px;
-        line-height: 1;
-        transition: transform 0.2s;
+.marker-label {
+    min-width: 40px;
+    min-height: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 4px;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.marker-pin {
+    width: 28px;
+    height: 28px;
+    transition: transform 0.2s;
+    position: relative;
+    z-index: 1;
+    /* Place marker-pin below mePin-wrapper */
+}
+
+.mePin-wrapper {
+    position: absolute;
+    top: 25px;
+    /* Adjust to make mePin-wrapper overlap marker-pin */
+    right: -10px;
+    z-index: 1;
+    /* Ensure mePin-wrapper is below the "R" text */
+}
+
+.mePin-child {
+    position: relative;
+}
+
+.mePin-wrapper b {
+    position: absolute;
+    top: 2px;
+    /* Adjust to make "R" appear above the mePin */
+    right: 10px;
+    /*color: #dc3545;*/
+    color: #5984ff;
+    font-weight: bold;
+    z-index: 2;
+    /* Ensure "R" text is above mePin */
+    font-size: 12px;
+}
+
+#mePin {
+    width: 33.3px;
+    height: 32.4px;
+    position: relative;
+    opacity: 1;
+    /* Initially visible */
+    animation: fadeInBoth 4s infinite ease-in-out;
+    animation-delay: 1s;
+    /* Delay the start of the animation by 1 second */
+}
+
+.ring_outer {
+    opacity: 1;
+    /* Initially visible */
+    animation: fadeOutRingOuter 4s infinite ease-in-out;
+    animation-delay: 1s;
+    /* Delay the start of the outer ring's animation by 1 second */
+}
+
+.ring_inner {
+    opacity: 1;
+    /* Initially visible */
+    animation: fadeOutRingInner 4s infinite ease-in-out;
+    animation-delay: 1s;
+    /* Delay the start of the inner ring's animation by 1 second */
+}
+
+
+@keyframes fadeOutRingOuter {
+    0% {
+        opacity: 1;
+        /* Fully visible at the start */
     }
 
-    .marker-pin {
-        width: 28px;
-        height: 28px;
-        transition: transform 0.2s;
-        position: relative;
-        z-index: 1;  /* Place marker-pin below mePin-wrapper */
+    50% {
+        opacity: 0;
+        /* Fades out at the midpoint */
     }
 
-    .mePin-wrapper {
-        position: absolute;
-        top: 25px;  /* Adjust to make mePin-wrapper overlap marker-pin */
-        right: -10px;
-        z-index: 1;  /* Ensure mePin-wrapper is below the "R" text */
+    100% {
+        opacity: 0;
+        /* Stays hidden after fading out */
+    }
+}
+
+@keyframes fadeOutRingInner {
+    0% {
+        opacity: 1;
+        /* Fully visible at the start */
     }
 
-    .mePin-child{
-        position: relative;
+    50% {
+        opacity: 1;
+        /* Stays visible until the midpoint */
     }
 
-    .mePin-wrapper b {
-        position: absolute;
-        top: 2px;  /* Adjust to make "R" appear above the mePin */
-        right: 10px;
-        /*color: #dc3545;*/
-        color: #5984ff;
-        font-weight: bold;
-        z-index: 2;  /* Ensure "R" text is above mePin */
-        font-size: 12px;
+    100% {
+        opacity: 0;
+        /* Fades out at the end */
+    }
+}
+
+@keyframes fadeInBoth {
+
+    0%,
+    50% {
+        opacity: 1;
+        /* Both rings are visible at the start and midpoint */
     }
 
-    #mePin {
-        width: 33.3px;
-        height: 32.4px;
-        position: relative;
-        opacity: 1; /* Initially visible */
-        animation: fadeInBoth 4s infinite ease-in-out;
-        animation-delay: 1s; /* Delay the start of the animation by 1 second */
+    100% {
+        opacity: 1;
+        /* Both rings reappear at the end */
     }
-
-    .ring_outer {
-        opacity: 1; /* Initially visible */
-        animation: fadeOutRingOuter 4s infinite ease-in-out;
-        animation-delay: 1s; /* Delay the start of the outer ring's animation by 1 second */
-    }
-
-    .ring_inner {
-        opacity: 1; /* Initially visible */
-        animation: fadeOutRingInner 4s infinite ease-in-out;
-        animation-delay: 1s; /* Delay the start of the inner ring's animation by 1 second */
-    }
-
-
-    @keyframes fadeOutRingOuter {
-        0% {
-            opacity: 1; /* Fully visible at the start */
-        }
-        50% {
-            opacity: 0; /* Fades out at the midpoint */
-        }
-        100% {
-            opacity: 0; /* Stays hidden after fading out */
-        }
-    }
-
-    @keyframes fadeOutRingInner {
-        0% {
-            opacity: 1; /* Fully visible at the start */
-        }
-        50% {
-            opacity: 1; /* Stays visible until the midpoint */
-        }
-        100% {
-            opacity: 0; /* Fades out at the end */
-        }
-    }
-
-    @keyframes fadeInBoth {
-        0%, 50% {
-            opacity: 1; /* Both rings are visible at the start and midpoint */
-        }
-        100% {
-            opacity: 1; /* Both rings reappear at the end */
-        }
-    }
+}
 
 
 
-    @keyframes bounce {
-    0%, 100% {
+@keyframes bounce {
+
+    0%,
+    100% {
         transform: translateY(0) scale(1, 1);
     }
+
     50% {
         transform: translateY(-18px) scale(1, 1);
     }
+
     70% {
-        transform: translateY(0) scale(1.2, 0.5); /* ép mạnh hơn: cao thấp méo ngang */
+        transform: translateY(0) scale(1.2, 0.5);
+        /* ép mạnh hơn: cao thấp méo ngang */
     }
+
     85% {
-        transform: translateY(0) scale(0.95, 1.05); /* dội lại */
+        transform: translateY(0) scale(0.95, 1.05);
+        /* dội lại */
     }
-    }
+}
 
 .bounce-animation {
     animation: bounce 1s infinite ease-in-out;
 }
+
 .custom-marker {
     margin-left: -16px;
     margin-top: -16px;
@@ -1679,20 +1719,26 @@ h1 {
     opacity: 1;
     z-index: 41;
 }
+
 #mappingWorkstation {
-    height: 100%; /* hoặc 500px, tùy layout */
+    height: 100%;
+    /* hoặc 500px, tùy layout */
     width: 100%;
     z-index: 1;
 }
+
 .leaflet-overlay-pane .leaflet-zoom-animated {
     top: 22px;
 }
+
 .leaflet-marker-pane {
     margin-top: 18px !important;
 }
+
 .leaflet-popup {
     bottom: -35px !important;
 }
+
 .leaflet-control-attribution {
     display: none !important;
 }
@@ -1707,7 +1753,7 @@ h1 {
 }
 
 
-#historySelect{
+#historySelect {
     width: 100%;
     height: 40px;
     border-radius: 15px;
@@ -1715,10 +1761,18 @@ h1 {
     margin-bottom: 10px;
 }
 
-#historySelect:focus, #BackCodeQR:focus, #share-qrcode-workstation:focus, #menuToggle:focus, #PickApp-button-scanQR:focus, #PickApp-button-pick:focus, #ScanQRNext:focus {
+#historySelect:focus,
+#BackCodeQR:focus,
+#share-qrcode-workstation:focus,
+#menuToggle:focus,
+#PickApp-button-scanQR:focus,
+#PickApp-button-pick:focus,
+#ScanQRNext:focus,
+#change-view:focus {
     outline: none;
     box-shadow: none;
-    border: none; /* nếu bạn muốn bỏ cả viền luôn */
+    border: none;
+    /* nếu bạn muốn bỏ cả viền luôn */
 }
 
 .add-app-box {
@@ -1728,57 +1782,31 @@ h1 {
     border-radius: 10px;
     background-color: #2b2f36;
     transition: all 0.25s ease;
-  }
-  
-  .add-app-box:hover {
+}
+
+.add-app-box:hover {
     background-color: #353b45;
     border-color: #28a745;
-  }
-  
-  .add-icon-plus {
+}
+
+.add-icon-plus {
     font-size: 1.5rem;
     color: rgb(152, 152, 152);
     margin-bottom: 4px;
-  }
-  
-  .add-text-label {
+}
+
+.add-text-label {
     font-size: 0.85rem;
     color: rgb(152, 152, 152);
     font-weight: 500;
     opacity: 0.85;
-  }
+}
 
-  .required-star {
+.required-star {
     color: red;
     margin-left: 4px;
     font-weight: bold;
 }
-/* 
-#product-buyagain  {
-    background-color: rgb(23, 162, 184, 0.6);
-    color: #fff;
-    width: 47%;
-    height: 40px;
-    box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
-    transition: all 0.2s ease-in-out;
-}
-#product-guide {
-    background-color: rgb(243, 156, 18, 0.6);
-    color: #fff;
-    width: 47%;
-    height: 40px;
-    box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
-    transition: all 0.2s ease-in-out;
-}
-#product-buyagain:hover {
-    background-color: rgb(23, 162, 184);
-    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
-}
-
-#product-guide:hover {
-    background-color: rgb(243, 156, 18);
-    box-shadow: 0 0 3px rgba(0, 0, 0, .2), 0 3px 6px rgba(0, 0, 0, .3);
-} */
 
 #product-buyagain,
 #product-guide {
@@ -1813,12 +1841,156 @@ h1 {
 }
 
 .warranty-box {
-    background-color: rgba(255, 255, 255, 0.05); /* nền mờ nhẹ */
+    background-color: rgba(255, 255, 255, 0.05);
+    /* nền mờ nhẹ */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     color: #fff;
     font-size: 14px;
-  }
-  .warranty-box li {
+}
+
+.warranty-box li {
     margin-bottom: 4px;
+}
+
+#view-icon,
+#view-text {
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: scale(1);
+}
+
+#view-icon.fade-out,
+#view-text.fade-out {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+
+.oee-container {
+    background-color: #1e1e1e;
+    padding: 15px;
+    color: #fff;
+    font-family: sans-serif;
+}
+
+.channel-item {
+    background-color: #2c2c2c;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.channel-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.channel-title {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.channel-product {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.channel-right {
+    text-align: right;
+}
+
+.statusOn {
+    color: #4caf50;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.statusOff {
+    color: #ff5b5b;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-On {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #4caf50;
+}
+
+
+.status-Off {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #ff5b5b;
+}
+
+.arrow-icon {
+    font-size: 18px;
+    color: #fff;
+    margin-top: 4px;
+}
+
+.circle-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #1b1b1b 60%, #111 100%);
+    border: 6px solid #00aaff;
+    box-shadow: 0 0 20px #00aaff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    position: relative;
+  }
+
+  .circle-container h1 {
+    font-size: 50px;
+    margin: 0;
+    font-weight: 600;
+    color: white;
+  }
+
+  .circle-container p {
+    margin: 8px 0 20px;
+    font-size: 16px;
+    color: #aaa;
+  }
+
+  .circle-container button {
+    background: linear-gradient(145deg, #0d1a2e, #12233f);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-size: 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: inset 0 0 4px #00aaff, 0 2px 10px rgba(0,0,0,0.6);
+    transition: background 0.3s;
+  }
+
+  .circle-container button:hover {
+    background: #0f2e4f;
+  }
+
+  .box-OEE{
+    border-radius: 15px;
+    background-color: #2B2B2B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }

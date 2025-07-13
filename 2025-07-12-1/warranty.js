@@ -590,6 +590,14 @@ function openTab(evt, tabName) {
     $(evt.currentTarget).addClass('active');
 }
 
+$("#outPermission").off("click").click(function () {
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+
+    if(window.shareWorkStation){
+        window.shareWorkStation("Sản phẩm "+ dataWarranty[0].PRODUCT_NAME, dataWarranty[0].PRODUCT_IMG, "Q=OWNER&CK="+dataWarranty[0].CK_CODE);
+    }
+});
+
 $("#share-warranty-admin").off("click").click(function () {
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
 
