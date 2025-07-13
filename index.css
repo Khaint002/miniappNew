@@ -1998,60 +1998,14 @@ h1 {
     border-radius: 15px;
     background-color: #2B2B2B;
     color: white;
-    padding: 20px;
     margin-top: 20px;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.3s ease-in-out;
     height: auto; /* Giữ chiều cao tự động */
     overflow: hidden; /* Đảm bảo nội dung không bị tràn ra ngoài */
-}
-
-.box-OEE:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-.box-OEE .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap; /* Đảm bảo các phần tử không bị cắt ngắn nếu không đủ chỗ */
-}
-
-.box-OEE .header h4 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0; /* Đảm bảo tiêu đề không bị đẩy ra ngoài */
-    word-wrap: break-word; /* Đảm bảo tiêu đề không bị cắt ngắn */
-}
-
-.box-OEE .percentage {
-    font-size: 20px;
-    color: #2ECC71; /* Màu xanh lá cho tỷ lệ phần trăm */
-    font-weight: 600;
-    min-width: 80px; /* Đảm bảo tỷ lệ phần trăm có đủ không gian */
-}
-
-.box-OEE .details {
-    margin-top: 10px;
-}
-
-.box-OEE .detail-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-
-.box-OEE .label, .box-OEE .value {
-    font-size: 14px;
-    color: #ddd; /* Màu chữ nhẹ để không làm cho giao diện quá rối mắt */
-}
-
-.box-OEE .value {
-    font-weight: 500;
 }
 
 
