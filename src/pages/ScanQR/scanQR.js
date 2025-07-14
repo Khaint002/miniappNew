@@ -15,7 +15,6 @@ $(".start").off("click").click(function () {
     } else if(HOMEOSAPP.checkTabHistory == 2 || HOMEOSAPP.checkTabHistory == 3){
         typeQR = 2;
     }
-
     if (dataId == 3) {
         const lotNumber = $("#lot-number").val();
         const classProduct = $("#classProduct").val().trim();

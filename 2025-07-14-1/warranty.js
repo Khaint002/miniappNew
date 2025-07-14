@@ -648,7 +648,7 @@ $("#product-guide").off("click").click(function () {
 })
 
 $("#product-Control").off("click").click(function () {
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
 })
 
 accessDeviceWarranty();
