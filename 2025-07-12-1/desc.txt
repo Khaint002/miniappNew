@@ -1,3 +1,2 @@
-Update app ngày 12/07/2025 lần 1:
-- fix lỗi không xác nhận chủ sở hữu khi quét qr
-- update giao diện OEE
+Cập nhật ngày 14/7/2025 lần 1:
+thêm phần 

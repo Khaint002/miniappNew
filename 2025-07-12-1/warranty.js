@@ -72,7 +72,13 @@ async function accessDeviceWarranty() {
                 } else {
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
                 }
-                
+                if(dataQRProduct[0].PRODUCT_TYPE == 2){
+                    $("#btn-guide").removeClass("d-none");
+                    $("#product-guide").removeClass("d-flex");
+                    $("#product-guide").addClass("d-none");
+                    $("#product-Control").addClass("d-flex");
+                    $("#product-Control").removeClass("d-none");
+                }
                 changeDataWarranty(dataQRProduct);
                 DetailProduct();
             }
@@ -116,6 +122,9 @@ async function changeDataWarranty(data) {
     // Hiển thị số seri
     const seri = (qrParts.length === 4) ? qrParts[3] : qrParts[2].substring(1);
     document.getElementById('productSeri').textContent = "Số seri: " + seri;
+    if(data[0].PRODUCT_TYPE == 2){
+        HOMEOSAPP.CodeCondition = seri;
+    }
     if (seri) {
         document.getElementById('productCodeInput').value = seri;
         document.getElementById('productCodeInput').setAttribute("readonly", true);
@@ -615,17 +624,31 @@ $("#share-warranty-guest").off("click").click(function () {
 
 $("#product-buyagain").off("click").click(function () {
     const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
-    if(dataWarranty[0].PRODUCT_DESC != null){
-        window.location.href = dataWarranty[0].PRODUCT_DESC;
+    if(dataWarranty[0].PRODUCT_LINK_STORE != null){
+        window.location.href = dataWarranty[0].PRODUCT_LINK_STORE;
     }
+});
+
+$("#btn-guide").off("click").click(function () {
+    HOMEOSAPP.loadPage("permission-popup");
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    const rawPdfUrl = dataWarranty[0].PRODUCT_GUIDE;
+    const viewerUrl = "https://docs.google.com/gview?embedded=true&url=" + encodeURIComponent(rawPdfUrl);
+
+    document.getElementById("pdfViewer").src = viewerUrl;
 })
 
 $("#product-guide").off("click").click(function () {
     HOMEOSAPP.loadPage("permission-popup");
-    const rawPdfUrl = "https://central.homeos.vn/singlepage/workstation/src/dist/file/ASS.F2200.Datasheet.2025-07.pdf";
+    const dataWarranty = JSON.parse(localStorage.getItem("productWarranty"));
+    const rawPdfUrl = dataWarranty[0].PRODUCT_GUIDE;
     const viewerUrl = "https://docs.google.com/gview?embedded=true&url=" + encodeURIComponent(rawPdfUrl);
 
     document.getElementById("pdfViewer").src = viewerUrl;
+})
+
+$("#product-Control").off("click").click(function () {
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
 })
 
 accessDeviceWarranty();
