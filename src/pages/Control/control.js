@@ -509,7 +509,7 @@ $("#change-view").on("click", function () {
                     <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
                 `);
             $("#view-text").text("EMS");
-            renderOEEChannels(3, 1);
+            renderOEEChannels();
         } else {
             $("#view-OEE").fadeOut(100, function () {
                 $("#view-EMS").fadeIn(100);
@@ -1387,11 +1387,30 @@ function attachEditHandler(span, control) {
                             style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
                             <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
                         </div> */}
-function renderOEEChannels(count, selectedIndex = 1) {
+async function renderOEEChannels(count, selectedIndex = 1) {
+    const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
+    const dataQRcode = dataItemCabinet[0].QR_CODE.split(",");
+    const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
+    const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
+    const dataDevice = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "ZALO_LINKED_QRCODE",
+        "ACTIVE = 1 AND QRCODE_ID = " + dataItemCabinet[0].PR_KEY
+    );
+    
+    let localDataRaw = JSON.parse(localStorage.getItem("dataCondition")) || [];
+        
+    const datacontrol = localDataRaw.find(item => item.CodeCondition == dataQRcode[3]) || null;
+
     const $container = $("#list-OEE");
     $container.empty();
     let delay = 0;
-    for (let i = 1; i <= count; i++) {
+    for (let i = 1; i <= numberOfMeters; i++) {
+        let nameMeter = dataDevice.data[0].NAME_CHANNEL + " " + i;
+        if(datacontrol?.meterNames){
+            nameMeter = datacontrol.meterNames[i-1];
+        }
+
         delay += 0.1;
         let status = 'On';
         if(i == 2){
@@ -1404,11 +1423,11 @@ function renderOEEChannels(count, selectedIndex = 1) {
                     <div id="PickApp-button-${i}" class="iconApp">
                         <div class="info-box-content">
                             <div class="d-flex justify-content-between">
-                                <span class="app-text">Kênh ${i}</span>
+                                <span class="app-text">${nameMeter}</span>
                                 <span class="app-text status${status}"><div class="status-${status}"></div> trạng thái hoạt động</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Thiết bị 1</span>
+                                <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${nameMeter}</span>
                                 <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                                         <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
@@ -1432,6 +1451,7 @@ function renderOEEChannels(count, selectedIndex = 1) {
                 .addClass("slide-OEE-in-right");
                 $("#list-OEE").addClass("d-none");
             }, 200);
+            $("#nameDevice").text(nameMeter);
         })
 
         $container.append($channel);
