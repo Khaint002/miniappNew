@@ -1411,6 +1411,33 @@ HOMEOSAPP.getDataMDQRcode = function(QRcode) {
     });
 }
 
+HOMEOSAPP.getDataOEE = function(NAME_TAG) {
+    const url = "https://central.homeos.vn/service_XD/service.svc/";
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url + "ApiServicePublic/" + "GetDataOEEZaloApp" + "/" + "NAME_TAG=" + NAME_TAG,
+            type: "GET",
+            dataType: "jsonp",
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    resolve(state); // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error); // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                
+            },
+        });
+    });
+}
+
 HOMEOSAPP.getDataChartCondition = function(startDate, endDate, ZONE_ID, ZONE_ADDRESS, DEVICE_ID){
 
     // const url = "https://DEV.HOMEOS.vn/service/service.svc/";

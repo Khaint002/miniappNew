@@ -5,6 +5,7 @@ var intervalId = null;
 var relayTimeouts = {};
 var cabinetID;
 var isActive = false;
+var statusOEE;
 HOMEOSAPP.itemlinkQR;
 
 var ctx_U = document.getElementById("chartVoltage").getContext("2d");
@@ -17,7 +18,14 @@ var ChartU, ChartI, ChartP, ChartE;
 async function accessDevice() {
     $('#qr-popup').hide();
     const inputValue = HOMEOSAPP.CodeCondition;
-
+    const dataStatusOEE = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "DM_STATUS",
+        "DESCRIPTION = 'OEE'"
+    );
+    statusOEE = dataStatusOEE.data
+    console.log(statusOEE);
+    
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
     } else {
@@ -496,8 +504,9 @@ $("#export-condition")
     });
 
 
-$("#change-view").on("click", function () {
+$("#change-view").off("click").on("click", function () {
     isActive = !isActive;
+
     $("#view-icon, #view-text").fadeOut(150, function () {
         if (isActive) {
             $("#view-EMS").fadeOut(100, function () {
@@ -509,7 +518,7 @@ $("#change-view").on("click", function () {
                     <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
                 `);
             $("#view-text").text("EMS");
-            renderOEEChannels();
+            
         } else {
             $("#view-OEE").fadeOut(100, function () {
                 $("#view-EMS").fadeIn(100);
@@ -525,7 +534,9 @@ $("#change-view").on("click", function () {
         $("#view-icon, #view-text").fadeIn(100);
     });
     
-
+    if(isActive){
+        renderOEEChannels();
+    }
     // Gọi hàm xử lý logic nếu cần
     customToggleFunction(isActive);
 });
@@ -1387,11 +1398,17 @@ function attachEditHandler(span, control) {
                             style="background-color: ${app.bgColor}; width: 60px; height: 60px; border-radius: 10px;">
                             <i class="bi ${app.icon}" style="font-size: 2rem; color: #fff;"></i>
                         </div> */}
-async function renderOEEChannels(count, selectedIndex = 1) {
+async function renderOEEChannels() {
     const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
     const dataQRcode = dataItemCabinet[0].QR_CODE.split(",");
     const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
     const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
+    const dataStatusOEE = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "LOG_ZONE_LANDING",
+        "WORKSTAITON_ID = '" + dataQRcode[3] +"'"
+    );
+    console.log(dataStatusOEE);
     const dataDevice = await HOMEOSAPP.getDM(
         "https://central.homeos.vn/service_XD/service.svc",
         "ZALO_LINKED_QRCODE",
@@ -1411,12 +1428,21 @@ async function renderOEEChannels(count, selectedIndex = 1) {
             nameMeter = datacontrol.meterNames[i-1];
         }
 
+        let device = 31 + Math.floor((i - 1) / 3);
+        let a = ((i - 1) % 3) + 1;
+        const matchedObj = dataStatusOEE.data.find(item => item.NO === device && item.ID === a);
+        const detailstatusOEE = statusOEE.find(s => s.STATUS_ID === matchedObj.STATUS.trim());
+        console.log(matchedObj);
+        
+        const colorStatus = getStatusColor(detailstatusOEE.STATUS_ID);
+        console.log(colorStatus);
         delay += 0.1;
         let status = 'On';
         if(i == 2){
             status = 'Off';
         }
         // const isActive = i === selectedIndex;
+
         const $channel = $(`
             <div class="col-12 m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
                 <div class="zoom-box slide-in-right" style="animation-delay: ${delay}s; animation-fill-mode: both;">
@@ -1424,7 +1450,7 @@ async function renderOEEChannels(count, selectedIndex = 1) {
                         <div class="info-box-content">
                             <div class="d-flex justify-content-between">
                                 <span class="app-text">${nameMeter}</span>
-                                <span class="app-text status${status}"><div class="status-${status}"></div> trạng thái hoạt động</span>
+                                <span class="app-text status" style="color: ${colorStatus};"><div class="status-icon" style="background-color: ${colorStatus};"></div>${detailstatusOEE.STATUS_NAME}</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${nameMeter}</span>
@@ -1452,22 +1478,87 @@ async function renderOEEChannels(count, selectedIndex = 1) {
                 $("#list-OEE").addClass("d-none");
             }, 200);
             $("#nameDevice").text(nameMeter);
+            const nameTag = dataQRcode[3] + device.toString().padStart(3, '0') + a.toString().padStart(2, '0');
+            getDataOEEtoChannel(nameTag);
         })
 
         $container.append($channel);
     }
 
     // Sự kiện click chọn kênh
-    $(".channel-item").on("click", function () {
-        $(".channel-item").removeClass("active");
-        $(this).addClass("active");
+    // $(".channel-item").on("click", function () {
+    //     $(".channel-item").removeClass("active");
+    //     $(this).addClass("active");
 
-        const index = $(this).data("index");
-        console.log("Kênh được chọn:", index);
-        // Gọi hàm xử lý khác nếu cần
-    });
+    //     const index = $(this).data("index");
+    //     console.log("Kênh được chọn:", index);
+    //     // Gọi hàm xử lý khác nếu cần
+    // });
 
     $container.fadeIn(300);
+}
+
+function getStatusColor(statusId) {
+    switch (statusId?.trim()) {
+        case "ABNORMAL":     return "#db6974"; // đỏ
+        case "LOAD":         return "#ffc107"; // vàng
+        case "NO_LOAD":      return "#6c757d"; // xám
+        case "NORMAL":       return "#007bff"; // xanh dương
+        case "RUNNING":       return "#28a745"; // xanh lá
+        case "STARTED":      return "#17a2b8"; // xanh ngọc
+        case "STOPPED":      return "#6f42c1"; // tím
+        default:             return "#999";    // mặc định: xám nhạt
+    }
+}
+
+async function getDataOEEtoChannel(nameTag) {
+    const dataOEE = await HOMEOSAPP.getDataOEE(nameTag);
+    console.log(dataOEE);
+    const findValue = (jobName) => {
+        const found = dataOEE.find(d => d.JOB_NAME === jobName);
+        return found ? found.VALUE : 0;
+    };
+    // Gán % OEE
+    $(".circle-container h1").text(Math.round(findValue("OEE") * 100) + "%");
+    const color = getOEEColor(Math.round(findValue("OEE") * 100));
+    $(".circle-container").css({
+        "border": `6px solid ${color}`,
+        "box-shadow": `0 0 20px ${color}`,
+        "color": color
+    });
+    // Gán số lần dừng máy
+    $(".box-OEE:contains('Dừng máy') span").text(` ${findValue("Số lần dừng máy")} `);
+
+    $(".box-OEE:contains('Quá tải') span").text(` ${findValue("Số lần quá tải")} `);
+    // Gán số quá tải (nếu có dữ liệu riêng thì thêm tiếp)
+
+    // Tính khả dụng (A)
+    $(".box-OEE:contains('Tính khả dụng') span").first().text((findValue("Tính khả dụng") * 100).toFixed(2) + "%");
+    $(".box-OEE:contains('Tính khả dụng')").find("div:eq(1) span:last").text("24/24");
+    $(".box-OEE:contains('Tính khả dụng')").find("div:eq(2) span:last").text((findValue("Thời gian hoạt động") / 60).toFixed(1));
+    $(".box-OEE:contains('Tính khả dụng')").find("div:eq(3) span:last").text((findValue("Thời gian Downtime") / 60).toFixed(1));
+
+    // Hiệu suất (P)
+    $(".box-OEE:contains('Hiệu suất') span").first().text((findValue("Hiệu suất thiết bị") * 100).toFixed(2) + "%");
+    $(".box-OEE:contains('Hiệu suất')").find("div:eq(1) span:last").text("15");
+    $(".box-OEE:contains('Hiệu suất')").find("div:eq(2) span:last").text((findValue("Thời gian chạy trong định mức (P)") / 60).toFixed(1));
+    $(".box-OEE:contains('Hiệu suất')").find("div:eq(3) span:last").text(""); // chưa có logic cụ thể
+
+    // Chất lượng (Q)
+    $(".box-OEE:contains('Chất lượng') span").first().text((findValue("Chất lượng") * 100).toFixed(2) + "%");
+    $(".box-OEE:contains('Chất lượng')").find("div:eq(1) span:last").text(findValue("Tổng sản lượng (Q)"));
+    $(".box-OEE:contains('Chất lượng')").find("div:eq(2) span:last").text(findValue("Số lượng OK (Q)"));
+    $(".box-OEE:contains('Chất lượng')").find("div:eq(3) span:last").text(findValue("Số lượng NG (Q)"));
+}
+
+function getOEEColor(percent) {
+    if (percent < 10) {
+        return "#dc3545"; // đỏ
+    } else if (percent < 50) {
+        return "#ffc107"; // vàng
+    } else {
+        return "#28a745"; // xanh lá
+    }
 }
 
 $("#detail-OEE-back").off("click").click(() => {

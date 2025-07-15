@@ -1911,35 +1911,18 @@ h1 {
     text-align: right;
 }
 
-.statusOn {
-    color: #4caf50;
+
+.status {
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.statusOff {
-    color: #ff5b5b;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.status-On {
+.status-icon {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background-color: #4caf50;
-}
-
-
-.status-Off {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background-color: #ff5b5b;
 }
 
 .arrow-icon {
