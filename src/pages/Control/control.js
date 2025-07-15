@@ -1579,15 +1579,18 @@ $("#detail-OEE-back").off("click").click(() => {
 
 function checkHeight() {
     const vh = $(window).height();
-    $('#history-detail').height(vh - 160);
-    $('#total-history-loading').height(vh - 180);
-    $('#tabWrapper').height(vh - 130);
-    $('#tabMap').height(vh - 130);
-    $('#list-history-detail').height(vh - 530);
-    $('#history-setting-detail').css('max-height', vh - 200);
+    const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
+    const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
+    const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
+    if(numberOfMeters <= 3){
+        $('#List-meter').height(vh - 450);
+    } else {
+        $('#List-meter').height(vh - 550);
+    }
+    
 }
 
 $(window).on('resize', checkHeight);
 // Gắn handler cho tất cả editable span
-
+checkHeight()
 accessDevice();
