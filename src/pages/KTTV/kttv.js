@@ -178,31 +178,33 @@ async function getDataMonitoring() {
     }
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
-    data.D = data.D.filter(item => {
-        if (item.ZONE_PROPERTY === 'RD') {
-            const itemDateStr = item.DATE_CREATE.split('T')[0];
-            return itemDateStr === todayStr; // Giữ lại nếu là hôm nay
-        }
-        return true; // Giữ lại tất cả item khác RD
-    });
-    if (data.D && data.D.length > 0) {
-        const lastItem = data.D[data.D.length - 1];
-        keyItem = lastItem.PR_KEY;
-    }
-    changeDataHomePage(data.D);
-    setIntervalMonitoring = setInterval(async () => {
-        const data = await HOMEOSAPP.getNewData(
-            localStorage.getItem("MATRAM"),
-            "WORKSTATION_ID='" + localStorage.getItem("MATRAM") + "'",
-            localStorage.getItem("URL"),
-            keyItem
-        );
+    if(data.D != undefined){
+        data.D = data.D.filter(item => {
+            if (item.ZONE_PROPERTY === 'RD') {
+                const itemDateStr = item.DATE_CREATE.split('T')[0];
+                return itemDateStr === todayStr; // Giữ lại nếu là hôm nay
+            }
+            return true; // Giữ lại tất cả item khác RD
+        });
         if (data.D && data.D.length > 0) {
             const lastItem = data.D[data.D.length - 1];
             keyItem = lastItem.PR_KEY;
-            changeDataHomePage(data.D);
         }
-    }, 10000);
+        changeDataHomePage(data.D);
+        setIntervalMonitoring = setInterval(async () => {
+            const data = await HOMEOSAPP.getNewData(
+                localStorage.getItem("MATRAM"),
+                "WORKSTATION_ID='" + localStorage.getItem("MATRAM") + "'",
+                localStorage.getItem("URL"),
+                keyItem
+            );
+            if (data.D && data.D.length > 0) {
+                const lastItem = data.D[data.D.length - 1];
+                keyItem = lastItem.PR_KEY;
+                changeDataHomePage(data.D);
+            }
+        }, 10000);
+    }
 }
 
 stopIntervalMonitoring = function() {

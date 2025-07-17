@@ -214,19 +214,26 @@ async function startInterval() {
 
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0]; // Ví dụ: "2025-06-04"
-        data.D = data.D.filter(item => {
-            if (item.ZONE_PROPERTY === 'RD') {
-                const itemDateStr = item.DATE_CREATE.split('T')[0];
-                return itemDateStr === todayStr; // Giữ lại nếu là hôm nay
+        console.log(data.D);
+        
+        if(data.D != undefined){
+            data.D = data.D.filter(item => {
+                if (item.ZONE_PROPERTY === 'RD') {
+                    const itemDateStr = item.DATE_CREATE.split('T')[0];
+                    return itemDateStr === todayStr; // Giữ lại nếu là hôm nay
+                }
+                return true; // Giữ lại tất cả item khác RD
+            });
+            if (data.D && data.D.length > 0) {
+                const lastItem = data.D[data.D.length - 1];
+                historyItems[i].key = lastItem.PR_KEY;
             }
-            return true; // Giữ lại tất cả item khác RD
-        });
-        if (data.D && data.D.length > 0) {
-            const lastItem = data.D[data.D.length - 1];
-            historyItems[i].key = lastItem.PR_KEY;
+            processAndUpdate(data);
+            await updateWorkstationUI(station, data);
         }
-        processAndUpdate(data);
-        await updateWorkstationUI(station, data);
+        
+        
+
     }
 
     intervalId = setInterval(async () => {
