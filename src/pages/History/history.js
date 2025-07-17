@@ -205,11 +205,13 @@ async function startInterval() {
 
     for (let i = historyItems.length - 1; i >= 0; i--) {
         const station = historyItems[i];
+        console.log(station);
         const data = await HOMEOSAPP.getNewData(
             station.CodeWorkStation,
             `WORKSTATION_ID='${station.CodeWorkStation}'`,
             `https://${station.domain}/Service/Service.svc`
         );
+
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0]; // Ví dụ: "2025-06-04"
         data.D = data.D.filter(item => {
@@ -587,8 +589,6 @@ function checkHeight() {
     $('#list-history-detail').height(vh - 530);
     $('#history-setting-detail').css('max-height', vh - 200);
 }
-
-
 $(window).on('resize', checkHeight);
 //-------------------------------------------------------------------------------
 

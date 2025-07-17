@@ -1020,7 +1020,7 @@ async function createElectricityMeter(data, name, cabinetID, control) {
         let device = 31;
         if(numberOfMeters == 1){
             const result = await getDataEOEE(numberOfMeters, cabinetID);
-
+            
             const stringE = await renderElectricCompareResult(result.valueKWHToday, result.valueKWH);
             container.innerHTML = stringE;
         }
