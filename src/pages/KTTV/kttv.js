@@ -204,6 +204,8 @@ async function getDataMonitoring() {
                 changeDataHomePage(data.D);
             }
         }, 10000);
+    } else {
+        $('#loading-popup').hide(); 
     }
 }
 
