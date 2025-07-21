@@ -1537,7 +1537,7 @@ function addItemWarranty() {
                     '</div>' +
                     '</div>'
                 );
-                const isLast = item === warrantyItems[warrantyItems.length - 1];
+                const isLast = item === ConditionItems[ConditionItems.length - 1];
                 const paddingStyle = isLast ? 'padding-bottom: 70px;' : 'padding-bottom: 13px;';
                 // Tạo phần tử bao bọc với nút X
                 const totalElement = $(

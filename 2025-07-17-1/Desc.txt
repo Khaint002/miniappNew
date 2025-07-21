@@ -1,3 +1,0 @@
-Cập nhật ngày 16/7/2025 lần 1:
-- Chỉnh sửa việc bị mấy ui trong bảo hành và điều khiển
-- sửa vị ko load được dữ liệu khi trạm mất kết nối

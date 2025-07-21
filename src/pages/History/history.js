@@ -1537,7 +1537,7 @@ function addItemWarranty() {
                     '</div>' +
                     '</div>'
                 );
-                const isLast = item === warrantyItems[warrantyItems.length - 1];
+                const isLast = item === ConditionItems[ConditionItems.length - 1];
                 const paddingStyle = isLast ? 'padding-bottom: 70px;' : 'padding-bottom: 13px;';
                 // Tạo phần tử bao bọc với nút X
                 const totalElement = $(
@@ -1583,7 +1583,7 @@ function addItemWarranty() {
             });
         }
     } else {
-        warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
+        let warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
         if (warrantyItems && warrantyItems.length > 0) {
             historyListDetail.empty()
             warrantyItems.forEach(item => {
