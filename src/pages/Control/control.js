@@ -1737,9 +1737,12 @@ function checkHeight() {
     const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
     const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
     const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
-    if(numberOfMeters <= 3){
+    if(numberOfMeters == 0){
+        $('#List-relay').addClass("d-none");
+        $('#List-meter').height(vh - 300);
+    } else if(numberOfMeters <= 3){
         $('#List-meter').height(vh - 450);
-    } else {
+    } else if(numberOfMeters > 3) {
         $('#List-meter').height(vh - 550);
     }
     
