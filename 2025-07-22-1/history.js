@@ -49,12 +49,12 @@ function showAddWorkStationButton() {
     buttonHTML.on('click', function () {
         if (HOMEOSAPP.checkTabHistory == 1) {
             HOMEOSAPP.stopInterval();
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 2) {
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (HOMEOSAPP.checkTabHistory == 3) {
             HOMEOSAPP.checkTabMenu = "DetailDevice";
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
     });
     historyListDetail.append(buttonHTML); // Giả sử bạn có một div với id "addWorkStationContainer" để chứa nút này
@@ -189,7 +189,7 @@ function handleItemClick(item) {
     const itemHistory = { 'CodeWorkStation': item.CodeWorkStation, 'NameWorkStation': item.NameWorkStation, 'domain': item.domain, 'date': HOMEOSAPP.getCurrentTime(), 'workstationType': item.workstationType }
     localStorage.setItem('itemHistory', JSON.stringify(itemHistory));
     $("#loading-popup").show();
-    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/KTTV/kttv.html");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/KTTV/kttv.html");
 }
 
 HOMEOSAPP.stopInterval = function() {
@@ -257,8 +257,6 @@ async function startInterval() {
             }
         }
     }, 10000);
-    $("#history-value").removeClass("d-none");
-    $("#history-loading").addClass("d-none");
 }
 
 function rotateProperties() {
@@ -404,6 +402,11 @@ async function showHistory(type) {
     locations = [];
     for (const item of historyItems) {
         addItemHistory(item);
+    }
+    $("#history-value").removeClass("d-none");
+    $("#history-loading").addClass("d-none");
+    for (const item of historyItems) {
+        // addItemHistory(item);
         const dataWorkstation = await HOMEOSAPP.getDM(
             "https://" + item.domain + "/service/service.svc",
             "DM_WORKSTATION",
@@ -589,7 +592,7 @@ function openTabHistory(evt, nextTabId) {
 
 function checkHeight() {
     const vh = $(window).height();
-    $('#history-detail').height(vh - 160);
+    $('#history-detail').height(vh - 220);
     $('#total-history-loading').height(vh - 180);
     $('#tabWrapper').height(vh - 130);
     $('#tabMap').height(vh - 130);
@@ -1147,7 +1150,7 @@ function WarningEnergy(value) {
 // QR code 
 $("#PickApp-button-scanQR").off("click").click(function () {
     HOMEOSAPP.checkTabMenu = "DetailDevice";
-    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
     if (HOMEOSAPP.checkTabHistory == 1) {
         HOMEOSAPP.stopInterval();
     }
@@ -1328,13 +1331,13 @@ menuItems.forEach((item) => {
             window.location.href = "https://homeos.com.vn/";
         } else if (menuText == "Thông tin sản phẩm") {
             HOMEOSAPP.checkTabMenu = "DetailDevice";
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (menuText == "Quét lô sản phẩm") {
             HOMEOSAPP.checkTabMenu = "ScanLotDevice";
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (menuText == "Quản lý và xuất lô hàng") {
             HOMEOSAPP.checkTabMenu = "ManageDevice";
-            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         }
         // Close the sidebar after selection (optional)
         sidebar.removeClass("open");
@@ -1574,7 +1577,7 @@ function addItemWarranty() {
                 element.on('click', function () {
                     HOMEOSAPP.CodeCondition = item.CodeCondition;
                     $("#loading-popup").show();
-                    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
+                    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
                 });
 
                 // Thêm phần tử vào danh sách lịch sử
@@ -1583,7 +1586,7 @@ function addItemWarranty() {
             });
         }
     } else {
-        warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
+        let warrantyItems = JSON.parse(localStorage.getItem('dataWarranty'));
         if (warrantyItems && warrantyItems.length > 0) {
             historyListDetail.empty()
             warrantyItems.forEach(item => {
@@ -1650,7 +1653,7 @@ function addItemWarranty() {
                     const isAllowed = await HOMEOSAPP.checkPermissionDevice(matchedItem);
                     if (!isAllowed) return;
                     HOMEOSAPP.CodeWarranty = item.CodeWarranty;
-                    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Warranty/warranty.html");
+                    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Warranty/warranty.html");
                 });
 
                 // Thêm phần tử vào danh sách lịch sử

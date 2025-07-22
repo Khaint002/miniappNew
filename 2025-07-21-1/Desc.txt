@@ -1,2 +1,0 @@
-Cập nhật ngày 21/7/2025 lần 1:
-- chỉnh sửa ui control khi không có điều khiển

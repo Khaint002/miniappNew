@@ -257,8 +257,6 @@ async function startInterval() {
             }
         }
     }, 10000);
-    $("#history-value").removeClass("d-none");
-    $("#history-loading").addClass("d-none");
 }
 
 function rotateProperties() {
@@ -404,6 +402,11 @@ async function showHistory(type) {
     locations = [];
     for (const item of historyItems) {
         addItemHistory(item);
+    }
+    $("#history-value").removeClass("d-none");
+    $("#history-loading").addClass("d-none");
+    for (const item of historyItems) {
+        // addItemHistory(item);
         const dataWorkstation = await HOMEOSAPP.getDM(
             "https://" + item.domain + "/service/service.svc",
             "DM_WORKSTATION",
@@ -589,7 +592,7 @@ function openTabHistory(evt, nextTabId) {
 
 function checkHeight() {
     const vh = $(window).height();
-    $('#history-detail').height(vh - 160);
+    $('#history-detail').height(vh - 220);
     $('#total-history-loading').height(vh - 180);
     $('#tabWrapper').height(vh - 130);
     $('#tabMap').height(vh - 130);

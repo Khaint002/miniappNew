@@ -59,6 +59,7 @@ async function accessDevice() {
             toastr.error("Sản phẩm không tồn tại hoặc chưa được thêm vào hệ thống");
         }
     }
+    checkHeight();
 }
 
 // truy cập websocket
@@ -1742,12 +1743,9 @@ function checkHeight() {
     const vh = $(window).height();
     const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
     const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
-    const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
+    // const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
     const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
-    console.log(numberOfMeters);
     if(numberOfRelays == 0){
-        console.log('test');
-        
         $('#List-relay').addClass("d-none");
         $('#List-meter').height(vh - 300);
     } else if(numberOfRelays <= 3){
@@ -1755,10 +1753,9 @@ function checkHeight() {
     } else if(numberOfRelays > 3) {
         $('#List-meter').height(vh - 550);
     }
-    
 }
 
 $(window).on('resize', checkHeight);
 // Gắn handler cho tất cả editable span
-checkHeight()
-accessDevice();
+
+accessDevice();r

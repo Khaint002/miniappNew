@@ -33,6 +33,7 @@ async function accessDevice() {
             "DM_QRCODE",
             "1=1"
         );
+        
         const matchedItem = dataQRcode.data.find(
             (item) =>
                 item.QR_CODE.slice(-inputValue.length).replace(/\./g, "") ===
@@ -42,6 +43,16 @@ async function accessDevice() {
             dataWarranty.push(matchedItem);
         }
         if (dataWarranty.length == 1) {
+            const dataCabinet = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "LOG_ZONE_00h",
+                "ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"' AND PR_KEY = (SELECT MAX(PR_KEY) FROM dbo.LOG_ZONE_00h WHERE ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"')"
+            );
+            if(dataCabinet.data.length != 0){
+                document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối"
+                document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinet.data[0].DATE_CREATE);
+            }
+            
             if (HOMEOSAPP.CodeCondition) {
                 $("#loading-popup").show();
                 let checkQRcode = dataWarranty[0].QR_CODE.split(",");
@@ -177,8 +188,7 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
                     intervalId = null;
                 }
                 const temp = txt.split(",");
-                document.getElementById("setDateTimeCondition").textContent =
-                    temp[0].substring(cabinetID.length + 3);
+                document.getElementById("setDateTimeCondition").textContent = temp[0].substring(cabinetID.length + 3);
                 document.getElementById("statusCabinet").textContent = "Online";
                 updateIndicator("#online", "#ceac30");
 
@@ -1758,4 +1768,4 @@ function checkHeight() {
 $(window).on('resize', checkHeight);
 // Gắn handler cho tất cả editable span
 
-accessDevice();r
+accessDevice();
