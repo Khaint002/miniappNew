@@ -744,8 +744,22 @@
                         Downtime
                     </p>
                 </div>
-                <div style="background-color: #1e2833;">
-                    -
+                <div>
+                    <div id="filterDowntime">
+                        <div class="content-form row" style="background-color: rgb(0, 0, 0, 0); padding: 0">
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="startDateOEE">Ngày bắt đầu:</label>
+                                <input type="datetime-local" id="startDateOEE" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập số điện thoại..." />
+                            </div>
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="endDateOEE">Ngày kết thúc:</label>
+                                <input type="datetime-local" id="endDateOEE" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập Mã định danh sản phẩm..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="listDowntimeOEE" style="overflow-y: auto; height: 300px;">
+
+                    </div>
                 </div>
             </div>
         </div>

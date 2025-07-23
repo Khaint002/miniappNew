@@ -144,7 +144,7 @@ async function changeDataWarranty(data) {
         const tokenPhone = await window.getPhoneNum();
         const token = await window.getUserAccessToken();
         dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
-        document.getElementById('phoneNumberInput').value = dataPhone;
+        document.getElementById('phoneNumberInput').value = formatPhoneNumber(dataPhone);
         document.getElementById('phoneNumberInput').setAttribute("readonly", true);
     }
     // Tính ngày bắt đầu bảo hành từ QR

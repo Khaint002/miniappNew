@@ -6,6 +6,8 @@ var relayTimeouts = {};
 var cabinetID;
 var isActive = false;
 var statusOEE;
+var deviceID;
+var zoneID;
 HOMEOSAPP.itemlinkQR;
 
 var ctx_U = document.getElementById("chartVoltage").getContext("2d");
@@ -1657,6 +1659,18 @@ async function renderOEEChannels() {
             $("#nameDevice").text(nameMeter);
             const nameTag = dataQRcode[3] + device.toString().padStart(3, '0') + a.toString().padStart(2, '0');
             getDataOEEtoChannel(nameTag);
+
+            const now = new Date();
+            const startDate = new Date(now);
+            startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(now);
+            endDate.setHours(23, 59, 59, 999);
+
+            $("#startDateOEE").val(formatDateTimeLocal(startDate));
+            $("#endDateOEE").val(formatDateTimeLocal(endDate));
+            deviceID = device;
+            zoneID = a;
+            GetDataDowntime(dataQRcode[3], startDate, endDate);
         })
 
         $container.append($channel);
@@ -1673,6 +1687,16 @@ async function renderOEEChannels() {
     // });
 
     $container.fadeIn(300);
+}
+
+function formatDateTimeLocal(date) {
+    const pad = (n) => n.toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 function getStatusColor(statusId) {
@@ -1762,6 +1786,86 @@ $("#BackDowntime").off("click").click(() => {
     HOMEOSAPP.goBack()
 })
 
+function validateDateRange(idStart, idEnd) {
+    const start = new Date($("#"+ idStart).val());
+    const end = new Date($("#"+ idEnd).val());
+
+    if (start && end && end < start) {
+        toastr.error("Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
+        const now = new Date();
+        const startDate = new Date(now);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(now);
+        endDate.setHours(23, 59, 59, 999);
+
+        $("#startDateOEE").val(formatDateTimeLocal(startDate));
+        $("#endDateOEE").val(formatDateTimeLocal(endDate));
+        return false;
+    }
+    return true
+}
+
+// Gán sự kiện change
+$("#startDateOEE, #endDateOEE").on("change", async () => {
+    isChecking = await validateDateRange("startDateOEE", "endDateOEE");
+    if(!isChecking) return;
+    const start = new Date($("#startDateOEE").val());
+    const end = new Date($("#endDateOEE").val());
+
+    GetDataDowntime(HOMEOSAPP.CodeCondition, start, end);
+});
+
+
+async function GetDataDowntime(id, startDate, endDate) {
+    console.log(id);
+    
+    const Data = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "OEE_DOWNTIME",
+        "ZONE_ADDRESS = '"+ id +"' AND DEVICE_ID = '"+ deviceID +"' AND ZONE_ID = '"+ zoneID +"' AND DATE_CREATE BETWEEN '"+ HOMEOSAPP.formatDateTime(startDate)  +"' AND '"+ HOMEOSAPP.formatDateTime(endDate) +"'"
+    );
+    const $container = $("#listDowntimeOEE");
+    $container.empty();
+    let delay = 0;
+    let dataDowntime = Data.data;
+    console.log(dataDowntime);
+    
+    if(dataDowntime.length != 0){
+        for (let i = dataDowntime.length -1; i >= 0 ; i--) {
+            delay += 0.1;
+            //<div class="status-icon" style="background-color: ${colorStatus};">
+            const $channel = $(`
+                <div class="col-12 m-0" style="padding: 5px 10px; position: relative; overflow: hidden; height: 90px;">
+                    <div class="zoom-box slide-in-right" style="animation-delay: ${delay}s; animation-fill-mode: both;">
+                        <div id="PickApp-button-${i}" class="iconApp">
+                            <div class="info-box-content">
+                                <div class="d-flex justify-content-between">
+                                    <span class="app-text">${dataDowntime[i].FROM_DATE}</span>
+                                    <span class="app-text status" style="color: white;">${dataDowntime[i].TIME_STAMP} phút</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${dataDowntime[i].TO_DATE}</span>
+                                    <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            $channel.on('click', async function () {
+            })
+
+            $container.append($channel);
+        }
+    }
+    
+}
+
 function checkHeight() {
     const vh = $(window).height();
     const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
@@ -1776,6 +1880,7 @@ function checkHeight() {
     } else if(numberOfRelays > 3) {
         $('#List-meter').height(vh - 550);
     }
+    $('#listDowntimeOEE').height(vh - 150);
 }
 
 $(window).on('resize', checkHeight);
