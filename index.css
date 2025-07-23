@@ -1768,7 +1768,9 @@ h1 {
 #PickApp-button-scanQR:focus,
 #PickApp-button-pick:focus,
 #ScanQRNext:focus,
-#change-view:focus {
+#change-view:focus,
+#detail-Downtime:focus,
+#BackDowntime:focus {
     outline: none;
     box-shadow: none;
     border: none;

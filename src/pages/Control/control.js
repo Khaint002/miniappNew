@@ -1754,6 +1754,14 @@ $("#detail-OEE-back").off("click").click(() => {
     }, 200);
 })
 
+$("#detail-Downtime").off("click").click(() => {
+    HOMEOSAPP.loadPage("downtime-popup");
+})
+
+$("#BackDowntime").off("click").click(() => {
+    HOMEOSAPP.goBack()
+})
+
 function checkHeight() {
     const vh = $(window).height();
     const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
