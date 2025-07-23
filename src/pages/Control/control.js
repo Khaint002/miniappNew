@@ -49,7 +49,7 @@ async function accessDevice() {
                 "ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"' AND PR_KEY = (SELECT MAX(PR_KEY) FROM dbo.LOG_ZONE_00h WHERE ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"')"
             );
             if(dataCabinet.data.length != 0){
-                document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối"
+                document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối";
                 document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinet.data[0].DATE_CREATE);
             }
             
@@ -136,12 +136,17 @@ getWebSocket = async function (value) {
     }
 };
 var isCollecting = false;
+var isChecking = true;
 var collectedLines = [];
 function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
     const txt = data.data;
     const checkValue = txt.split(":");
 
     if (checkValue[0] === cabinetID) {
+        if(isChecking){
+            isChecking = false;
+            document.getElementById("setNameDateTimeCondition").textContent = "Cập nhật";
+        }
         clearTimeout(timeoutHandle);
         timeoutHandle = setTimeout(noDataReceived, 120000);
 

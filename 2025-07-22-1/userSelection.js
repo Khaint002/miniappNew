@@ -93,7 +93,7 @@ function saveSelectedAppsToLocal() {
         HOMEOSAPP.goBack();
         HOMEOSAPP.handleLogin();
     } else {
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
         DataUser = JSON.parse(localStorage.getItem("userInfo"));
         if (UserID && !DataUser) {
             HOMEOSAPP.handleLogin();

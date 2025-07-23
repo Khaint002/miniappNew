@@ -1,3 +1,4 @@
 Cập nhật ngày 22/7/2025 lần 1:
 - fix lỗi lưu cache khi vào từng thiết bị ccems.
 - sửa lại cách load khí tượng thuỷ văn, hiển thị trạm trước và load dữ liệu sau
+- thêm thời gian dữ liệu lần cuối khi vào phần điều khiển
