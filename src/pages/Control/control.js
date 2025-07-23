@@ -1786,6 +1786,14 @@ $("#BackDowntime").off("click").click(() => {
     HOMEOSAPP.goBack()
 })
 
+$("#notification-OEE").off("click").click(() => {
+    HOMEOSAPP.loadPage("notification-OEE");
+})
+
+$("#BackNotification").off("click").click(() => {
+    HOMEOSAPP.goBack()
+})
+
 function validateDateRange(idStart, idEnd) {
     const start = new Date($("#"+ idStart).val());
     const end = new Date($("#"+ idEnd).val());
