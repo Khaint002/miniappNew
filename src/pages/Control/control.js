@@ -1787,7 +1787,7 @@ $("#BackDowntime").off("click").click(() => {
 })
 
 $("#notification-OEE").off("click").click(() => {
-    HOMEOSAPP.loadPage("notification-OEE");
+    HOMEOSAPP.loadPage("notification-popup");
 })
 
 $("#BackNotification").off("click").click(() => {
