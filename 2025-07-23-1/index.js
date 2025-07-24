@@ -722,7 +722,7 @@ HOMEOSAPP.handleControlApp = function(check) {
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     
     if(check == 'IN'){
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
         setTimeout(() => {
             HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
             
@@ -787,7 +787,7 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
     checkApp = 'GUA';
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
     if(check == 'IN'){
-        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
         setTimeout(() => {
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
@@ -1686,10 +1686,10 @@ setTimeout(async () => {
         }
         if(checkparam){
             let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
-            historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
-            historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
+            historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
+            historyStack.push("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
             localStorage.setItem('historyStack', JSON.stringify(historyStack));
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/ScanQR/scanQR.html");
         }
     }
     if(!checkparam){
@@ -1697,9 +1697,9 @@ setTimeout(async () => {
         
         const saved = localStorage.getItem("selectedApps");
         if (saved) {
-            HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+            HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
         } else {
-            $("#content-block").load("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
+            $("#content-block").load("https://central.homeos.vn/singlepage/workstation/src/pages/UserSelection/userSelection.html");
         }
     }
 }, 1000);

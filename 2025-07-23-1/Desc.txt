@@ -1,0 +1,4 @@
+Cập nhật ngày 22/7/2025 lần 1:
+- tối ưu lại việc gọi REFRESH trên ws
+- thêm chi tiết downtime 
+- thêm thời gian mới nhất của OEE

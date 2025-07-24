@@ -5,6 +5,7 @@ var intervalId = null;
 var relayTimeouts = {};
 var cabinetID;
 var isActive = false;
+var isFirstConnect = true;
 var statusOEE;
 var deviceID;
 var zoneID;
@@ -45,15 +46,16 @@ async function accessDevice() {
             dataWarranty.push(matchedItem);
         }
         if (dataWarranty.length == 1) {
-            const dataCabinet = await HOMEOSAPP.getDM(
-                "https://central.homeos.vn/service_XD/service.svc",
-                "LOG_ZONE_00h",
-                "ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"' AND PR_KEY = (SELECT MAX(PR_KEY) FROM dbo.LOG_ZONE_00h WHERE ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"')"
-            );
-            if(dataCabinet.data.length != 0){
-                document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối";
-                document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinet.data[0].DATE_CREATE);
-            }
+            // const dataCabinet = await HOMEOSAPP.getDM(
+            //     "https://central.homeos.vn/service_XD/service.svc",
+            //     "LOG_ZONE_00h",
+            //     "ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"' AND PR_KEY = (SELECT MAX(PR_KEY) FROM dbo.LOG_ZONE_00h WHERE ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"')"
+            // );
+            // if(dataCabinet.data.length != 0){
+                
+                
+            
+            // }
             
             if (HOMEOSAPP.CodeCondition) {
                 $("#loading-popup").show();
@@ -71,8 +73,54 @@ async function accessDevice() {
         } else {
             toastr.error("Sản phẩm không tồn tại hoặc chưa được thêm vào hệ thống");
         }
+        const icon = document.getElementById("btn-online");
+        $("#btn-online").prop("disabled", true);
+        icon.innerHTML = `
+            <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+            </svg>
+        `;
+        $("#load-online").addClass("spin-loading");
     }
     checkHeight();
+}
+
+changeDataFirstConnect = async function (Cid) {
+    const dataCabinetlanding = await HOMEOSAPP.getDM(
+        "https://central.homeos.vn/service_XD/service.svc",
+        "LOG_ZONE_LANDING",
+        "WORKSTAITON_ID = '"+ Cid +"'"
+    );
+    for (let i = 0; i < dataCabinetlanding.data.length; i++) {
+        if(i == 0){
+            document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối";
+            document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinetlanding.data[0].DATE_CREATE);
+        }
+        if(dataCabinetlanding.data[i].NO != '41'){
+            const stringValue = await objectToFormattedString(dataCabinetlanding.data[i]);
+            updateDataLed(stringValue, "testResizableArray");
+            console.log(dataCabinetlanding.data[i], stringValue);
+        }
+    }
+}
+
+function objectToFormattedString(obj) {
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    function formatDateTime(dateStr) {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "";
+        const Y = date.getFullYear();
+        const M = pad(date.getMonth() + 1);
+        const D = pad(date.getDate());
+        const h = pad(date.getHours());
+        const m = pad(date.getMinutes());
+        const s = pad(date.getSeconds());
+        return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+    }
+
+    return `T:${formatDateTime(obj.LAST_TIME)},TD:${obj.TD},NO:${obj.NO},ID:${obj.ID},U:${obj.U},I:${obj.I},F:${obj.FEQ},P:${obj.P},PF:${obj.PF},E:${obj.ENERGY}`;
 }
 
 // truy cập websocket
@@ -107,7 +155,7 @@ getWebSocket = async function (value) {
             datacontrol
         );
         runLed7(dataItemCabinet[0].QR_CODE);
-
+        changeDataFirstConnect(cabinetID);
         // --- WebSocket 1 ---
         ws = new WebSocket(`wss://${value}/findme`);
         ws.onopen = () => {
@@ -121,20 +169,22 @@ getWebSocket = async function (value) {
         wss = new WebSocket(`wss://${value}/controller`);
         wss.onopen = () => {
             wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
+            // gọi refresh lần đầu tiên khi truy cập
+            // if(isFirstConnect){
+            //     setTimeout(() => {
+            //         console.log("chạy đoạn 1");
+                    
+            //         const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
+            //         wss.send(JSON.stringify(cmd));
+            //     }, 1000);
+            //     isFirstConnect = false;
+            // }
         };
-
-        // Send refresh command after short delay
-        setTimeout(() => {
-            const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
-            wss.send(JSON.stringify(cmd));
-        }, 1000);
-
         // Final UI updates
         $("#loading-popup").hide();
         saveCondition(JSON.parse(localStorage.getItem("itemCondition")), datacontrol);
     } catch (e) {
         console.error("Error in getWebSocket:", e);
-        // alert(`Máy chủ ${$("#txtDNSServer").val()} hiện đang tắt.!`);
     }
 };
 var isCollecting = false;
@@ -149,6 +199,22 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             isChecking = false;
             document.getElementById("setNameDateTimeCondition").textContent = "Cập nhật";
         }
+        if(isFirstConnect){
+            const icon = document.getElementById("btn-online");
+            if ($("#online").css("background-color") == "rgb(206, 172, 48)") {
+                $("#online").css("background", "#ceac30");
+                $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
+            }
+            $("#btn-online").prop("disabled", false);
+            icon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
+                </svg>
+            `
+            isFirstConnect = false;
+        }
+        console.log(txt);
+        
         clearTimeout(timeoutHandle);
         timeoutHandle = setTimeout(noDataReceived, 120000);
 
@@ -415,8 +481,10 @@ var noDataReceived = function () {
     document.getElementById("statusCabinet").textContent = "Offline";
     intervalId = setInterval(() => {
         onClose();
+        console.log("chạy WS");
+        
         getWebSocket("homeos.vn:447");
-    }, 10000);
+    }, 100000);
 };
 
 $("#online")
@@ -427,11 +495,11 @@ $("#online")
         // $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
         $("#btn-online").prop("disabled", true);
         icon.innerHTML = `
-        <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-        </svg>
-    `;
+            <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+            </svg>
+        `;
         $("#load-online").addClass("spin-loading");
         setTimeout(() => {
             if ($("#online").css("background-color") == "rgb(206, 172, 48)") {
@@ -444,7 +512,8 @@ $("#online")
                 <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
             </svg>
         `;
-        }, 5000);
+        }, 15000);
+        console.log("chạy đoạn click");
         let cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
         wss.send(JSON.stringify(cmd));
     });
@@ -1236,8 +1305,8 @@ function getEnergySavingOrLossPercent(data, currentDate = new Date()) {
         d.THANG == (yesterday.getMonth() + 1) &&
         d.NAM == yesterday.getFullYear()
     );
-    const valueKWH = getHourRangeWithEnergy(yesterdayData)
-    const valueKWHToday = getHourRangeWithEnergy(todayData)
+    const valueKWH = getHourRangeWithEnergy(yesterdayData, 'yesterday')
+    const valueKWHToday = getHourRangeWithEnergy(todayData, 'today')
 
     return {
         valueKWH,
@@ -1245,7 +1314,7 @@ function getEnergySavingOrLossPercent(data, currentDate = new Date()) {
     };
 }
 
-function getHourRangeWithEnergy(entry) {
+function getHourRangeWithEnergy(entry, check) {
     let totalValue;
     if(entry != undefined){
         let minHour = null;
@@ -1266,6 +1335,11 @@ function getHourRangeWithEnergy(entry) {
         }
 
         const energyStart = parseFloat(entry[`GIO_${minHour}`] || 0);
+        if(check == 'yesterday'){
+            const today = new Date();
+            const nowHour = today.getHours();
+            maxHour = nowHour - 1;
+        }
         const energyEnd = parseFloat(entry[`GIO_${maxHour}`] || 0);
         console.log(maxHour, minHour);
         totalValue = (energyEnd - energyStart).toFixed(3)
@@ -1335,8 +1409,10 @@ var onClose = function () {
 $(".WarrantyScanNext")
     .off("click")
     .click(function () {
+        onClose();
         HOMEOSAPP.handleControlApp();
     });
+
 createChartDataCondition = function (data) {
     // Destroy charts if exist
     [ChartU, ChartI, ChartP, ChartE].forEach((chart) => {
@@ -1714,7 +1790,7 @@ function getStatusColor(statusId) {
 
 async function getDataOEEtoChannel(nameTag) {
     const dataOEE = await HOMEOSAPP.getDataOEE(nameTag);
-    console.log(dataOEE);
+    console.log(dataOEE[0]);
     const findValue = (jobName) => {
         const found = dataOEE.find(d => d.JOB_NAME === jobName);
         return found ? found.VALUE : 0;
@@ -1722,6 +1798,7 @@ async function getDataOEEtoChannel(nameTag) {
     // Gán % OEE
     $(".circle-container h1").text(Math.round(findValue("OEE") * 100) + "%");
     const color = getOEEColor(Math.round(findValue("OEE") * 100));
+    $("#lastTimeOEE").text( HOMEOSAPP.formatDateTime(dataOEE[0]?.DATE_CREATED, "HH:mm DD-MM-YYYY"))
     $(".circle-container").css({
         "border": `6px solid ${color}`,
         "box-shadow": `0 0 20px ${color}`,
@@ -1870,6 +1947,14 @@ async function GetDataDowntime(id, startDate, endDate) {
 
             $container.append($channel);
         }
+    } else {
+        const $channel = $(`
+            <div style="text-align: start; color: white; margin-bottom: 10px;">
+                <h5 id="section-title">Thời gian trên chưa phát sinh donwtime.</h5>
+            </div>
+        `);
+
+        $container.append($channel);
     }
     
 }
