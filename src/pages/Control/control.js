@@ -1820,7 +1820,6 @@ async function getDataOEEtoChannel(nameTag) {
     $(".box-OEE:contains('Hiệu suất') span").first().text((findValue("Hiệu suất thiết bị") * 100).toFixed(2) + "%");
     $(".box-OEE:contains('Hiệu suất')").find("div:eq(1) span:last").text((findValue("Thời gian chạy trong định mức (P)") / 60).toFixed(1));
     $(".box-OEE:contains('Hiệu suất')").find("div:eq(2) span:last").text("0");
-    $(".box-OEE:contains('Hiệu suất')").find("div:eq(3) span:last").text(""); // chưa có logic cụ thể
 
     // Chất lượng (Q)
     $(".box-OEE:contains('Chất lượng') span").first().text((findValue("Chất lượng") * 100).toFixed(2) + "%");
