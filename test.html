@@ -79,6 +79,35 @@
       display: none;
     }
 
+    .form-check-custom {
+      display: none;
+      margin: 0;
+      transform: scale(1.4);
+    }
+
+.schedule-card .check-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.schedule-card.selected .form-check-input {
+  display: block !important;
+}
+
+.schedule-card.selected .switch-toggle {
+  display: none;
+}
+
+/* Khi vào chế độ chọn, ẩn switch - hiện checkbox */
+.selection-mode .switch-toggle {
+  display: none !important;
+}
+
+.selection-mode .form-check-custom {
+  display: block !important;
+}
+
     .schedule-card.selected .check-icon {
       display: block;
     }
@@ -119,21 +148,34 @@
   </div>
 
   <!-- Danh sách -->
-  <div class="schedule-card" data-id="1">
-    <div>
-      <div class="time-range">07:00 - 09:00</div>
-      <div class="subtext">Thứ hai đến Thứ sáu | Báo thức sau 1 ngày...</div>
+  <div id="listSchedule">
+    <div class="schedule-card" data-id="1">
+      <div>
+        <div class="time-range">07:00 - 09:00</div>
+        <div class="subtext">Thứ hai đến Thứ sáu | Báo thức sau 1 ngày...</div>
+      </div>
+      <div class="check-icon">
+        <input type="checkbox" class="form-check-input form-check-custom">
+        <div class="form-check form-switch switch-toggle">
+          <input class="form-check-input" type="checkbox" checked>
+        </div>
+      </div>
     </div>
-    <div class="check-icon"><i class="bi bi-check-circle-fill"></i></div>
-  </div>
 
-  <div class="schedule-card" data-id="2">
-    <div>
-      <div class="time-range">18:00 - 20:00</div>
-      <div class="subtext">Thứ bảy | Bật sau 5 giờ...</div>
+    <div class="schedule-card" data-id="2">
+      <div>
+        <div class="time-range">18:00 - 20:00</div>
+        <div class="subtext">Thứ bảy | Bật sau 5 giờ...</div>
+      </div>
+      <div class="check-icon">
+        <input type="checkbox" class="form-check-input form-check-custom">
+        <div class="form-check form-switch switch-toggle">
+          <input class="form-check-input" type="checkbox" checked>
+        </div>
+      </div>
     </div>
-    <div class="check-icon"><i class="bi bi-check-circle-fill"></i></div>
   </div>
+  
 
   <button class="floating-btn">+</button>
   <!-- Toolbar dưới -->
@@ -152,12 +194,13 @@ let selectedItems = [];
 
 function updateSelectedCount() {
   $('#selected-count').text(`Đã chọn ${selectedItems.length} mục`);
-  if (selectedItems.length === 0) {
-    exitSelectionMode();
-  }
+  // if (selectedItems.length === 0) {
+  //   exitSelectionMode();
+  // }
 }
 
 function enterSelectionMode() {
+  $('#listSchedule').addClass('selection-mode');
   $('.header-default').addClass('d-none');
   $('#select-header').removeClass('d-none');
   $('#select-header').addClass('d-flex');
@@ -165,6 +208,7 @@ function enterSelectionMode() {
 }
 
 function exitSelectionMode() {
+  $('#listSchedule').removeClass('selection-mode');
   $('.header-default').removeClass('d-none');
   $('#select-header').addClass('d-none');
   $('#select-header').addClass('d-flex');
@@ -177,11 +221,14 @@ $('.schedule-card').on('mousedown touchstart', function (e) {
   const $card = $(this);
   longPressTimer = setTimeout(() => {
     const itemId = $card.data('id');
-    
+
     // Nếu chưa chọn
     if (!$card.hasClass('selected')) {
       $card.addClass('selected');
       selectedItems.push(itemId);
+      
+      // ✅ Check vào checkbox của mục này
+      $card.find('input[type="checkbox"]').prop('checked', true);
     }
 
     enterSelectionMode();
