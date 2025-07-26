@@ -382,11 +382,11 @@ var renderReray = async function (data, control) {
     return new Promise((resolve) => {
         const typeMatch = data.match(/(\d+)K-(\d+)TB/i);
         const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
-        if (numberOfRelays == 0) {
-            $("#schedule-condition").addClass("d-none");
-            $("#schedule-condition").removeClass("d-flex");
-        }
-        renderCheckboxes("sltDeviceForSchedule", numberOfRelays);
+        // if (numberOfRelays == 0) {
+        //     $("#schedule-condition").addClass("d-none");
+        //     $("#schedule-condition").removeClass("d-flex");
+        // }
+        // renderCheckboxes("sltDeviceForSchedule", numberOfRelays);
         const container = document.getElementById("relay-container");
         container.innerHTML = "";
 
@@ -1982,6 +1982,85 @@ function checkHeight() {
     }
     $('#listDowntimeOEE').height(vh - 150);
 }
+
+//schedule
+
+let selectedItems = [];
+
+function updateSelectedCount() {
+    $('#selected-count').text(`Đã chọn ${selectedItems.length} mục`);
+    // if (selectedItems.length === 0) {
+    //   exitSelectionMode();
+    // }
+}
+
+function enterSelectionMode() {
+    $('#listSchedule').addClass('selection-mode');
+    $('.header-default').addClass('d-none');
+    $('#select-header').removeClass('d-none');
+    $('#select-header').addClass('d-flex');
+    $('#toolbar').show();
+}
+
+function exitSelectionMode() {
+    $('#listSchedule').removeClass('selection-mode');
+    $('.header-default').removeClass('d-none');
+    $('#select-header').addClass('d-none');
+    $('#select-header').addClass('d-flex');
+    $('#toolbar').hide();
+    $('.schedule-card').removeClass('selected');
+    selectedItems = [];
+}
+
+$('.schedule-card').on('mousedown touchstart', function (e) {
+  const $card = $(this);
+  longPressTimer = setTimeout(() => {
+    const itemId = $card.data('id');
+
+    // Nếu chưa chọn
+    if (!$card.hasClass('selected')) {
+        $card.addClass('selected');
+        selectedItems.push(itemId);
+        
+        // ✅ Check vào checkbox của mục này
+        $card.find('input[type="checkbox"]').prop('checked', true);
+    }
+
+        enterSelectionMode();
+        updateSelectedCount();
+    }, 500);
+}).on('mouseup mouseleave touchend', function () {
+    clearTimeout(longPressTimer);
+});
+
+// Cho phép click nhanh để chọn/bỏ nếu đã vào chế độ chọn
+$('.schedule-card').on('click', function () {
+    if (!$('#select-header').hasClass('d-none')) {
+
+        const $card = $(this);
+        const itemId = $card.data('id');
+        const $checkbox = $card.find('.form-check-custom');
+
+        if ($card.hasClass('selected')) {
+            $card.removeClass('selected');
+            selectedItems = selectedItems.filter(id => id !== itemId);
+            $checkbox.prop('checked', false);
+        } else {
+            $card.addClass('selected');
+            selectedItems.push(itemId);
+            $checkbox.prop('checked', true);
+        }
+
+        updateSelectedCount();
+    }
+});
+
+// Nhấn nút ❌ để hủy chọn
+$('#cancel-select').on('click', function () {
+    exitSelectionMode();
+});
+
+//------------------------------------------------------------------------------------------
 
 $(window).on('resize', checkHeight);
 // Gắn handler cho tất cả editable span

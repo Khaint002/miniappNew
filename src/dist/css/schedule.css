@@ -1,0 +1,133 @@
+#listSchedule{
+    background-color: #000;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+}
+.schedule-card, .schedule-card * {
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none;     /* IE/Edge */
+  }
+  
+      .header-default,
+      .header-select {
+        padding: 5px;
+        font-size: 20px;
+        font-weight: 500;
+        border-bottom: 1px solid #333;
+      }
+  
+      .header-select {
+        justify-content: space-between;
+        align-items: center;
+      }
+  
+      .schedule-card {
+        background-color: #1e1e1e;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+  
+      .selected {
+        background-color: #3f3f3f !important;
+      }
+  
+      .time-range {
+        font-size: 24px;
+        font-weight: 600;
+      }
+  
+      .subtext {
+        font-size: 13px;
+        color: #ccc;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+  
+      .bottom-toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #111;
+        border-top: 1px solid #333;
+        text-align: center;
+        display: none;
+      }
+  
+      .bottom-toolbar i {
+        font-size: 20px;
+        display: block;
+        margin-bottom: 5px;
+      }
+  
+      .check-icon {
+        font-size: 20px;
+        color: #0d6efd;
+        display: none;
+      }
+  
+      .form-check-custom {
+        display: none;
+        margin: 0;
+        transform: scale(1.4);
+      }
+  
+  .schedule-card .check-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .schedule-card .form-check-custom {
+    border-radius: 50px;
+  }
+  
+  .schedule-card.selected .form-check-input {
+    display: block !important;
+  }
+  
+  .schedule-card.selected .switch-toggle {
+    display: none;
+  }
+  
+  /* Khi vào chế độ chọn, ẩn switch - hiện checkbox */
+  .selection-mode .switch-toggle {
+    display: none !important;
+  }
+  
+  .selection-mode .form-check-custom {
+    display: block !important;
+  }
+  
+      .schedule-card.selected .check-icon {
+        display: block;
+      }
+  
+      .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #1e1e1e;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        color: #0d6efd;
+        border: none;
+      }
+  
+      .floating-btn:hover {
+        background-color: #333;
+      }
