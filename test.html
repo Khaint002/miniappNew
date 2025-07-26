@@ -44,7 +44,7 @@
     }
 
     .selected {
-      border: 1px solid #0d6efd;
+      background-color: #3f3f3f !important;
     }
 
     .time-range {
@@ -95,6 +95,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.schedule-card .form-check-custom {
+  border-radius: 50px;
 }
 
 .schedule-card.selected .form-check-input {
@@ -154,29 +158,29 @@
   </div>
 
   <!-- Danh sách -->
-  <div id="listSchedule">
-    <div class="schedule-card" data-id="1">
-      <div>
+  <div id="listSchedule" style="margin-top: 20px;">
+    <div class="schedule-card row" data-id="1" style="--bs-gutter-x: 0rem;">
+      <div class="col-11">
         <div class="time-range">07:00 - 09:00</div>
         <div class="subtext">Thứ hai đến Thứ sáu | Báo thức sau 1 ngày...</div>
       </div>
-      <div class="check-icon">
+      <div class="check-icon col-1">
         <input type="checkbox" class="form-check-input form-check-custom">
         <div class="form-check form-switch switch-toggle">
-          <input class="form-check-input" type="checkbox" checked>
+          <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
         </div>
       </div>
     </div>
 
-    <div class="schedule-card" data-id="2">
-      <div>
+    <div class="schedule-card row" data-id="1" style="--bs-gutter-x: 0rem;">
+      <div class="col-11">
         <div class="time-range">18:00 - 20:00</div>
         <div class="subtext">Thứ bảy | Bật sau 5 giờ...</div>
       </div>
-      <div class="check-icon">
+      <div class="check-icon col-1">
         <input type="checkbox" class="form-check-input form-check-custom">
         <div class="form-check form-switch switch-toggle">
-          <input class="form-check-input" type="checkbox" checked>
+          <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
         </div>
       </div>
     </div>
@@ -247,15 +251,19 @@ $('.schedule-card').on('mousedown touchstart', function (e) {
 // Cho phép click nhanh để chọn/bỏ nếu đã vào chế độ chọn
 $('.schedule-card').on('click', function () {
   if (!$('#select-header').hasClass('d-none')) {
+
     const $card = $(this);
     const itemId = $card.data('id');
+    const $checkbox = $card.find('.form-check-custom');
 
     if ($card.hasClass('selected')) {
       $card.removeClass('selected');
       selectedItems = selectedItems.filter(id => id !== itemId);
+      $checkbox.prop('checked', false);
     } else {
       $card.addClass('selected');
       selectedItems.push(itemId);
+      $checkbox.prop('checked', true);
     }
 
     updateSelectedCount();
