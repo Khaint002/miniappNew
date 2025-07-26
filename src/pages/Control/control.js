@@ -20,13 +20,10 @@ var ChartU, ChartI, ChartP, ChartE;
 // xác định thiết bị cần truy cập
 async function accessDevice() {
     $('#qr-popup').hide();
+    setTimeout(() => {
+        $("#loading-popup").hide();
+    }, 10000);
     const inputValue = HOMEOSAPP.CodeCondition;
-    const dataStatusOEE = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
-        "DM_STATUS",
-        "DESCRIPTION = 'OEE'"
-    );
-    statusOEE = dataStatusOEE.data
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
     } else {
@@ -182,7 +179,7 @@ getWebSocket = async function (value) {
         };
         // Final UI updates
         $("#loading-popup").hide();
-        saveCondition(JSON.parse(localStorage.getItem("itemCondition")), datacontrol);
+        saveCondition(JSON.parse(localStorage.getItem("itemCondition")), datacontrol, dataDevice);
     } catch (e) {
         console.error("Error in getWebSocket:", e);
     }
@@ -304,17 +301,11 @@ function updateIndicator(selector, color) {
     });
 }
 
-async function saveCondition(data, control) {
+async function saveCondition(data, control, dataDevice) {
     const DataQRcode = data[0].QR_CODE.split(",");
     const typeMatch = data[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
     const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0; // fallback mặc định 8 nếu lỗi
     const numberOfMeters = typeMatch ? parseInt(typeMatch[2]) : 0;
-
-    const dataDevice = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
-        "ZALO_LINKED_QRCODE",
-        "ACTIVE = 1 AND QRCODE_ID = " + data[0].PR_KEY + ""
-    );
     
     let itemW = {
         CodeCondition: DataQRcode[3],
@@ -589,7 +580,7 @@ $("#export-condition")
     });
 
 
-$("#change-view").off("click").on("click", function () {
+$("#change-view").off("click").on("click", async function () {
     isActive = !isActive;
 
     $("#view-icon, #view-text").fadeOut(150, function () {
@@ -620,6 +611,12 @@ $("#change-view").off("click").on("click", function () {
     });
     
     if(isActive){
+        const dataStatusOEE = await HOMEOSAPP.getDM(
+            "https://central.homeos.vn/service_XD/service.svc",
+            "DM_STATUS",
+            "DESCRIPTION = 'OEE'"
+        );
+        statusOEE = dataStatusOEE.data
         renderOEEChannels();
     }
     // Gọi hàm xử lý logic nếu cần
@@ -1206,7 +1203,10 @@ function renderElectricCompareResult(todayValue, yesterdayValue) {
 
     const diff = todayValue - yesterdayValue;
     const percentChange = ((diff) / yesterdayValue) * 100;
-    const percentText = Math.abs(percentChange).toFixed(1) + "%";
+    let percentText = Math.abs(percentChange).toFixed(1) + "%";
+    if(percentChange == 'Infinity'){
+        percentText = '100%'
+    }
 
     let message = "";
     let color = "";
@@ -1868,7 +1868,15 @@ $("#notification-OEE").off("click").click(() => {
 
 $("#BackNotification").off("click").click(() => {
     HOMEOSAPP.goBack()
-})
+});
+
+$(".detail-OEE-setting").off("click").click(() => {
+    HOMEOSAPP.loadPage("declaration-popup");
+});
+
+$("#BackDeclaration").off("click").click(() => {
+    HOMEOSAPP.goBack();
+});
 
 function validateDateRange(idStart, idEnd) {
     const start = new Date($("#"+ idStart).val());
