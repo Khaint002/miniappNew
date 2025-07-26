@@ -13,6 +13,7 @@
       .header-select {
         padding: 5px;
         font-size: 20px;
+        height: 50px;
         font-weight: 500;
         border-bottom: 1px solid #333;
       }
@@ -109,7 +110,7 @@
   }
   
       .schedule-card.selected .check-icon {
-        display: block;
+        display: flex;
       }
   
       .floating-btn {

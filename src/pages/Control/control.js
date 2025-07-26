@@ -1985,7 +1985,7 @@ function checkHeight() {
 
 //schedule
 
-let selectedItems = [];
+var selectedItems = [];
 
 function updateSelectedCount() {
     $('#selected-count').text(`Đã chọn ${selectedItems.length} mục`);

@@ -141,6 +141,134 @@
     .floating-btn:hover {
       background-color: #333;
     }
+
+    .new-screen {
+  position: fixed;
+  top: 0;
+  left: 100%; /* bắt đầu ngoài khung nhìn */
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  color: white;
+  z-index: 999;
+  transition: left 0.4s ease;
+}
+
+.new-screen.active {
+  left: 0;
+}
+
+.new-screen.slide-out {
+  left: 100%;
+}
+.time-group {
+  margin: 30px 0;
+  text-align: center;
+  color: white;
+  font-family: sans-serif;
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.colon {
+  font-size: 36px;
+  color: white;
+  margin: 0 10px;
+}
+
+.spinner-container {
+  width: 70px;
+  height: 250px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  background: black;
+  mask-image: linear-gradient(to bottom, transparent 0%, white 40%, white 60%, transparent 100%);
+}
+
+.spinner {
+  height: 200px; /* hoặc chiều cao bạn đang dùng */
+  overflow-y: scroll;
+}
+
+.spinner div {
+  height: 50px;
+  line-height: 50px;
+  font-size: 24px;
+  color: #777;
+  scroll-snap-align: center;
+  transition: font-size 0.2s, color 0.2s;
+}
+
+.spinner div.selected {
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+}
+
+.spinner-column {
+  overflow-y: scroll;
+  height: 180px;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.spinner-column li {
+  font-size: 24px;
+  color: #555;
+  text-align: center;
+  scroll-snap-align: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+  height: 36px;
+  line-height: 36px;
+  opacity: 0.3;
+}
+
+.spinner-column li.selected {
+  color: #fff;
+  font-size: 30px;
+  font-weight: bold;
+  opacity: 1;
+}
+
+.spinner div {
+  text-align: center;
+  font-size: 24px;
+  color: #999;
+  height: 50px;
+  line-height: 50px;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+.spinner div.selected {
+  color: white;
+  font-weight: bold;
+  font-size: 28px;
+}
+
+.spinner-item.selected {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+.time-group {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.time-group:nth-child(2) {
+  background-color: #2a2a2a;
+}
+
+
+
   </style>
 </head>
 <body class="px-3">
@@ -185,7 +313,63 @@
       </div>
     </div>
   </div>
+  <div id="new-screen" class="new-screen">
+    <div class="header-select d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+      <span class="fw-bold">Thêm báo thức</span>
+      <i class="bi bi-x-lg" id="close-new-screen" style="cursor: pointer;"></i>
+    </div>
   
+    <div class="px-4 py-3">
+      <div class="row">
+        <div class="col-6" style="padding-right: 10px;">
+          <div class="time-group">
+            <label>Bật lúc</label>
+            <div class="spinner-wrapper">
+              <div class="spinner-container">
+                <div class="spinner" id="on-hour"></div>
+              </div>
+              <div class="colon">:</div>
+              <div class="spinner-container">
+                <div class="spinner" id="on-minute"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6" style="padding-left: 10px;">
+          <div class="time-group">
+            <label>Tắt lúc</label>
+            <div class="spinner-wrapper">
+              <div class="spinner-container">
+                <div class="spinner" id="off-hour"></div>
+              </div>
+              <div class="colon">:</div>
+              <div class="spinner-container">
+                <div class="spinner" id="off-minute"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <button onclick="handleSave()">Lưu thời gian</button>
+      <!-- Các tùy chọn khác -->
+      <div class="form-check form-switch text-white mb-3">
+        <input class="form-check-input" type="checkbox" id="vibrate">
+        <label class="form-check-label" for="vibrate">Rung khi báo thức</label>
+      </div>
+  
+      <div class="form-check form-switch text-white mb-3">
+        <input class="form-check-input" type="checkbox" id="auto-delete">
+        <label class="form-check-label" for="auto-delete">Xóa sau khi đã báo thức</label>
+      </div>
+  
+      <div class="mb-3">
+        <label class="form-label text-white">Nhãn</label>
+        <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="Nhập nhãn">
+      </div>
+    </div>
+  </div>
 
   <button class="floating-btn">+</button>
   <!-- Toolbar dưới -->
@@ -274,6 +458,146 @@
       $('#cancel-select').on('click', function () {
         exitSelectionMode();
       });
+      $('.floating-btn').on('click', function () {
+        createSpinner("on-hour", hours);
+        createSpinner("on-minute", minutes);
+        createSpinner("off-hour", hours);
+        createSpinner("off-minute", minutes);
+        $('#new-screen').addClass('active');
+      });
+
+// Đóng màn mới khi nhấn nút X
+$('#close-new-screen').on('click', function () {
+  $('#new-screen').removeClass('active');
+
+  // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
+  setTimeout(() => {
+    $('#new-screen').removeClass('slide-out');
+  }, 400);
+});
+
+
+
+function createSpinner(id, items) {
+      const spinner = document.getElementById(id);
+      const itemHeight = 50;
+      const itemCount = items.length;
+      const loopedItems = [...items, ...items, ...items];
+
+      console.log(spinner);
+      
+
+      // Tạo item
+      loopedItems.forEach(val => {
+        const div = document.createElement("div");
+        div.className = "spinner-item";
+        div.textContent = val;
+        spinner.appendChild(div);
+      });
+
+      // Scroll đến giữa
+      setTimeout(() => {
+        spinner.scrollTop = itemCount * itemHeight;
+        highlightSelected();
+      }, 0);
+
+      function highlightSelected() {
+        const center = spinner.scrollTop + spinner.clientHeight / 2;
+        const items = spinner.querySelectorAll(".spinner-item");
+
+        let closest = null;
+        let minDiff = Infinity;
+
+        items.forEach(div => {
+          const divCenter = div.offsetTop + itemHeight / 2;
+          const diff = Math.abs(divCenter - center);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closest = div;
+          }
+        });
+
+        items.forEach(div => div.classList.remove("selected"));
+        if (closest) closest.classList.add("selected");
+      }
+
+      function handleInfiniteScroll() {
+        const totalHeight = itemHeight * itemCount * 3;
+        if (spinner.scrollTop <= itemHeight) {
+          spinner.scrollTop += itemCount * itemHeight;
+        } else if (spinner.scrollTop >= totalHeight - spinner.clientHeight - itemHeight) {
+          spinner.scrollTop -= itemCount * itemHeight;
+        }
+      }
+
+      let scrollTimeout = null;
+
+      spinner.addEventListener("scroll", () => {
+        console.log('chạy');
+        
+        handleInfiniteScroll();
+        clearTimeout(scrollTimeout);
+
+        scrollTimeout = setTimeout(() => {
+          const center = spinner.scrollTop + spinner.clientHeight / 2;
+          const items = spinner.querySelectorAll(".spinner-item");
+
+          let closest = null;
+          let minDiff = Infinity;
+
+          items.forEach(div => {
+            const divCenter = div.offsetTop + itemHeight / 2;
+            const diff = Math.abs(divCenter - center);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closest = div;
+            }
+          });
+
+          if (closest) {
+            spinner.scrollTop = closest.offsetTop - (spinner.clientHeight - itemHeight) / 2;
+            highlightSelected();
+          }
+        }, 150);
+      });
+
+      highlightSelected(); // lúc khởi tạo
+    }
+// Dữ liệu giờ & phút
+var hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+var minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+
+function getSelectedValue(spinnerId) {
+  const spinner = document.getElementById(spinnerId);
+  const itemHeight = 50;
+  const center = spinner.scrollTop + spinner.clientHeight / 2;
+
+  let closestDiv = null;
+  let minDiff = Infinity;
+
+  [...spinner.children].forEach(div => {
+    const divCenter = div.offsetTop + itemHeight / 2;
+    const diff = Math.abs(divCenter - center);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestDiv = div;
+    }
+  });
+
+  return closestDiv ? closestDiv.textContent : null;
+}
+
+function handleSave(params) {
+  const onHour = getSelectedValue("on-hour");
+const onMinute = getSelectedValue("on-minute");
+const offHour = getSelectedValue("off-hour");
+const offMinute = getSelectedValue("off-minute");
+
+console.log(`Bật lúc: ${onHour}:${onMinute}, Tắt lúc: ${offHour}:${offMinute}`);
+
+}
+// Tạo 4 spinner
 
   </script>
 </body>
