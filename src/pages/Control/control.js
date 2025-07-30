@@ -9,6 +9,7 @@ var isFirstConnect = true;
 var statusOEE;
 var deviceID;
 var zoneID;
+var numberSchedule = 0;
 HOMEOSAPP.itemlinkQR;
 
 var ctx_U = document.getElementById("chartVoltage").getContext("2d");
@@ -92,7 +93,7 @@ changeDataFirstConnect = async function (Cid) {
     for (let i = 0; i < dataCabinetlanding.data.length; i++) {
         if(i == 0){
             document.getElementById("setNameDateTimeCondition").textContent = "Dữ liệu lần cuối";
-            document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinetlanding.data[0].DATE_CREATE);
+            document.getElementById("setDateTimeCondition").textContent = HOMEOSAPP.formatDateTime(dataCabinetlanding.data[0].LAST_TIME);
         }
         if(dataCabinetlanding.data[i].NO != '41'){
             const stringValue = await objectToFormattedString(dataCabinetlanding.data[i]);
@@ -166,16 +167,15 @@ getWebSocket = async function (value) {
         wss = new WebSocket(`wss://${value}/controller`);
         wss.onopen = () => {
             wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
-            // gọi refresh lần đầu tiên khi truy cập
-            // if(isFirstConnect){
-            //     setTimeout(() => {
-            //         console.log("chạy đoạn 1");
+            //gọi refresh lần đầu tiên khi truy cập
+            if(isFirstConnect){
+                setTimeout(() => {
+                    console.log("chạy đoạn 1");
                     
-            //         const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
-            //         wss.send(JSON.stringify(cmd));
-            //     }, 1000);
-            //     isFirstConnect = false;
-            // }
+                    // const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
+                    // wss.send(JSON.stringify(cmd));
+                }, 1000);
+            }
         };
         // Final UI updates
         $("#loading-popup").hide();
@@ -221,12 +221,40 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             return;
         }
 
+        if (txt.includes("Command: CREATE") && txt.endsWith("process: Done")) {
+            toastr.success("Tạo lịch thành công.");
+        }
+
+        if (txt.includes("Command: DISPOSE") && txt.endsWith("process: Done")) {
+            toastr.success("Xoá lịch thành công.");
+        }
+
         if (txt.includes("Command: LR SCHEDULE, process: Done")) {
             isCollecting = false;
 
+            numberSchedule = 0;
+            // const scheduleData = `[1] 1 10:00:00 14:40:00 1 126
+            // [2] 2 10:00:00 13:00:00 1 43
+            // Total: 2`
             // xử lý kết quả:
-            const result = collectedLines.join("\n").trim();
-
+            $("#listSchedule").empty();
+            const scheduleData = collectedLines.join("\n").trim();
+            console.log(scheduleData);
+            
+            scheduleData.split('\n').forEach(line => {
+                const idx = line.indexOf(':');
+            
+                if (idx > -1) {
+                    const zoneId = line.slice(0, idx).trim();
+                    const dataPart = line.slice(idx + 1).trim(); // ví dụ: "[1] 1 14:29:00 14:40:00 0 0"
+            
+                    if (dataPart.startsWith('[')) {
+                        numberSchedule++;
+                        renderScheduleFromLine(dataPart, zoneId); // nếu bạn cần truyền zoneId
+                    }
+                }
+            });
+            runScheduleCard();
             collectedLines = [];
             return;
         }
@@ -382,14 +410,15 @@ var renderReray = async function (data, control) {
     return new Promise((resolve) => {
         const typeMatch = data.match(/(\d+)K-(\d+)TB/i);
         const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
-        // if (numberOfRelays == 0) {
-        //     $("#schedule-condition").addClass("d-none");
-        //     $("#schedule-condition").removeClass("d-flex");
-        // }
-        // renderCheckboxes("sltDeviceForSchedule", numberOfRelays);
         const container = document.getElementById("relay-container");
+        const customsK = document.getElementById("customK");
         container.innerHTML = "";
-
+        customsK.innerHTML = "";
+        if(numberOfRelays == 1){
+            $("#options-Kenh").addClass("d-none");
+        } else {
+            $("#options-Kenh").removeClass("d-none")
+        }
         for (let i = 1; i <= numberOfRelays; i++) {
             let textButton;
             if(control?.relayNames){
@@ -419,7 +448,13 @@ var renderReray = async function (data, control) {
                     </div>
                 </div>
             `;
+            const relayCustom = `
+                <div class="K-item" data-day="${i}"><span>${textButton}</span><div class="checkbox"></div></div>
+            `;
+
             container.insertAdjacentHTML("beforeend", relayDiv);
+
+            customsK.insertAdjacentHTML("beforeend", relayCustom);
         }
         document.querySelectorAll('.editable-label').forEach((span, index) => {
             attachEditHandler(span, control);
@@ -561,7 +596,11 @@ $("#share-control").off("click").click(function () {
 $("#schedule-condition")
     .off("click")
     .click(function () {
+        const cmd = [{ CHIP_ID: cabinetID, COMMAND: "LR SCHEDULE;" }];
+        wss.send(JSON.stringify(cmd));
         HOMEOSAPP.loadPage("schedule-condition-popup");
+
+        runOptionS();
     });
 $("#error-condition")
     .off("click")
@@ -1819,7 +1858,7 @@ async function getDataOEEtoChannel(nameTag) {
     // Hiệu suất (P)
     $(".box-OEE:contains('Hiệu suất') span").first().text((findValue("Hiệu suất thiết bị") * 100).toFixed(2) + "%");
     $(".box-OEE:contains('Hiệu suất')").find("div:eq(1) span:last").text((findValue("Thời gian chạy trong định mức (P)") / 60).toFixed(1));
-    $(".box-OEE:contains('Hiệu suất')").find("div:eq(2) span:last").text("0");
+    $(".box-OEE:contains('Hiệu suất')").find("div:eq(2) span:last").text((findValue("Thời gian chạy vượt định mức (P)") / 60).toFixed(1));
 
     // Chất lượng (Q)
     $(".box-OEE:contains('Chất lượng') span").first().text((findValue("Chất lượng") * 100).toFixed(2) + "%");
@@ -1932,11 +1971,11 @@ async function GetDataDowntime(id, startDate, endDate) {
                         <div id="PickApp-button-${i}" class="iconApp">
                             <div class="info-box-content">
                                 <div class="d-flex justify-content-between">
-                                    <span class="app-text">${dataDowntime[i].FROM_DATE}</span>
+                                    <span class="app-text">${HOMEOSAPP.formatDateTime(dataDowntime[i].FROM_DATE)}</span>
                                     <span class="app-text status" style="color: white;">${dataDowntime[i].TIME_STAMP} phút</span>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${dataDowntime[i].TO_DATE}</span>
+                                    <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${HOMEOSAPP.formatDateTime(dataDowntime[i].TO_DATE)}</span>
                                     <span class="app-text-number" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
@@ -2012,54 +2051,675 @@ function exitSelectionMode() {
     selectedItems = [];
 }
 
-$('.schedule-card').on('mousedown touchstart', function (e) {
-  const $card = $(this);
-  longPressTimer = setTimeout(() => {
-    const itemId = $card.data('id');
-
-    // Nếu chưa chọn
-    if (!$card.hasClass('selected')) {
-        $card.addClass('selected');
-        selectedItems.push(itemId);
-        
-        // ✅ Check vào checkbox của mục này
-        $card.find('input[type="checkbox"]').prop('checked', true);
-    }
-
-        enterSelectionMode();
-        updateSelectedCount();
-    }, 500);
-}).on('mouseup mouseleave touchend', function () {
-    clearTimeout(longPressTimer);
+$('#toolbar').off("click").click(async () => {
+    const dataRemove = await getCheckedSchedules();
+    const cmd = [{ CHIP_ID: cabinetID, COMMAND: `LR SCHEDULE;` }];
+    wss.send(JSON.stringify(cmd));
+    $("#cancel-select").click();
 });
 
-// Cho phép click nhanh để chọn/bỏ nếu đã vào chế độ chọn
-$('.schedule-card').on('click', function () {
-    if (!$('#select-header').hasClass('d-none')) {
+function getCheckedSchedules() {
+    const checkedLines = [];
 
+    document.querySelectorAll('.schedule-card').forEach(async card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+            const line = card.getAttribute('data-line');
+            if (line) {
+                const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+                if (!match) return;
+                const [_, id, repeat, start, end, switchState, dayBinary] = match;
+                const cmd = [{ CHIP_ID: cabinetID, COMMAND: `DISPOSE(${repeat});` }];
+                wss.send(JSON.stringify(cmd));
+                checkedLines.push(line);
+                await HOMEOSAPP.delay(100);
+            }
+        }
+    });
+    return checkedLines;
+}
+
+
+var longPressTimer;
+
+function runScheduleCard(params) {
+    $('.schedule-card').on('mousedown touchstart', function (e) {
         const $card = $(this);
+        longPressTimer = setTimeout(() => {
         const itemId = $card.data('id');
-        const $checkbox = $card.find('.form-check-custom');
-
-        if ($card.hasClass('selected')) {
-            $card.removeClass('selected');
-            selectedItems = selectedItems.filter(id => id !== itemId);
-            $checkbox.prop('checked', false);
-        } else {
+    
+        // Nếu chưa chọn
+        if (!$card.hasClass('selected')) {
             $card.addClass('selected');
             selectedItems.push(itemId);
-            $checkbox.prop('checked', true);
+            
+            // ✅ Check vào checkbox của mục này
+            $card.find('input[type="checkbox"]').prop('checked', true);
         }
+    
+            enterSelectionMode();
+            updateSelectedCount();
+        }, 500);
+    }).on('mouseup mouseleave touchend', function () {
+        clearTimeout(longPressTimer);
+    });
+    
+    // Cho phép click nhanh để chọn/bỏ nếu đã vào chế độ chọn
+    $('.schedule-card').on('click', function () {
+        if (!$('#select-header').hasClass('d-none')) {
+    
+            const $card = $(this);
+            const itemId = $card.data('id');
+            const $checkbox = $card.find('.form-check-custom');
+    
+            if ($card.hasClass('selected')) {
+                $card.removeClass('selected');
+                selectedItems = selectedItems.filter(id => id !== itemId);
+                $checkbox.prop('checked', false);
+            } else {
+                $card.addClass('selected');
+                selectedItems.push(itemId);
+                $checkbox.prop('checked', true);
+            }
+    
+            updateSelectedCount();
+        }
+    });
 
-        updateSelectedCount();
-    }
-});
+    document.getElementById("listSchedule").addEventListener("change", async function (e) {
+        if (e.target.matches('.switch-toggle input[type="checkbox"]')) {
+            const card = e.target.closest('.schedule-card');
+            const line = card?.getAttribute('data-line');
+            const newState = e.target.checked ? 1 : 0;
+            
+            const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+            if (!match) return;
+
+            const [_, id, repeat, start, end, switchState, dayBinary] = match;
+            const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
+            const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
+            const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
+
+            if(numberOfRelays == 1){
+                const cmdDis = [{ CHIP_ID: cabinetID, COMMAND: `DISPOSE(${repeat});` }];
+                wss.send(JSON.stringify(cmdDis));
+                await HOMEOSAPP.delay(500);
+                const commandSchedule = `CREATE(SL, ${repeat}, ${start}:00, ${end}:00, ${newState}, ${dayBinary});`;
+                const cmdCreate = [{ CHIP_ID: cabinetID, COMMAND: commandSchedule }];
+                wss.send(JSON.stringify(cmdCreate));
+            }
+
+            console.log("Switched line:", line);
+            console.log("New switch state:", newState);
+            // Bạn có thể xử lý update line hoặc gọi API tại đây
+        }
+    });
+    
+}
 
 // Nhấn nút ❌ để hủy chọn
 $('#cancel-select').on('click', function () {
     exitSelectionMode();
 });
 
+$('.floating-btn').on('click', async function () {
+    await resetTimeWrapper();
+    createSpinner("on-hour", hours, "hour");
+    createSpinner("on-minute", minutes, 'minute');
+    createSpinner("off-hour", hours, 'hour');
+    createSpinner("off-minute", minutes, 'minute');
+    $('#new-screen').addClass('active');
+  });
+
+// Đóng màn mới khi nhấn nút X
+$('#close-new-screen').on('click', function () {
+    $('#new-screen').removeClass('active');
+    
+    // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
+    setTimeout(() => {
+        $('#new-screen').removeClass('slide-out');
+        const cmd = [{ CHIP_ID: cabinetID, COMMAND: "LR SCHEDULE;" }];
+        wss.send(JSON.stringify(cmd));
+    }, 400);
+});
+
+
+
+function createSpinner(id, items, type = 'hour') {
+    const spinnerEl = document.getElementById(id);
+    if (!spinnerEl) {
+        console.warn(`❗ Spinner element with id="${id}" not found.`);
+        return;
+    }
+
+    const spinner = spinnerEl.parentElement;
+    if (!spinner) {
+        console.warn(`❗ Spinner parent of id="${id}" not found.`);
+        return;
+    }
+    const itemHeight = 50;
+    const itemCount = items.length;
+    const loopedItems = [...items, ...items, ...items];
+  
+    // spinner.innerHTML = "";
+  
+    // Tạo item và gán giá trị
+    loopedItems.forEach((val) => {
+      const div = document.createElement("div");
+      div.className = "spinner-item";
+      div.textContent = val;
+      div.setAttribute("data-value", val);
+      spinner.appendChild(div);
+    });
+  
+    // Lấy giờ phút hiện tại
+    const now = new Date();
+    const currentValue = type === 'hour'
+      ? now.getHours().toString().padStart(2, '0')
+      : now.getMinutes().toString().padStart(2, '0');
+  
+    // Tìm item giữa danh sách (vòng 2)
+    const middleStartIndex = itemCount; // bắt đầu vòng 2
+    const middleEndIndex = itemCount * 2;
+  
+    const itemsEls = spinner.querySelectorAll(".spinner-item");
+    let targetIndex = middleStartIndex;
+  
+    for (let i = middleStartIndex; i < middleEndIndex; i++) {
+      if (itemsEls[i].getAttribute("data-value") === currentValue) {
+        targetIndex = i;
+        break;
+      }
+    }
+  
+    // Tính scrollTop sao cho item nằm chính giữa
+    const scrollTo = itemsEls[targetIndex].offsetTop - (spinner.clientHeight - itemHeight) / 2;
+  
+    // Scroll sau khi DOM đã render
+    setTimeout(() => {
+      spinner.scrollTop = scrollTo;
+      highlightSelected();
+    }, 50);
+  
+    function highlightSelected() {
+      const center = spinner.scrollTop + spinner.clientHeight / 2;
+      const itemsEls = spinner.querySelectorAll(".spinner-item");
+  
+      let closest = null;
+      let minDiff = Infinity;
+  
+      itemsEls.forEach(div => {
+        const divCenter = div.offsetTop + itemHeight / 2;
+        const diff = Math.abs(divCenter - center);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closest = div;
+        }
+      });
+  
+      itemsEls.forEach(div => div.classList.remove("selected"));
+      if (closest) closest.classList.add("selected");
+    }
+  
+    function handleInfiniteScroll() {
+      const totalHeight = itemHeight * itemCount * 3;
+      if (spinner.scrollTop <= itemHeight) {
+        spinner.scrollTop += itemCount * itemHeight;
+      } else if (spinner.scrollTop >= totalHeight - spinner.clientHeight - itemHeight) {
+        spinner.scrollTop -= itemCount * itemHeight;
+      }
+    }
+  
+    let scrollTimeout = null;
+  
+    spinner.addEventListener("scroll", () => {
+        handleInfiniteScroll();
+        clearTimeout(scrollTimeout);
+    
+        scrollTimeout = setTimeout(() => {
+            const center = spinner.scrollTop + spinner.clientHeight / 2;
+            const items = spinner.querySelectorAll(".spinner-item");
+    
+            let closest = null;
+            let minDiff = Infinity;
+    
+            items.forEach(div => {
+                const divCenter = div.offsetTop + itemHeight / 2;
+                const diff = Math.abs(divCenter - center);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = div;
+                }
+            });
+    
+            if (closest) {
+                spinner.scrollTop = closest.offsetTop - (spinner.clientHeight - itemHeight) / 2;
+                highlightSelected();
+            }
+            getDataAddSchedule("ADDTIME");
+        }, 150);
+    });
+  
+    highlightSelected();
+  }
+  
+// Dữ liệu giờ & phút
+var hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+var minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+function getSelectedTime(id) {
+    const spinner = document.getElementById(id).parentElement;
+    const selected = spinner.querySelector(".selected");
+    return selected ? selected.textContent.trim() : "00"; // fallback nếu chưa scroll
+}
+
+document.getElementById("toggle-on-time").addEventListener("change", function () {
+    ChangeActiveSpinner(this, "on-time-wrapper")
+});
+
+document.getElementById("toggle-off-time").addEventListener("change", function () {
+    ChangeActiveSpinner(this, "off-time-wrapper")
+});
+
+function ChangeActiveSpinner(data, id) {
+    const wrapper = document.getElementById(id);
+
+    if (data.checked) {
+        wrapper.classList.remove("disabledSpinner");
+    } else {
+        wrapper.classList.add("disabledSpinner");
+    }
+}
+
+function runOptionS() {
+    // Toggle phần "Tuỳ chỉnh"
+    const customToggle = document.getElementById("custom-toggle");
+    const customDays = document.getElementById("customDays");
+    const options = document.querySelectorAll(".option");
+
+    const custom_K_Toggle = document.getElementById("custom-K-toggle");
+    const customs_K = document.getElementById("customK");
+    const options_K = document.querySelectorAll(".option-K");
+
+    // Gắn 1 lần cho phần .option (không phải .custom-toggle)
+    options.forEach(opt => {
+        if (!opt.classList.contains("custom-toggle") && !opt.hasAttribute("data-bound")) {
+            opt.addEventListener("click", () => {
+                document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+                opt.classList.add("selected");
+                customDays.classList.remove("show");
+                customToggle.classList.remove("open");
+            });
+            opt.setAttribute("data-bound", "true");
+        }
+    });
+
+    options_K.forEach(opt => {
+        if (!opt.classList.contains("custom-toggle") && !opt.hasAttribute("data-bound")) {
+            opt.addEventListener("click", () => {
+                document.querySelectorAll(".option-K").forEach(o => o.classList.remove("selected"));
+                opt.classList.add("selected");
+                customs_K.classList.remove("show");
+                custom_K_Toggle.classList.remove("open");
+            });
+            opt.setAttribute("data-bound", "true");
+        }
+    });
+
+    // Gắn toggle cho Tuỳ chỉnh ngày
+    if (customToggle && !customToggle.hasAttribute("data-bound")) {
+        customToggle.addEventListener("click", () => {
+            customDays.classList.toggle("show");
+            customToggle.classList.toggle("show");
+            customToggle.classList.toggle("open");
+
+            options.forEach(o => o.classList.remove("selected"));
+            customToggle.classList.add("selected");
+            getDataAddSchedule("ADDTIME");
+        });
+        customToggle.setAttribute("data-bound", "true");
+    }
+
+    // Gắn toggle cho Tuỳ chỉnh Kênh
+    if (custom_K_Toggle && !custom_K_Toggle.hasAttribute("data-bound")) {
+        custom_K_Toggle.addEventListener("click", () => {
+            customs_K.classList.toggle("show");
+            custom_K_Toggle.classList.toggle("show");
+            custom_K_Toggle.classList.toggle("open");
+
+            options_K.forEach(o => o.classList.remove("selected"));
+            custom_K_Toggle.classList.add("selected");
+        });
+        custom_K_Toggle.setAttribute("data-bound", "true");
+    }
+
+    // Gắn toggle cho từng K-item (kênh) – gọi lại được
+    document.querySelectorAll(".K-item").forEach(day => {
+        if (!day.hasAttribute("data-bound")) {
+            day.addEventListener("click", () => {
+                day.classList.toggle("selected");
+                const checkbox = day.querySelector(".checkbox");
+                checkbox.classList.toggle("checked");
+            });
+            day.setAttribute("data-bound", "true");
+        }
+    });
+
+    // Gắn toggle cho từng day-item (ngày) – gọi lại được
+    document.querySelectorAll(".day-item").forEach(day => {
+        if (!day.hasAttribute("data-bound")) {
+            day.addEventListener("click", () => {
+                day.classList.toggle("selected");
+                const checkbox = day.querySelector(".checkbox");
+                checkbox.classList.toggle("checked");
+                getDataAddSchedule("ADDTIME");
+            });
+            day.setAttribute("data-bound", "true");
+        }
+    });
+}
+
+
+function formatTimeDistanceLogic(start, end, dayBinary) {
+    const now = new Date();
+
+    const parseTime = (str) => {
+        if (typeof str !== 'string') return null;
+        const [h, m] = str.split(":").map(Number);
+        const d = new Date(now);
+        d.setHours(h, m, 0, 0);
+        return d;
+    };
+
+    // Padding binary string to 7 bits (0 = CN)
+    const paddedBinary = parseInt(dayBinary).toString(2).padStart(7, '0');
+    const today = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
+
+    const isTodayActive = paddedBinary[today] === '1';
+
+    // Kiểm tra hợp lệ và parse giờ
+    const startTime = (typeof start === "string" && start !== "00:00:00") ? parseTime(start) : null;
+    const endTime = (typeof end === "string" && end !== "00:00:00") ? parseTime(end) : null;
+
+    const getDiff = (target) => {
+        const diffMs = target - now;
+        const diffMin = Math.floor(diffMs / (1000 * 60));
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        return `${h > 0 ? `${h} giờ ` : ''}${m} phút`;
+    };
+
+    if (!isTodayActive) {
+        for (let i = 1; i <= 7; i++) {
+            const nextDay = (today + i) % 7;
+            if (paddedBinary[nextDay] === '1') {
+                return `Bật sau ${i} ngày nữa`;
+            }
+        }
+        return "Không hoạt động trong tuần";
+    }
+
+    if (startTime && now < startTime) {
+        return `Bật sau ${getDiff(startTime)}`;
+    }
+
+    if (startTime && endTime && now >= startTime && now < endTime) {
+        return `Tắt sau ${getDiff(endTime)}`;
+    }
+
+    if (!startTime && endTime && now < endTime) {
+        return `Tắt sau ${getDiff(endTime)}`;
+    }
+
+    if (startTime && !endTime && now < startTime) {
+        return `Bật sau ${getDiff(startTime)}`;
+    }
+
+    // Nếu hết giờ hôm nay, chờ tới ngày tiếp theo
+    for (let i = 1; i <= 7; i++) {
+        const nextDay = (today + i) % 7;
+        if (paddedBinary[nextDay] === '1') {
+            const nextStart = parseTime(start);
+            if (nextStart) {
+                nextStart.setDate(now.getDate() + i);
+                return `Bật sau ${getDiff(nextStart)}`;
+            }
+        }
+    }
+
+    return '';
+}
+
+// BE Schedule
+function renderScheduleFromLine(line) {
+    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+    if (!match) return;
+
+    const [_, id, repeat, start, end, switchState, dayBinary] = match;
+
+    const daysText = binaryToDays(dayBinary);
+    const timeLogicText = formatTimeDistanceLogic(start, end, dayBinary);
+    const subtext = `${daysText} | ${timeLogicText}`;
+
+    const card = document.createElement('div');
+    card.className = 'schedule-card row';
+    card.setAttribute('data-id', id);
+    card.setAttribute('data-line', line.replace(/"/g, '&quot;'));
+    card.style.setProperty('--bs-gutter-x', '0rem');
+
+    card.innerHTML = `
+        <div class="col-11">
+            <div class="time-range">${start} - ${end}</div>
+            <div class="subtext">${subtext}</div>
+        </div>
+        <div class="check-icon col-1">
+            <input type="checkbox" class="form-check-input form-check-custom" style="font-size: 20px; width: 20px; height: 20px;">
+            <div class="form-check form-switch switch-toggle">
+                <input class="form-check-input" style="font-size: 25px;" type="checkbox" ${switchState === "1" ? "checked" : ""}>
+            </div>
+        </div>
+    `;
+
+    document.getElementById("listSchedule").appendChild(card);
+}
+
+
+
+
+// Hàm phụ: chuyển nhị phân sang ngày
+function binaryToDays(bin) {
+    const weekDays = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
+    const binStr = (+bin).toString(2).padStart(7, '0');
+    let days = [];
+    for (let i = 0; i < binStr.length; i++) {
+        if (binStr[6 - i] === '1') {
+            days.push(weekDays[i]);
+        }
+    }
+
+    if (days.length === 7) return 'Cả tuần';
+    if (days.length > 1 && days.every((v, i, arr) => i === 0 || weekDays.indexOf(arr[i]) === weekDays.indexOf(arr[i - 1]) + 1)) {
+        return `${days[0]} đến ${days[days.length - 1]}`;
+    }
+
+    return days.join(', ');
+}
+
+$("#save-alarm").off("click").click(() => {
+    getDataAddSchedule()
+});
+
+async function getDataAddSchedule(type) {
+    const dataItemCabinet = JSON.parse(localStorage.getItem("itemCondition"));
+    const typeMatch = dataItemCabinet[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
+    const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
+
+    const onHour = getSelectedTime("on-hour") ;
+    const onMinute = getSelectedTime("on-minute") ;
+    const offHour = getSelectedTime("off-hour") ;
+    const offMinute = getSelectedTime("off-minute") ;
+
+    const repeatData = getSelectedRepeatDaysData();
+    console.log("Số thập phân:", repeatData.decimal);
+    
+    let startTime = `${onHour}:${onMinute}:00`;
+    let endTime = `${offHour}:${offMinute}:00`;
+    let commandSchedule;
+    console.log(repeatData.decimal);
+    
+    if ($('#on-time-wrapper').hasClass('disabledSpinner')) {
+        startTime = 0;
+    } else if($('#off-time-wrapper').hasClass('disabledSpinner')){
+        endTime = 0
+    }
+
+    if(type == 'ADDTIME'){
+        const timeLogicText = formatTimeDistanceLogic(startTime, endTime, repeatData.decimal);
+        console.log(timeLogicText);
+        $("#subtitleSchedule").text(timeLogicText);
+    } else {
+        if(numberOfRelays == 1){
+            commandSchedule = `CREATE(SL, ${numberSchedule+1}, ${startTime}, ${endTime}, 1, ${repeatData.decimal});`;
+            console.log(commandSchedule);
+            const cmd = [{ CHIP_ID: cabinetID, COMMAND: commandSchedule }];
+            wss.send(JSON.stringify(cmd));
+            $("#close-new-screen").click()
+        } else {
+            const result = getSelectedChannels();
+            console.log(result);
+            if(result == 'all'){
+                console.log(numberSchedule);
+                const startTimeDelay = `${onHour}:${onMinute}:05`;
+                const endTimeDelay = `${offHour}:${offMinute}:05`;
+                const commandScheduleOn = `CREATE(SL, schedule${numberSchedule + 1}on, ${startTime}, ${startTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_ON_ALL);`;
+                const commandScheduleOff = `CREATE(SL, schedule${numberSchedule + 1}off, ${endTime}, ${endTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_OFF_ALL);`;
+                const cmdOn = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOn }];
+                // wss.send(JSON.stringify(cmdOn));
+
+                HOMEOSAPP.delay(500)
+                console.log(commandScheduleOn);
+                console.log(commandScheduleOff);
+                const cmdoff = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOff }];
+                // wss.send(JSON.stringify(cmdoff));
+            } else {
+                for (let i = 0; i < result.length; i++) {
+                    const commandScheduleOn = `CREATE(SL, schedule${numberSchedule + 1}on, ${startTime}, ${startTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_ON_${result[i]});`;
+                    const commandScheduleOff = `CREATE(SL, schedule${numberSchedule + 1}off, ${endTime}, ${endTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_OFF_${result[i]});`;
+                    const cmdOn = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOn }];
+                    // wss.send(JSON.stringify(cmdOn));
+
+                    await HOMEOSAPP.delay(500);
+
+                    console.log(commandScheduleOn);
+                    console.log(commandScheduleOff);
+                    const cmdOff = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOff }];
+                    // wss.send(JSON.stringify(cmdOff));
+
+                    await HOMEOSAPP.delay(200);
+                }
+            }
+        }
+    }
+}
+
+function getSelectedRepeatDaysData() {
+    const selectedOption = document.querySelector('.option.selected');
+    const selectedDays = [];
+    
+    const selectedType = selectedOption?.getAttribute('data-value');
+  
+    if (selectedType === 'daily') {
+        // Hàng ngày: Thứ 2 (2) đến Chủ nhật (8)
+        selectedDays.push(2, 3, 4, 5, 6, 7, 8);
+    } else if (selectedType === 'weekdays') {
+        // Thứ 2 đến Thứ 6
+        selectedDays.push(2, 3, 4, 5, 6);
+    } else {
+        // Tuỳ chỉnh: lấy các checkbox.checked trong .custom-days
+        document.querySelectorAll('.custom-days .day-item').forEach(item => {
+            const checkbox = item.querySelector('.checkbox');
+            if (checkbox?.classList.contains('checked')) {
+                const day = parseInt(item.getAttribute('data-day'));
+                if (!isNaN(day)) {
+                    selectedDays.push(day);
+                }
+            }
+        });
+    }
+  
+    // Tạo chuỗi binary 7-bit từ Thứ 7 → CN
+    const bits = Array(7).fill('0');
+    selectedDays.forEach(day => {
+        let index = -1;
+        if (day === 8) index = 6; // CN
+        else if (day >= 2 && day <= 7) index = 7 - day; // Thứ 2 đến Thứ 7
+        if (index >= 0) bits[index] = '1';
+    });
+  
+    const binaryStr = bits.join('');
+    const decimalValue = parseInt(binaryStr, 2);
+  
+    return {
+        type: selectedType,
+        days: selectedDays.sort((a, b) => a - b),
+        binary: binaryStr,
+        decimal: decimalValue
+    };
+}
+
+function getSelectedChannels() {
+    const isAllSelected = document.querySelector('.option-K[data-value="all"]')?.classList.contains('selected');
+
+    if (isAllSelected) {
+        return 'all';
+    }
+
+    const selectedItems = Array.from(document.querySelectorAll('#customK .K-item .checkbox.checked'))
+        .map(el => el.closest('.K-item').getAttribute('data-day'));
+
+    return selectedItems.length > 0 ? selectedItems : [];
+}
+var toggleOn = document.getElementById('toggle-on-time');
+var toggleOff = document.getElementById('toggle-off-time');
+
+toggleOn.addEventListener('change', function () {
+    // Nếu người dùng cố tắt cả 2 thì chặn và bật lại toggleOff
+    if (!toggleOn.checked && !toggleOff.checked) {
+        toggleOff.checked = true;
+        $("#off-time-wrapper").removeClass("disabledSpinner");
+        getDataAddSchedule("ADDTIME");
+    }
+});
+
+toggleOff.addEventListener('change', function () {
+    // Nếu người dùng cố tắt cả 2 thì chặn và bật lại toggleOn
+    if (!toggleOn.checked && !toggleOff.checked) {
+        toggleOn.checked = true;
+        $("#on-time-wrapper").removeClass("disabledSpinner");
+        getDataAddSchedule("ADDTIME");
+    }
+});
+
+function resetTimeWrapper() {
+    const onWrapper = document.getElementById("on-time-wrapper");
+    if (!onWrapper) return;
+  
+    onWrapper.innerHTML = `
+      <div class="spinner-container"><div class="spinner" id="on-hour"></div></div>
+      <div class="colon">:</div>
+      <div class="spinner-container"><div class="spinner" id="on-minute"></div></div>
+    `;
+
+    const offWrapper = document.getElementById("off-time-wrapper");
+    if (!offWrapper) return;
+
+    offWrapper.innerHTML = `
+      <div class="spinner-container"><div class="spinner" id="off-hour"></div></div>
+      <div class="colon">:</div>
+      <div class="spinner-container"><div class="spinner" id="off-minute"></div></div>
+    `;
+  }
+  
 //------------------------------------------------------------------------------------------
 
 $(window).on('resize', checkHeight);

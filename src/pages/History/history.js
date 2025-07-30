@@ -421,7 +421,7 @@ async function showHistory(type) {
             arrayCategory.push(item.workstationType);
         }
 
-        await delay(10); // đợi 100ms trước khi xử lý item tiếp theo
+        await HOMEOSAPP.delay(10); // đợi 100ms trước khi xử lý item tiếp theo
     }
     addMarkers(locations, "mappingWorkstation");
     arrayCategory.push("ALL");
@@ -489,9 +489,7 @@ async function showHistory(type) {
 
 
     
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 
 function getIconWorkstation(type) {
     switch (type) {

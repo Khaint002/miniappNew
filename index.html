@@ -413,30 +413,85 @@
 
                     <!-- Danh sách -->
                     <div id="listSchedule" style="margin-top: 20px;">
-                        <div class="schedule-card row" data-id="1" style="--bs-gutter-x: 0rem;">
-                            <div class="col-11">
-                                <div class="time-range">07:00 - 09:00</div>
-                                <div class="subtext">Thứ hai đến Thứ sáu | Báo thức sau 1 ngày...</div>
-                            </div>
-                            <div class="check-icon col-1">
-                                <input type="checkbox" style="font-size: 20px; width: 20px; height: 20px;" class="form-check-input form-check-custom">
-                                <div class="form-check form-switch switch-toggle">
-                                    <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
-                                </div>
-                            </div>
+                        <div class="col-12" style="text-align: center; margin-top: 100px;">
+                            <i class="bi bi-calendar" style="font-size: 30px; color: #909090;"></i>
+                            <div><p style="color: #909090;">Thiết bị chưa được lập lịch hoặc chưa thể kết nối đến thiết bị</p></div>
                         </div>
-
-                        <div class="schedule-card row" data-id="1" style="--bs-gutter-x: 0rem;">
-                            <div class="col-11">
-                                <div class="time-range">18:00 - 20:00</div>
-                                <div class="subtext">Thứ bảy | Bật sau 5 giờ...</div>
+                    </div>
+                    <div id="new-screen" class="new-screen" style="overflow-y: auto; height: 100%;">
+                        <div class="alarm-header">
+                            <div class="header-icon" id="close-new-screen">✕</div>
+                            <div class="header-content">
+                                <div class="title">Thêm lịch</div>
+                                <div id="subtitleSchedule" class="subtitle">Bật sau 23 giờ 22 phút</div>
                             </div>
-                            <div class="check-icon col-1">
-                                    <input type="checkbox" style="font-size: 20px;" class="form-check-input form-check-custom">
-                                <div class="form-check form-switch switch-toggle">
-                                <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
+                            <div class="header-icon" id="save-alarm">✔</div>
+                        </div>
+                        <div class="px-3 py-3">
+                            <div class="row">
+                                <div class="col-6" style="padding-right: 5px; padding-left: 6px;">
+                                    <div class="time-group">
+                                        <label class="row" style="display: flex; align-items: center;">
+                                        <span class="col-9" style="text-align: start;">Bật lúc</span>
+                                        <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
+                                            <input id="toggle-on-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
+                                        </div>
+                                        </label>
+                                        <div class="spinner-wrapper" id="on-time-wrapper">
+                                            <div class="spinner-container"><div class="spinner" id="on-hour"></div></div>
+                                            <div class="colon">:</div>
+                                            <div class="spinner-container"><div class="spinner" id="on-minute"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" style="padding-left: 5px; padding-right: 6px;">
+                                    <div class="time-group">
+                                        <label class="row" style="display: flex; align-items: center;">
+                                        <span class="col-9" style="text-align: start;">Tắt lúc</span>
+                                        <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
+                                            <input id="toggle-off-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
+                                        </div>
+                                        </label>
+                                        <div class="spinner-wrapper" id="off-time-wrapper">
+                                            <div class="spinner-container"><div class="spinner" id="off-hour"></div></div>
+                                            <div class="colon">:</div>
+                                            <div class="spinner-container"><div class="spinner" id="off-minute"></div></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <div id="options-Kenh" class="repeat-options" style="margin-top: 10px;">
+                                <label class="form-label text-white">Chọn Kênh:</label>
+                                <div class="option-K selected" data-value="all">Tất cả</div>
+                                <!-- Tùy chỉnh có toggle -->
+                                <div class="option-K custom-toggle" id="custom-K-toggle">Tuỳ chọn <span class="arrow">▶</span></div>
+                                
+                                <div class="custom-K" id="customK">
+                                    <div class="K-item" data-day="2"><span>kênh 1</span><div class="checkbox"></div></div>
+                                    <div class="K-item" data-day="3"><span>Kênh 2</span><div class="checkbox"></div></div>
+                                    <div class="K-item" data-day="4"><span>Kênh 3</span><div class="checkbox"></div></div>
+                                </div>
+                            </div> 
+
+                            <div class="repeat-options" style="margin-top: 10px;">
+                                <label class="form-label text-white">Lặp lại:</label>
+                                <div class="option selected" data-value="daily">Hàng ngày</div>
+                                <div class="option" data-value="weekdays">Thứ hai đến Thứ sáu</div>
+                            
+                                <!-- Tùy chỉnh có toggle -->
+                                <div class="option custom-toggle" id="custom-toggle">Tuỳ chỉnh <span class="arrow">▶</span></div>
+                                
+                                <div class="custom-days" id="customDays">
+                                    <div class="day-item" data-day="2"><span>Thứ Hai</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="3"><span>Thứ Ba</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="4"><span>Thứ Tư</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="5"><span>Thứ Năm</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="6"><span>Thứ Sáu</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="7"><span>Thứ Bảy</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="8"><span>Chủ Nhật</span><div class="checkbox"></div></div>
+                                </div>
+                            </div>      
                         </div>
                     </div>
                     <button class="floating-btn">+</button>
