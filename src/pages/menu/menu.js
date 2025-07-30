@@ -24,7 +24,8 @@ var apps = [
     { id: "IOT", name: "Web OS", version: "v4.56 Pro", description: "IIoT", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: false },
     { id: "den", name: "Đèn", version: "v6.10.24", description: "Chiếu sáng thông minh", bgColor: "#28a745", icon: "bi-lightbulb-fill", visible: false },
     { id: "warranty", name: "Bảo hành", version: "v1.0.4", description: "Bảo hành sản phẩm", bgColor: "#e29038", icon: "bi-tools", visible: true },
-    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Điều khiển, giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: true }
+    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Điều khiển, giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: true },
+    { id: "Schedule", name: "Lịch công tác", version: "v1.0.1", description: "Xem lịch làm việc", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: true }
 ];
 
 function renderApps(apps, containerId) {
@@ -115,6 +116,10 @@ async function pickApp(type) {
 
         case 'IOT':
             window.location.href = "http://devices.homeos.vn/";
+            break;
+
+        case 'Schedule':
+            window.location.href = "https://central.homeos.vn/singlepage/PetrolimexHRM/";
             break;
 
         case 'HISTORY':

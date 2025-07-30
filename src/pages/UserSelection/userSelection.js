@@ -7,7 +7,8 @@ var apps = [
     { id: "IOT", name: "Web OS", version: "v4.56 Pro", description: "IIoT", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: true },
     { id: "den", name: "Đèn", version: "v6.10.24", description: "Chiếu sáng thông minh", bgColor: "#28a745", icon: "bi-lightbulb-fill", visible: false },
     { id: "warranty", name: "Bảo hành", version: "v1.0.5", description: "Bảo hành sản phẩm", bgColor: "#e29038", icon: "bi-tools", visible: true },
-    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: true }
+    { id: "CONTROL", name: "Điều khiển", version: "v1.0.3", description: "Giám sát năng lượng", bgColor: "#17a2b8", icon: "bi-toggles", visible: true },
+    { id: "Schedule", name: "Lịch công tác", version: "v1.0.1", description: "Xem lịch làm việc", bgColor: "#da4a58", icon: "bi-pc-display-horizontal", visible: true }
 ];
 
 function renderApps(apps, containerId) {
@@ -43,7 +44,7 @@ function renderApps(apps, containerId) {
                         <i class="bi ${app.icon} text-white fs-3" style="font-size: 25px"></i>
                     </div>
                     <h6 class="mb-1">${app.name}</h6>
-                    <p class="text-muted mb-1 small">${app.description}</p>
+                    <p class="mb-1 small" style="color: gray;">${app.description}</p>
                     <span class="badge bg-secondary">${app.version}</span>
                 </div>
             </div>

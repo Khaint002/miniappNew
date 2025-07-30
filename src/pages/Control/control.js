@@ -592,10 +592,19 @@ $("#share-control").off("click").click(function () {
     });
 });
 
-
 $("#schedule-condition")
     .off("click")
     .click(function () {
+        $("#listSchedule").empty();
+        const card = `
+            <div class="col-12" style="text-align: center; margin-top: 100px;">
+                <i class="bi bi-calendar" style="font-size: 30px; color: #909090;"></i>
+                <div><p style="color: #909090;">Thiết bị chưa được lập lịch hoặc chưa thể kết nối đến thiết bị</p></div>
+            </div>
+        `;
+
+        document.getElementById("listSchedule").innerHTML = card;
+
         const cmd = [{ CHIP_ID: cabinetID, COMMAND: "LR SCHEDULE;" }];
         wss.send(JSON.stringify(cmd));
         HOMEOSAPP.loadPage("schedule-condition-popup");
@@ -2423,23 +2432,18 @@ function runOptionS() {
 function formatTimeDistanceLogic(start, end, dayBinary) {
     const now = new Date();
 
-    const parseTime = (str) => {
-        if (typeof str !== 'string') return null;
-        const [h, m] = str.split(":").map(Number);
+    const parseTime = (str, dayOffset = 0) => {
+        if (typeof str !== 'string' || str === '0' || str === '00:00:00') return null;
+        const [h, m, s] = str.split(":").map(Number);
         const d = new Date(now);
-        d.setHours(h, m, 0, 0);
+        d.setDate(d.getDate() + dayOffset);
+        d.setHours(h, m, s || 0, 0);
         return d;
     };
 
-    // Padding binary string to 7 bits (0 = CN)
     const paddedBinary = parseInt(dayBinary).toString(2).padStart(7, '0');
     const today = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
-
     const isTodayActive = paddedBinary[today] === '1';
-
-    // Kiểm tra hợp lệ và parse giờ
-    const startTime = (typeof start === "string" && start !== "00:00:00") ? parseTime(start) : null;
-    const endTime = (typeof end === "string" && end !== "00:00:00") ? parseTime(end) : null;
 
     const getDiff = (target) => {
         const diffMs = target - now;
@@ -2448,6 +2452,38 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
         const m = diffMin % 60;
         return `${h > 0 ? `${h} giờ ` : ''}${m} phút`;
     };
+
+    // Trường hợp chỉ có thời gian tắt (start = 0)
+    if (start === '0') {
+        for (let i = 0; i < 7; i++) {
+            const day = (today + i) % 7;
+            if (paddedBinary[day] === '1') {
+                const targetTime = parseTime(end, i);
+                if (targetTime && targetTime > now) {
+                    return `Tắt sau ${getDiff(targetTime)}`;
+                }
+            }
+        }
+        return "Không có thời gian tắt phù hợp";
+    }
+
+    // Trường hợp chỉ có thời gian bật (end = 0)
+    if (end === '0') {
+        for (let i = 0; i < 7; i++) {
+            const day = (today + i) % 7;
+            if (paddedBinary[day] === '1') {
+                const targetTime = parseTime(start, i);
+                if (targetTime && targetTime > now) {
+                    return `Bật sau ${getDiff(targetTime)}`;
+                }
+            }
+        }
+        return "Không có thời gian bật phù hợp";
+    }
+
+    // Cả hai đều có
+    const startTime = parseTime(start);
+    const endTime = parseTime(end);
 
     if (!isTodayActive) {
         for (let i = 1; i <= 7; i++) {
@@ -2459,29 +2495,20 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
         return "Không hoạt động trong tuần";
     }
 
-    if (startTime && now < startTime) {
+    if (now < startTime) {
         return `Bật sau ${getDiff(startTime)}`;
     }
 
-    if (startTime && endTime && now >= startTime && now < endTime) {
+    if (now >= startTime && now < endTime) {
         return `Tắt sau ${getDiff(endTime)}`;
     }
 
-    if (!startTime && endTime && now < endTime) {
-        return `Tắt sau ${getDiff(endTime)}`;
-    }
-
-    if (startTime && !endTime && now < startTime) {
-        return `Bật sau ${getDiff(startTime)}`;
-    }
-
-    // Nếu hết giờ hôm nay, chờ tới ngày tiếp theo
+    // Ngoài thời gian hôm nay → tìm ngày kế tiếp
     for (let i = 1; i <= 7; i++) {
         const nextDay = (today + i) % 7;
         if (paddedBinary[nextDay] === '1') {
-            const nextStart = parseTime(start);
+            const nextStart = parseTime(start, i);
             if (nextStart) {
-                nextStart.setDate(now.getDate() + i);
                 return `Bật sau ${getDiff(nextStart)}`;
             }
         }
@@ -2490,9 +2517,10 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
     return '';
 }
 
+
 // BE Schedule
 function renderScheduleFromLine(line) {
-    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(0|\d{1,2}:\d{2}:\d{2})\s+(0|\d{1,2}:\d{2}:\d{2})\s+(\d+)\s+(\d+)/);
     if (!match) return;
 
     const [_, id, repeat, start, end, switchState, dayBinary] = match;
@@ -2500,16 +2528,26 @@ function renderScheduleFromLine(line) {
     const daysText = binaryToDays(dayBinary);
     const timeLogicText = formatTimeDistanceLogic(start, end, dayBinary);
     const subtext = `${daysText} | ${timeLogicText}`;
-
+    console.log(subtext);
+    
     const card = document.createElement('div');
     card.className = 'schedule-card row';
     card.setAttribute('data-id', id);
     card.setAttribute('data-line', line.replace(/"/g, '&quot;'));
     card.style.setProperty('--bs-gutter-x', '0rem');
 
+    let textHtml = '';
+    if(start == 0){
+        textHtml = `<div class="time-range">${end.substring(0, 5)}</div>`;
+    } else if(end == 0){
+        textHtml = `<div class="time-range">${start.substring(0, 5)}</div>`;
+    } else {
+        textHtml = `<div class="time-range">${start.substring(0, 5)} - ${end.substring(0, 5)}</div>`;
+    }
+
     card.innerHTML = `
         <div class="col-11">
-            <div class="time-range">${start} - ${end}</div>
+            ${textHtml}
             <div class="subtext">${subtext}</div>
         </div>
         <div class="check-icon col-1">
