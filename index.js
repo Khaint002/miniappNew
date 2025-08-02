@@ -6,6 +6,15 @@ HOMEOSAPP.checkTabHistory = 0;
 HOMEOSAPP.checkTabWarranty = 1;
 HOMEOSAPP.LeverPermission = 0;
 HOMEOSAPP.UserID = localStorage.getItem("userID");
+HOMEOSAPP.apps = [
+    { MENU_ID: "KTTV", MENU_NAME: "Môi trường", MENU_VERSION: "v1.1.5", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-cloud-sun", MENU_SHARE_OWNER: "WID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Khí tượng thuỷ văn", VISIBLE: true },
+    { MENU_ID: "IOT", MENU_NAME: "Web OS", MENU_VERSION: "v4.56 Pro", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "http://devices.homeos.vn/", DESCRIPTION: "IIoT", VISIBLE: true },
+    { MENU_ID: "WARRANTY", MENU_NAME: "Bảo hành", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Khí tượng thuỷ văn", VISIBLE: true },
+    { MENU_ID: "CONTROL", MENU_NAME: "Điều khiển", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Khí tượng thuỷ văn", VISIBLE: true },
+    { MENU_ID: "SCHEDULE", MENU_NAME: "Lịch công tác", MENU_VERSION: "v1.0.1", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "https://central.homeos.vn/singlepage/PetrolimexHRM/", DESCRIPTION: "Xem lịch làm việc", VISIBLE: true },
+    { MENU_ID: "DEN", MENU_NAME: "Đèn", MENU_VERSION: "v6.10.24", MENU_BGCOLOR: "#28a745", MENU_ICON: "bi-lightbulb-fill", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: null, MENU_LINK: null, DESCRIPTION: "Chiếu sáng thông minh", VISIBLE: false }
+]; 
+HOMEOSAPP.objApp = {};
 var checkReport = '';
 let historyStack = ['pickApp'];
 var UserID = localStorage.getItem("userID");
@@ -826,6 +835,68 @@ HOMEOSAPP.handleWarrantyApp = async function(check) {
     }
 }
 
+HOMEOSAPP.handleAppView = function (mode, check = 'IN') {
+    
+    const config = {
+        KTTV: {
+            checkTabHistory: 1,
+            name: "Quan trắc:",
+            desc: "", // KTTV không có dòng này
+            footer: "thêm mới mã trạm hoặc chọn trạm đã lưu",
+            show: ['.workstation_access', '.workstation_category'],
+            hide: ['.warranty_scansQRcode', '.warranty_lot', '.warranty_scanQRcode'],
+        },
+        CONTROL: {
+            checkTabHistory: 2,
+            name: "Tủ điều khiển:",
+            desc: "Lịch sử tủ đã truy cập:",
+            footer: "chọn tủ đã truy cập hoặc thêm mới",
+            show: [],
+            hide: ['.workstation_access', '.workstation_category', '.warranty_scansQRcode', '.warranty_lot', '.warranty_scanQRcode'],
+        },
+        WARRANTY: {
+            checkTabHistory: 3,
+            name: "Sản phẩm:",
+            desc: "Lịch sử sản phẩm đã xem:",
+            footer: "",
+            show: ['.warranty_scansQRcode', '.warranty_lot', '.warranty_scanQRcode'],
+            hide: ['.workstation_access', '.workstation_category'],
+        },
+    };
+
+    const app = config[mode];
+    if (!app) return;
+
+    HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
+
+    const render = () => {
+        HOMEOSAPP.checkTabHistory = app.checkTabHistory;
+        HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
+        if(mode != 'KTTV'){
+            $('#nameHistory').removeClass("d-none").addClass("d-flex");
+            $('#listTabMap').addClass("d-none");
+            $('#historySelect').addClass("d-none");
+        }
+        $('#NameHistoryPage').text(app.name);
+        if (app.desc !== undefined) $('#descHistoryPage').text(app.desc);
+        
+        $('#footerHistoryPage').text(app.footer || '');
+
+        // Toggle visibility
+        app.show.forEach(cls => $(cls).removeClass("d-none"));
+        app.hide.forEach(cls => $(cls).addClass("d-none"));
+    };
+
+    if (check === 'IN') {
+        HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+        setTimeout(render, 2000);
+    } else {
+        HOMEOSAPP.goBack();
+        setTimeout(render, 200);
+    }
+};
+
+
 var reportOptions = [
     { value: "CHANGE", text: "Tuỳ ý" },
     { value: "MONTH1", text: "Tháng 1" },
@@ -1270,11 +1341,11 @@ HOMEOSAPP.sha1Encode = function(message) {
 $("#share-workStation").click(function () {
     const item = JSON.parse(localStorage.getItem("itemHistory"));
     if(window.shareWorkStation){
-        if(HOMEOSAPP.checkTabHistory == 1){
-            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', "WID="+item.CodeWorkStation);
-        } else if(HOMEOSAPP.checkTabHistory == 2) {
+        if(HOMEOSAPP.objApp.MENU_ID == 'KTTV'){
+            window.shareWorkStation("Trạm quan trắc "+ item.NameWorkStation, 'https://central.homeos.vn/images/MiniAppLoadingScreen.png', HOMEOSAPP.objApp.MENU_SHARE_OWNER);
+        } else if(HOMEOSAPP.objApp.MENU_ID == 'CONTROL') {
             const dataItemLink = HOMEOSAPP.itemlinkQR;
-            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', "CID="+dataItemLink[0].WORKSTATION_ID);
+            window.shareWorkStation( dataItemLink[0].NAME_DEVICE +"-"+ dataItemLink[0].WORKSTATION_ID, 'https://central.homeos.vn/images/cabinetConditionPNJ.jpg', HOMEOSAPP.objApp.MENU_SHARE_OWNER);
         }
     } else {
 

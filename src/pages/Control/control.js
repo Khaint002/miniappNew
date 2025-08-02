@@ -18,11 +18,16 @@ var ctx_P = document.getElementById("chartPower").getContext("2d");
 var ctx_E = document.getElementById("chartEnergy").getContext("2d");
 
 var ChartU, ChartI, ChartP, ChartE;
+
 // xác định thiết bị cần truy cập
 async function accessDevice() {
     $('#qr-popup').hide();
     setTimeout(() => {
         $("#loading-popup").hide();
+        if(isFirstConnect){
+            HOMEOSAPP.goBack();
+            toastr.error("tạm thời chưa thể kết nối đến thiết bị ");
+        }
     }, 10000);
     const inputValue = HOMEOSAPP.CodeCondition;
     if (inputValue == null || inputValue == "") {
@@ -44,23 +49,14 @@ async function accessDevice() {
             dataWarranty.push(matchedItem);
         }
         if (dataWarranty.length == 1) {
-            // const dataCabinet = await HOMEOSAPP.getDM(
-            //     "https://central.homeos.vn/service_XD/service.svc",
-            //     "LOG_ZONE_00h",
-            //     "ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"' AND PR_KEY = (SELECT MAX(PR_KEY) FROM dbo.LOG_ZONE_00h WHERE ZONE_ADDRESS = '"+ HOMEOSAPP.CodeCondition +"')"
-            // );
-            // if(dataCabinet.data.length != 0){
-                
-                
-            
-            // }
-            
             if (HOMEOSAPP.CodeCondition) {
                 $("#loading-popup").show();
                 let checkQRcode = dataWarranty[0].QR_CODE.split(",");
                 const dataQRCondition = await HOMEOSAPP.getDataMDQRcode(
                     dataWarranty[0].QR_CODE.replaceAll(",", "$")
                 );
+
+                HOMEOSAPP.objApp.MENU_SHARE_OWNER += checkQRcode[3];
 
                 localStorage.setItem("itemCondition", JSON.stringify(dataQRCondition));
                 document.getElementById("header-conditionName").textContent =
@@ -98,7 +94,6 @@ changeDataFirstConnect = async function (Cid) {
         if(dataCabinetlanding.data[i].NO != '41'){
             const stringValue = await objectToFormattedString(dataCabinetlanding.data[i]);
             updateDataLed(stringValue, "testResizableArray");
-            console.log(dataCabinetlanding.data[i], stringValue);
         }
     }
 }
@@ -170,10 +165,7 @@ getWebSocket = async function (value) {
             //gọi refresh lần đầu tiên khi truy cập
             if(isFirstConnect){
                 setTimeout(() => {
-                    console.log("chạy đoạn 1");
-                    
-                    // const cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
-                    // wss.send(JSON.stringify(cmd));
+                    // sendMessage("REFRESH;");
                 }, 1000);
             }
         };
@@ -187,6 +179,12 @@ getWebSocket = async function (value) {
 var isCollecting = false;
 var isChecking = true;
 var collectedLines = [];
+
+function sendMessage(command) {
+    const cmd = [{ CHIP_ID: cabinetID, COMMAND: command }];
+    wss.send(JSON.stringify(cmd));
+}
+
 function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
     const txt = data.data;
     const checkValue = txt.split(":");
@@ -210,7 +208,6 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             `
             isFirstConnect = false;
         }
-        console.log(txt);
         
         clearTimeout(timeoutHandle);
         timeoutHandle = setTimeout(noDataReceived, 120000);
@@ -233,23 +230,29 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             isCollecting = false;
 
             numberSchedule = 0;
-            // const scheduleData = `[1] 1 10:00:00 14:40:00 1 126
-            // [2] 2 10:00:00 13:00:00 1 43
-            // Total: 2`
+            // const scheduleData = `[1] 1  0:00:00  11:3:00 0 127
+            //     [2] 2  08:3:00  17:3:00 0 62
+            //     [3] 3  14:2:00  14:4:00 0 0
+            //     [4] 4 19:13:00 20:30:00 1 127
+            //     [5] 5 19:05:00 20:30:00 0 127
+            //     Total: 5`
             // xử lý kết quả:
             $("#listSchedule").empty();
-            const scheduleData = collectedLines.join("\n").trim();
-            console.log(scheduleData);
+            // console.log(collectedLines);
+            
+            scheduleData = collectedLines.join("\n").trim();
+            
             
             scheduleData.split('\n').forEach(line => {
                 const idx = line.indexOf(':');
-            
                 if (idx > -1) {
                     const zoneId = line.slice(0, idx).trim();
                     const dataPart = line.slice(idx + 1).trim(); // ví dụ: "[1] 1 14:29:00 14:40:00 0 0"
             
                     if (dataPart.startsWith('[')) {
                         numberSchedule++;
+                        // console.log(dataPart);
+                        
                         renderScheduleFromLine(dataPart, zoneId); // nếu bạn cần truyền zoneId
                     }
                 }
@@ -539,9 +542,7 @@ $("#online")
             </svg>
         `;
         }, 15000);
-        console.log("chạy đoạn click");
-        let cmd = [{ CHIP_ID: cabinetID, COMMAND: "REFRESH;" }];
-        wss.send(JSON.stringify(cmd));
+        sendMessage("REFRESH;");
     });
 
 function formatCustomDate(date) {
@@ -604,9 +605,7 @@ $("#schedule-condition")
         `;
 
         document.getElementById("listSchedule").innerHTML = card;
-
-        const cmd = [{ CHIP_ID: cabinetID, COMMAND: "LR SCHEDULE;" }];
-        wss.send(JSON.stringify(cmd));
+        sendMessage("LR SCHEDULE;");
         HOMEOSAPP.loadPage("schedule-condition-popup");
 
         runOptionS();
@@ -682,12 +681,6 @@ $("#BackSchedule")
         HOMEOSAPP.goBack();
     });
 
-// $("#BackExportCondition")
-//     .off("click")
-//     .click(function () {
-//         HOMEOSAPP.goBack();
-//     });
-
 onOffRelay = function (id, color) {
     const icon = document.getElementById("icon-" + id);
     let checkID = parseInt(id.substring(6));
@@ -700,10 +693,9 @@ onOffRelay = function (id, color) {
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
         `;
         $("#icon-" + id).addClass("spin-loading");
-        let cmd = [
-            { CHIP_ID: cabinetID, COMMAND: "CALL BATCH LGS_ON_" + checkID + ";" },
-        ];
-        wss.send(JSON.stringify(cmd));
+
+        sendMessage("CALL BATCH LGS_ON_" + checkID + ";");
+
         relayTimeouts[id] = setTimeout(() => {
             if ($("#" + id).css("background-color") == "rgb(206, 172, 48)") {
                 $("#" + id).css("background", "#000000");
@@ -721,12 +713,9 @@ onOffRelay = function (id, color) {
             <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
         `;
         $("#icon-" + id).addClass("spin-loading");
-        // let cmd = [{ CHIP_ID: '12929152', COMMAND: 'SEND CAN(17 0 0 0 41 '+ (checkID+6) +');' }];
-        let cmd = [
-            { CHIP_ID: cabinetID, COMMAND: "CALL BATCH LGS_OFF_" + checkID + ";" },
-        ];
-        wss.send(JSON.stringify(cmd));
-        // ws.send('12929152:SEND CAN(17 0 0 0 41 '+ (checkID+6) +');')
+
+        sendMessage("CALL BATCH LGS_OFF_" + checkID + ";");
+
         relayTimeouts[id] = setTimeout(() => {
             if ($("#" + id).css("background-color") == "rgb(206, 172, 48)") {
                 $("#" + id).css("background", "#08ed0a");
@@ -1367,7 +1356,6 @@ function getHourRangeWithEnergy(entry, check) {
     if(entry != undefined){
         let minHour = null;
         let maxHour = null;
-        console.log(entry);
         
         for (let i = 0; i <= 23; i++) {
             const value = parseFloat(entry[`GIO_${i}`] || 0);
@@ -1389,7 +1377,6 @@ function getHourRangeWithEnergy(entry, check) {
             maxHour = nowHour - 1;
         }
         const energyEnd = parseFloat(entry[`GIO_${maxHour}`] || 0);
-        console.log(maxHour, minHour);
         totalValue = (energyEnd - energyStart).toFixed(3)
         if(totalValue < 0){
             totalValue = 0
@@ -1576,9 +1563,9 @@ $("#submitCalendar")
             });
         }
         command = GenerateCreateScheduleString(scheduleName, startTime, command);
-        // gửi lệnh xuống thiết bị
-        let cmd = [{ CHIP_ID: cabinetID, COMMAND: command }];
-        wss.send(JSON.stringify(cmd));
+        
+        sendMessage(command);
+
         toastr.success("Lập lịch thành công!");
     });
 
@@ -1711,7 +1698,6 @@ async function renderOEEChannels() {
         "LOG_ZONE_LANDING",
         "WORKSTAITON_ID = '" + dataQRcode[3] +"'"
     );
-    console.log(dataStatusOEE);
     const dataDevice = await HOMEOSAPP.getDM(
         "https://central.homeos.vn/service_XD/service.svc",
         "ZALO_LINKED_QRCODE",
@@ -1735,10 +1721,8 @@ async function renderOEEChannels() {
         let a = ((i - 1) % 3) + 1;
         const matchedObj = dataStatusOEE.data.find(item => item.NO === device && item.ID === a);
         const detailstatusOEE = statusOEE.find(s => s.STATUS_ID === matchedObj.STATUS.trim());
-        console.log(matchedObj);
         
         const colorStatus = getStatusColor(detailstatusOEE.STATUS_ID);
-        console.log(colorStatus);
         delay += 0.1;
         let status = 'On';
         if(i == 2){
@@ -1800,15 +1784,6 @@ async function renderOEEChannels() {
         $container.append($channel);
     }
 
-    // Sự kiện click chọn kênh
-    // $(".channel-item").on("click", function () {
-    //     $(".channel-item").removeClass("active");
-    //     $(this).addClass("active");
-
-    //     const index = $(this).data("index");
-    //     console.log("Kênh được chọn:", index);
-    //     // Gọi hàm xử lý khác nếu cần
-    // });
 
     $container.fadeIn(300);
 }
@@ -1838,7 +1813,8 @@ function getStatusColor(statusId) {
 
 async function getDataOEEtoChannel(nameTag) {
     const dataOEE = await HOMEOSAPP.getDataOEE(nameTag);
-    console.log(dataOEE[0]);
+    console.log(dataOEE);
+    
     const findValue = (jobName) => {
         const found = dataOEE.find(d => d.JOB_NAME === jobName);
         return found ? found.VALUE : 0;
@@ -1957,7 +1933,6 @@ $("#startDateOEE, #endDateOEE").on("change", async () => {
 
 
 async function GetDataDowntime(id, startDate, endDate) {
-    console.log(id);
     
     const Data = await HOMEOSAPP.getDM(
         "https://central.homeos.vn/service_XD/service.svc",
@@ -1968,7 +1943,6 @@ async function GetDataDowntime(id, startDate, endDate) {
     $container.empty();
     let delay = 0;
     let dataDowntime = Data.data;
-    console.log(dataDowntime);
     
     if(dataDowntime.length != 0){
         for (let i = dataDowntime.length -1; i >= 0 ; i--) {
@@ -2062,8 +2036,9 @@ function exitSelectionMode() {
 
 $('#toolbar').off("click").click(async () => {
     const dataRemove = await getCheckedSchedules();
-    const cmd = [{ CHIP_ID: cabinetID, COMMAND: `LR SCHEDULE;` }];
-    wss.send(JSON.stringify(cmd));
+    
+    sendMessage("LR SCHEDULE;");
+
     $("#cancel-select").click();
 });
 
@@ -2075,11 +2050,11 @@ function getCheckedSchedules() {
         if (checkbox && checkbox.checked) {
             const line = card.getAttribute('data-line');
             if (line) {
-                const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+                const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{1,2}):\d{1,2}\s+(\d{1,2}:\d{1,2}):\d{1,2}\s+(\d+)\s+(\d+)/);
                 if (!match) return;
                 const [_, id, repeat, start, end, switchState, dayBinary] = match;
-                const cmd = [{ CHIP_ID: cabinetID, COMMAND: `DISPOSE(${repeat});` }];
-                wss.send(JSON.stringify(cmd));
+                
+                sendMessage(`DISPOSE(${repeat});`);
                 checkedLines.push(line);
                 await HOMEOSAPP.delay(100);
             }
@@ -2141,7 +2116,7 @@ function runScheduleCard(params) {
             const line = card?.getAttribute('data-line');
             const newState = e.target.checked ? 1 : 0;
             
-            const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{2}):\d{2}\s+(\d{1,2}:\d{2}):\d{2}\s+(\d+)\s+(\d+)/);
+            const match = line.match(/\[(\d+)\]\s+(\d+)\s+(\d{1,2}:\d{1,2}):\d{1,2}\s+(\d{1,2}:\d{1,2}):\d{1,2}\s+(\d+)\s+(\d+)/);
             if (!match) return;
 
             const [_, id, repeat, start, end, switchState, dayBinary] = match;
@@ -2150,16 +2125,11 @@ function runScheduleCard(params) {
             const numberOfRelays = typeMatch ? parseInt(typeMatch[1]) : 0;
 
             if(numberOfRelays == 1){
-                const cmdDis = [{ CHIP_ID: cabinetID, COMMAND: `DISPOSE(${repeat});` }];
-                wss.send(JSON.stringify(cmdDis));
+                sendMessage(`DISPOSE(${repeat});`);
                 await HOMEOSAPP.delay(500);
                 const commandSchedule = `CREATE(SL, ${repeat}, ${start}:00, ${end}:00, ${newState}, ${dayBinary});`;
-                const cmdCreate = [{ CHIP_ID: cabinetID, COMMAND: commandSchedule }];
-                wss.send(JSON.stringify(cmdCreate));
+                sendMessage(commandSchedule);
             }
-
-            console.log("Switched line:", line);
-            console.log("New switch state:", newState);
             // Bạn có thể xử lý update line hoặc gọi API tại đây
         }
     });
@@ -2187,8 +2157,8 @@ $('#close-new-screen').on('click', function () {
     // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
     setTimeout(() => {
         $('#new-screen').removeClass('slide-out');
-        const cmd = [{ CHIP_ID: cabinetID, COMMAND: "LR SCHEDULE;" }];
-        wss.send(JSON.stringify(cmd));
+        sendMessage("LR SCHEDULE;");
+
     }, 400);
 });
 
@@ -2520,7 +2490,7 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
 
 // BE Schedule
 function renderScheduleFromLine(line) {
-    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(0|\d{1,2}:\d{2}:\d{2})\s+(0|\d{1,2}:\d{2}:\d{2})\s+(\d+)\s+(\d+)/);
+    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(0|\d{1,2}:\d{1,2}:\d{1,2})\s+(0|\d{1,2}:\d{1,2}:\d{1,2})\s+(\d+)\s+(\d+)/);
     if (!match) return;
 
     const [_, id, repeat, start, end, switchState, dayBinary] = match;
@@ -2528,7 +2498,6 @@ function renderScheduleFromLine(line) {
     const daysText = binaryToDays(dayBinary);
     const timeLogicText = formatTimeDistanceLogic(start, end, dayBinary);
     const subtext = `${daysText} | ${timeLogicText}`;
-    console.log(subtext);
     
     const card = document.createElement('div');
     card.className = 'schedule-card row';
@@ -2579,7 +2548,6 @@ function binaryToDays(bin) {
     if (days.length > 1 && days.every((v, i, arr) => i === 0 || weekDays.indexOf(arr[i]) === weekDays.indexOf(arr[i - 1]) + 1)) {
         return `${days[0]} đến ${days[days.length - 1]}`;
     }
-
     return days.join(', ');
 }
 
@@ -2598,61 +2566,59 @@ async function getDataAddSchedule(type) {
     const offMinute = getSelectedTime("off-minute") ;
 
     const repeatData = getSelectedRepeatDaysData();
-    console.log("Số thập phân:", repeatData.decimal);
     
     let startTime = `${onHour}:${onMinute}:00`;
     let endTime = `${offHour}:${offMinute}:00`;
     let commandSchedule;
-    console.log(repeatData.decimal);
     
     if ($('#on-time-wrapper').hasClass('disabledSpinner')) {
         startTime = 0;
     } else if($('#off-time-wrapper').hasClass('disabledSpinner')){
-        endTime = 0
+        endTime = 0;
     }
 
     if(type == 'ADDTIME'){
         const timeLogicText = formatTimeDistanceLogic(startTime, endTime, repeatData.decimal);
-        console.log(timeLogicText);
         $("#subtitleSchedule").text(timeLogicText);
     } else {
         if(numberOfRelays == 1){
             commandSchedule = `CREATE(SL, ${numberSchedule+1}, ${startTime}, ${endTime}, 1, ${repeatData.decimal});`;
-            console.log(commandSchedule);
-            const cmd = [{ CHIP_ID: cabinetID, COMMAND: commandSchedule }];
-            wss.send(JSON.stringify(cmd));
+            sendMessage(commandSchedule);
             $("#close-new-screen").click()
         } else {
+            const startTimeDelay = `${onHour}:${onMinute}:05`;
+            const endTimeDelay = `${offHour}:${offMinute}:05`;
+
             const result = getSelectedChannels();
-            console.log(result);
             if(result == 'all'){
-                console.log(numberSchedule);
-                const startTimeDelay = `${onHour}:${onMinute}:05`;
-                const endTimeDelay = `${offHour}:${offMinute}:05`;
                 const commandScheduleOn = `CREATE(SL, schedule${numberSchedule + 1}on, ${startTime}, ${startTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_ON_ALL);`;
                 const commandScheduleOff = `CREATE(SL, schedule${numberSchedule + 1}off, ${endTime}, ${endTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_OFF_ALL);`;
-                const cmdOn = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOn }];
-                // wss.send(JSON.stringify(cmdOn));
+                
+                if(startTime == 0){
+                    sendMessage(commandScheduleOff);
+                } else if(endTime == 0){
+                    sendMessage(commandScheduleOn)
+                } else {
+                    sendMessage(commandScheduleOn);
+                    HOMEOSAPP.delay(500);
+                    sendMessage(commandScheduleOff);
+                }
 
-                HOMEOSAPP.delay(500)
-                console.log(commandScheduleOn);
-                console.log(commandScheduleOff);
-                const cmdoff = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOff }];
-                // wss.send(JSON.stringify(cmdoff));
             } else {
                 for (let i = 0; i < result.length; i++) {
                     const commandScheduleOn = `CREATE(SL, schedule${numberSchedule + 1}on, ${startTime}, ${startTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_ON_${result[i]});`;
                     const commandScheduleOff = `CREATE(SL, schedule${numberSchedule + 1}off, ${endTime}, ${endTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_OFF_${result[i]});`;
-                    const cmdOn = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOn }];
-                    // wss.send(JSON.stringify(cmdOn));
-
-                    await HOMEOSAPP.delay(500);
-
-                    console.log(commandScheduleOn);
-                    console.log(commandScheduleOff);
-                    const cmdOff = [{ CHIP_ID: cabinetID, COMMAND: commandScheduleOff }];
-                    // wss.send(JSON.stringify(cmdOff));
-
+                    
+                    if(startTime == 0){
+                        sendMessage(commandScheduleOff);
+                    } else if(endTime == 0){
+                        sendMessage(commandScheduleOn)
+                    } else {
+                        sendMessage(commandScheduleOn);
+                        HOMEOSAPP.delay(500);
+                        sendMessage(commandScheduleOff);
+                    }
+                    numberSchedule += 1
                     await HOMEOSAPP.delay(200);
                 }
             }
