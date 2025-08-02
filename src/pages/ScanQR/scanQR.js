@@ -227,6 +227,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                     if (dataQRCODE.data.length < $('#classProductNumber').val()) {
                         const willInsertData = {
                             PR_KEY: data[0].PR_KEY,
+                            CK_CODE: data[0].CK_CODE,
                             QR_CODE: decodedText,
                             MA_SAN_PHAM: checkQRcode[1],
                             LOT_ID: $('#lot-number').val(),

@@ -10,7 +10,7 @@ function truyCap() {
     document.getElementById("footer-stationName").textContent = HOMEOSAPP.itemHistory.CodeWorkStation + " - " + HOMEOSAPP.itemHistory.NameWorkStation;
     matram = localStorage.getItem("MATRAM");
 
-    HOMEOSAPP.objApp.MENU_SHARE_OWNER += matram;
+    HOMEOSAPP.addObj('CID', matram);
     
     $("button-modal-loading").click();
     saveHistory(localStorage.getItem('MATRAM'));

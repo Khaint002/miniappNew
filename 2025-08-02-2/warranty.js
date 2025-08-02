@@ -43,10 +43,8 @@ async function accessDeviceWarranty() {
             "DM_QRCODE",
             "1=1"
         );
-        HOMEOSAPP.objApp.MENU_SHARE_OWNER += dataQRcode.CK_CODE;
-        HOMEOSAPP.objApp.MENU_SHARE_ADMIN += dataQRcode.CK_CODE;
-        HOMEOSAPP.objApp.MENU_SHARE_GUEST += dataQRcode.CK_CODE;
-
+        HOMEOSAPP.addObj('CK', dataQRcode.CK_CODE);
+        
         const inputClean = inputValue.replace(/[^\d]/g, "");
 
         const matchedItem = dataQRcode.data.find(item =>
@@ -648,7 +646,7 @@ $("#product-guide").off("click").click(function () {
 })
 
 $("#product-Control").off("click").click(function () {
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/Control/control.html");
 })
 
 accessDeviceWarranty();

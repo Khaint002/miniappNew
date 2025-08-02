@@ -55,8 +55,8 @@ async function accessDevice() {
                 const dataQRCondition = await HOMEOSAPP.getDataMDQRcode(
                     dataWarranty[0].QR_CODE.replaceAll(",", "$")
                 );
-
-                HOMEOSAPP.objApp.MENU_SHARE_OWNER += checkQRcode[3];
+                
+                HOMEOSAPP.addObj('CID', checkQRcode[3]);
 
                 localStorage.setItem("itemCondition", JSON.stringify(dataQRCondition));
                 document.getElementById("header-conditionName").textContent =

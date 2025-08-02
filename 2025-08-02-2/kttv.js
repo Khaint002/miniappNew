@@ -10,7 +10,7 @@ function truyCap() {
     document.getElementById("footer-stationName").textContent = HOMEOSAPP.itemHistory.CodeWorkStation + " - " + HOMEOSAPP.itemHistory.NameWorkStation;
     matram = localStorage.getItem("MATRAM");
 
-    HOMEOSAPP.objApp.MENU_SHARE_OWNER += matram;
+    HOMEOSAPP.addObj('CID', matram);
     
     $("button-modal-loading").click();
     saveHistory(localStorage.getItem('MATRAM'));
@@ -405,7 +405,7 @@ function handleNoRainVisual() {
 $(".homepage-Pre-pickApp").off("click").click(function () {
     HOMEOSAPP.stopInterval();
     stopIntervalMonitoring();
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/menu/menu.html");
 });
 
 $("#share-qrcode-workstation").off("click").click(function () {
