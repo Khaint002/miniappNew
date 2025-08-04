@@ -1412,4 +1412,15 @@ $("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
     $("#tabIndicator-Scan").css("left", "50%");
 });
+
+$("#tab-scan-export").off("click").click(function (event) {
+    openTab(event, 'tabExport')
+    $("#tabIndicator-export").css("left", "0%");
+});
+
+$("#tab-export-lot").off("click").click(function (event) {
+    openTab(event, 'tabExportLot')
+    $("#tabIndicator-export").css("left", "50%");
+});
+
 $("#tab-scan-qr").click();
