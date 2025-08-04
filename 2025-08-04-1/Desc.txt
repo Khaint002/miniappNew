@@ -1,0 +1,3 @@
+Cập nhật ngày 04/08/2025 lần 1:
+- Bỏ phần out ra khi ko kết nối được đến thiết bị.
+- Sửa lại phần quét lô sản phẩm.

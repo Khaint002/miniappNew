@@ -25,7 +25,7 @@ async function accessDevice() {
     setTimeout(() => {
         $("#loading-popup").hide();
         if(isFirstConnect){
-            HOMEOSAPP.goBack();
+            // HOMEOSAPP.goBack();
             toastr.error("tạm thời chưa thể kết nối đến thiết bị ");
         }
     }, 10000);
@@ -165,7 +165,7 @@ getWebSocket = async function (value) {
             //gọi refresh lần đầu tiên khi truy cập
             if(isFirstConnect){
                 setTimeout(() => {
-                    // sendMessage("REFRESH;");
+                    sendMessage("REFRESH;");
                 }, 1000);
             }
         };

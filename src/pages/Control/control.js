@@ -6,6 +6,7 @@ var relayTimeouts = {};
 var cabinetID;
 var isActive = false;
 var isFirstConnect = true;
+var isFirstConnectRefresh = true;
 var statusOEE;
 var deviceID;
 var zoneID;
@@ -25,7 +26,7 @@ async function accessDevice() {
     setTimeout(() => {
         $("#loading-popup").hide();
         if(isFirstConnect){
-            HOMEOSAPP.goBack();
+            // HOMEOSAPP.goBack();
             toastr.error("tạm thời chưa thể kết nối đến thiết bị ");
         }
     }, 10000);
@@ -163,10 +164,11 @@ getWebSocket = async function (value) {
         wss.onopen = () => {
             wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
             //gọi refresh lần đầu tiên khi truy cập
-            if(isFirstConnect){
+            if(isFirstConnectRefresh){
                 setTimeout(() => {
-                    // sendMessage("REFRESH;");
+                    sendMessage("REFRESH;");
                 }, 1000);
+
             }
         };
         // Final UI updates
@@ -1569,14 +1571,37 @@ $("#submitCalendar")
         toastr.success("Lập lịch thành công!");
     });
 
-var GenerateCreateScheduleString = function (batchName, startTime, cmd) {
-    let res =
-        "CREATE(SL,<BATCH_NAME>,<START_TIME>, <END_TIME>,1,<COMMAND_STRING>);\r\n";
-    res = res.replace(/<BATCH_NAME>/g, batchName);
-    res = res.replace(/<START_TIME>/g, startTime + ":00");
-    res = res.replace(/<END_TIME>/g, startTime + ":05");
-    res = res.replace(/<COMMAND_STRING>/g, cmd);
-    return res;
+var GenerateCreateScheduleString = function (numberOfRelays, batchName, timeOn, timeOff, repeat, cmd) {
+    if(numberOfRelays == 1){
+        let res = "CREATE(SL,<NAME>,<TIME_ON>, <TIME_OFF>,1,<REPEAT>);";
+        res = res.replace(/<NAME>/g, batchName);
+        res = res.replace(/<TIME_ON>/g, timeOn + ":00");
+        res = res.replace(/<TIME_OFF>/g, timeOff + ":00");
+        res = res.replace(/<REPEAT>/g, repeat);
+        return res;
+    } else {
+        // NAME = schedule n on/off (0 <= n < 15); DỰA THEO SỐ LƯỢNG LỊCH.
+        // TỦ NHIỀU KÊNH
+        let resOn = "CREATE(SL,<NAME>,<TIME_ON>, <TIME_DELAY>,1,<REPEAT>,<CMD>);";
+        let resOff = "CREATE(SL,<NAME>,<TIME_OFF>, <TIME_DELAY>,1,<REPEAT>,<CMD>);";
+
+        resOn = resOn.replace(/<NAME>/g, batchName);
+        resOn = resOn.replace(/<TIME_ON>/g, timeOn + ":00");
+        resOn = resOn.replace(/<TIME_DELAY>/g, timeOn + ":05");
+        resOn = resOn.replace(/<REPEAT>/g, repeat);
+        resOn = resOn.replace(/<CMD>/g, cmd);
+
+        resOff = resOff.replace(/<NAME>/g, batchName);
+        resOff = resOff.replace(/<TIME_OFF>/g, timeOff + ":00");
+        resOff = resOff.replace(/<TIME_DELAY>/g, timeOff + ":05");
+        resOff = resOff.replace(/<REPEAT>/g, repeat);
+        resOff = resOff.replace(/<CMD>/g, cmd);
+
+        return {
+            scheduleOn: resOn,
+            scheduleOff: resOff
+        }
+    }
 };
 
 $("#BackCondition")
@@ -2412,6 +2437,8 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
     };
 
     const paddedBinary = parseInt(dayBinary).toString(2).padStart(7, '0');
+    console.log(paddedBinary);
+    
     const today = now.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
     const isTodayActive = paddedBinary[today] === '1';
 
@@ -2582,6 +2609,7 @@ async function getDataAddSchedule(type) {
         $("#subtitleSchedule").text(timeLogicText);
     } else {
         if(numberOfRelays == 1){
+            GenerateCreateScheduleString();
             commandSchedule = `CREATE(SL, ${numberSchedule+1}, ${startTime}, ${endTime}, 1, ${repeatData.decimal});`;
             sendMessage(commandSchedule);
             $("#close-new-screen").click()
@@ -2603,7 +2631,6 @@ async function getDataAddSchedule(type) {
                     HOMEOSAPP.delay(500);
                     sendMessage(commandScheduleOff);
                 }
-
             } else {
                 for (let i = 0; i < result.length; i++) {
                     const commandScheduleOn = `CREATE(SL, schedule${numberSchedule + 1}on, ${startTime}, ${startTimeDelay}, 1, ${repeatData.decimal}, CALL BATCH LGS_ON_${result[i]});`;
