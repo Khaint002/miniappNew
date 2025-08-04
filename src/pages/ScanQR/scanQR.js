@@ -30,6 +30,14 @@ $(".start").off("click").click(function () {
             return toastr.error("Vui lòng nhập số lượng cần quét hợp lệ (lớn hơn 0)!");
         }
     }
+
+    if(dataId == 4){
+        const Desc = $("#descExport").val();
+        if (!Desc) {
+            return toastr.error("Vui lòng nhập ghi chú! Ví dụ: Sản phẩm được bán qua Shopee");
+        }
+        typeQR = 4;
+    }
     if(typeof window.ScanQR == "function"){
         ScanQRcodeByZalo();
     } else {
@@ -395,6 +403,47 @@ async function onScanSuccess(decodedText, decodedResult) {
                     document.getElementById("result-truycap").classList.add("d-none");
                     toastr.error("Vui lòng quét đúng mã QR!");
                 }
+            }
+        }
+    } else if(typeQR == 4){
+        data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+        dataCheckPermission = data;
+        if (data.length > 0 && checkQRcode.length == 3) {
+            if (checkTab) {
+                if (data[0].LOT_ID == 0) {
+                    const dataWarrantyError = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_ERROR", "QRCODE_ID='" + data[0].PR_KEY + "'");
+                    const hasExport = dataWarrantyError.data.some(item => item.ERROR_NAME === 'Xuất bán sản phẩm');
+
+                    if (!hasExport) {
+                        const willInsert = {
+                            TYPE: "ADD",
+                            ERROR_NAME: "Xuất bán sản phẩm",
+                            DESCRIPTION: $("#descExport").val(),
+                            DATE_CREATE: new Date(),
+                            ERROR_STATUS: 0,
+                            QRCODE_ID: dataEdit[0].PR_KEY,
+                            USER_ID: UserID,
+                            DATASTATE: "ADD",
+                        };
+                        await HOMEOSAPP.add('WARRANTY_ERROR', willInsert)
+                        toastr.success("Xác nhận xuất bán thành công!");
+                    } else {
+                        toastr.error("Sản phẩm đã được xuất bán!");
+                    }
+                } else {
+                    if (data[0].LOT_ID == $('#lot-number').val()) {
+                        toastr.error("Sản phẩm đã tồn tại trong lô này!");
+                    } else {
+                        toastr.error("Sản phẩm đã thuộc 1 lô khác, vui lòng kiểm tra lại!");
+                    }
+                }
+            } else {
+                document.getElementById("result-product").classList.remove("d-none");
+                document.getElementById("result-form-loading").classList.add("d-none");
+                document.getElementById("result-form").classList.remove("d-none");
+                document.getElementById("result-product-truycap").disabled = false;
+                document.getElementById("result-form-productName").value = checkQRcode[1];
+                document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
             }
         }
     } else {
@@ -1405,8 +1454,6 @@ $("#tab-scan-qr").off("click").click(async function (event) {
     }
     $("#tabIndicator-Scan").css("left", "0%");
 });
-
-
 
 $("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
