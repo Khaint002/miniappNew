@@ -73,9 +73,17 @@
                 <div class="content-form" style="background-color: #282d31; padding: 0 20px;">
                     <div class="form-group content-detail mb-1">
                         <label class="form-label content-label" for="ap_ssid">Lô sản phẩm:</label>
-                        <select name="" id="lot-number" class="form-control content-input">
-                            <option value="0">Chọn lô cần quét</option>
-                        </select>
+                        <div class="row">
+                            <div class="col-9">
+                                <select name="" id="lot-number" class="form-control content-input">
+                                    <option value="0">Chọn lô cần quét</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <button id="addLotProduct" class="btn btn-warning" style="background-color: #f39c12;border: solid 1px #f39c12; width: 100%; color: #fff; margin-top: 20px;">Thêm lô</button>
+                            </div>
+                        </div>
+                        
                     </div>
                     <div class="form-group content-detail mb-1">
                         <label class="form-label content-label" for="ap_ssid">Lớp sản phẩm:</label>
