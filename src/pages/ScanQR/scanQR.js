@@ -408,6 +408,8 @@ async function onScanSuccess(decodedText, decodedResult) {
     } else if(typeQR == 4){
         data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
         dataCheckPermission = data;
+        console.log(data);
+        
         if (data.length > 0 && checkQRcode.length == 3) {
             if (checkTab) {
                 if (data[0].LOT_ID == 0) {
