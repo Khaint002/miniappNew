@@ -43,7 +43,6 @@ async function accessDeviceWarranty() {
             "DM_QRCODE",
             "1=1"
         );
-        HOMEOSAPP.addObj('CK', dataQRcode.CK_CODE);
         
         const inputClean = inputValue.replace(/[^\d]/g, "");
 
@@ -60,8 +59,9 @@ async function accessDeviceWarranty() {
                 $("#loading-popup").show();
                 let checkQRcode = dataWarranty[0].QR_CODE.split(',');
                 const dataQRProduct = await HOMEOSAPP.getDataMDQRcode(dataWarranty[0].QR_CODE.replaceAll(',', '$'));
-                console.log(dataQRProduct);
                 
+                HOMEOSAPP.addObj('CK', dataWarranty[0].CK_CODE);
+
                 document.getElementById("result-product").classList.remove("d-none");
                 document.getElementById("result-form-loading").classList.add("d-none");
                 document.getElementById("result-form").classList.remove("d-none");
