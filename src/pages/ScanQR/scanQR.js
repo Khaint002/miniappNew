@@ -429,7 +429,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                         };
                         await HOMEOSAPP.add('WARRANTY_ERROR', willInsert)
                         toastr.success("Xác nhận xuất bán thành công!");
-                        document.getElementById("result-form").classList.add("d-none");
+                        $("#close-scanner").click();
                     } else {
                         toastr.error("Sản phẩm đã được xuất bán!");
                     }
