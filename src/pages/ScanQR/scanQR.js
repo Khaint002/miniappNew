@@ -423,12 +423,13 @@ async function onScanSuccess(decodedText, decodedResult) {
                             DESCRIPTION: $("#descExport").val(),
                             DATE_CREATE: new Date(),
                             ERROR_STATUS: 0,
-                            QRCODE_ID: dataEdit[0].PR_KEY,
+                            QRCODE_ID: data[0].PR_KEY,
                             USER_ID: UserID,
                             DATASTATE: "ADD",
                         };
                         await HOMEOSAPP.add('WARRANTY_ERROR', willInsert)
                         toastr.success("Xác nhận xuất bán thành công!");
+                        document.getElementById("result-form").classList.add("d-none");
                     } else {
                         toastr.error("Sản phẩm đã được xuất bán!");
                     }
