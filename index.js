@@ -1714,6 +1714,8 @@ HOMEOSAPP.addObj = function(type, code) {
         SHARE_CODE: code
     };
     if(type == 'CK'){
+        console.log(code);
+        
         HOMEOSAPP.objApp.MENU_SHARE_OWNER += code;
         HOMEOSAPP.objApp.MENU_SHARE_ADMIN += code;
         HOMEOSAPP.objApp.MENU_SHARE_GUEST += code;
