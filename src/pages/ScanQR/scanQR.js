@@ -1475,6 +1475,23 @@ $("#tab-export-lot").off("click").click(function (event) {
 
 $('#addLotProduct').off('click').on('click', async function () {
     $('#screen-addLot').addClass('active');
+
+    $('#Prdouct-lot').empty();
+    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'DM_PRODUCT', "ACTIVE=1");
+    const newOption = $('<option>', {
+        value: '0', // Giá trị của option
+        text: 'Chọn sản phẩm cần tạo lô' // Nội dung hiển thị
+    });
+    // Thêm vào select
+    $('#Prdouct-lot').append(newOption);
+    Data.data.forEach(item => {
+        const newOption = $('<option>', {
+            value: item.PR_KEY, // Giá trị của option
+            text: item.PRODUCT_NAME // Nội dung hiển thị
+        });
+        // Thêm vào select
+        $('#Prdouct-lot').append(newOption);
+    });
 });
 
 // Đóng màn mới khi nhấn nút X
@@ -1485,6 +1502,63 @@ $('#close-screen-addLot').off('click').on('click', function () {
     setTimeout(() => {
         $('#screen-addLot').removeClass('slide-out');
     }, 400);
+});
+
+$('#save-lotProduct').off('click').on('click', function () {
+    const productSelect = document.getElementById("Prdouct-lot");
+    const codeLotInput = document.getElementById("codeLot");
+    const nameLotInput = document.getElementById("nameLot");
+
+    const selectedProduct = productSelect.value.trim();
+    const codeLot = codeLotInput.value.trim();
+    const nameLot = nameLotInput.value.trim();
+
+    // Kiểm tra sản phẩm
+    if (selectedProduct === "0") {
+      toastr.error("Vui lòng chọn sản phẩm cần tạo lô.");
+      productSelect.focus();
+      return;
+    }
+
+    // Kiểm tra mã lô sản phẩm
+    if (codeLot === "") {
+      toastr.error("Vui lòng nhập mã lô sản phẩm.");
+      codeLotInput.focus();
+      return;
+    }
+
+    // Kiểm tra tên lô sản phẩm
+    if (nameLot === "") {
+      toastr.error("Vui lòng nhập tên lô sản phẩm.");
+      nameLotInput.focus();
+      return;
+    }
+
+    console.log("Dữ liệu hợp lệ:", {
+      productId: selectedProduct,
+      codeLot,
+      nameLot
+    });
+
+    const willInsertData = {
+        PRODUCT_ID: selectedProduct,
+        LOT_NUMBER: codeLot,
+        LOT_NAME: nameLot,
+        DATE_CREATE: new Date(Date.now() + 7 * 60 * 60 * 1000),
+        USER_ID: UserID,
+        DELIVERY_DATE: "1999-01-01 00:00:00.000",
+        DATASTATE: "ADD",
+    };
+    HOMEOSAPP.add('WARRANTY_LOT', willInsertData).then(async data => {
+        try {
+            toastr.success("Thêm Lô hàng thành công.");
+            $('#close-screen-addLot').click();
+        } catch (e) { }
+    }).catch(err => {
+        console.error('Error:', err);
+    });
+
+    
 });
 
 $("#tab-scan-qr").click();

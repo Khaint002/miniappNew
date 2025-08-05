@@ -168,6 +168,7 @@ getWebSocket = async function (value) {
             if(isFirstConnectRefresh){
                 setTimeout(() => {
                     // sendMessage("REFRESH;");
+                    isFirstConnectRefresh = false;
                 }, 1000);
 
             }

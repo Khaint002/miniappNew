@@ -30,6 +30,14 @@ $(".start").off("click").click(function () {
             return toastr.error("Vui lòng nhập số lượng cần quét hợp lệ (lớn hơn 0)!");
         }
     }
+
+    if(dataId == 4){
+        const Desc = $("#descExport").val();
+        if (!Desc) {
+            return toastr.error("Vui lòng nhập ghi chú! Ví dụ: Sản phẩm được bán qua Shopee");
+        }
+        typeQR = 4;
+    }
     if(typeof window.ScanQR == "function"){
         ScanQRcodeByZalo();
     } else {
@@ -395,6 +403,50 @@ async function onScanSuccess(decodedText, decodedResult) {
                     document.getElementById("result-truycap").classList.add("d-none");
                     toastr.error("Vui lòng quét đúng mã QR!");
                 }
+            }
+        }
+    } else if(typeQR == 4){
+        data = await getDataMDQRcode(decodedText.replaceAll(',', '$'));
+        dataCheckPermission = data;
+        console.log(data);
+        
+        if (data.length > 0 && checkQRcode.length == 3) {
+            if (checkTab) {
+                if (data[0].LOT_ID == 0) {
+                    const dataWarrantyError = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_ERROR", "QRCODE_ID='" + data[0].PR_KEY + "'");
+                    const hasExport = dataWarrantyError.data.some(item => item.ERROR_NAME === 'Xuất bán sản phẩm');
+
+                    if (!hasExport) {
+                        const willInsert = {
+                            TYPE: "ADD",
+                            ERROR_NAME: "Xuất bán sản phẩm",
+                            DESCRIPTION: $("#descExport").val(),
+                            DATE_CREATE: new Date(),
+                            ERROR_STATUS: 0,
+                            QRCODE_ID: data[0].PR_KEY,
+                            USER_ID: UserID,
+                            DATASTATE: "ADD",
+                        };
+                        await HOMEOSAPP.add('WARRANTY_ERROR', willInsert)
+                        toastr.success("Xác nhận xuất bán thành công!");
+                        $("#close-scanner").click();
+                    } else {
+                        toastr.error("Sản phẩm đã được xuất bán!");
+                    }
+                } else {
+                    if (data[0].LOT_ID == $('#lot-number').val()) {
+                        toastr.error("Sản phẩm đã tồn tại trong lô này!");
+                    } else {
+                        toastr.error("Sản phẩm đã thuộc 1 lô khác, vui lòng kiểm tra lại!");
+                    }
+                }
+            } else {
+                document.getElementById("result-product").classList.remove("d-none");
+                document.getElementById("result-form-loading").classList.add("d-none");
+                document.getElementById("result-form").classList.remove("d-none");
+                document.getElementById("result-product-truycap").disabled = false;
+                document.getElementById("result-form-productName").value = checkQRcode[1];
+                document.getElementById("result-form-productCode").value = checkQRcode[2].substring(1);
             }
         }
     } else {
@@ -1047,7 +1099,7 @@ async function ScanQRcodeByZalo() {
 }
 
 async function addItemLotproduct() {
-    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "DELIVERY_DATE='1999-01-01 00:00:00.000'");
     listLotProduct.empty();
     data.data.forEach(item => {
         let element = '';
@@ -1376,7 +1428,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
                 case "ScanLotDevice":
                     $("#ScanAllQRcode").removeClass("d-none");
                     $('#lot-number').empty();
-                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "DELIVERY_DATE='1999-01-01 00:00:00.000'");
                     const newOption = $('<option>', {
                         value: '0', // Giá trị của option
                         text: 'Chọn lô sản phẩm' // Nội dung hiển thị
@@ -1406,10 +1458,107 @@ $("#tab-scan-qr").off("click").click(async function (event) {
     $("#tabIndicator-Scan").css("left", "0%");
 });
 
-
-
 $("#tab-text").off("click").click(function (event) {
     openTab(event, 'tab2')
     $("#tabIndicator-Scan").css("left", "50%");
 });
+
+$("#tab-scan-export").off("click").click(function (event) {
+    openTab(event, 'tabExport')
+    $("#tabIndicator-export").css("left", "0%");
+});
+
+$("#tab-export-lot").off("click").click(function (event) {
+    openTab(event, 'tabExportLot')
+    $("#tabIndicator-export").css("left", "50%");
+});
+
+$('#addLotProduct').off('click').on('click', async function () {
+    $('#screen-addLot').addClass('active');
+
+    $('#Prdouct-lot').empty();
+    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'DM_PRODUCT', "ACTIVE=1");
+    const newOption = $('<option>', {
+        value: '0', // Giá trị của option
+        text: 'Chọn sản phẩm cần tạo lô' // Nội dung hiển thị
+    });
+    // Thêm vào select
+    $('#Prdouct-lot').append(newOption);
+    Data.data.forEach(item => {
+        const newOption = $('<option>', {
+            value: item.PR_KEY, // Giá trị của option
+            text: item.PRODUCT_NAME // Nội dung hiển thị
+        });
+        // Thêm vào select
+        $('#Prdouct-lot').append(newOption);
+    });
+});
+
+// Đóng màn mới khi nhấn nút X
+$('#close-screen-addLot').off('click').on('click', function () {
+    $('#screen-addLot').removeClass('active');
+    
+    // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
+    setTimeout(() => {
+        $('#screen-addLot').removeClass('slide-out');
+    }, 400);
+});
+
+$('#save-lotProduct').off('click').on('click', function () {
+    const productSelect = document.getElementById("Prdouct-lot");
+    const codeLotInput = document.getElementById("codeLot");
+    const nameLotInput = document.getElementById("nameLot");
+
+    const selectedProduct = productSelect.value.trim();
+    const codeLot = codeLotInput.value.trim();
+    const nameLot = nameLotInput.value.trim();
+
+    // Kiểm tra sản phẩm
+    if (selectedProduct === "0") {
+      toastr.error("Vui lòng chọn sản phẩm cần tạo lô.");
+      productSelect.focus();
+      return;
+    }
+
+    // Kiểm tra mã lô sản phẩm
+    if (codeLot === "") {
+      toastr.error("Vui lòng nhập mã lô sản phẩm.");
+      codeLotInput.focus();
+      return;
+    }
+
+    // Kiểm tra tên lô sản phẩm
+    if (nameLot === "") {
+      toastr.error("Vui lòng nhập tên lô sản phẩm.");
+      nameLotInput.focus();
+      return;
+    }
+
+    console.log("Dữ liệu hợp lệ:", {
+      productId: selectedProduct,
+      codeLot,
+      nameLot
+    });
+
+    const willInsertData = {
+        PRODUCT_ID: selectedProduct,
+        LOT_NUMBER: codeLot,
+        LOT_NAME: nameLot,
+        DATE_CREATE: new Date(Date.now() + 7 * 60 * 60 * 1000),
+        USER_ID: UserID,
+        DELIVERY_DATE: "1999-01-01 00:00:00.000",
+        DATASTATE: "ADD",
+    };
+    HOMEOSAPP.add('WARRANTY_LOT', willInsertData).then(async data => {
+        try {
+            toastr.success("Thêm Lô hàng thành công.");
+            $('#close-screen-addLot').click();
+        } catch (e) { }
+    }).catch(err => {
+        console.error('Error:', err);
+    });
+
+    
+});
+
 $("#tab-scan-qr").click();

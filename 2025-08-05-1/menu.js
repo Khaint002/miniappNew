@@ -88,7 +88,7 @@ function renderApps(apps, containerId) {
 
 
 function onAddNewApp() {
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/UserSelection/userSelection.html");
 }
 
 function getSelectedAppsOrDefault() {
@@ -151,7 +151,7 @@ async function pickApp(type) {
 function handleMuaApp() {
     HOMEOSAPP.showElement("LoadScreen", "img-station");
 
-    HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/History/history.html");
+    HOMEOSAPP.loadPage("https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html");
     setTimeout(() => {
         HOMEOSAPP.hideElement("LoadScreen", "img-station");
 
