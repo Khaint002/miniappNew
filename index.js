@@ -1771,19 +1771,21 @@ setTimeout(async () => {
             HOMEOSAPP.application = "CONTROL";
             HOMEOSAPP.checkTabHistory = 2;
             HOMEOSAPP.controlID = window.paramObjects.CID;
-            checkparam = true
+            checkparam = true;
         } else if(window.paramObjects.CK){
             HOMEOSAPP.application = "WARRANTY";
             HOMEOSAPP.checkTabHistory = 3;
             HOMEOSAPP.checkTabMenu = "DetailDevice";
-            checkparam = true
+            checkparam = true;
         } else if(window.paramObjects.WID) {
             HOMEOSAPP.application = "KTTV";
             HOMEOSAPP.checkTabHistory = 1;
             HOMEOSAPP.workstationID = window.paramObjects.WID;
-            checkparam = true
+            checkparam = true;
         }
         if(checkparam){
+            const app = HOMEOSAPP.apps.find(a => a.MENU_ID === HOMEOSAPP.application);
+            HOMEOSAPP.objApp = app;
             let historyStack = JSON.parse(localStorage.getItem('historyStack')) || [];
             historyStack.push("https://miniapp-new.vercel.app/src/pages/menu/menu.html");
             historyStack.push("https://miniapp-new.vercel.app/src/pages/History/history.html");
