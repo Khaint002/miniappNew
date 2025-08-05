@@ -91,6 +91,8 @@ async function accessDeviceWarranty() {
 }
 
 async function changeDataWarranty(data) {
+    console.log(data);
+    
     const item = data[0];
     const qrParts = item.QR_CODE.split(',');
     
@@ -171,6 +173,7 @@ async function changeDataWarranty(data) {
     }
 
     // Ghi log + lịch sử
+
     saveWarranty(data);
     addItemHistoryWarranty(item.PR_KEY, data);
 }
@@ -203,6 +206,8 @@ function calculateWarrantyRemaining(startDate, timeWarranty) {
 }
 
 function saveWarranty(data) {
+    console.log(data);
+    
     const DataQRcode = data[0].QR_CODE.split(',');
     let codeDevice;
     if(DataQRcode.length == 4){
