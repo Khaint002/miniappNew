@@ -1474,7 +1474,6 @@ $("#tab-export-lot").off("click").click(function (event) {
 });
 
 $('#addLotProduct').off('click').on('click', async function () {
-    await resetTimeWrapper();
     $('#screen-addLot').addClass('active');
 });
 
