@@ -32,9 +32,24 @@ $(".start").off("click").click(function () {
     }
 
     if(dataId == 4){
-        const Desc = $("#descExport").val();
-        if (!Desc) {
-            return toastr.error("Vui lòng nhập ghi chú! Ví dụ: Sản phẩm được bán qua Shopee");
+        const type = $("#NoteExport").val();
+        const priceRaw = $("#priceInput").val();
+        const price = priceRaw.replace(/\D/g, ""); // chỉ lấy số
+        const desc = $("#descExport").val().trim();
+
+        if (type === "0") {
+            toastr.error("Vui lòng chọn hình thức xuất bán!");
+            return false;
+        }
+
+        if (!price) {
+            toastr.error("Vui lòng nhập giá tiền!");
+            return false;
+        }
+
+        if (!desc) {
+            toastr.error("Vui lòng nhập ghi chú! Ví dụ: Sản phẩm được bán qua Shopee");
+            return false;
         }
         typeQR = 4;
     }
@@ -415,15 +430,19 @@ async function onScanSuccess(decodedText, decodedResult) {
                 if (data[0].LOT_ID == 0) {
                     const dataWarrantyError = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_ERROR", "QRCODE_ID='" + data[0].PR_KEY + "'");
                     const hasExport = dataWarrantyError.data.some(item => item.ERROR_NAME === 'Xuất bán sản phẩm');
-
+                    const type = $("#NoteExport").val();
+                    const priceRaw = $("#priceInput").val();
+                    const price = priceRaw.replace(/\D/g, ""); // chỉ lấy số
                     if (!hasExport) {
                         const willInsert = {
                             TYPE: "ADD",
                             ERROR_NAME: "Xuất bán sản phẩm",
-                            DESCRIPTION: $("#descExport").val(),
+                            DESCRIPTION: type,
                             DATE_CREATE: new Date(),
                             ERROR_STATUS: 0,
                             QRCODE_ID: data[0].PR_KEY,
+                            PRICE_PRODUCT: price,
+                            NOTE: $("#descExport").val(),
                             USER_ID: UserID,
                             DATASTATE: "ADD",
                         };
@@ -1337,6 +1356,15 @@ async function generateVoucher(item) {
     newTab.document.body.appendChild(script);
 }
 
+function formatVND(value) {
+    if (!value) return "";
+    return new Intl.NumberFormat('vi-VN').format(value) + " ₫";
+}
+
+function unformatVND(value) {
+    return value.replace(/\D/g, "");
+}
+
 $("#result-truycap").off("click").click(function () {
     document.getElementById("result-truycap").disabled = true;
     $("#loading-popup").show();
@@ -1471,6 +1499,23 @@ $("#tab-scan-export").off("click").click(function (event) {
 $("#tab-export-lot").off("click").click(function (event) {
     openTab(event, 'tabExportLot')
     $("#tabIndicator-export").css("left", "50%");
+});
+
+$(".money-input").off("input").on("input", function () {
+    const numeric = unformatVND($(this).val());
+    $(this).val(formatVND(numeric));
+});
+
+$(".money-input").off("focus").on("focus", function () {
+    const numeric = unformatVND($(this).val());
+    $(this).val(numeric);
+});
+
+$(".money-input").off("blur").on("blur", function () {
+    const numeric = unformatVND($(this).val());
+    if (numeric) {
+        $(this).val(formatVND(numeric));
+    }
 });
 
 $('#addLotProduct').off('click').on('click', async function () {
