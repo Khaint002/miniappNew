@@ -132,41 +132,36 @@
             <div class="header-icon" id="save-alarm">✔</div>
         </div>
         <div class="px-3 py-3">
-            <div class="content-form" style="background-color: #000; padding: 0 20px; color: #f1f1f1;">
-                <div class="form-group content-detail mb-1">
-                  <label class="form-label content-label" for="ap_ssid">Sản phẩm:</label>
-                  <div class="row">
-                    <div class="col-12">
-                      <select id="Prdouct-lot" class="form-control content-input" style="background-color: #1c1c1c; color: #f1f1f1; border: 1px solid #444;">
-                        <option value="0" style="background-color: #1c1c1c; color: #ccc;">Chọn sản phẩm cần tạo lô</option>
-                      </select>
-                    </div>
-                  </div>
+            <div style="padding: 20px; background-color: #000; color: #fff; font-family: 'Segoe UI', sans-serif;">
+                <div class="mb-3">
+                  <label for="Prdouct-lot" class="form-label" style="font-weight: 500;">Sản phẩm:</label>
+                  <select id="Prdouct-lot" class="form-select" style="background-color: #1a1a1a; color: #fff; border-radius: 8px; border: 1px solid #444;">
+                    <option value="0">Chọn sản phẩm cần tạo lô</option>
+                  </select>
                 </div>
               
-                <div class="form-group content-detail mb-1">
-                  <label class="form-label content-label" for="classProduct">Mã lô sản phẩm:</label>
-                  <input id="classProduct" class="form-control content-input"
-                         type="text" placeholder="Nhập lớp cần quét"
-                         style="background-color: #1c1c1c; color: #f1f1f1; border: 1px solid #444;">
+                <div class="mb-3">
+                  <label for="classProduct" class="form-label" style="font-weight: 500;">Mã lô sản phẩm:</label>
+                  <input type="text" class="form-control" id="classProduct" placeholder="Nhập lớp cần quét"
+                    style="background-color: #1a1a1a; color: #fff; border-radius: 8px; border: 1px solid #444;">
                 </div>
               
-                <div class="form-group content-detail mb-1">
-                  <label class="form-label content-label" for="classProductNumber">Tên lô sản phẩm:</label>
-                  <input id="classProductNumber" class="form-control content-input"
-                         type="text" placeholder="Nhập số lượng cần quét"
-                         style="background-color: #1c1c1c; color: #f1f1f1; border: 1px solid #444;">
+                <div class="mb-3">
+                  <label for="classProductNumber" class="form-label" style="font-weight: 500;">Tên lô sản phẩm:</label>
+                  <input type="text" class="form-control" id="classProductNumber" placeholder="Nhập số lượng cần quét"
+                    style="background-color: #1a1a1a; color: #fff; border-radius: 8px; border: 1px solid #444;">
                 </div>
               
-                <button id="addLotProduct"
-                        class="btn btn-warning"
-                        style="background-color: #f39c12; border: 1px solid #f39c12; width: 100%; color: #fff; margin-top: 20px;">
+                <button id="addLotProduct" type="button"
+                  class="btn w-100"
+                  style="background-color: #f39c12; color: #fff; font-weight: bold; border-radius: 8px; padding: 10px;">
                   Thêm lô
                 </button>
               </div>
+              
         </div>
     </div>
 </div>
 
-<script src="https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.js"></script>
-<!-- <script src="./src/pages/ScanQR/scanQR.js"></script> -->
+<!-- <script src="https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.js"></script> -->
+<script src="./src/pages/ScanQR/scanQR.js"></script>
