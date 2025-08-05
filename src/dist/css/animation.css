@@ -253,3 +253,8 @@
 .hide-down {
   animation: slideDownFadeOut 0.2s forwards;
 }
+
+#Prdouct-lot::placeholder, #codeLot::placeholder, #nameLot::placeholder {
+  color: #ccc !important;
+  opacity: 1; /* Firefox fix */
+}
