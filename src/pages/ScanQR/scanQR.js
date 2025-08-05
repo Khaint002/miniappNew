@@ -1473,4 +1473,19 @@ $("#tab-export-lot").off("click").click(function (event) {
     $("#tabIndicator-export").css("left", "50%");
 });
 
+$('#addLotProduct').off('click').on('click', async function () {
+    await resetTimeWrapper();
+    $('#screen-addLot').addClass('active');
+});
+
+// Đóng màn mới khi nhấn nút X
+$('#close-screen-addLot').off('click').on('click', function () {
+    $('#screen-addLot').removeClass('active');
+    
+    // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
+    setTimeout(() => {
+        $('#screen-addLot').removeClass('slide-out');
+    }, 400);
+});
+
 $("#tab-scan-qr").click();

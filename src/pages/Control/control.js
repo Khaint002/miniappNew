@@ -2183,7 +2183,7 @@ $('.floating-btn').off('click').on('click', async function () {
     createSpinner("off-hour", hours, 'hour');
     createSpinner("off-minute", minutes, 'minute');
     $('#new-screen').addClass('active');
-  });
+});
 
 // Đóng màn mới khi nhấn nút X
 $('#close-new-screen').off('click').on('click', function () {

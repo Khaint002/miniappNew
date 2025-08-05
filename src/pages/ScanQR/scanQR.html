@@ -74,16 +74,15 @@
                     <div class="form-group content-detail mb-1">
                         <label class="form-label content-label" for="ap_ssid">Lô sản phẩm:</label>
                         <div class="row">
-                            <div class="col-9">
+                            <div class="col-7">
                                 <select name="" id="lot-number" class="form-control content-input">
                                     <option value="0">Chọn lô cần quét</option>
                                 </select>
                             </div>
-                            <div class="col-3">
-                                <button id="addLotProduct" class="btn btn-warning" style="background-color: #f39c12;border: solid 1px #f39c12; width: 100%; color: #fff; margin-top: 20px;">Thêm lô</button>
+                            <div class="col-5">
+                                <button id="addLotProduct" class="btn btn-warning" style="background-color: #f39c12;border: solid 1px #f39c12; width: 100%; color: #fff;">Thêm lô</button>
                             </div>
                         </div>
-                        
                     </div>
                     <div class="form-group content-detail mb-1">
                         <label class="form-label content-label" for="ap_ssid">Lớp sản phẩm:</label>
@@ -124,6 +123,43 @@
         <ul id="lot-warranty-detail" style="overflow-y: auto; max-height: 538px; padding: 10px 0 0px;">
         </ul>
     </div>
+    <div id="screen-addLot" class="new-screen" style="overflow-y: auto; height: 100%;">
+        <div class="alarm-header">
+            <div class="header-icon" id="close-screen-addLot">✕</div>
+            <div class="header-content">
+                <div class="title">Thêm Lot</div>
+            </div>
+            <div class="header-icon" id="save-alarm">✔</div>
+        </div>
+        <div class="px-3 py-3">
+            <div class="content-form" style="background-color: #282d31; padding: 0 20px;">
+                <div class="form-group content-detail mb-1">
+                    <label class="form-label content-label" for="ap_ssid">Sản phẩm:</label>
+                    <div class="row">
+                        <div class="col-7">
+                            <select name="" id="Prdouct-lot" class="form-control content-input">
+                                <option value="0">Chọn sản phẩm cần tạo lô</option>
+                            </select>
+                        </div>
+                        <div class="col-5">
+                            <button id="addLotProduct" class="btn btn-warning" style="background-color: #f39c12;border: solid 1px #f39c12; width: 100%; color: #fff;">Thêm lô</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group content-detail mb-1">
+                    <label class="form-label content-label" for="ap_ssid">Mã lô sản phẩm:</label>
+                    <input id="classProduct" class="form-control content-input" type="text"
+                        placeholder="Nhập lớp cần quét">
+                </div>
+                <div class="form-group content-detail mb-1">
+                    <label class="form-label content-label" for="ap_ssid">Tên lô sản phẩm:</label>
+                    <input id="classProductNumber" class="form-control content-input" type="text"
+                        placeholder="Nhập số lượng cần quét">
+                </div>
+            </div>      
+        </div>
+    </div>
 </div>
+
 <script src="https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.js"></script>
 <!-- <script src="./src/pages/ScanQR/scanQR.js"></script> -->
