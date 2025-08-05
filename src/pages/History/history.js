@@ -1330,7 +1330,7 @@ menuItems.forEach((item) => {
         } else if (menuText == "Thông tin sản phẩm") {
             HOMEOSAPP.checkTabMenu = "DetailDevice";
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
-        } else if (menuText == "Quét lô sản phẩm") {
+        } else if (menuText == "Xuất sản phẩm") {
             HOMEOSAPP.checkTabMenu = "ScanLotDevice";
             HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/ScanQR/scanQR.html");
         } else if (menuText == "Quản lý và xuất lô hàng") {
