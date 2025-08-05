@@ -139,7 +139,7 @@ getWebSocket = async function (value) {
         ).textContent = `${dataDevice.data[0].NAME_DEVICE} [${cabinetID}]`;
 
         let localDataRaw = JSON.parse(localStorage.getItem("dataCondition")) || [];
-        
+
         const datacontrol = localDataRaw.find(item => item.CodeCondition == cabinetID) || null;
         // Render UI components
         await renderReray(dataItemCabinet[0].QR_CODE, datacontrol);

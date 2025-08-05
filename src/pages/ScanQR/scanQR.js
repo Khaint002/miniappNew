@@ -1099,7 +1099,7 @@ async function ScanQRcodeByZalo() {
 }
 
 async function addItemLotproduct() {
-    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+    const data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "DELIVERY_DATE='1999-01-01 00:00:00.000'");
     listLotProduct.empty();
     data.data.forEach(item => {
         let element = '';
@@ -1428,7 +1428,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
                 case "ScanLotDevice":
                     $("#ScanAllQRcode").removeClass("d-none");
                     $('#lot-number').empty();
-                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+                    const Data = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "DELIVERY_DATE='1999-01-01 00:00:00.000'");
                     const newOption = $('<option>', {
                         value: '0', // Giá trị của option
                         text: 'Chọn lô sản phẩm' // Nội dung hiển thị
