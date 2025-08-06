@@ -1,0 +1,2 @@
+Cập nhật ngày 05/08/2025 lần 2:
+- bổ sung trường giá và cho chọn hình thức xuất bán khi xuất sản phẩm.

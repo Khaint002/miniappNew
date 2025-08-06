@@ -1,4 +1,0 @@
-Cập nhật ngày 04/08/2025 lần 1:
-- sửa lại phần tính thời gian bật tắt của phần lập lịch
-- sửa lỗi chia sẻ của phần bảo hành
-- thêm màn quét xác nhận xuất sản phẩm, thêm lô sản phẩm.
