@@ -1564,7 +1564,6 @@ HOMEOSAPP.checkPermissionDevice = async function (data) {
     const serviceUrl = "https://central.homeos.vn/service_XD/service.svc";
     let OWNER_SHIP_LEVEL = 0;
     let DataUser;
-    console.log(data);
     
     // Lấy dữ liệu quyền sở hữu từ QR code
     const dataPermission = await HOMEOSAPP.getDM(

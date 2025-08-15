@@ -3,803 +3,552 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Đặt lịch</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <title>Timeline Fixed Footer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
   <style>
     body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    .schedule-card, .schedule-card * {
-      user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-    }
-
-    .header-default, .header-select {
-      padding: 15px;
-      font-size: 20px;
-      font-weight: 500;
-      border-bottom: 1px solid #333;
-    }
-
-    .header-select {
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .schedule-card {
-      background-color: #1e1e1e;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 15px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .selected {
-      background-color: #515152 !important;
-    }
-
-    .time-range {
-      font-size: 24px;
-      font-weight: 600;
-    }
-
-    .subtext {
-      font-size: 13px;
-      color: #ccc;
-      max-width: 220px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .bottom-toolbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 10px 0;
-      background-color: #111;
-      border-top: 1px solid #333;
-      text-align: center;
-      display: none;
-    }
-
-    .bottom-toolbar i {
-      font-size: 20px;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .check-icon {
-      font-size: 20px;
-      color: #0d6efd;
-      display: none;
-    }
-
-    .form-check-custom {
-      display: none;
+      flex-direction: column;
+      height: 100vh;
       margin: 0;
-      transform: scale(1.4);
-      border-radius: 50px;
     }
-
-    .schedule-card .check-icon {
+    .app-card {
+      border-radius: 10px;
+      padding: 15px;
+      background: #f3f3f3;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .app-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .app-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .schedule-card.selected .form-check-input {
-      display: block !important;
-    }
-
-    .schedule-card.selected .switch-toggle {
-      display: none;
-    }
-
-    .selection-mode .switch-toggle {
-      display: none !important;
-    }
-
-    .selection-mode .form-check-custom {
-      display: block !important;
-    }
-
-    .schedule-card.selected .check-icon {
-      display: block;
-    }
-
-    .floating-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #1e1e1e;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      display: flex;
       justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      color: #0d6efd;
-      border: none;
-    }
-
-    .floating-btn:hover {
-      background-color: #333;
-    }
-
-    .new-screen {
-      position: fixed;
-      top: 0;
-      left: 100%;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
       color: white;
-      z-index: 999;
-      transition: left 0.4s ease;
+      font-size: 24px;
     }
-
-    .new-screen.active {
-      left: 0;
+    .app-title {
+      font-weight: bold;
+      margin: 0;
     }
-
-    .new-screen.slide-out {
-      left: 100%;
+    .app-subtitle {
+      margin: 0;
+      color: #6c757d;
+      font-size: 14px;
     }
-
-    .time-group {
-      background-color: #111;
-      border-radius: 12px;
-      padding: 10px;
-      margin: 5px;
-      text-align: center;
+    .app-version {
+      font-size: 12px;
+      color: #999;
     }
-
-    .time-group label {
-      color: #fff;
-      font-size: 1rem;
-      margin-bottom: 8px;
-      display: block;
+    .timeline-wrapper {
+      position: relative;
+      padding: 15px 0;
+      background: #fff;
     }
-
-    .spinner-wrapper {
+    /* Đường line nền */
+    .timeline-line {
+      position: absolute;
+      top: 32px;
+      left: 18px;
+      right: 18px;
+      height: 3px;
+      background: #ccc;
+      z-index: 1;
+    }
+    /* Các bước */
+    .timeline {
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: space-between;
       position: relative;
+      z-index: 2;
     }
-
-    .spinner-container {
-      position: relative;
-      width: 60px;
-      height: 150px;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scrollbar-width: none;
-    }
-
-    .spinner-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .spinner {
+    .step {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 50px;
-      padding-bottom: 50px;
-    }
-
-    .spinner-item {
-      scroll-snap-align: center;
-      font-size: 1.4rem;
-      color: #ccc;
-      padding: 10px 0;
-    }
-
-    .spinner-item.selected {
-      color: white;
-      font-weight: bold;
-      background-color: #555;
-      border-radius: 6px;
-      width: 100%;
+      flex: 1;
       text-align: center;
     }
-
-    .colon {
-      color: #fff;
-      font-size: 1.6rem;
-      margin: 0 8px;
-    }
-
-    .spinner-container::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 40px;
-      transform: translateY(-50%);
-      border-top: 1px solid #666;
-      border-bottom: 1px solid #666;
-      pointer-events: none;
-    }
-
-    .alarm-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: black;
-  color: white;
-  font-family: sans-serif;
-}
-
-.header-icon {
-  font-size: 24px;
-  cursor: pointer;
-  width: 32px;
-  text-align: center;
-}
-
-.header-content {
-  flex: 1;
-  text-align: center;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: #aaa;
-}
-.disabledSpinner {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-.repeat-options {
-  background: #000;
-  color: #fff;
-  font-family: sans-serif;
-}
-
-.option {
-  background: #2c2c2c;
-  padding: 12px 16px;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.3s;
-}
-
-.option.selected {
-  background: #0a3c75 !important;
-}
-
-.option .arrow {
-  float: right;
-  transition: transform 0.3s ease;
-}
-
-.option.open .arrow {
-  transform: rotate(90deg);
-}
-
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  margin: 6px 0;
-  font-size: 14px;
-  position: relative;
-}
-
-.checkbox-wrapper input[type="checkbox"] {
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border: 2px solid #888;
-  border-radius: 4px;
-  margin-right: 10px;
-  position: relative;
-  transition: 0.2s;
-  background: #000;
-}
-
-.checkbox-wrapper input[type="checkbox"]:checked {
-  background-color: #2196F3;
-  border-color: #2196F3;
-}
-
-.checkbox-wrapper input[type="checkbox"]::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 6px;
-  width: 4px;
-  height: 9px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  display: none;
-}
-
-.checkbox-wrapper input[type="checkbox"]:checked::after {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scaleY(0.95); }
-  to { opacity: 1; transform: scaleY(1); }
-}
-
-.custom-days {
-      background-color: #111;
-      border-radius: 10px;
-      padding: 8px 0;
-      margin-top: -5px;
-      margin-bottom: 10px;
-      display: none;
-      animation: expand 0.3s ease;
-    }
-    .day-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 16px;
-      align-items: center;
-      transition: background 0.3s;
-    }
-
-    .day-item:hover {
-      background-color: #222;
-    }
-
-    .day-item.selected {
-      background-color: #333;
-      color: #4ea3ff;
-    }
-
-    .checkbox {
-      width: 20px;
-      height: 20px;
+    .circle {
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      border: 2px solid #666;
+      background: #ccc;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: #fff;
+      z-index: 2;
+      transition: background 0.3s ease, transform 0.3s ease;
     }
-
-    .checkbox.checked {
-      border-color: #4ea3ff;
-      background-color: #4ea3ff;
+    .step.active .circle {
+      background: #0d6efd;
+      transform: scale(1.1);
     }
-
-    .checkbox.checked::after {
-      content: '\2713';
+    .step.done .circle {
+      background: #198754;
+      transform: scale(1.1);
+    }
+    .label {
+      margin-top: 6px;
       font-size: 14px;
-      color: black;
+      white-space: nowrap;
+      transition: opacity 0.3s ease;
     }
-    .custom-days.show {
-      display: block;
+    .label.inactive {
+      opacity: 0.5;
+    }
+    /* Line đã hoàn thành */
+    .timeline-line-fill {
+      position: absolute;
+      top: 32px;
+      left: 18px;
+      height: 3px;
+      background: #198754;
+      z-index: 1;
+      transition: width 0.4s ease;
+    }
+    /* Nội dung cuộn */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background: #f8f9fa;
+    }
+    .step-content {
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    /* Footer cố định */
+    .footer-nav {
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 10px;
     }
   </style>
 </head>
-<body class="px-3">
-
-  <div class="header-default">Đặt lịch</div>
-  <div class="header-select d-none" id="select-header">
-    <span id="selected-count">Đã chọn 1 mục</span>
-    <div>
-      <i class="bi bi-x-lg me-3" id="cancel-select"></i>
-      <i class="bi bi-three-dots-vertical"></i>
+<body>
+  <div id="all" class="container py-3">
+    <h5 class="mb-3">Chức năng:</h5>
+  
+    <div class="app-card" onclick="openApp('check')">
+      <div class="d-flex align-items-center">
+        <div class="app-icon" style="background-color:#0dcaf0;">
+          <i class="bi bi-archive"></i>
+        </div>
+        <div class="ms-3 flex-grow-1">
+          <p class="app-title">Theo dõi đơn giặt</p>
+          <p class="app-subtitle">Theo dõi đơn giặt</p>
+        </div>
+        <span class="app-version"></span>
+      </div>
+    </div>
+  
+    <div class="app-card" onclick="openApp('giat')">
+      <div class="d-flex align-items-center">
+        <div class="app-icon" style="background-color:#dc3545;">
+          <i class="bi bi-card-checklist"></i>
+        </div>
+        <div class="ms-3 flex-grow-1">
+          <p class="app-title">Tạo đơn giặt</p>
+          <p class="app-subtitle">Tạo đơn giặt</p>
+        </div>
+        <span class="app-version"></span>
+      </div>
+    </div>
+  
+    <div class="app-card d-none" onclick="openApp('baoHanh')">
+      <div class="d-flex align-items-center">
+        <div class="app-icon" style="background-color:#fd7e14;">
+          🛠
+        </div>
+        <div class="ms-3 flex-grow-1">
+          <p class="app-title">Bảo hành</p>
+          <p class="app-subtitle">Bảo hành sản phẩm</p>
+        </div>
+        <span class="app-version">v1.0.5</span>
+      </div>
     </div>
   </div>
+  <div id="create" class="d-none d-flex flex-column" style="height: 100vh;">
+    <!-- Timeline -->
+    <div class="d-flex align-items-center p-2 border-bottom bg-white">
+      <button class="btn btn-link p-0 me-2" id="btnBackHome">
+        <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+      </button>
+      <h5 class="mb-0">Tạo đơn giặt</h5>
+    </div>
 
-  <div id="listSchedule" style="margin-top: 20px;">
-    <div class="schedule-card row" data-id="1" style="--bs-gutter-x: 0rem;">
-      <div class="col-11">
-        <div class="time-range">07:00 - 09:00</div>
-        <div class="subtext">Thứ hai đến Thứ sáu | Báo thức sau 1 ngày...</div>
-      </div>
-      <div class="check-icon col-1">
-        <input type="checkbox" class="form-check-input form-check-custom">
-        <div class="form-check form-switch switch-toggle">
-          <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
-        </div>
-      </div>
-    </div>
-    <div class="schedule-card row" data-id="2" style="--bs-gutter-x: 0rem;">
-      <div class="col-11">
-        <div class="time-range">18:00 - 20:00</div>
-        <div class="subtext">Thứ bảy | Bật sau 5 giờ...</div>
-      </div>
-      <div class="check-icon col-1">
-        <input type="checkbox" class="form-check-input form-check-custom">
-        <div class="form-check form-switch switch-toggle">
-          <input class="form-check-input" style="font-size: 25px;" type="checkbox" checked>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="new-screen" class="new-screen">
-    <div class="alarm-header">
-      <div class="header-icon" id="close-new-screen">✕</div>
-      <div class="header-content">
-        <div class="title">Thêm lịch</div>
-        <div class="subtitle">Bật sau 23 giờ 22 phút</div>
-      </div>
-      <div class="header-icon" id="save-alarm">✔</div>
-    </div>
-    <div class="px-3 py-3">
-      <div class="row">
-        <div class="col-6" style="padding-right: 5px; padding-left: 6px;">
-          <div class="time-group">
-            <label class="row" style="display: flex; align-items: center;">
-              <span class="col-9" style="text-align: start;">Bật lúc</span>
-              <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
-                <input id="toggle-on-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
-              </div>
-            </label>
-            <div class="spinner-wrapper" id="on-time-wrapper">
-              <div class="spinner-container"><div class="spinner" id="on-hour"></div></div>
-              <div class="colon">:</div>
-              <div class="spinner-container"><div class="spinner" id="on-minute"></div></div>
-            </div>
+    <div class="flex-grow-1 overflow-auto">
+      <div class="timeline-wrapper">
+        <div class="timeline-line"></div>
+        <div class="timeline-line-fill" id="lineFill" style="width:0"></div>
+        <div class="timeline" id="timeline">
+          <div class="step active">
+            <div class="circle">1</div>
+            <div class="label">Tạo đơn</div>
           </div>
-        </div>
-        <div class="col-6" style="padding-left: 5px; padding-right: 6px;">
-          <div class="time-group">
-            <label class="row" style="display: flex; align-items: center;">
-              <span class="col-9" style="text-align: start;">Tắt lúc</span>
-              <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
-                <input id="toggle-off-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
-              </div>
-            </label>
-            <div class="spinner-wrapper" id="off-time-wrapper">
-              <div class="spinner-container"><div class="spinner" id="off-hour"></div></div>
-              <div class="colon">:</div>
-              <div class="spinner-container"><div class="spinner" id="off-minute"></div></div>
-            </div>
+          <div class="step">
+            <div class="circle">2</div>
+            <div class="label">Cân và phân loại</div>
+          </div>
+          <div class="step">
+            <div class="circle">3</div>
+            <div class="label">Đơn giá</div>
+          </div>
+          <div class="step">
+            <div class="circle">4</div>
+            <div class="label">Thanh toán</div>
           </div>
         </div>
       </div>
-      <!-- <button onclick="getAlarmTimes()">Lưu thời gian</button>
-      <div class="form-check form-switch text-white mb-3">
-        <input class="form-check-input" type="checkbox" id="vibrate">
-        <label class="form-check-label" for="vibrate">Rung khi báo thức</label>
-      </div>
-      <div class="form-check form-switch text-white mb-3">
-        <input class="form-check-input" type="checkbox" id="auto-delete">
-        <label class="form-check-label" for="auto-delete">Xóa sau khi đã báo thức</label>
-      </div> -->
-      <div class="repeat-options" style="margin-top: 10px;">
-        <label class="form-label text-white">Lặp lại:</label>
-        <div class="option selected" data-value="daily">Hàng ngày</div>
-        <div class="option" data-value="weekdays">Thứ hai đến Thứ sáu</div>
-      
-        <!-- Tùy chỉnh có toggle -->
-        <div class="option custom-toggle" id="custom-toggle">
-          Tuỳ chỉnh <span class="arrow">▶</span>
+
+      <!-- Nội dung -->
+      <div class="content">
+        <div class="step-content" data-step="0">
+          <div class="container-fluid">
+            <h3 class="mb-3">Nhập thông tin đơn hàng</h3>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Tên khách hàng:</label>
+                <input type="text" class="form-control" placeholder="Nhập tên khách hàng">
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Địa chỉ:</label>
+                <input type="text" class="form-control" placeholder="Nhập địa chỉ">
+              </div>
+              <div class="col-md-6 col-6">
+                <label class="form-label">Số điện thoại:</label>
+                <input type="text" class="form-control" placeholder="Nhập số điện thoại">
+              </div>
+              <div class="col-md-6 col-6">
+                <label class="form-label">Loại giặt:</label>
+                <select class="form-select">
+                  <option>Giặt ướt</option>
+                  <option>Giặt khô</option>
+                </select>
+              </div>
+            </div>
+        
+            <h4 class="mt-4">Chọn máy giặt</h4>
+            <div class="row g-3">
+              <div class="col-md-6 col-6">
+                <label class="form-label">Máy giặt</label>
+                <select class="form-select">
+                  <option>Máy giặt số 1</option>
+                  <option>Máy giặt số 2</option>
+                </select>
+              </div>
+              <div class="col-md-6 col-6">
+                <label class="form-label">Máy sấy</label>
+                <select class="form-select">
+                  <option>Máy sấy số 1</option>
+                  <option>Máy sấy số 2</option>
+                </select>
+              </div>
+              <div class="col-md-6 col-6">
+                <label class="form-label">Thời gian dự kiến:</label>
+                <input type="text" class="form-control" placeholder="Giặt trong 50 phút">
+              </div>
+              <div class="col-md-6 col-6">
+                <label class="form-label">Lượt giặt:</label>
+                <input type="text" class="form-control" placeholder="Lượt 1">
+              </div>
+            </div>
+          </div>
         </div>
         
-        <div class="custom-days" id="customDays">
-          <div class="day-item" data-day="2"><span>Thứ Hai</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="3"><span>Thứ Ba</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="4"><span>Thứ Tư</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="5"><span>Thứ Năm</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="6"><span>Thứ Sáu</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="7"><span>Thứ Bảy</span><div class="checkbox"></div></div>
-          <div class="day-item" data-day="8"><span>Chủ Nhật</span><div class="checkbox"></div></div>
+        <div class="step-content d-none" data-step="1">
+          <h4>Cân và phân loại đồ giặt</h4>
+          <!-- Form nhập -->
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4 col-12">
+              <label class="form-label">Loại đồ:</label>
+              <select class="form-select" id="itemType">
+                <option value="Quần áo (Cái)">Quần áo (Cái)</option>
+                <option value="Chăn (Cái)">Chăn (Cái)</option>
+                <option value="Khăn (Cái)">Khăn (Cái)</option>
+                <option value="Giày (Đôi)">Giày (Đôi)</option>
+              </select>
+            </div>
+            <div class="col-md-3 col-6">
+              <label class="form-label">Số lượng:</label>
+              <input type="number" class="form-control" id="itemQty" min="1" value="1">
+            </div>
+            <div class="col-md-3 col-6">
+              <label class="form-label">Số kg:</label>
+              <input type="number" class="form-control" id="itemWeight" min="0.1" step="0.1" value="0.5">
+            </div>
+            <div class="col-md-2 col-12">
+              <button class="btn btn-danger w-100" id="addItem">Xác nhận Cân</button>
+            </div>
+          </div>
+
+          <!-- Bảng hiển thị -->
+          <div class="mt-4">
+            <table class="table table-bordered table-sm" id="itemTable">
+              <thead class="table-light">
+                <tr>
+                  <th>Loại đồ</th>
+                  <th>Số lượng</th>
+                  <th>Số kg</th>
+                  <th>Xoá</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Hàng sẽ được thêm bằng JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>      
+        <div class="step-content d-none" data-step="2">
+          <h4>Bảng đơn giá</h4>
+          <table id="priceTable" class="table table-bordered">
+              <thead>
+                  <tr style="font-size: 12px;">
+                      <th>Sản phẩm</th>
+                      <th>Khối lượng</th>
+                      <th>Đơn giá</th>
+                      <th>Thành tiền</th>
+                  </tr>
+              </thead>
+              <tbody style="font-size: 12px;"></tbody>
+              <tfoot>
+                  <tr>
+                      <th colspan="3" style="text-align:right;">Tổng cộng</th>
+                      <th id="totalAmount">0 đ</th>
+                  </tr>
+              </tfoot>
+          </table>
+        </div>
+        <div class="step-content d-none" data-step="3">
+          <h4>Thanh toán</h4>
+          <p class="mb-3"></p>
+          
+          <!-- Tổng tiền -->
+          <h5 class="text-center mb-4">
+            Tổng tiền: <span id="total-price" class="text-danger fw-bold">0 VND</span>
+          </h5>
+
+          <!-- QR Code -->
+          <div class="d-flex justify-content-center mb-4">
+            <div id="qrcode"></div>
+          </div>
+
+          <div class="text-center">
+            <button id="success" class="btn btn-success btn-lg">Hoàn tất thanh toán</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer nút -->
+    <div class="footer-nav d-flex justify-content-between gap-2 p-2 border-top bg-white">
+      <button class="btn btn-secondary" id="btnBack" disabled>Quay lại</button>
+      <div id="footer-total">
+        <button class="btn btn-primary" id="btnNext">Tiếp tục</button>
+      </div>
     </div>
   </div>
 
-  <button class="floating-btn">+</button>
-  <div class="bottom-toolbar" id="toolbar">
-    <i class="bi bi-trash"></i>
-    <span>Xóa</span>
-  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script>
+  const steps = document.querySelectorAll(".step");
+  const labels = document.querySelectorAll(".label");
+  const lineFill = document.getElementById("lineFill");
+  const contents = document.querySelectorAll(".step-content");
+  const btnNext = document.getElementById("btnNext");
+  const btnBack = document.getElementById("btnBack");
+  let currentStep = 0;
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    let longPressTimer;
-      let selectedItems = [];
+  // Đơn giá mẫu (bạn có thể thay đổi theo thực tế)
+  const priceList = {
+    "Quần áo (Cái)": 25000, // đơn giá mỗi kg
+    "Chăn (Cái)": 50000,
+    "Khăn (Cái)": 10000,
+    "Giày (Đôi)": 50000
+  };
 
-      function updateSelectedCount() {
-        $('#selected-count').text(`Đã chọn ${selectedItems.length} mục`);
-        // if (selectedItems.length === 0) {
-        //   exitSelectionMode();
-        // }
+  function updateSteps() {
+    steps.forEach((step, i) => {
+      const circle = step.querySelector(".circle");
+      const label = step.querySelector(".label");
+
+      if (i < currentStep) {
+        step.classList.add("done");
+        step.classList.remove("active");
+        circle.innerHTML = '<i class="bi bi-check-lg"></i>';
+        label.classList.remove("inactive");
+      } else if (i === currentStep) {
+        step.classList.add("active");
+        step.classList.remove("done");
+        circle.textContent = i + 1;
+        label.classList.remove("inactive");
+      } else {
+        step.classList.remove("active", "done");
+        circle.textContent = i + 1;
+        label.classList.add("inactive");
       }
+    });
 
-      function enterSelectionMode() {
-        $('#listSchedule').addClass('selection-mode');
-        $('.header-default').addClass('d-none');
-        $('#select-header').removeClass('d-none');
-        $('#select-header').addClass('d-flex');
-        $('#toolbar').show();
-      }
+    const percent = (currentStep / (steps.length - 1)) * 100;
+    lineFill.style.width = percent + "%";
 
-      function exitSelectionMode() {
-        $('#listSchedule').removeClass('selection-mode');
-        $('.header-default').removeClass('d-none');
-        $('#select-header').addClass('d-none');
-        $('#select-header').addClass('d-flex');
-        $('#toolbar').hide();
-        $('.schedule-card').removeClass('selected');
-        selectedItems = [];
-      }
+    contents.forEach((c, idx) => {
+      c.classList.toggle("d-none", idx !== currentStep);
+    });
 
-      $('.schedule-card').on('mousedown touchstart', function (e) {
-        const $card = $(this);
-        longPressTimer = setTimeout(() => {
-          const itemId = $card.data('id');
+    btnBack.disabled = currentStep === 0;
+    btnNext.disabled = currentStep === steps.length - 1;
 
-          // Nếu chưa chọn
-          if (!$card.hasClass('selected')) {
-            $card.addClass('selected');
-            selectedItems.push(itemId);
-            
-            // ✅ Check vào checkbox của mục này
-            $card.find('input[type="checkbox"]').prop('checked', true);
-          }
-
-          enterSelectionMode();
-          updateSelectedCount();
-        }, 500);
-      }).on('mouseup mouseleave touchend', function () {
-        clearTimeout(longPressTimer);
-      });
-
-      // Cho phép click nhanh để chọn/bỏ nếu đã vào chế độ chọn
-      $('.schedule-card').on('click', function () {
-        if (!$('#select-header').hasClass('d-none')) {
-
-          const $card = $(this);
-          const itemId = $card.data('id');
-          const $checkbox = $card.find('.form-check-custom');
-
-          if ($card.hasClass('selected')) {
-            $card.removeClass('selected');
-            selectedItems = selectedItems.filter(id => id !== itemId);
-            $checkbox.prop('checked', false);
-          } else {
-            $card.addClass('selected');
-            selectedItems.push(itemId);
-            $checkbox.prop('checked', true);
-          }
-
-          updateSelectedCount();
-        }
-      });
-
-      // Nhấn nút ❌ để hủy chọn
-      $('#cancel-select').on('click', function () {
-        exitSelectionMode();
-      });
-      $('.floating-btn').on('click', function () {
-        createSpinner("on-hour", hours);
-        createSpinner("on-minute", minutes);
-        createSpinner("off-hour", hours);
-        createSpinner("off-minute", minutes);
-        $('#new-screen').addClass('active');
-      });
-
-// Đóng màn mới khi nhấn nút X
-$('#close-new-screen').on('click', function () {
-  $('#new-screen').removeClass('active');
-
-  // Sau khi ẩn, reset vị trí để chuẩn bị cho lần mở tiếp theo
-  setTimeout(() => {
-    $('#new-screen').removeClass('slide-out');
-  }, 400);
-});
-
-
-
-function createSpinner(id, items) {
-      const spinner = document.getElementById(id).parentElement;
-      const itemHeight = 50;
-      const itemCount = items.length;
-      const loopedItems = [...items, ...items, ...items];
-
-      console.log(spinner);
-      
-
-      // Tạo item
-      loopedItems.forEach(val => {
-        const div = document.createElement("div");
-        div.className = "spinner-item";
-        div.textContent = val;
-        spinner.appendChild(div);
-      });
-
-      // Scroll đến giữa
-      setTimeout(() => {
-        spinner.scrollTop = itemCount * itemHeight;
-        highlightSelected();
-      }, 0);
-
-      function highlightSelected() {
-        const center = spinner.scrollTop + spinner.clientHeight / 2;
-        const items = spinner.querySelectorAll(".spinner-item");
-
-        let closest = null;
-        let minDiff = Infinity;
-
-        items.forEach(div => {
-          const divCenter = div.offsetTop + itemHeight / 2;
-          const diff = Math.abs(divCenter - center);
-          if (diff < minDiff) {
-            minDiff = diff;
-            closest = div;
-          }
-        });
-
-        items.forEach(div => div.classList.remove("selected"));
-        if (closest) closest.classList.add("selected");
-      }
-
-      function handleInfiniteScroll() {
-        const totalHeight = itemHeight * itemCount * 3;
-        if (spinner.scrollTop <= itemHeight) {
-          spinner.scrollTop += itemCount * itemHeight;
-        } else if (spinner.scrollTop >= totalHeight - spinner.clientHeight - itemHeight) {
-          spinner.scrollTop -= itemCount * itemHeight;
-        }
-      }
-
-      let scrollTimeout = null;
-
-      spinner.addEventListener("scroll", () => {
-        handleInfiniteScroll();
-        clearTimeout(scrollTimeout);
-
-        scrollTimeout = setTimeout(() => {
-          const center = spinner.scrollTop + spinner.clientHeight / 2;
-          const items = spinner.querySelectorAll(".spinner-item");
-
-          let closest = null;
-          let minDiff = Infinity;
-
-          items.forEach(div => {
-            const divCenter = div.offsetTop + itemHeight / 2;
-            const diff = Math.abs(divCenter - center);
-            if (diff < minDiff) {
-              minDiff = diff;
-              closest = div;
-            }
-          });
-
-          if (closest) {
-            spinner.scrollTop = closest.offsetTop - (spinner.clientHeight - itemHeight) / 2;
-            highlightSelected();
-          }
-        }, 150);
-      });
-
-      highlightSelected(); // lúc khởi tạo
+    // Khi đến bước đơn giá -> render bảng đơn giá
+    if (currentStep === 2) {
+      renderPriceTable();
     }
-// Dữ liệu giờ & phút
-var hours = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-var minutes = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
-
-function getSelectedTime(id) {
-  const spinner = document.getElementById(id).parentElement;
-  const selected = spinner.querySelector(".selected");
-  console.log(selected);
-  
-  return selected ? selected.textContent.trim() : "00"; // fallback nếu chưa scroll
-}
-
-function getAlarmTimes() {
-  const onHour = getSelectedTime("on-hour");
-  const onMinute = getSelectedTime("on-minute");
-  const offHour = getSelectedTime("off-hour");
-  const offMinute = getSelectedTime("off-minute");
-
-  console.log(`Bật lúc: ${onHour}:${onMinute}, Tắt lúc: ${offHour}:${offMinute}`);
-}
-
-document.getElementById("toggle-on-time").addEventListener("change", function () {
-  ChangeActiveSpinner(this, "on-time-wrapper")
-});
-
-document.getElementById("toggle-off-time").addEventListener("change", function () {
-  ChangeActiveSpinner(this, "off-time-wrapper")
-});
-
-function ChangeActiveSpinner(data, id) {
-  const wrapper = document.getElementById(id);
-  
-  if (data.checked) {
-    wrapper.classList.remove("disabledSpinner");
-  } else {
-    wrapper.classList.add("disabledSpinner");
   }
-}
 
-// Lựa chọn các option bình thường
-document.querySelectorAll(".option:not(.custom-toggle)").forEach(opt => {
-  opt.addEventListener("click", () => {
-    console.log(opt);
-    
-    document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
-    opt.classList.add("selected");
-    document.getElementById("customDays").classList.remove("show");
-    document.getElementById("custom-toggle").classList.remove("open");
-  });
-});
-
-// Toggle phần "Tuỳ chỉnh"
-const customToggle = document.getElementById("custom-toggle");
-const customDays = document.getElementById("customDays");
-const dayOptions = document.querySelectorAll(".day-item");
-const options = document.querySelectorAll(".option");
-
-// Toggle tuỳ chỉnh
-customToggle.addEventListener("click", () => {
-  customDays.classList.toggle("show");
-  customToggle.classList.toggle("show");
-  customToggle.classList.toggle("open");
-
-  // Nếu click vào Tuỳ chỉnh thì set selected
-  options.forEach(o => o.classList.remove("selected"));
-  customToggle.classList.add("selected");
-});
-
-// Chọn nhiều ngày trong phần Tuỳ chỉnh
-dayOptions.forEach(day => {
-  day.addEventListener("click", () => {
-    day.classList.toggle("selected");
-
-    // Nếu có ít nhất một ngày được chọn thì giữ selected ở Tuỳ chỉnh
-    const hasSelected = [...dayOptions].some(d => d.classList.contains("selected"));
-    options.forEach(o => o.classList.remove("selected"));
-    if (hasSelected) {
-      customToggle.classList.add("selected");
+  btnNext.addEventListener("click", () => {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      updateSteps();
     }
   });
-});
 
-// Xử lý các lựa chọn khác ngoài Tuỳ chỉnh
-dayOptions.forEach(day => {
-  day.addEventListener("click", () => {
-    // Toggle selected on the day-item
-    day.classList.toggle("selected");
-
-    // Toggle checked on the checkbox inside
-    const checkbox = day.querySelector(".checkbox");
-    checkbox.classList.toggle("checked");
-
-    // Nếu có ít nhất một ngày được chọn thì giữ selected ở Tuỳ chỉnh
-    const hasSelected = [...dayOptions].some(d => d.classList.contains("selected"));
-    options.forEach(o => o.classList.remove("selected"));
-    if (hasSelected) {
-      customToggle.classList.add("selected");
+  btnBack.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateSteps();
     }
   });
-});
 
+  // Bước 2: Cân và phân loại
+  const itemType = document.getElementById("itemType");
+  const itemQty = document.getElementById("itemQty");
+  const itemWeight = document.getElementById("itemWeight");
+  const addItemBtn = document.getElementById("addItem");
+  const itemTableBody = document.querySelector("#itemTable tbody");
 
+  addItemBtn.addEventListener("click", () => {
+    const type = itemType.value.trim();
+    const qty = parseInt(itemQty.value);
+    const weight = parseFloat(itemWeight.value);
 
-  </script>
+    if (!type || qty <= 0 || weight <= 0) {
+      alert("Vui lòng nhập đầy đủ và hợp lệ");
+      return;
+    }
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${type}</td>
+      <td>${qty}</td>
+      <td>${weight.toFixed(1)}</td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-outline-danger delete-item"><i class="bi bi-trash"></i></button>
+      </td>
+    `;
+    itemTableBody.appendChild(row);
+
+    // Reset input
+    itemQty.value = 1;
+    itemWeight.value = 0.5;
+  });
+
+  // Xóa hàng
+  itemTableBody.addEventListener("click", (e) => {
+    if (e.target.closest(".delete-item")) {
+      e.target.closest("tr").remove();
+    }
+  });
+
+  // Render bảng đơn giá
+  function renderPriceTable() {
+    const priceTableBody = document.querySelector("#priceTable tbody");
+    const totalAmountEl = document.getElementById("totalAmount");
+
+    priceTableBody.innerHTML = "";
+    let total = 0;
+
+    document.querySelectorAll("#itemTable tbody tr").forEach(row => {
+      const type = row.cells[0].textContent;
+      const qty = parseInt(row.cells[1].textContent);
+      const weight = parseFloat(row.cells[2].textContent);
+
+      const unitPrice = priceList[type] || 0;
+      const amount = unitPrice * weight; // tính theo kg
+
+      total += amount;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${type}</td>
+        <td>${weight.toFixed(1)} kg</td>
+        <td>${unitPrice.toLocaleString()} đ/kg</td>
+        <td>${amount.toLocaleString()} đ</td>
+      `;
+      priceTableBody.appendChild(tr);
+    });
+
+    totalAmountEl.textContent = total.toLocaleString() + " đ";
+    renderPaymentStep(total);
+  }
+
+  function renderPaymentStep(totalPriceValue) {
+    document.getElementById("total-price").textContent =
+    totalPriceValue.toLocaleString() + " VND";
+
+    // Xóa QR cũ (nếu có)
+    document.getElementById("qrcode").innerHTML = "";
+
+    // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
+    new QRCode(document.getElementById("qrcode"), {
+      text: "https://thanhtoan.example.com/?amount=" + totalPriceValue,
+      width: 200,
+      height: 200
+    });
+  }
+
+  function openApp(appName) {
+    if(appName === 'giat') {
+
+      document.getElementById("create").classList.remove("d-none");
+      document.getElementById("all").classList.add("d-none");
+    } 
+    else {
+      alert('Mở ứng dụng: ' + appName);
+    }
+  }
+
+  $("#btnBackHome").click(() => {
+    document.getElementById("create").classList.add("d-none");
+    document.getElementById("all").classList.remove("d-none");
+  })
+  $("#success").click(() => {
+    document.getElementById("create").classList.add("d-none");
+    document.getElementById("all").classList.remove("d-none");
+    toastr.success("Tạo đơn giặt thành công.");
+  })
+
+  updateSteps();
+</script>
+
 </body>
 </html>

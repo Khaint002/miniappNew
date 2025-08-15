@@ -995,12 +995,32 @@ async function checkDevice(type) {
     } else {
         let dataDevice = [];
         const dataQRcode = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "DM_QRCODE", "1=1")
-        const inputClean = inputValue.replace(/[^\d]/g, "");
+        // const inputClean = inputValue.replace(/[^\d]/g, "");
 
-        const matchedItem = dataQRcode.data.find(item =>
-            item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
-            inputClean.length >= 6
-        );
+        // const matchedItem = dataQRcode.data.find(item =>
+        //     item.QR_CODE.split(",").pop().replace(/[^\d]/g, "").endsWith(inputClean) &&
+        //     inputClean.length >= 6
+        // );
+
+        // Tách tiền tố và phần số
+        const inputPrefix = inputValue.trim().charAt(0).toUpperCase();        
+        const inputDigits = inputValue.trim().slice(1).replace(/\D/g, "");
+
+        const matchedItem = dataQRcode.data.find(item => {
+            // Luôn lấy phần cuối trong QR code
+            const lastPart = item.QR_CODE.split(",").pop().trim(); // VD: S202508.0010
+            const lastPrefix = lastPart.charAt(0).toUpperCase();  
+            const lastDigits = lastPart.slice(1).replace(/\D/g, "");
+
+            // Kiểm tra
+            return (
+                lastPrefix === inputPrefix &&        // Bắt buộc giống S/T
+                inputDigits.length >= 6 &&           // đủ độ dài
+                lastDigits.endsWith(inputDigits)     // cho phép nhập rút gọn
+            );
+        });
+        console.log(matchedItem);
+        
         if (matchedItem != undefined) {
             dataDevice.push(matchedItem);
         }
