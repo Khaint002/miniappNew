@@ -14,6 +14,20 @@
       height: 100vh;
       margin: 0;
     }
+    @media print {
+      body * {
+        visibility: hidden; /* Ẩn toàn bộ nội dung */
+      }
+      #bodyBill, #bodyBill * {
+        visibility: visible; /* Chỉ hiện #bodyBill */
+      }
+      #bodyBill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
     .app-card {
       border-radius: 10px;
       padding: 15px;
@@ -139,6 +153,49 @@
       border-top: 1px solid #ddd;
       padding: 10px;
     }
+
+    .bill-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    display: none;
+    flex-direction: column;
+    z-index: 999;
+  }
+  .bill-header {
+    background: #f0f0f0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+  }
+  .bill-header i {
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .bill-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+  }
+  .bill-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  table, th, td {
+    border: 1px solid #ccc;
+  }
+  th, td {
+    padding: 5px;
+    text-align: left;
+  }
   </style>
 </head>
 <body>
@@ -187,7 +244,7 @@
   <div id="create" class="d-none d-flex flex-column" style="height: 100vh;">
     <!-- Timeline -->
     <div class="d-flex align-items-center p-2 border-bottom bg-white">
-      <button class="btn btn-link p-0 me-2" id="btnBackHome">
+      <button class="btnBackHome btn btn-link p-0 me-2">
         <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
       </button>
       <h5 class="mb-0">Tạo đơn giặt</h5>
@@ -349,7 +406,9 @@
           <div class="d-flex justify-content-center mb-4">
             <div id="qrcode"></div>
           </div>
-
+          <div class="text-center" style="margin-bottom: 20px;">
+            <button id="create-bill" class="btn btn-success btn-lg">Tạo bill thanh toán</button>
+          </div>
           <div class="text-center">
             <button id="success" class="btn btn-success btn-lg">Hoàn tất thanh toán</button>
           </div>
@@ -365,7 +424,110 @@
       </div>
     </div>
   </div>
+  
+  <div id="bill-view" class="d-none" >
+    <div class="d-flex align-items-center p-2 border-bottom bg-white">
+      <button class="btnBackCreate btn btn-link p-0 me-2">
+        <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+      </button>
+      <h5 class="mb-0">Bill đơn giặt</h5>
+    </div>
+    <!-- Header -->
+    <div id="bodyBill" style="max-width: 400px; margin:auto; border:1px solid #ccc; padding:10px; font-family:Arial; margin-top: 20px; margin-bottom: 20px;">
 
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ccc; padding:5px 0;">
+        <strong>Phiếu giao nhận</strong>
+      </div>
+  
+    <!-- Thông tin cửa hàng -->
+    <div style="text-align:center; margin-top:10px;">
+      <h3>Cửa hàng giặt - sấy</h3>
+      <p>Hà Đông - Hà Nội</p>
+      <p>0123.123.123</p>
+    </div>
+  
+    <!-- Thông tin khách -->
+    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+      <tr>
+        <td><b>Tên khách hàng:</b></td>
+        <td id="bill-customerName"></td>
+      </tr>
+      <tr>
+        <td><b>Số điện thoại:</b></td>
+        <td id="bill-phone"></td>
+      </tr>
+      <tr>
+        <td><b>Ngày:</b></td>
+        <td id="bill-date"></td>
+      </tr>
+      <tr>
+        <td><b>Giờ:</b></td>
+        <td id="bill-time"></td>
+      </tr>
+      <tr>
+        <td><b>Trọng lượng:</b></td>
+        <td id="bill-weight"></td>
+      </tr>
+    </table>
+  
+    <!-- Bảng item -->
+    <table border="1" style="width:100%; border-collapse:collapse; margin-top:10px; text-align:center;">
+      <thead>
+        <tr style="font-size: 12px;">
+          <th>Dịch vụ</th>
+          <th>Số lượng</th>
+          <th>Khối lượng</th>
+          <th>Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody id="bill-items" style="font-size: 12px;"></tbody>
+    </table>
+  
+    <!-- Tổng tiền -->
+     <div class="d-flex justify-content-between">
+      <div style="width: 40%; padding: 10px; text-align: center;">
+        <div id="qrcodeZalo" style="display: flex; justify-content: center;"></div>
+        <div style="font-size: 12px;">
+            <i>(Truy cập app giặt là thông qua QR)</i>
+        </div>
+    </div>
+        
+        <h3 style="width: 60%; text-align:right; margin-top:10px;">Tổng: <span id="bill-total"></span> đ</h3>
+     </div>
+    
+  </div>
+    
+  
+    <!-- Footer -->
+    <div class="footer-nav d-flex justify-content-between gap-2 p-2 border-top bg-white">
+      <div></div>
+      <div id="footer-total">
+        <button class="btn btn-primary" id="btnNext" onclick="window.print()">In Bill</button>
+      </div>
+    </div>
+  </div>
+  <div id="list" class="d-none d-flex flex-column" style="height: 100vh;">
+    <div id="orderList">
+      <div class="d-flex align-items-center p-2 border-bottom bg-white">
+        <button class="btnBackHome btn btn-link p-0 me-2">
+          <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+        </button>
+        <h5 class="mb-0">Theo dõi đơn giặt</h5>
+      </div>
+      <div id="listAll" style="padding: 10px;">
+
+      </div>
+    </div>
+    <div id="orderDetail" class="d-none bg-white border rounded shadow-sm">
+      <div class="d-flex align-items-center p-2 border-bottom bg-white">
+        <button class="btnBacklist btn btn-link p-0 me-2">
+          <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+        </button>
+        <h5 class="mb-0">chi tiết đơn giặt</h5>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -378,6 +540,8 @@
   const btnNext = document.getElementById("btnNext");
   const btnBack = document.getElementById("btnBack");
   let currentStep = 0;
+  var itemObj = {};
+  var orders = JSON.parse(localStorage.getItem("ListAll")) || [];
 
   // Đơn giá mẫu (bạn có thể thay đổi theo thực tế)
   const priceList = {
@@ -509,6 +673,9 @@
 
     totalAmountEl.textContent = total.toLocaleString() + " đ";
     renderPaymentStep(total);
+    const orderData = createOrderObject(total);
+    itemObj = orderData;
+    console.log(orderData);
   }
 
   function renderPaymentStep(totalPriceValue) {
@@ -531,21 +698,201 @@
 
       document.getElementById("create").classList.remove("d-none");
       document.getElementById("all").classList.add("d-none");
-    } 
-    else {
+    } else if(appName === 'check'){
+      createListOrder();
+      document.getElementById("list").classList.remove("d-none");
+      document.getElementById("all").classList.add("d-none");
+    } else {
       alert('Mở ứng dụng: ' + appName);
     }
   }
 
-  $("#btnBackHome").click(() => {
+  $(".btnBackHome").click(() => {
+    document.getElementById("list").classList.add("d-none");
     document.getElementById("create").classList.add("d-none");
     document.getElementById("all").classList.remove("d-none");
   })
+  $(".btnBacklist").click(() => {
+    document.getElementById("orderList").classList.remove("d-none");
+    document.getElementById("orderDetail").classList.add("d-none");
+  })
+  $(".btnBackCreate").click(() => {
+    document.getElementById("bill-view").classList.add("d-none");
+    document.getElementById("create").classList.remove("d-none");
+  })
   $("#success").click(() => {
+    let ListAll = JSON.parse(localStorage.getItem("ListAll")) || [];
+    ListAll.push(itemObj);
+    orders = ListAll;
+    localStorage.setItem("ListAll", JSON.stringify(ListAll));
+
     document.getElementById("create").classList.add("d-none");
     document.getElementById("all").classList.remove("d-none");
     toastr.success("Tạo đơn giặt thành công.");
   })
+
+  $("#create-bill").click(() => {
+    document.getElementById("create").classList.add("d-none");
+    document.getElementById("bill-view").classList.remove("d-none");
+    showBill()
+  })
+
+  function createOrderObject(total) {
+    // Lấy thông tin từ form
+    const order = {
+        customerName: document.querySelector('input[placeholder="Nhập tên khách hàng"]').value.trim(),
+        address: document.querySelector('input[placeholder="Nhập địa chỉ"]').value.trim(),
+        phone: document.querySelector('input[placeholder="Nhập số điện thoại"]').value.trim(),
+        washType: document.querySelectorAll('select')[0].value, // Loại giặt
+        machineWash: document.querySelectorAll('select')[1].value, // Máy giặt
+        machineDry: document.querySelectorAll('select')[2].value,  // Máy sấy
+        estimatedTime: document.querySelector('input[placeholder="Giặt trong 50 phút"]').value.trim(),
+        washTurn: document.querySelector('input[placeholder="Lượt 1"]').value.trim(),
+        totalAmount: total,
+        items: [],
+        status: 'NEW',
+        createdAt: new Date().toLocaleString()
+    };
+
+    // Lấy danh sách sản phẩm từ bảng #itemTable
+    document.querySelectorAll("#itemTable tbody tr").forEach(row => {
+        const type = row.cells[0].textContent;
+        const qty = parseInt(row.cells[1].textContent);
+        const weight = parseFloat(row.cells[2].textContent);
+
+        const unitPrice = priceList[type] || 0;
+        const amount = unitPrice * weight; // tính theo kg
+
+        order.items.push({
+            type,
+            qty,
+            weight,
+            amount
+        });
+    });
+
+    return order;
+  }
+
+  function createListOrder() {
+
+    let listAllContainer = document.getElementById("listAll");
+    listAllContainer.innerHTML = "";
+
+    // Hiển thị rút gọn
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((order, index) => {
+        let orderHTML = `
+            <div class=" card mb-2 order-item" data-index="${index}">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold">${order.createdAt || "Chưa có thời gian"}</div>
+                        <small class="text-muted">${order.status}</small>
+                    </div>
+                    <div class="fw-bold text-primary">
+                        ${order.totalAmount.toLocaleString()} đ
+                    </div>
+                </div>
+            </div>
+        `;
+        listAllContainer.innerHTML += orderHTML;
+    });
+
+    document.querySelectorAll(".order-item").forEach(el => {
+      el.addEventListener("click", function(){
+          let index = this.getAttribute("data-index");
+          let o = orders[index];
+
+          // Ẩn danh sách, hiện chi tiết
+          document.getElementById("orderList").classList.add("d-none");
+          document.getElementById("orderDetail").classList.remove("d-none");
+
+          // Render chi tiết
+          document.getElementById("detailContent").innerHTML = `
+  <div class="p-3">
+    <p><strong>Thời gian:</strong> ${o.createdAt}</p>
+    <p><strong>Trạng thái:</strong> <span class="badge bg-info text-dark">${o.status}</span></p>
+    <p><strong>Khách hàng:</strong> ${o.customerName}</p>
+    <p><strong>Địa chỉ:</strong> ${o.address}</p>
+    <p><strong>Số điện thoại:</strong> ${o.phone}</p>
+    <p><strong>Loại giặt:</strong> ${o.washType}</p>
+    <p><strong>Máy giặt:</strong> ${o.machineWash}</p>
+    <p><strong>Máy sấy:</strong> ${o.machineDry}</p>
+    <h5 class="mt-3 text-primary">Tổng tiền: ${o.totalAmount.toLocaleString()} đ</h5>
+    <hr>
+    <h6 class="mb-3">Danh sách đồ:</h6>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>STT</th>
+            <th>Loại</th>
+            <th>Số lượng</th>
+            <th>Khối lượng (kg)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${o.items.map((item, index) => `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${item.type}</td>
+              <td>${item.qty}</td>
+              <td>${item.weight}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  </div>
+`;
+
+      });
+  });
+
+  // Nút quay lại
+  document.getElementById("btnBack").addEventListener("click", function(){
+      document.getElementById("orderDetail").classList.add("d-none");
+      document.getElementById("orderList").classList.remove("d-none");
+  });
+  }
+
+  function showBill() {
+
+  // Fill data
+  document.getElementById('bill-customerName').textContent = itemObj.customerName;
+  document.getElementById('bill-phone').textContent = itemObj.phone;
+
+  const date = new Date(itemObj.createdAt);
+  document.getElementById('bill-date').textContent = date.toLocaleDateString('vi-VN');
+  document.getElementById('bill-time').textContent = date.toLocaleTimeString('vi-VN');
+
+  let totalWeight = 0;
+  let html = '';
+  itemObj.items.forEach(i => {
+    totalWeight += i.weight;
+    html += `<tr>
+      <td>${i.type}</td>
+      <td>${i.qty}</td>
+      <td>${i.weight}</td>
+      <td>${i.amount.toLocaleString()}</td>
+    </tr>`;
+  });
+  document.getElementById('bill-weight').textContent = totalWeight + " kg";
+  document.getElementById('bill-items').innerHTML = html;
+  document.getElementById('bill-total').textContent = itemObj.items.reduce((sum, i) => sum + i.amount, 0).toLocaleString();
+
+  document.getElementById("qrcodeZalo").innerHTML = "";
+
+    // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
+  new QRCode(document.getElementById("qrcodeZalo"), {
+    text: "https://zalo.me/s/4560528012046048397/",
+    width: 100,
+    height: 100
+  });
+}
+
+  function closeBill() {
+    document.getElementById('billView').style.display = 'none';
+  }
 
   updateSteps();
 </script>
