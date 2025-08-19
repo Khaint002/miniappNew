@@ -157,8 +157,7 @@ getWebSocket = async function (value) {
             ws.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
         };
 
-        ws.onmessage = (data) =>
-            handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
+        ws.onmessage = (data) => handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
 
         // --- WebSocket 2 ---
         wss = new WebSocket(`wss://${value}/controller`);
@@ -1955,7 +1954,7 @@ function validateDateRange(idStart, idEnd) {
 }
 
 // Gán sự kiện change
-$("#startDateOEE, #endDateOEE").on("change", async () => {
+$("#startDateOEE, #endDateOEE").off("change").on("change", async () => {
     isChecking = await validateDateRange("startDateOEE", "endDateOEE");
     if(!isChecking) return;
     const start = new Date($("#startDateOEE").val());

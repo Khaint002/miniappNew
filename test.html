@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     body {
       display: flex;
@@ -196,6 +197,55 @@
     padding: 5px;
     text-align: left;
   }
+
+  .scroll-tabs {
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .scroll-tabs .nav-item {
+      flex: 0 0 auto;
+    }
+    .scroll-tabs .nav-link {
+      white-space: nowrap;
+      color: #333;
+      padding: 10px 16px;
+    }
+    .scroll-tabs .nav-link.active {
+      font-weight: bold;
+      color: #0d6efd !important;
+      border-bottom: 3px solid #0d6efd; /* underline ngay tab */
+    }
+    .scroll-tabs::-webkit-scrollbar { display: none; }
+
+    .swiper {
+      width: 100%;
+      height: 100%; /* cho demo */
+    }
+    .swiper-slide {
+      height: 100%;
+      overflow-y: auto; /* Cho phép cuộn nội dung trong slide */
+      -webkit-overflow-scrolling: touch;
+      background: #f8f9fa;
+      padding: 15px;
+    }
+    .star-rating {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .star {
+    color: #ccc;
+    transition: color 0.2s;
+  }
+  .star.active {
+    color: gold;
+  }
+  .tag-btn.active {
+  background: #ff2e55;
+  color: white;
+  border-color: #ff2e55;
+}
   </style>
 </head>
 <body>
@@ -228,16 +278,16 @@
       </div>
     </div>
   
-    <div class="app-card d-none" onclick="openApp('baoHanh')">
+    <div class="app-card" onclick="openApp('ship')">
       <div class="d-flex align-items-center">
         <div class="app-icon" style="background-color:#fd7e14;">
-          🛠
+            <i class="bi bi-truck"></i>
         </div>
         <div class="ms-3 flex-grow-1">
-          <p class="app-title">Bảo hành</p>
-          <p class="app-subtitle">Bảo hành sản phẩm</p>
+          <p class="app-title">Giao hàng</p>
+          <p class="app-subtitle">Theo dõi giao hàng</p>
         </div>
-        <span class="app-version">v1.0.5</span>
+        <span class="app-version"></span>
       </div>
     </div>
   </div>
@@ -424,7 +474,6 @@
       </div>
     </div>
   </div>
-  
   <div id="bill-view" class="d-none" >
     <div class="d-flex align-items-center p-2 border-bottom bg-white">
       <button class="btnBackCreate btn btn-link p-0 me-2">
@@ -433,7 +482,7 @@
       <h5 class="mb-0">Bill đơn giặt</h5>
     </div>
     <!-- Header -->
-    <div id="bodyBill" style="max-width: 400px; margin:auto; border:1px solid #ccc; padding:10px; font-family:Arial; margin-top: 20px; margin-bottom: 20px;">
+    <div id="bodyBill" style="max-width: 360px; margin:auto; border:1px solid #ccc; padding:10px; font-family:Arial; margin-top: 20px; margin-bottom: 20px;">
 
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ccc; padding:5px 0;">
         <strong>Phiếu giao nhận</strong>
@@ -523,13 +572,95 @@
         <button class="btnBacklist btn btn-link p-0 me-2">
           <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
         </button>
-        <h5 class="mb-0">chi tiết đơn giặt</h5>
+        <h5 class="mb-0">Chi tiết đơn giặt</h5>
       </div>
       <div id="detailContent"></div>
     </div>
   </div>
+  <div id="ship" class="d-none d-flex flex-column" style="height: 100vh;">
+    <div class="d-flex align-items-center p-2 border-bottom bg-white">
+      <button class="btnBackHome btn btn-link p-0 me-2">
+        <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+      </button>
+      <h5 class="mb-0">Theo dõi giao hàng</h5>
+    </div>
+      <!-- Tabs -->
+      <ul class="nav nav-tabs scroll-tabs flex-nowrap" id="tabMenu">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-index="0">Tất cả</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="1">Chờ vận chuyển</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="2">Đang vận chuyển</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="3">Cần đánh giá</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="4">Hoàn tất</a></li>
+      </ul>
+    
+      <!-- Nội dung (Swiper để vuốt ngang) -->
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" id="listShipAll"></div>
+          <div class="swiper-slide" id="listNew">Nội dung: Chờ vận chuyển</div>
+          <div class="swiper-slide" id="listShipping">Nội dung: Đang vận chuyển</div>
+          <div class="swiper-slide" id="listIsDone">Nội dung: Cần đánh giá</div>
+          <div class="swiper-slide" id="listDone">Nội dung: Hoàn tất</div>
+        </div>
+      </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-white text-dark">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Đánh giá sản phẩm</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          
+          <!-- Rating Stars -->
+          <div class="text-center mb-2">
+            <span class="star fs-3 text-secondary" data-value="1">★</span>
+            <span class="star fs-3 text-secondary" data-value="2">★</span>
+            <span class="star fs-3 text-secondary" data-value="3">★</span>
+            <span class="star fs-3 text-secondary" data-value="4">★</span>
+            <span class="star fs-3 text-secondary" data-value="5">★</span>
+            <div id="ratingText" class="mt-1 text-muted">Chọn đánh giá</div>
+          </div>
+  
+          <!-- Tags -->
+          <div class="mb-3">
+            <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Đặc điểm</button>
+            <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Chất liệu</button>
+            <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Kích cỡ</button>
+          </div>
+  
+          <!-- Textarea -->
+          <div class="mb-2">
+            <textarea id="reviewText" class="form-control bg-light text-dark" 
+              rows="3" maxlength="300" placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
+            <div class="text-end small mt-1 text-muted"><span id="charCount">0</span>/300</div>
+          </div>
+  
+          <!-- Upload -->
+          <div class="mb-3 text-center p-3 border rounded bg-light" id="uploadBox" style="cursor:pointer;">
+            <i class="bi bi-camera fs-2 text-secondary"></i><br>
+            <span class="text-secondary">Thêm ảnh hoặc video</span>
+            <input type="file" id="uploadFile" class="d-none" multiple>
+          </div>
+  
+          <!-- Anonymous -->
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="anonymousCheck">
+            <label class="form-check-label" for="anonymousCheck">Đánh giá ẩn danh</label>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button id="submitReview" class="btn w-100" style="background:#ff2e55; color:white;">Gửi</button>
+        </div>
+      </div>
+    </div>
+  </div>  
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script>
@@ -693,6 +824,34 @@
     });
   }
 
+  var swiper = new Swiper(".mySwiper", {
+    spaceBetween: 0,
+    on: {
+      slideChange: function () {
+        let index = this.activeIndex;
+        $("#tabMenu .nav-link").removeClass("active");
+        $('#tabMenu .nav-link[data-index="'+index+'"]').addClass("active");
+        scrollTabToCenter($('#tabMenu .nav-link[data-index="'+index+'"]'));
+      }
+    }
+  });
+
+  // Click tab -> chuyển slide
+  $("#tabMenu .nav-link").on("click", function () {
+    let index = $(this).data("index");
+    swiper.slideTo(index);
+  });
+
+  // Auto scroll tab vào giữa
+  function scrollTabToCenter($item) {
+    let $container = $("#tabMenu");
+    let containerWidth = $container.width();
+    let itemPos = $item.position().left + $container.scrollLeft();
+    let itemWidth = $item.outerWidth();
+    let scrollPos = itemPos - (containerWidth / 2) + (itemWidth / 2);
+    $container.animate({ scrollLeft: scrollPos }, 300);
+  }
+
   function openApp(appName) {
     if(appName === 'giat') {
 
@@ -702,6 +861,10 @@
       createListOrder();
       document.getElementById("list").classList.remove("d-none");
       document.getElementById("all").classList.add("d-none");
+    } else if(appName === 'ship'){
+      renderListOrder();
+      document.getElementById("ship").classList.remove("d-none");
+      document.getElementById("all").classList.add("d-none");
     } else {
       alert('Mở ứng dụng: ' + appName);
     }
@@ -710,6 +873,7 @@
   $(".btnBackHome").click(() => {
     document.getElementById("list").classList.add("d-none");
     document.getElementById("create").classList.add("d-none");
+    document.getElementById("ship").classList.add("d-none");
     document.getElementById("all").classList.remove("d-none");
   })
   $(".btnBacklist").click(() => {
@@ -775,7 +939,6 @@
   }
 
   function createListOrder() {
-
     let listAllContainer = document.getElementById("listAll");
     listAllContainer.innerHTML = "";
 
@@ -853,6 +1016,135 @@
       document.getElementById("orderDetail").classList.add("d-none");
       document.getElementById("orderList").classList.remove("d-none");
   });
+  }
+
+  function renderListOrder() {
+    let containers = {
+      all: document.getElementById("listShipAll"),
+      new: document.getElementById("listNew"),
+      inprogress: document.getElementById("listShipping"),
+      done: document.getElementById("listDone"),
+      isDone: document.getElementById("listIsDone")
+    };
+
+    Object.values(containers).forEach(c => c.innerHTML = "");
+
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .forEach((order, index) => {
+        let baseHTML = `
+          <div class="card mb-2 order-item" data-index="${index}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold">${order.createdAt || "Chưa có thời gian"}</div>
+                  <small class="text-muted">${order.status}</small>
+                </div>
+                <div class="fw-bold text-primary">
+                  ${order.totalAmount.toLocaleString()} đ
+                </div>
+              </div>
+        `;
+
+        if (order.status === "ISDONE") {
+          baseHTML += `
+            <div class="mt-2" style="display: flex; justify-content: end;">
+              <button class="btn btn-sm review-btn" data-index="${index}" style="background-color: #f54646; color: white;">
+                Viết đánh giá
+              </button>
+            </div>
+          `;
+        }
+
+        baseHTML += `</div></div>`;
+
+        containers.all.innerHTML += baseHTML;
+        if (order.status === "NEW") containers.new.innerHTML += baseHTML;
+        if (order.status === "INPROGRESS") containers.inprogress.innerHTML += baseHTML;
+        if (order.status === "ISDONE") containers.isDone.innerHTML += baseHTML;
+      });
+
+    // Gán sự kiện mở modal cho nút "Đánh giá"
+    document.querySelectorAll(".review-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        let orderIndex = this.getAttribute("data-index");
+
+        // reset modal trước
+        document.querySelectorAll("#reviewModal .star").forEach(s => s.classList.remove("active"));
+        document.getElementById("ratingText").innerText = "Chọn đánh giá";
+        document.getElementById("reviewText").value = "";
+        document.getElementById("charCount").innerText = "0";
+        document.querySelectorAll(".tag-btn").forEach(t => t.classList.remove("active"));
+        document.getElementById("anonymousCheck").checked = false;
+        document.getElementById("uploadFile").value = "";
+
+        // mở modal
+        let modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        modal.show();
+
+        // click sao trong modal
+        document.querySelectorAll("#reviewModal .star").forEach(star => {
+          star.onclick = function () {
+            let value = parseInt(this.getAttribute("data-value"));
+
+            // reset tất cả sao về xám
+            document.querySelectorAll("#reviewModal .star").forEach(s => {
+              s.classList.remove("text-warning");
+              s.classList.add("text-secondary");
+            });
+
+            // tô vàng từ 1 -> value
+            for (let i = 0; i < value; i++) {
+              document.querySelectorAll("#reviewModal .star")[i].classList.remove("text-secondary");
+              document.querySelectorAll("#reviewModal .star")[i].classList.add("text-warning");
+            }
+
+            // đổi text hiển thị
+            const texts = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Xuất sắc"];
+            document.getElementById("ratingText").innerText = texts[value - 1] || "Chọn đánh giá";
+
+            // lưu rating vào modal
+            document.getElementById("reviewModal").setAttribute("data-rating", value);
+          };
+        });
+
+        // đếm ký tự textarea
+        document.getElementById("reviewText").oninput = function () {
+          document.getElementById("charCount").innerText = this.value.length;
+        };
+
+        // chọn tag
+        document.querySelectorAll(".tag-btn").forEach(tag => {
+          tag.onclick = function () {
+            this.classList.toggle("active");
+          };
+        });
+
+        // click vào upload box
+        document.getElementById("uploadBox").onclick = function () {
+          document.getElementById("uploadFile").click();
+        };
+
+        // submit review
+        document.getElementById("submitReview").onclick = () => {
+          let rating = document.getElementById("reviewModal").getAttribute("data-rating") || 0;
+          let text = document.getElementById("reviewText").value;
+          let tags = Array.from(document.querySelectorAll(".tag-btn.active")).map(t => t.innerText);
+          let anonymous = document.getElementById("anonymousCheck").checked;
+          let files = document.getElementById("uploadFile").files;
+
+          alert(`
+            Đánh giá đơn hàng #${orderIndex}
+            Sao: ${rating}
+            Nội dung: ${text}
+            Tag: ${tags.join(", ")}
+            Ẩn danh: ${anonymous}
+            Số file upload: ${files.length}
+          `);
+
+          modal.hide();
+        };
+      });
+    });
   }
 
   function showBill() {

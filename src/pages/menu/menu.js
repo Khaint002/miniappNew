@@ -86,7 +86,6 @@ function renderApps(apps, containerId) {
     });
 }
 
-
 function onAddNewApp() {
     HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.html");
 }
