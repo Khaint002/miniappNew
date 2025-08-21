@@ -154,22 +154,29 @@ getWebSocket = async function (value) {
         // --- WebSocket 1 ---
         ws = new WebSocket(`wss://${value}/findme`);
         ws.onopen = () => {
-            ws.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
+            // ws.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
+            // ws.send("10eba031-2203-4105-b80b-04b675dfe576");
+            // ws.send(cabinetID);
         };
 
-        ws.onmessage = (data) => handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
+        ws.onmessage = (data) => {
+            if(data.data == 'TYPE DEVICE;'){
+                ws.send(cabinetID);
+                return;
+            }
+            handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
+        }
 
         // --- WebSocket 2 ---
         wss = new WebSocket(`wss://${value}/controller`);
         wss.onopen = () => {
-            wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
+            // wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
             //gọi refresh lần đầu tiên khi truy cập
             if(isFirstConnectRefresh){
                 setTimeout(() => {
-                    // sendMessage("REFRESH;");
+                    sendMessage("REFRESH;");
                     isFirstConnectRefresh = false;
                 }, 1000);
-
             }
         };
         // Final UI updates
@@ -298,7 +305,8 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
                 document.getElementById("setDateTimeCondition").textContent = temp[0].substring(cabinetID.length + 3);
                 document.getElementById("statusCabinet").textContent = "Online";
                 updateIndicator("#online", "#ceac30");
-
+                console.log(temp);
+                
                 // Process relay state
                 if (temp[temp.length - 1].startsWith("RL")) {
                     const number = parseInt(temp[temp.length - 1].substring(3));
@@ -760,9 +768,15 @@ var updateDataLed = function (dataString, idPrefix) {
 
         // Tính toán lại chỉ số thiết bị toàn cục (global)
         const localId = parseInt(dataObj["ID"]);
-        const nodeOffset = (parseInt(dataObj["NO"]) - 31) * 3;
+        let nodeOffset;
+        if(dataObj["NO"] == 31){
+            nodeOffset = (parseInt(dataObj["NO"]) - 31) * 3;
+        } else {
+            nodeOffset = (parseInt(dataObj["NO"]) - 1) * 3;
+        }
         const globalId = nodeOffset + localId;
-
+        console.log(globalId);
+        
         // Format các giá trị số
         const valueU = formatNumber(Number(dataObj["U"] || 0));
         const valueP = formatNumber(Number(dataObj["P"] || 0));
@@ -2031,7 +2045,9 @@ function checkHeight() {
         $('#List-meter').height(vh - 300);
     } else if(numberOfRelays <= 3){
         $('#List-meter').height(vh - 450);
-    } else if(numberOfRelays > 3) {
+    } else if(numberOfRelays <= 6) {
+        $('#List-meter').height(vh - 550);
+    } else if(numberOfRelays > 6) {
         $('#List-meter').height(vh - 550);
     }
     $('#listDowntimeOEE').height(vh - 150);
