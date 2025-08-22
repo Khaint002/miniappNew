@@ -33,6 +33,7 @@ async function accessDeviceWarranty() {
         $('#warranty-permission').click();
     }
     const inputValue = HOMEOSAPP.CodeWarranty;
+    console.log(inputValue);
     
     if (inputValue == null || inputValue == "") {
         toastr.error("Vui lòng nhập mã QRcode!");
