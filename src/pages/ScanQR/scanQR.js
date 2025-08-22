@@ -1032,7 +1032,6 @@ async function checkDevice(type) {
                 HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
             } else if(HOMEOSAPP.checkTabHistory == 3){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
-                console.log(checkQRcode);
                 
                 const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataDevice[0]);
                 if (!isAllowed) return;
@@ -1459,7 +1458,7 @@ $("#tab-scan-qr").off("click").click(async function (event) {
             const lastPart = dataQRcode.data[0].QR_CODE.split(',').pop();
             console.log(window.paramObjects);
             
-            const result = lastPart.substring(1).replace('.', '');
+            const result = lastPart.replace('.', '');
             openTab(event, 'tab1');
             const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataQRcode.data[0]);
             if (!isAllowed) return;
