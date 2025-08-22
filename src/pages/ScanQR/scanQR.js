@@ -1032,6 +1032,8 @@ async function checkDevice(type) {
                 HOMEOSAPP.loadPage("https://miniapp-new.vercel.app/src/pages/Control/control.html");
             } else if(HOMEOSAPP.checkTabHistory == 3){
                 let checkQRcode = dataDevice[0].QR_CODE.split(',');
+                console.log(checkQRcode);
+                
                 const isAllowed = await HOMEOSAPP.checkPermissionDevice(dataDevice[0]);
                 if (!isAllowed) return;
                 $("#loading-popup").show();
