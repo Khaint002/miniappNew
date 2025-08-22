@@ -84,6 +84,8 @@ async function accessDeviceWarranty() {
                 } else {
                     document.getElementById("header-productName").textContent = checkQRcode[1] + " - " + checkQRcode[2].substring(1);
                 }
+                console.log(dataQRProduct, dataWarranty);
+                
                 if(dataQRProduct[0].PRODUCT_TYPE == 2){
                     $("#btn-guide").removeClass("d-none");
                     $("#product-guide").removeClass("d-flex");

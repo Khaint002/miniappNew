@@ -243,25 +243,23 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
             isCollecting = false;
 
             numberSchedule = 0;
-            // const scheduleData = `[1] 1  0:00:00  11:3:00 0 127
-            //     [2] 2  08:3:00  17:3:00 0 62
-            //     [3] 3  14:2:00  14:4:00 0 0
-            //     [4] 4 19:13:00 20:30:00 1 127
-            //     [5] 5 19:05:00 20:30:00 0 127
-            //     Total: 5`
-            // xử lý kết quả:
             $("#listSchedule").empty();
             // console.log(collectedLines);
             
             scheduleData = collectedLines.join("\n").trim();
+            const merge = parseSchedules(scheduleData);
+            console.log(merge);
             
-            
-            scheduleData.split('\n').forEach(line => {
+            // scheduleData.split('\n').forEach(line => {
+            merge.forEach(line => {
+                
                 const idx = line.indexOf(':');
+                console.log(line, idx);
+                
                 if (idx > -1) {
                     const zoneId = line.slice(0, idx).trim();
                     const dataPart = line.slice(idx + 1).trim(); // ví dụ: "[1] 1 14:29:00 14:40:00 0 0"
-            
+                    
                     if (dataPart.startsWith('[')) {
                         // numberSchedule++;
                         // console.log(dataPart);
@@ -276,7 +274,6 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
         }
 
         if (isCollecting) {
-
             collectedLines.push(txt);
         }
 
@@ -305,23 +302,40 @@ function handleWSMessage(data, cabinetID, relayCount, qrCodeParts) {
                 document.getElementById("setDateTimeCondition").textContent = temp[0].substring(cabinetID.length + 3);
                 document.getElementById("statusCabinet").textContent = "Online";
                 updateIndicator("#online", "#ceac30");
-                console.log(temp);
                 
                 // Process relay state
                 if (temp[temp.length - 1].startsWith("RL")) {
+                    
+                    const dataObj = {};
+                    txt.split(",").forEach(function (item) {
+                        const parts = item.split(":");
+                        if (parts.length === 2) {
+                            dataObj[parts[0]] = parts[1];
+                        }
+                    });
+                    
+                    // Bỏ qua nếu không có ID hoặc NO
+                    if (!dataObj["NO"]) return;
+
+                    // Tính toán lại chỉ số thiết bị toàn cục (global)
+                    const localId = parseInt(dataObj["ID"]);
+                    const nodeOffset = (parseInt(dataObj["NO"]) - 41) * 6;
+                    
                     const number = parseInt(temp[temp.length - 1].substring(3));
                     const binaryArray = number
                         .toString(2)
-                        .padStart(relayCount, "0")
+                        .padStart(6, "0")
                         .split("")
                         .reverse();
 
                     binaryArray.forEach((bit, i) => {
+                        const globalId = nodeOffset + i + 1;
+                        
                         const color = bit === "1" ? "#08ed0a" : "#000000";
-                        updateIndicator(`#Relay_${i + 1}`, color);
+                        updateIndicator(`#Relay_${globalId}`, color);
 
-                        const icon = document.getElementById(`icon-Relay_${i + 1}`);
-                        resetIcon(icon, `Relay_${i + 1}`);
+                        const icon = document.getElementById(`icon-Relay_${globalId}`);
+                        resetIcon(icon, `Relay_${globalId}`);
                     });
                 } else if (temp[temp.length - 1].startsWith("E:")) {
                     updateDataLed(txt, "testResizableArray");
@@ -346,6 +360,62 @@ function updateIndicator(selector, color) {
     });
 }
 
+function parseSchedules(input) {
+    const lines = input.split("\n").map(l => l.trim()).filter(l => l && !l.includes("Total:"));
+
+    let results = [];
+    let tempSchedules = {};
+
+    for (let line of lines) {
+        const prefixMatch = line.match(/^(\d+:)\[(\d+)\]\s+(.*)$/);
+        if (!prefixMatch) continue;
+
+        const prefix = prefixMatch[1]; 
+        const index = prefixMatch[2].padStart(2, "0"); 
+        const content = prefixMatch[3];
+
+        // bắt schedule
+        const schMatch = content.match(/^schedule\s+(\d+)\s+(on|off)\s+(\d{2}:\d{2}:\d{2})\s+\d{2}:\d{2}:\d{2}\s+(\d+)\s+(\d+)\s+(.*)$/i);
+
+        if (schMatch) {
+            const num = parseInt(schMatch[1]);
+            const type = schMatch[2];
+            const time = schMatch[3];
+            const switchState = schMatch[4];
+            const dayBinary = schMatch[5];
+            const command = schMatch[6].trim();
+
+            if (!tempSchedules[num]) {
+                tempSchedules[num] = { prefix, index, num, on: null, off: null, switchState, dayBinary, command };
+            }
+
+            if (type === "on") {
+                tempSchedules[num].on = time;
+            } else {
+                tempSchedules[num].off = time;
+            }
+        } else {
+            // các dòng khác giữ nguyên
+            results.push(`${prefix}[${index}] ${content}`);
+        }
+    }
+
+    // xử lý gộp schedule
+    Object.values(tempSchedules).forEach(sch => {
+        const onTime = sch.on || "0";
+        const offTime = sch.off || "0";
+        results.push(`${sch.prefix}[${sch.index}] schedule ${sch.num} ${onTime} ${offTime} ${sch.switchState} ${sch.dayBinary} ${sch.command}`);
+    });
+
+    // sắp xếp lại theo index
+    results.sort((a, b) => {
+        const ai = parseInt(a.match(/\[(\d+)\]/)[1]);
+        const bi = parseInt(b.match(/\[(\d+)\]/)[1]);
+        return ai - bi;
+    });
+
+    return results;
+}
 async function saveCondition(data, control, dataDevice) {
     const DataQRcode = data[0].QR_CODE.split(",");
     const typeMatch = data[0].QR_CODE.match(/(\d+)K-(\d+)TB/i);
@@ -422,6 +492,7 @@ function updateRelayNamesFromInput(dataInput) {
     // Bước 3: Ghi lại vào localStorage
     localStorage.setItem("dataCondition", JSON.stringify(dataCondition));
 }
+
 
 var renderReray = async function (data, control) {
     return new Promise((resolve) => {
@@ -742,6 +813,7 @@ onOffRelay = function (id, color) {
 };
 
 function resetIcon(icon, id) {
+    if(icon == null) return;
     icon.innerHTML = `
         <path d="M7.5 1v7h1V1z"></path>
         <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812"></path>
@@ -775,7 +847,6 @@ var updateDataLed = function (dataString, idPrefix) {
             nodeOffset = (parseInt(dataObj["NO"]) - 1) * 3;
         }
         const globalId = nodeOffset + localId;
-        console.log(globalId);
         
         // Format các giá trị số
         const valueU = formatNumber(Number(dataObj["U"] || 0));
@@ -2045,11 +2116,15 @@ function checkHeight() {
         $('#List-meter').height(vh - 300);
     } else if(numberOfRelays <= 3){
         $('#List-meter').height(vh - 450);
+        $('#List-relay').height(105);
     } else if(numberOfRelays <= 6) {
         $('#List-meter').height(vh - 550);
+        $('#List-relay').height(205);
     } else if(numberOfRelays > 6) {
         $('#List-meter').height(vh - 550);
+        $('#List-relay').height(205);
     }
+    $('#listSchedule').height(vh - 150);
     $('#listDowntimeOEE').height(vh - 150);
 }
 
@@ -2583,30 +2658,71 @@ function formatTimeDistanceLogic(start, end, dayBinary) {
 
 
 
-// BE Schedule
 function renderScheduleFromLine(line) {
-    const match = line.match(/\[(\d+)\]\s+(\d+)\s+(0|\d{1,2}:\d{1,2}:\d{1,2})\s+(0|\d{1,2}:\d{1,2}:\d{1,2})\s+(\d+)\s+(\d+)/);
-    if (!match) return;
+    console.log("raw line:", line);
+    if (!line) return null;
 
-    const [_, id, repeat, start, end, switchState, dayBinary] = match;
+    // chuẩn hoá: bỏ CALL BATCH, gom nhiều khoảng trắng thành 1
+    let clean = line.replace(/\s+CALL\s+BATCH.*$/i, '').replace(/\s+/g, ' ').trim();
+
+    // cắt thành mảng token
+    let tokens = clean.split(" ");
+    console.log("tokens:", tokens);
+
+    let id = parseInt(tokens[0].replace(/\[|\]/g, ''), 10);
+    let repeat, action, start, end, switchState, dayBinary;
+
+    if (tokens[1].toLowerCase() === "schedule") {
+        // ===== Trường hợp schedule =====
+        repeat = parseInt(tokens[2], 10);
+
+        // có thể có "on"/"off"
+        if (tokens[3].toLowerCase() === "on" || tokens[3].toLowerCase() === "off") {
+            action = tokens[3].toLowerCase();
+            start = tokens[4] || "00:00:00";
+            // Nếu có end time thì lấy, nếu không thì cho trùng start
+            end = tokens[5] && tokens[5].includes(":") ? tokens[5] : start;
+            switchState = parseInt(tokens[6], 10);
+            dayBinary = parseInt(tokens[7], 10);
+        } else {
+            // fallback: không có on/off
+            action = null;
+            start = tokens[3] || "00:00:00";
+            end = tokens[4] && tokens[4].includes(":") ? tokens[4] : start;
+            switchState = parseInt(tokens[5], 10);
+            dayBinary = parseInt(tokens[6], 10);
+        }
+    } else {
+        // ===== Trường hợp thường =====
+        repeat = parseInt(tokens[1], 10);
+        start = tokens[2];
+        end = tokens[3];
+        switchState = parseInt(tokens[4], 10);
+        dayBinary = parseInt(tokens[5], 10);
+    }
+
+    // đồng bộ biến repeatNumber
     const repeatNumber = typeof repeat === 'string' ? parseInt(repeat, 10) : repeat;
-    if(numberSchedule < repeatNumber){
+    if (typeof numberSchedule !== "undefined" && numberSchedule < repeatNumber) {
         numberSchedule = repeatNumber;
     }
+
     const daysText = binaryToDays(dayBinary);
     const timeLogicText = formatTimeDistanceLogic(start, end, dayBinary);
     const subtext = `${daysText} | ${timeLogicText}`;
-    
+
     const card = document.createElement('div');
     card.className = 'schedule-card row';
     card.setAttribute('data-id', id);
     card.setAttribute('data-line', line.replace(/"/g, '&quot;'));
     card.style.setProperty('--bs-gutter-x', '0rem');
 
+    console.log("switchState:", switchState);
+
     let textHtml = '';
-    if(start == 0){
+    if (start === "0" || start === "00:00:00") {
         textHtml = `<div class="time-range">${end.substring(0, 5)}</div>`;
-    } else if(end == 0){
+    } else if (end === "0" || end === "00:00:00") {
         textHtml = `<div class="time-range">${start.substring(0, 5)}</div>`;
     } else {
         textHtml = `<div class="time-range">${start.substring(0, 5)} - ${end.substring(0, 5)}</div>`;
@@ -2620,7 +2736,7 @@ function renderScheduleFromLine(line) {
         <div class="check-icon col-1">
             <input type="checkbox" class="form-check-input form-check-custom" style="font-size: 20px; width: 20px; height: 20px;">
             <div class="form-check form-switch switch-toggle">
-                <input class="form-check-input" style="font-size: 25px;" type="checkbox" ${switchState === "1" ? "checked" : ""}>
+                <input class="form-check-input" style="font-size: 25px;" type="checkbox" ${switchState === 1 ? "checked" : ""}>
             </div>
         </div>
     `;
@@ -2685,12 +2801,9 @@ async function getDataAddSchedule(type) {
             sendMessage(commandSchedule);
             $("#close-new-screen").click()
         } else {
-            const startTimeDelay = `${onHour}:${onMinute}:05`;
-            const endTimeDelay = `${offHour}:${offMinute}:05`;
-
             const result = getSelectedChannels();
             if(result == 'all'){
-                commandSchedule = GenerateCreateScheduleString(numberOfRelays, `schedule${numberSchedule + 1}on`, startTime,endTime, repeatData.decimal, "CALL BATCH LGS_ON_ALL");
+                commandSchedule = GenerateCreateScheduleString(numberOfRelays, `schedule ${numberSchedule + 1} on`, startTime,endTime, repeatData.decimal, "CALL BATCH LGS_ON_ALL");
                 
                 if(startTime == 0){
                     sendMessage(commandSchedule.scheduleOff);
@@ -2698,26 +2811,32 @@ async function getDataAddSchedule(type) {
                     sendMessage(commandSchedule.scheduleOn)
                 } else {
                     sendMessage(commandSchedule.scheduleOn);
-                    HOMEOSAPP.delay(500);
+                    HOMEOSAPP.delay(2000);
                     sendMessage(commandSchedule.scheduleOff);
                 }
             } else {
+                let cmd = '';
                 for (let i = 0; i < result.length; i++) {
-                    const commandScheduleOn = GenerateCreateScheduleString(numberOfRelays, `schedule${numberSchedule + 1}on`, startTime,endTime, repeatData.decimal, `CALL BATCH LGS_ON_${result[i]});`);
-                    
-                    if(startTime == 0){
-                        sendMessage(commandSchedule.scheduleOff);
-                    } else if(endTime == 0){
-                        sendMessage(commandSchedule.scheduleOn)
+                    if(i < result.length-1){
+                        cmd += `CALL BATCH LGS_ON_${result[i]};`
                     } else {
-                        sendMessage(commandSchedule.scheduleOn);
-                        HOMEOSAPP.delay(500);
-                        sendMessage(commandSchedule.scheduleOff);
+                        cmd += `CALL BATCH LGS_ON_${result[i]}`
                     }
-                    numberSchedule += 1
-                    await HOMEOSAPP.delay(200);
                 }
+                commandSchedule = GenerateCreateScheduleString(numberOfRelays, `schedule ${numberSchedule + 1} on`, startTime,endTime, repeatData.decimal, cmd);
+                if(startTime == 0){
+                    sendMessage(commandSchedule.scheduleOff);
+                } else if(endTime == 0){
+                    sendMessage(commandSchedule.scheduleOn);
+                } else {
+                    sendMessage(commandSchedule.scheduleOn);
+                    HOMEOSAPP.delay(2000);
+                    sendMessage(commandSchedule.scheduleOff);
+                }
+                numberSchedule += 1
+                await HOMEOSAPP.delay(200);
             }
+            $("#close-new-screen").click()
         }
     }
 }

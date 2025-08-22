@@ -943,22 +943,36 @@
     listAllContainer.innerHTML = "";
 
     // Hiển thị rút gọn
-    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach((order, index) => {
-        let orderHTML = `
-            <div class=" card mb-2 order-item" data-index="${index}">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="fw-bold">${order.createdAt || "Chưa có thời gian"}</div>
-                        <small class="text-muted">${order.status}</small>
-                    </div>
-                    <div class="fw-bold text-primary">
-                        ${order.totalAmount.toLocaleString()} đ
-                    </div>
-                </div>
+    orders
+  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  .forEach((order, index) => {
+    // Lấy 3-4 số cuối điện thoại
+    const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
+
+    // Format thời gian (cắt ngắn gọn)
+    const timeString = order.createdAt
+      ? new Date(order.createdAt).toLocaleString("vi-VN")
+      : "Chưa có thời gian";
+
+    let orderHTML = `
+      <div class="card mb-2 order-item" data-index="${index}">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-bold">
+              ${order.customerName} (${phoneSuffix})
             </div>
-        `;
-        listAllContainer.innerHTML += orderHTML;
-    });
+            <small class="text-muted">
+              ${timeString} - ${order.status}
+            </small>
+          </div>
+          <div class="fw-bold text-primary">
+            ${order.totalAmount.toLocaleString("vi-VN")} đ
+          </div>
+        </div>
+      </div>
+    `;
+    listAllContainer.innerHTML += orderHTML;
+  });
 
     document.querySelectorAll(".order-item").forEach(el => {
       el.addEventListener("click", function(){
