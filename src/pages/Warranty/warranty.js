@@ -64,6 +64,8 @@ async function accessDeviceWarranty() {
         if (matchedItem != undefined) {
             dataWarranty.push(matchedItem);
         }
+        console.log(dataWarranty);
+        
         if (dataWarranty.length == 1) {
             if (HOMEOSAPP.CodeWarranty) {
                 $("#loading-popup").show();
