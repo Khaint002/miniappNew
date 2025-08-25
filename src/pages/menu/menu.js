@@ -133,9 +133,11 @@ $("#PickApp-button-login").off("click").click(function () {
 });
 async function pickApp(type) {
     const app = HOMEOSAPP.apps.find(a => a.MENU_ID === type);
+    console.log(app);
     HOMEOSAPP.objApp = app;
     switch (app.MENU_TYPE) {
         case 'LOAD':
+            
             HOMEOSAPP.application = type;
             HOMEOSAPP.handleAppView(type, 'IN');
             break;
