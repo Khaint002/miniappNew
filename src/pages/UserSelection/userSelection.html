@@ -1,12 +1,23 @@
 <div class="container" style="overflow-y: auto; height: 100%; background-color: #282d31;">
-    <div class="d-flex" style="line-height: 50px">
-        <button id="BackSelection" style="height: 40px; border: none; background-color: #282d31;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd"
-                    d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-            </svg>
-        </button>
+    <div class="history-header">
+        <div class="history-avt">
+            <div class="d-flex">
+                <img class="userAvt"
+                    src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+                    alt="">
+                <p class="userName">Khách</p>
+            </div>
+        </div>
+        <div>
+            <div style="line-height: 50px; float: left;" id="extra_view"></div>
+            <div style="line-height: 50px; float: left;">
+                <button class="menuToggle" style="height: 40px; border: none; background-color: #1E2833;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff;" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
     <div id="LogoPickScreen" class="d-flex justify-content-center align-items-center w-100" >
         <img id="LogoPickScreen" src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 1rem; margin-top: 0;">
@@ -18,7 +29,7 @@
         <h5 id="section-title">Chọn ứng dụng bạn cần:</h5>
     </div>
     <div id="app-list" class="row"></div>
-    <button id="appSelection">Xác nhận</button>
+    <button id="appSelection" style="margin-bottom: 10px;">Xác nhận</button>
 </div>
 <script src="https://miniapp-new.vercel.app/src/pages/UserSelection/userSelection.js"></script>
 <!-- <script src="./src/pages/UserSelection/userSelection.js"></script> -->
