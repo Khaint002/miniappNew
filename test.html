@@ -982,6 +982,67 @@
     </div>
   </div>
 
+  <div class="modal fade" id="scaleAgainModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modalTitle">Cân Lại</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="" data-step="1">
+            <h4>Cân và phân loại đồ giặt</h4>
+            <!-- Form nhập -->
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4 col-12">
+                <label class="form-label">Loại đồ:</label>
+                <select class="form-select" id="itemTypeAgain">
+                  <option value="Quần áo (Cái)">Quần áo (Cái)</option>
+                  <option value="Chăn (Cái)">Chăn (Cái)</option>
+                  <option value="Khăn (Cái)">Khăn (Cái)</option>
+                  <option value="Giày (Đôi)">Giày (Đôi)</option>
+                </select>
+              </div>
+              <div class="col-md-3 col-6">
+                <label class="form-label">Số lượng:</label>
+                <input type="number" class="form-control" id="itemQtyAgain" min="1" value="1">
+              </div>
+              <div class="col-md-3 col-6">
+                <label class="form-label">Số kg:</label>
+                <input type="number" class="form-control" id="itemWeightAgain" min="0.1" step="0.1" value="0.5">
+              </div>
+              <div class="col-md-2 col-12">
+                <button class="btn btn-danger w-100" id="addItemAgain">Xác nhận Cân</button>
+              </div>
+            </div>
+  
+            <!-- Bảng hiển thị -->
+            <div class="mt-4">
+              <table class="table table-bordered table-sm" id="itemTableAgain">
+                <thead class="table-light">
+                  <tr>
+                    <th>Loại đồ</th>
+                    <th>Số lượng</th>
+                    <th>Số kg</th>
+                    <th>Xoá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Hàng sẽ được thêm bằng JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+              <div></div>
+              <button id="successAgain" class="btn btn-primary btn-sm">Xác nhận</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -995,6 +1056,7 @@
     const contents = document.querySelectorAll(".step-content");
     const btnNext = document.getElementById("btnNext");
     const btnBack = document.getElementById("btnBack");
+    var indexAgain = 0;
     let currentStep = 0;
     var itemObj = {};
     var orders = JSON.parse(localStorage.getItem("ListAll")) || [];
@@ -1087,8 +1149,13 @@
     const itemType = document.getElementById("itemType");
     const itemQty = document.getElementById("itemQty");
     const itemWeight = document.getElementById("itemWeight");
+    const itemTypeAgain = document.getElementById("itemTypeAgain");
+    const itemQtyAgain = document.getElementById("itemQtyAgain");
+    const itemWeightAgain = document.getElementById("itemWeightAgain");
     const addItemBtn = document.getElementById("addItem");
+    const addItemAgainBtn = document.getElementById("addItemAgain");
     const itemTableBody = document.querySelector("#itemTable tbody");
+    const itemTableAgainBody = document.querySelector("#itemTableAgain tbody");
 
     addItemBtn.addEventListener("click", () => {
       const type = itemType.value.trim();
@@ -1102,13 +1169,13 @@
 
       const row = document.createElement("tr");
       row.innerHTML = `
-      <td>${type}</td>
-      <td>${qty}</td>
-      <td>${weight.toFixed(1)}</td>
-      <td class="text-center">
-        <button class="btn btn-sm btn-outline-danger delete-item"><i class="bi bi-trash"></i></button>
-      </td>
-    `;
+        <td>${type}</td>
+        <td>${qty}</td>
+        <td>${weight.toFixed(1)}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-danger delete-item"><i class="bi bi-trash"></i></button>
+        </td>
+      `;
       itemTableBody.appendChild(row);
 
       // Reset input
@@ -1116,8 +1183,34 @@
       itemWeight.value = 0.5;
     });
 
+    addItemAgainBtn.addEventListener("click", () => {
+      const type = itemTypeAgain.value.trim();
+      const qty = parseInt(itemQtyAgain.value);
+      const weight = parseFloat(itemWeightAgain.value);
+
+      if (!type || qty <= 0 || weight <= 0) {
+        alert("Vui lòng nhập đầy đủ và hợp lệ");
+        return;
+      }
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${type}</td>
+        <td>${qty}</td>
+        <td>${weight.toFixed(1)}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-danger delete-item"><i class="bi bi-trash"></i></button>
+        </td>
+      `;
+      itemTableAgainBody.appendChild(row);
+
+      // Reset input
+      itemQty.valueAgain = 1;
+      itemWeight.valueAgain = 0.5;
+    });
+
     // Xóa hàng
-    itemTableBody.addEventListener("click", (e) => {
+    itemTableAgainBody.addEventListener("click", (e) => {
       if (e.target.closest(".delete-item")) {
         e.target.closest("tr").remove();
       }
@@ -1255,6 +1348,12 @@
     })
 
     function createOrderObject(total) {
+      const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+      let type = 'AUTOMATIC';
+      if(login.length != 0){
+        type = 'HANDMADE';
+      }
+
       // Lấy thông tin từ form
       const order = {
         customerName: document.querySelector('input[placeholder="Nhập tên khách hàng"]').value.trim(),
@@ -1268,6 +1367,7 @@
         totalAmount: total,
         items: [],
         status: 'NEW',
+        createdType: type,
         createdAt: new Date().toLocaleString()
       };
 
@@ -1483,17 +1583,17 @@
       switch (order.status) {
         case "NEW":
           return `<button class="btn btn-sm btn-primary action-btn" 
-                    data-index="${index}" data-next="DONE">
+                    data-index="${index}" data-now="NEW" data-next="DONE">
                     Bắt đầu giặt
                   </button>`;
         case "WASHING":
           return `<button class="btn btn-sm btn-warning action-btn" 
-                    data-index="${index}" data-next="DONE">
-                    Hoàn tất giặt
+                    data-index="${index}" data-now="WASHING" data-next="DONE">
+                    Cân lại
                   </button>`;
         case "DONE":
           return `<button class="btn btn-sm btn-success action-btn" 
-                    data-index="${index}" data-next="ISDONE">
+                    data-index="${index}" data-now="DONE" data-next="ISDONE">
                     Giao hàng
                   </button>`;
         case "ISDONE":
@@ -1519,7 +1619,7 @@
         .forEach((order, index) => {
           const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
           // let textButton = '';
-          const textButton = getActionButton(order, index);
+          const textButton = getActionButton(order, index, order.createdType);
 
           let baseHTML = `
           <div class="card mb-2 order-item" data-index="${index}">
@@ -1544,7 +1644,7 @@
 
           // containers.all.innerHTML += baseHTML;
           if (order.status === "NEW") containers.new.innerHTML += baseHTML;
-          if (order.status === "DONE") containers.inprogress.innerHTML += baseHTML;
+          if (order.status === "DONE" || order.status === "WASHING") containers.inprogress.innerHTML += baseHTML;
           if (order.status === "ISDONE") containers.isDone.innerHTML += baseHTML;
           
         });
@@ -1552,17 +1652,23 @@
           e.stopPropagation();
 
           let index = $(this).data("index");   // index trong mảng orders
+          let now = $(this).data("now");   // trạng thái hiện tại
           let next  = $(this).data("next");    // trạng thái mới muốn set
+          if(now != 'WASHING'){
+            // Cập nhật trạng thái
 
-          // Cập nhật trạng thái
-          orders[index].status = next;
-          console.log(orders);
-          
-          // Lưu lại vào localStorage
-          localStorage.setItem("ListAll", JSON.stringify(orders));
-
-          // Render lại giao diện
-          renderListOrder();
+            if(now == 'NEW' && orders[index].createdType == 'HANDMADE'){
+              orders[index].status = 'WASHING';
+            } else {
+              orders[index].status = next;
+            }
+            localStorage.setItem("ListAll", JSON.stringify(orders));
+            // Render lại giao diện
+            renderListOrder();
+          } else {
+            indexAgain = index;
+            new bootstrap.Modal(document.getElementById('scaleAgainModal')).show();
+          }
         });
     }
 
@@ -1898,6 +2004,37 @@
 
       new bootstrap.Modal(document.getElementById('detailModal')).show();
     });
+
+    $("#successAgain").on("click", function(){
+      orders[indexAgain].items = [];
+      let total = 0;
+      document.querySelectorAll("#itemTableAgain tbody tr").forEach(row => {
+        const type = row.cells[0].textContent;
+        const qty = parseInt(row.cells[1].textContent);
+        const weight = parseFloat(row.cells[2].textContent);
+
+        const unitPrice = priceList[type] || 0;
+        const amount = unitPrice * weight; // tính theo kg
+
+        total += amount;
+
+        orders[indexAgain].items.push({
+          type,
+          qty,
+          weight,
+          amount
+        });
+      });
+      orders[indexAgain].status = 'DONE';
+      orders[indexAgain].totalAmount = total;
+      console.log(orders[indexAgain]);
+      
+      localStorage.setItem("ListAll", JSON.stringify(orders));
+      // Render lại giao diện
+      toastr.success("Cân lại thành công!")
+      bootstrap.Modal.getOrCreateInstance(document.getElementById('scaleAgainModal')).hide();
+      renderListOrder();
+    })
 
     updateSteps();
 
