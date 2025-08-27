@@ -824,17 +824,17 @@
     </div>
     <!-- Tabs -->
     <ul class="nav nav-tabs scroll-tabs flex-nowrap" id="tabMenu">
-      <li class="nav-item d-none"><a class="nav-link " data-bs-toggle="tab" data-index="0">Tất cả</a></li>
-      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-index="1">Đã nhận đơn</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="2">Hoàn thành giặt</a></li>
-      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="3">Hoàn thành giao hàng</a></li>
-      <li class="nav-item d-none"><a class="nav-link" data-bs-toggle="tab" data-index="4">Hoàn tất</a></li>
+      <!-- <li class="nav-item d-none"><a class="nav-link " data-bs-toggle="tab" data-index="0">Tất cả</a></li> -->
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-index="0">Đã nhận đơn</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="1">Hoàn thành giặt</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="2">Hoàn thành giao hàng</a></li>
+      <li class="nav-item d-none"><a class="nav-link" data-bs-toggle="tab" data-index="3">Hoàn tất</a></li>
     </ul>
 
     <!-- Nội dung (Swiper để vuốt ngang) -->
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
-        <div class="swiper-slide" id="listShipAll"></div>
+        <!-- <div class="swiper-slide" id="listShipAll"></div> -->
         <div class="swiper-slide" id="listNew">Nội dung: Chờ vận chuyển</div>
         <div class="swiper-slide" id="listShipping">Nội dung: Đang vận chuyển</div>
         <div class="swiper-slide" id="listIsDone">Nội dung: Cần đánh giá</div>
@@ -1177,7 +1177,7 @@
       spaceBetween: 0,
       on: {
         slideChange: function () {
-          let index = this.activeIndex;
+          let index = this.activeIndex; // lấy index slide hiện tại
           $("#tabMenu .nav-link").removeClass("active");
           $('#tabMenu .nav-link[data-index="' + index + '"]').addClass("active");
           scrollTabToCenter($('#tabMenu .nav-link[data-index="' + index + '"]'));
@@ -1307,10 +1307,14 @@
             ? new Date(order.createdAt).toLocaleString("vi-VN")
             : "Chưa có thời gian";
 
-          const textButton = order.status == 'ISDONE' ? `<button class="btn btn-sm review-btn" 
-    style="background-color: #f54646; color: white; width: 120px; padding-top: 5px;">
-                Cân lại
-              </button>` : ''
+          const textButton = order.status == 'ISDONE' ?
+            `
+            <div class="mt-2" style="display: flex; justify-content: end;">
+              <button class="btn btn-sm review-btn" data-index="${index}" style="background-color: #f54646; color: white;">
+                Viết đánh giá
+              </button>
+            </div>
+          `: '';
 
           let orderHTML = `
       <div class="card mb-2 order-item" data-index="${index}">
@@ -1333,6 +1337,88 @@
       </div>
     `;
           listAllContainer.innerHTML += orderHTML;
+        });
+
+        document.querySelectorAll(".review-btn").forEach(btn => {
+          btn.addEventListener("click", function () {
+            let orderIndex = this.getAttribute("data-index");
+
+            // reset modal trước
+            document.querySelectorAll("#reviewModal .star").forEach(s => s.classList.remove("active"));
+            document.getElementById("ratingText").innerText = "Chọn đánh giá";
+            document.getElementById("reviewText").value = "";
+            document.getElementById("charCount").innerText = "0";
+            document.querySelectorAll(".tag-btn").forEach(t => t.classList.remove("active"));
+            document.getElementById("anonymousCheck").checked = false;
+            document.getElementById("uploadFile").value = "";
+
+            // mở modal
+            let modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            modal.show();
+
+            // click sao trong modal
+            document.querySelectorAll("#reviewModal .star").forEach(star => {
+              star.onclick = function () {
+                let value = parseInt(this.getAttribute("data-value"));
+
+                // reset tất cả sao về xám
+                document.querySelectorAll("#reviewModal .star").forEach(s => {
+                  s.classList.remove("text-warning");
+                  s.classList.add("text-secondary");
+                });
+
+                // tô vàng từ 1 -> value
+                for (let i = 0; i < value; i++) {
+                  document.querySelectorAll("#reviewModal .star")[i].classList.remove("text-secondary");
+                  document.querySelectorAll("#reviewModal .star")[i].classList.add("text-warning");
+                }
+
+                // đổi text hiển thị
+                const texts = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Xuất sắc"];
+                document.getElementById("ratingText").innerText = texts[value - 1] || "Chọn đánh giá";
+
+                // lưu rating vào modal
+                document.getElementById("reviewModal").setAttribute("data-rating", value);
+              };
+            });
+
+            // đếm ký tự textarea
+            document.getElementById("reviewText").oninput = function () {
+              document.getElementById("charCount").innerText = this.value.length;
+            };
+
+            // chọn tag
+            document.querySelectorAll(".tag-btn").forEach(tag => {
+              tag.onclick = function () {
+                this.classList.toggle("active");
+              };
+            });
+
+            // click vào upload box
+            document.getElementById("uploadBox").onclick = function () {
+              document.getElementById("uploadFile").click();
+            };
+
+            // submit review
+            document.getElementById("submitReview").onclick = () => {
+              let rating = document.getElementById("reviewModal").getAttribute("data-rating") || 0;
+              let text = document.getElementById("reviewText").value;
+              let tags = Array.from(document.querySelectorAll(".tag-btn.active")).map(t => t.innerText);
+              let anonymous = document.getElementById("anonymousCheck").checked;
+              let files = document.getElementById("uploadFile").files;
+
+              alert(`
+              Đánh giá đơn hàng #${orderIndex}
+              Sao: ${rating}
+              Nội dung: ${text}
+              Tag: ${tags.join(", ")}
+              Ẩn danh: ${anonymous}
+              Số file upload: ${files.length}
+            `);
+
+              modal.hide();
+            };
+          });
         });
 
       document.querySelectorAll(".order-item").forEach(el => {
@@ -1393,9 +1479,34 @@
       });
     }
 
+    function getActionButton(order, index) {
+      switch (order.status) {
+        case "NEW":
+          return `<button class="btn btn-sm btn-primary action-btn" 
+                    data-index="${index}" data-next="DONE">
+                    Bắt đầu giặt
+                  </button>`;
+        case "WASHING":
+          return `<button class="btn btn-sm btn-warning action-btn" 
+                    data-index="${index}" data-next="DONE">
+                    Hoàn tất giặt
+                  </button>`;
+        case "DONE":
+          return `<button class="btn btn-sm btn-success action-btn" 
+                    data-index="${index}" data-next="ISDONE">
+                    Giao hàng
+                  </button>`;
+        case "ISDONE":
+          return ``;
+        default:
+          return "";
+      }
+    }
+
+
     function renderListOrder() {
       let containers = {
-        all: document.getElementById("listShipAll"),
+        // all: document.getElementById("listShipAll"),
         new: document.getElementById("listNew"),
         inprogress: document.getElementById("listShipping"),
         done: document.getElementById("listDone"),
@@ -1407,16 +1518,9 @@
       orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .forEach((order, index) => {
           const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
-          let textButton = '';
-          if (order.status === "ISDONE") {
-            textButton = `
-            <div class="mt-2" style="display: flex; justify-content: end;">
-              <button class="btn btn-sm review-btn" data-index="${index}" style="background-color: #f54646; color: white;">
-                Viết đánh giá
-              </button>
-            </div>
-          `;
-          }
+          // let textButton = '';
+          const textButton = getActionButton(order, index);
+
           let baseHTML = `
           <div class="card mb-2 order-item" data-index="${index}">
             <div class="card-body">
@@ -1427,7 +1531,9 @@
                 </div>
                 <div class="fw-bold text-primary" style="text-align: end;">
                   ${order.totalAmount.toLocaleString()} đ
-                  ${textButton}
+                  <div class="fw-bold" >
+                    ${textButton}
+                  </div>
                 </div>
               </div>
         `;
@@ -1436,94 +1542,28 @@
 
           baseHTML += `</div></div>`;
 
-          containers.all.innerHTML += baseHTML;
+          // containers.all.innerHTML += baseHTML;
           if (order.status === "NEW") containers.new.innerHTML += baseHTML;
-          if (order.status === "INPROGRESS") containers.inprogress.innerHTML += baseHTML;
+          if (order.status === "DONE") containers.inprogress.innerHTML += baseHTML;
           if (order.status === "ISDONE") containers.isDone.innerHTML += baseHTML;
+          
         });
+        $(document).off("click", ".action-btn").on("click", ".action-btn", function (e) {
+          e.stopPropagation();
 
-      // Gán sự kiện mở modal cho nút "Đánh giá"
-      document.querySelectorAll(".review-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-          let orderIndex = this.getAttribute("data-index");
+          let index = $(this).data("index");   // index trong mảng orders
+          let next  = $(this).data("next");    // trạng thái mới muốn set
 
-          // reset modal trước
-          document.querySelectorAll("#reviewModal .star").forEach(s => s.classList.remove("active"));
-          document.getElementById("ratingText").innerText = "Chọn đánh giá";
-          document.getElementById("reviewText").value = "";
-          document.getElementById("charCount").innerText = "0";
-          document.querySelectorAll(".tag-btn").forEach(t => t.classList.remove("active"));
-          document.getElementById("anonymousCheck").checked = false;
-          document.getElementById("uploadFile").value = "";
+          // Cập nhật trạng thái
+          orders[index].status = next;
+          console.log(orders);
+          
+          // Lưu lại vào localStorage
+          localStorage.setItem("ListAll", JSON.stringify(orders));
 
-          // mở modal
-          let modal = new bootstrap.Modal(document.getElementById('reviewModal'));
-          modal.show();
-
-          // click sao trong modal
-          document.querySelectorAll("#reviewModal .star").forEach(star => {
-            star.onclick = function () {
-              let value = parseInt(this.getAttribute("data-value"));
-
-              // reset tất cả sao về xám
-              document.querySelectorAll("#reviewModal .star").forEach(s => {
-                s.classList.remove("text-warning");
-                s.classList.add("text-secondary");
-              });
-
-              // tô vàng từ 1 -> value
-              for (let i = 0; i < value; i++) {
-                document.querySelectorAll("#reviewModal .star")[i].classList.remove("text-secondary");
-                document.querySelectorAll("#reviewModal .star")[i].classList.add("text-warning");
-              }
-
-              // đổi text hiển thị
-              const texts = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Xuất sắc"];
-              document.getElementById("ratingText").innerText = texts[value - 1] || "Chọn đánh giá";
-
-              // lưu rating vào modal
-              document.getElementById("reviewModal").setAttribute("data-rating", value);
-            };
-          });
-
-          // đếm ký tự textarea
-          document.getElementById("reviewText").oninput = function () {
-            document.getElementById("charCount").innerText = this.value.length;
-          };
-
-          // chọn tag
-          document.querySelectorAll(".tag-btn").forEach(tag => {
-            tag.onclick = function () {
-              this.classList.toggle("active");
-            };
-          });
-
-          // click vào upload box
-          document.getElementById("uploadBox").onclick = function () {
-            document.getElementById("uploadFile").click();
-          };
-
-          // submit review
-          document.getElementById("submitReview").onclick = () => {
-            let rating = document.getElementById("reviewModal").getAttribute("data-rating") || 0;
-            let text = document.getElementById("reviewText").value;
-            let tags = Array.from(document.querySelectorAll(".tag-btn.active")).map(t => t.innerText);
-            let anonymous = document.getElementById("anonymousCheck").checked;
-            let files = document.getElementById("uploadFile").files;
-
-            alert(`
-            Đánh giá đơn hàng #${orderIndex}
-            Sao: ${rating}
-            Nội dung: ${text}
-            Tag: ${tags.join(", ")}
-            Ẩn danh: ${anonymous}
-            Số file upload: ${files.length}
-          `);
-
-            modal.hide();
-          };
+          // Render lại giao diện
+          renderListOrder();
         });
-      });
     }
 
     function showBill() {
@@ -1802,7 +1842,7 @@
         $("#Logout").removeClass('d-none');
         $("#btnLogin").addClass('d-none');
         $('#step4').addClass('d-none');
-        $('#ship').removeClass('d-none');
+        $('#shipMenu').removeClass('d-none');
         $('#ca').removeClass('d-none');
         $('#check').addClass('d-none');
       }
