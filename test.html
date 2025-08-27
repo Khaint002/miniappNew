@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
     body {
       display: flex;
@@ -15,13 +16,19 @@
       height: 100vh;
       margin: 0;
     }
+
     @media print {
       body * {
-        visibility: hidden; /* Ẩn toàn bộ nội dung */
+        visibility: hidden;
+        /* Ẩn toàn bộ nội dung */
       }
-      #bodyBill, #bodyBill * {
-        visibility: visible; /* Chỉ hiện #bodyBill */
+
+      #bodyBill,
+      #bodyBill * {
+        visibility: visible;
+        /* Chỉ hiện #bodyBill */
       }
+
       #bodyBill {
         position: absolute;
         left: 0;
@@ -29,19 +36,22 @@
         width: 100%;
       }
     }
+
     .app-card {
       border-radius: 10px;
       padding: 15px;
       background: #f3f3f3;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       margin-bottom: 10px;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
+
     .app-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
+
     .app-icon {
       width: 50px;
       height: 50px;
@@ -52,24 +62,29 @@
       color: white;
       font-size: 24px;
     }
+
     .app-title {
       font-weight: bold;
       margin: 0;
     }
+
     .app-subtitle {
       margin: 0;
       color: #6c757d;
       font-size: 14px;
     }
+
     .app-version {
       font-size: 12px;
       color: #999;
     }
+
     .timeline-wrapper {
       position: relative;
       padding: 15px 0;
       background: #fff;
     }
+
     /* Đường line nền */
     .timeline-line {
       position: absolute;
@@ -80,6 +95,7 @@
       background: #ccc;
       z-index: 1;
     }
+
     /* Các bước */
     .timeline {
       display: flex;
@@ -87,6 +103,7 @@
       position: relative;
       z-index: 2;
     }
+
     .step {
       display: flex;
       flex-direction: column;
@@ -94,6 +111,7 @@
       flex: 1;
       text-align: center;
     }
+
     .circle {
       width: 36px;
       height: 36px;
@@ -107,23 +125,28 @@
       z-index: 2;
       transition: background 0.3s ease, transform 0.3s ease;
     }
+
     .step.active .circle {
       background: #0d6efd;
       transform: scale(1.1);
     }
+
     .step.done .circle {
       background: #198754;
       transform: scale(1.1);
     }
+
     .label {
       margin-top: 6px;
       font-size: 14px;
       white-space: nowrap;
       transition: opacity 0.3s ease;
     }
+
     .label.inactive {
       opacity: 0.5;
     }
+
     /* Line đã hoàn thành */
     .timeline-line-fill {
       position: absolute;
@@ -134,6 +157,7 @@
       z-index: 1;
       transition: width 0.4s ease;
     }
+
     /* Nội dung cuộn */
     .content {
       flex: 1;
@@ -141,13 +165,23 @@
       padding: 15px;
       background: #f8f9fa;
     }
+
     .step-content {
       animation: fadeIn 0.4s ease;
     }
+
     @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     /* Footer cố định */
     .footer-nav {
       background: #fff;
@@ -156,140 +190,339 @@
     }
 
     .bill-container {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: white;
-    display: none;
-    flex-direction: column;
-    z-index: 999;
-  }
-  .bill-header {
-    background: #f0f0f0;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-  }
-  .bill-header i {
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  .bill-content {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    font-family: Arial, sans-serif;
-  }
-  .bill-footer {
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    text-align: center;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  table, th, td {
-    border: 1px solid #ccc;
-  }
-  th, td {
-    padding: 5px;
-    text-align: left;
-  }
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
 
-  .scroll-tabs {
+    .bill-header {
+      background: #f0f0f0;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .bill-header i {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .bill-content {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      font-family: Arial, sans-serif;
+    }
+
+    .bill-footer {
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #ccc;
+    }
+
+    th,
+    td {
+      padding: 5px;
+      text-align: left;
+    }
+
+    .scroll-tabs {
       overflow-x: auto;
       white-space: nowrap;
       -webkit-overflow-scrolling: touch;
       border-bottom: 1px solid #dee2e6;
     }
+
     .scroll-tabs .nav-item {
       flex: 0 0 auto;
     }
+
     .scroll-tabs .nav-link {
       white-space: nowrap;
       color: #333;
       padding: 10px 16px;
     }
+
     .scroll-tabs .nav-link.active {
       font-weight: bold;
       color: #0d6efd !important;
-      border-bottom: 3px solid #0d6efd; /* underline ngay tab */
+      border-bottom: 3px solid #0d6efd;
+      /* underline ngay tab */
     }
-    .scroll-tabs::-webkit-scrollbar { display: none; }
+
+    .scroll-tabs::-webkit-scrollbar {
+      display: none;
+    }
 
     .swiper {
       width: 100%;
-      height: 100%; /* cho demo */
+      height: 100%;
+      /* cho demo */
     }
+
     .swiper-slide {
       height: 100%;
-      overflow-y: auto; /* Cho phép cuộn nội dung trong slide */
+      overflow-y: auto;
+      /* Cho phép cuộn nội dung trong slide */
       -webkit-overflow-scrolling: touch;
       background: #f8f9fa;
       padding: 15px;
     }
+
     .star-rating {
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  .star {
-    color: #ccc;
-    transition: color 0.2s;
-  }
-  .star.active {
-    color: gold;
-  }
-  .tag-btn.active {
-  background: #ff2e55;
-  color: white;
-  border-color: #ff2e55;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .star {
+      color: #ccc;
+      transition: color 0.2s;
+    }
+
+    .star.active {
+      color: gold;
+    }
+
+    .tag-btn.active {
+      background: #ff2e55;
+      color: white;
+      border-color: #ff2e55;
+    }
+
+    .login-card {
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+      background-color: #f3f3f3;
+    }
+
+    .brand-area {
+      background: #ebe5e5;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 15px 15px 0 0;
+    }
+
+    .form-floating>label {
+      color: #6b7280;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      padding: .25rem;
+      color: #6b7280;
+    }
+
+    .btn-primary {
+      border-radius: .8rem;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #9ca3af;
+      font-size: .9rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #e5e7eb;
+      margin: 0 .75rem;
+    }
+
+    #menuHeader {
+    text-align: center;
+    padding: 0 10px 0 20px;
+    max-width: 500px;
+    width: 100%;
+    background-color: #272727;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-avt {
+    line-height: 50px;
+}
+
+.history-avt img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-top: 10px;
+}
+
+.history-avt p {
+    margin-left: 10px;
+    color: white;
 }
   </style>
 </head>
+
 <body>
-  <div id="all" class="container py-3">
-    <h5 class="mb-3">Chức năng:</h5>
-  
-    <div class="app-card" onclick="openApp('check')">
-      <div class="d-flex align-items-center">
-        <div class="app-icon" style="background-color:#0dcaf0;">
-          <i class="bi bi-archive"></i>
+  <div id="login" class="container d-none d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card login-card">
+      <div class="brand-area p-4 text-center">
+        <div class="d-inline-flex align-items-center gap-2">
+          <i class="bi bi-shield-lock fs-3 text-primary"></i>
+          <h1 class="h4 m-0">Trang đăng nhập</h1>
         </div>
-        <div class="ms-3 flex-grow-1">
-          <p class="app-title">Theo dõi đơn giặt</p>
-          <p class="app-subtitle">Theo dõi đơn giặt</p>
-        </div>
-        <span class="app-version"></span>
+        <p class="text-muted mb-0 mt-2">Chào mừng quay lại 👋</p>
+      </div>
+
+
+      <div class="card-body p-4">
+        <form class="needs-validation" novalidate>
+          <div class="mb-3">
+            <div class="form-floating">
+              <input type="userName" class="form-control" id="userName" placeholder="user name" required>
+              <label for="userName">Tên đăng nhập</label>
+              <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+            </div>
+          </div>
+          <div class="mb-3 position-relative">
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" placeholder="••••••••" required minlength="6">
+              <label for="password">Mật khẩu</label>
+              <div class="invalid-feedback">Mật khẩu tối thiểu 6 ký tự.</div>
+            </div>
+            <button class="toggle-password" type="button" aria-label="Hiện/ẩn mật khẩu" title="Hiện/ẩn mật khẩu">
+              <i class="bi bi-eye" id="toggleIcon"></i>
+            </button>
+          </div>
+
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+              <label class="form-check-label" for="rememberMe">Ghi nhớ tôi</label>
+            </div>
+            <a href="#" class="link-underline link-underline-opacity-0">Quên mật khẩu?</a>
+          </div>
+
+
+          <div class="d-grid mb-3">
+            <button id="submitLogin" class="btn btn-primary btn-lg" type="submit">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+            </button>
+          </div>
+
+
+          <div class="divider mb-3">Hoặc</div>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-secondary" type="button">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" width="20"
+                height="20" class="me-2">
+              Tiếp tục với Zalo
+            </button>
+          </div>
+          <div id="backLogin" class="d-grid gap-2 mt-3">
+            <button class="btn btn-outline-secondary" type="button">
+              <i class="bi bi-arrow-left"></i>
+              Quay lại
+            </button>
+          </div>
+        </form>
+
       </div>
     </div>
-  
-    <div class="app-card" onclick="openApp('giat')">
-      <div class="d-flex align-items-center">
-        <div class="app-icon" style="background-color:#dc3545;">
-          <i class="bi bi-card-checklist"></i>
+  </div>
+  <div id="all">
+    <div id="menuHeader">
+      <div class="history-avt">
+        <div class="d-flex">
+          <img class="userAvt" src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="">
+          <p class="userName">Khách</p>
         </div>
-        <div class="ms-3 flex-grow-1">
-          <p class="app-title">Tạo đơn giặt</p>
-          <p class="app-subtitle">Tạo đơn giặt</p>
-        </div>
-        <span class="app-version"></span>
+      </div>
+      <div style="line-height: 50px;">
+        <button class="btn btn-danger w-100" id="btnLogin">Đăng nhập</button>
+        <button class="btn btn-danger w-100 d-none" id="Logout">Đăng Xuất</button>
       </div>
     </div>
-  
-    <div class="app-card" onclick="openApp('ship')">
-      <div class="d-flex align-items-center">
-        <div class="app-icon" style="background-color:#fd7e14;">
-            <i class="bi bi-truck"></i>
+    <div class="container py-3">
+      <h5 class="mb-3">Chức năng:</h5>
+      <div id="check" class="app-card" onclick="openApp('check')">
+        <div class="d-flex align-items-center">
+          <div class="app-icon" style="background-color:#0dcaf0;">
+            <i class="bi bi-archive"></i>
+          </div>
+          <div class="ms-3 flex-grow-1">
+            <p class="app-title">Lịch sử đơn giặt</p>
+            <p class="app-subtitle">Lịch sử đơn giặt</p>
+          </div>
+          <span class="app-version"></span>
         </div>
-        <div class="ms-3 flex-grow-1">
-          <p class="app-title">Giao hàng</p>
-          <p class="app-subtitle">Theo dõi giao hàng</p>
+      </div>
+
+      <div id="giat" class="app-card" onclick="openApp('giat')">
+        <div class="d-flex align-items-center">
+          <div class="app-icon" style="background-color:#dc3545;">
+            <i class="bi bi-card-checklist"></i>
+          </div>
+          <div class="ms-3 flex-grow-1">
+            <p class="app-title">Tạo đơn giặt</p>
+            <p class="app-subtitle">Tạo đơn giặt</p>
+          </div>
+          <span class="app-version"></span>
         </div>
-        <span class="app-version"></span>
+      </div>
+
+      <div id="shipMenu" class="app-card" onclick="openApp('ship')">
+        <div class="d-flex align-items-center">
+          <div class="app-icon" style="background-color:#fd7e14;">
+            <i class="bi bi-clipboard2"></i>
+          </div>
+          <div class="ms-3 flex-grow-1">
+            <p class="app-title">Thông kê</p>
+            <p class="app-subtitle">Thống kê đơn giặt</p>
+          </div>
+          <span class="app-version"></span>
+        </div>
+      </div>
+
+      <div id="ca" class="app-card" onclick="openApp('ca')">
+        <div class="d-flex align-items-center">
+          <div class="app-icon" style="background-color:#5edf43;">
+            <i class="bi bi-arrow-left-right"></i>
+          </div>
+          <div class="ms-3 flex-grow-1">
+            <p class="app-title">Giao ca</p>
+            <p class="app-subtitle">Bàn giao ca sau</p>
+          </div>
+          <span class="app-version"></span>
+        </div>
       </div>
     </div>
+    
   </div>
   <div id="create" class="d-none d-flex flex-column" style="height: 100vh;">
     <!-- Timeline -->
@@ -317,7 +550,7 @@
             <div class="circle">3</div>
             <div class="label">Đơn giá</div>
           </div>
-          <div class="step">
+          <div id="step4" class="step">
             <div class="circle">4</div>
             <div class="label">Thanh toán</div>
           </div>
@@ -334,7 +567,7 @@
                 <label class="form-label">Tên khách hàng:</label>
                 <input type="text" class="form-control" placeholder="Nhập tên khách hàng">
               </div>
-              
+
               <div class="col-md-6">
                 <label class="form-label">Địa chỉ:</label>
                 <input type="text" class="form-control" placeholder="Nhập địa chỉ">
@@ -351,7 +584,7 @@
                 </select>
               </div>
             </div>
-        
+
             <h4 class="mt-4">Chọn máy giặt</h4>
             <div class="row g-3">
               <div class="col-md-6 col-6">
@@ -379,7 +612,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="step-content d-none" data-step="1">
           <h4>Cân và phân loại đồ giặt</h4>
           <!-- Form nhập -->
@@ -426,27 +659,30 @@
         <div class="step-content d-none" data-step="2">
           <h4>Bảng đơn giá</h4>
           <table id="priceTable" class="table table-bordered">
-              <thead>
-                  <tr style="font-size: 12px;">
-                      <th>Sản phẩm</th>
-                      <th>Khối lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
-                  </tr>
-              </thead>
-              <tbody style="font-size: 12px;"></tbody>
-              <tfoot>
-                  <tr>
-                      <th colspan="3" style="text-align:right;">Tổng cộng</th>
-                      <th id="totalAmount">0 đ</th>
-                  </tr>
-              </tfoot>
+            <thead>
+              <tr style="font-size: 12px;">
+                <th>Sản phẩm</th>
+                <th>Khối lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody style="font-size: 12px;"></tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3" style="text-align:right;">Tổng cộng</th>
+                <th id="totalAmount">0 đ</th>
+              </tr>
+            </tfoot>
           </table>
+          <div class="text-center">
+            <button id="success3" class="btn btn-success btn-lg success w-100">Hoàn tất tạo đơn</button>
+          </div>
         </div>
         <div class="step-content d-none" data-step="3">
           <h4>Thanh toán</h4>
           <p class="mb-3"></p>
-          
+
           <!-- Tổng tiền -->
           <h5 class="text-center mb-4">
             Tổng tiền: <span id="total-price" class="text-danger fw-bold">0 VND</span>
@@ -460,7 +696,7 @@
             <button id="create-bill" class="btn btn-success btn-lg">Tạo bill thanh toán</button>
           </div>
           <div class="text-center">
-            <button id="success" class="btn btn-success btn-lg">Hoàn tất thanh toán</button>
+            <button class="btn btn-success btn-lg success">Hoàn tất thanh toán</button>
           </div>
         </div>
       </div>
@@ -474,7 +710,7 @@
       </div>
     </div>
   </div>
-  <div id="bill-view" class="d-none" >
+  <div id="bill-view" class="d-none">
     <div class="d-flex align-items-center p-2 border-bottom bg-white">
       <button class="btnBackCreate btn btn-link p-0 me-2">
         <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
@@ -482,71 +718,73 @@
       <h5 class="mb-0">Bill đơn giặt</h5>
     </div>
     <!-- Header -->
-    <div id="bodyBill" style="max-width: 360px; margin:auto; border:1px solid #ccc; padding:10px; font-family:Arial; margin-top: 20px; margin-bottom: 20px;">
+    <div id="bodyBill"
+      style="max-width: 360px; margin:auto; border:1px solid #ccc; padding:10px; font-family:Arial; margin-top: 20px; margin-bottom: 20px;">
 
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ccc; padding:5px 0;">
+      <div
+        style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ccc; padding:5px 0;">
         <strong>Phiếu giao nhận</strong>
       </div>
-  
-    <!-- Thông tin cửa hàng -->
-    <div style="text-align:center; margin-top:10px;">
-      <h3>Cửa hàng giặt - sấy</h3>
-      <p>Hà Đông - Hà Nội</p>
-      <p>0123.123.123</p>
-    </div>
-  
-    <!-- Thông tin khách -->
-    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-      <tr>
-        <td><b>Tên khách hàng:</b></td>
-        <td id="bill-customerName"></td>
-      </tr>
-      <tr>
-        <td><b>Số điện thoại:</b></td>
-        <td id="bill-phone"></td>
-      </tr>
-      <tr>
-        <td><b>Ngày:</b></td>
-        <td id="bill-date"></td>
-      </tr>
-      <tr>
-        <td><b>Giờ:</b></td>
-        <td id="bill-time"></td>
-      </tr>
-      <tr>
-        <td><b>Trọng lượng:</b></td>
-        <td id="bill-weight"></td>
-      </tr>
-    </table>
-  
-    <!-- Bảng item -->
-    <table border="1" style="width:100%; border-collapse:collapse; margin-top:10px; text-align:center;">
-      <thead>
-        <tr style="font-size: 12px;">
-          <th>Dịch vụ</th>
-          <th>Số lượng</th>
-          <th>Khối lượng</th>
-          <th>Thành tiền</th>
+
+      <!-- Thông tin cửa hàng -->
+      <div style="text-align:center; margin-top:10px;">
+        <h3>Cửa hàng giặt - sấy</h3>
+        <p>Hà Đông - Hà Nội</p>
+        <p>0123.123.123</p>
+      </div>
+
+      <!-- Thông tin khách -->
+      <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+        <tr>
+          <td><b>Tên khách hàng:</b></td>
+          <td id="bill-customerName"></td>
         </tr>
-      </thead>
-      <tbody id="bill-items" style="font-size: 12px;"></tbody>
-    </table>
-  
-    <!-- Tổng tiền -->
-     <div class="d-flex justify-content-between">
-      <div style="width: 40%; padding: 10px; text-align: center;">
-        <div id="qrcodeZalo" style="display: flex; justify-content: center;"></div>
-        <div style="font-size: 12px;">
+        <tr>
+          <td><b>Số điện thoại:</b></td>
+          <td id="bill-phone"></td>
+        </tr>
+        <tr>
+          <td><b>Ngày:</b></td>
+          <td id="bill-date"></td>
+        </tr>
+        <tr>
+          <td><b>Giờ:</b></td>
+          <td id="bill-time"></td>
+        </tr>
+        <tr>
+          <td><b>Trọng lượng:</b></td>
+          <td id="bill-weight"></td>
+        </tr>
+      </table>
+
+      <!-- Bảng item -->
+      <table border="1" style="width:100%; border-collapse:collapse; margin-top:10px; text-align:center;">
+        <thead>
+          <tr style="font-size: 12px;">
+            <th>Dịch vụ</th>
+            <th>Số lượng</th>
+            <th>Khối lượng</th>
+            <th>Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody id="bill-items" style="font-size: 12px;"></tbody>
+      </table>
+
+      <!-- Tổng tiền -->
+      <div class="d-flex justify-content-between">
+        <div style="width: 40%; padding: 10px; text-align: center;">
+          <div id="qrcodeZalo" style="display: flex; justify-content: center;"></div>
+          <div style="font-size: 12px;">
             <i>(Truy cập app giặt là thông qua QR)</i>
+          </div>
         </div>
-    </div>
-        
+
         <h3 style="width: 60%; text-align:right; margin-top:10px;">Tổng: <span id="bill-total"></span> đ</h3>
-     </div>
-    
-  </div>
-    
-  
+      </div>
+
+    </div>
+
+
     <!-- Footer -->
     <div class="footer-nav d-flex justify-content-between gap-2 p-2 border-top bg-white">
       <div></div>
@@ -584,25 +822,95 @@
       </button>
       <h5 class="mb-0">Theo dõi giao hàng</h5>
     </div>
-      <!-- Tabs -->
-      <ul class="nav nav-tabs scroll-tabs flex-nowrap" id="tabMenu">
-        <li class="nav-item d-none"><a class="nav-link " data-bs-toggle="tab" data-index="0">Tất cả</a></li>
-        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-index="1">Đã nhận đơn</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="2">Hoàn thành giặt</a></li>
-        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="3">Hoàn thành giao hàng</a></li>
-        <li class="nav-item d-none"><a class="nav-link" data-bs-toggle="tab" data-index="4">Hoàn tất</a></li>
-      </ul>
-    
-      <!-- Nội dung (Swiper để vuốt ngang) -->
-      <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide" id="listShipAll"></div>
-          <div class="swiper-slide" id="listNew">Nội dung: Chờ vận chuyển</div>
-          <div class="swiper-slide" id="listShipping">Nội dung: Đang vận chuyển</div>
-          <div class="swiper-slide" id="listIsDone">Nội dung: Cần đánh giá</div>
-          <div class="swiper-slide" id="listDone">Nội dung: Hoàn tất</div>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs scroll-tabs flex-nowrap" id="tabMenu">
+      <li class="nav-item d-none"><a class="nav-link " data-bs-toggle="tab" data-index="0">Tất cả</a></li>
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" data-index="1">Đã nhận đơn</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="2">Hoàn thành giặt</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" data-index="3">Hoàn thành giao hàng</a></li>
+      <li class="nav-item d-none"><a class="nav-link" data-bs-toggle="tab" data-index="4">Hoàn tất</a></li>
+    </ul>
+
+    <!-- Nội dung (Swiper để vuốt ngang) -->
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" id="listShipAll"></div>
+        <div class="swiper-slide" id="listNew">Nội dung: Chờ vận chuyển</div>
+        <div class="swiper-slide" id="listShipping">Nội dung: Đang vận chuyển</div>
+        <div class="swiper-slide" id="listIsDone">Nội dung: Cần đánh giá</div>
+        <div class="swiper-slide" id="listDone">Nội dung: Hoàn tất</div>
+      </div>
+    </div>
+  </div>
+  <div id="CaLV" class="d-none d-flex flex-column container py-3 pt-0" style="height: 100vh;">
+    <div class="d-flex align-items-center p-2 border-bottom bg-white">
+      <button class="btnBackHome btn btn-link p-0 me-2">
+        <i class="bi bi-arrow-left" style="font-size: 1.5rem;"></i>
+      </button>
+      <h5 class="mb-0">Bàn giao ca làm việc</h5>
+    </div>
+    <!-- Thông tin nhân viên -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <p class="mb-1"><strong>Nhân viên bàn giao:</strong><br>Nguyễn Văn A</p>
+        <p class="mb-0"><strong>Nhân viên nhận bàn giao:</strong><br>Trần Thị B</p>
+      </div>
+    </div>
+  
+    <!-- Các thống kê -->
+    <div class="row g-2">
+  
+      <div class="col-6">
+        <div class="card text-center shadow-sm stat-card" data-type="ALL">
+          <div class="card-body py-3">
+            <small class="text-muted">Đơn nhận</small>
+            <h5 class="fw-bold text-primary mb-0">25</h5>
+          </div>
         </div>
       </div>
+  
+      <div class="col-6">
+        <div class="card text-center shadow-sm stat-card" data-type="DONE">
+          <div class="card-body py-3">
+            <small class="text-muted">Đã giặt</small>
+            <h5 class="fw-bold text-success mb-0">18</h5>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-6">
+        <div class="card text-center shadow-sm stat-card" data-type="ISDONE">
+          <div class="card-body py-3">
+            <small class="text-muted">Hoàn thành giao</small>
+            <h5 class="fw-bold text-success mb-0">15</h5>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-6">
+        <div class="card text-center shadow-sm stat-card" data-type="NEW">
+          <div class="card-body py-3">
+            <small class="text-muted">Chưa giặt</small>
+            <h5 class="fw-bold text-danger mb-0">7</h5>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-12">
+        <div class="card text-center shadow-sm bg-light border-primary">
+          <div class="card-body py-3">
+            <small class="text-muted">Tổng tiền thu</small>
+            <h4 class="fw-bold text-primary mb-0">12,500,000 đ</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-outline-secondary btn-sm">Quay lại</button>
+        <button class="btn btn-primary btn-sm">Xác nhận giao ca</button>
+      </div>
+
+    </div>
   </div>
   <!-- Modal -->
   <div class="modal fade" id="reviewModal" tabindex="-1">
@@ -613,7 +921,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          
+
           <!-- Rating Stars -->
           <div class="text-center mb-2">
             <span class="star fs-3 text-secondary" data-value="1">★</span>
@@ -623,28 +931,28 @@
             <span class="star fs-3 text-secondary" data-value="5">★</span>
             <div id="ratingText" class="mt-1 text-muted">Chọn đánh giá</div>
           </div>
-  
+
           <!-- Tags -->
           <!-- <div class="mb-3">
             <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Đặc điểm</button>
             <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Chất liệu</button>
             <button class="btn btn-outline-secondary btn-sm me-1 tag-btn">Kích cỡ</button>
           </div> -->
-  
+
           <!-- Textarea -->
           <div class="mb-2">
-            <textarea id="reviewText" class="form-control bg-light text-dark" 
-              rows="3" maxlength="300" placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
+            <textarea id="reviewText" class="form-control bg-light text-dark" rows="3" maxlength="300"
+              placeholder="Chia sẻ suy nghĩ của bạn..."></textarea>
             <div class="text-end small mt-1 text-muted"><span id="charCount">0</span>/300</div>
           </div>
-  
+
           <!-- Upload -->
           <div class="mb-3 text-center p-3 border rounded bg-light" id="uploadBox" style="cursor:pointer;">
             <i class="bi bi-camera fs-2 text-secondary"></i><br>
             <span class="text-secondary">Thêm ảnh hoặc video</span>
             <input type="file" id="uploadFile" class="d-none" multiple>
           </div>
-  
+
           <!-- Anonymous -->
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="anonymousCheck">
@@ -656,103 +964,144 @@
         </div>
       </div>
     </div>
-  </div>  
+  </div>
+
+  <div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="modalTitle">Chi tiết</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="orderLists">
+            <!-- Card đơn hàng sẽ render ở đây -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-<script>
-  const steps = document.querySelectorAll(".step");
-  const labels = document.querySelectorAll(".label");
-  const lineFill = document.getElementById("lineFill");
-  const contents = document.querySelectorAll(".step-content");
-  const btnNext = document.getElementById("btnNext");
-  const btnBack = document.getElementById("btnBack");
-  let currentStep = 0;
-  var itemObj = {};
-  var orders = JSON.parse(localStorage.getItem("ListAll")) || [];
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script>
+    const steps = document.querySelectorAll(".step");
+    const labels = document.querySelectorAll(".label");
+    const lineFill = document.getElementById("lineFill");
+    const contents = document.querySelectorAll(".step-content");
+    const btnNext = document.getElementById("btnNext");
+    const btnBack = document.getElementById("btnBack");
+    let currentStep = 0;
+    var itemObj = {};
+    var orders = JSON.parse(localStorage.getItem("ListAll")) || [];
 
-  // Đơn giá mẫu (bạn có thể thay đổi theo thực tế)
-  const priceList = {
-    "Quần áo (Cái)": 25000, // đơn giá mỗi kg
-    "Chăn (Cái)": 50000,
-    "Khăn (Cái)": 10000,
-    "Giày (Đôi)": 50000
-  };
+    // Đơn giá mẫu (bạn có thể thay đổi theo thực tế)
+    const priceList = {
+      "Quần áo (Cái)": 25000, // đơn giá mỗi kg
+      "Chăn (Cái)": 50000,
+      "Khăn (Cái)": 10000,
+      "Giày (Đôi)": 50000
+    };
 
-  function updateSteps() {
-    steps.forEach((step, i) => {
-      const circle = step.querySelector(".circle");
-      const label = step.querySelector(".label");
-
-      if (i < currentStep) {
-        step.classList.add("done");
-        step.classList.remove("active");
-        circle.innerHTML = '<i class="bi bi-check-lg"></i>';
-        label.classList.remove("inactive");
-      } else if (i === currentStep) {
-        step.classList.add("active");
-        step.classList.remove("done");
-        circle.textContent = i + 1;
-        label.classList.remove("inactive");
+    async function updateSteps() {
+      const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+      if(login.length != 0){
+        $(".userName").text(login.name);
+        $("#Logout").removeClass('d-none');
+        $("#btnLogin").addClass('d-none');
+        $('#step4').addClass('d-none');
+        $('#check').addClass('d-none');
       } else {
-        step.classList.remove("active", "done");
-        circle.textContent = i + 1;
-        label.classList.add("inactive");
+        $('#shipMenu').addClass('d-none');
+        $('#ca').addClass('d-none');
+        $('#check').removeClass('d-none');
+      }
+      
+      steps.forEach((step, i) => {
+        const circle = step.querySelector(".circle");
+        const label = step.querySelector(".label");
+
+        if (i < currentStep) {
+          step.classList.add("done");
+          step.classList.remove("active");
+          circle.innerHTML = '<i class="bi bi-check-lg"></i>';
+          label.classList.remove("inactive");
+        } else if (i === currentStep) {
+          step.classList.add("active");
+          step.classList.remove("done");
+          circle.textContent = i + 1;
+          label.classList.remove("inactive");
+        } else {
+          step.classList.remove("active", "done");
+          circle.textContent = i + 1;
+          label.classList.add("inactive");
+        }
+      });
+
+      const percent = (currentStep / (steps.length - 1)) * 100;
+      lineFill.style.width = percent + "%";
+
+      contents.forEach((c, idx) => {
+        c.classList.toggle("d-none", idx !== currentStep);
+      });
+
+      btnBack.disabled = currentStep === 0;
+      btnNext.disabled = currentStep === steps.length - 1;
+
+      // Khi đến bước đơn giá -> render bảng đơn giá
+      if (currentStep === 2) {
+        renderPriceTable();
+      }
+    }
+
+    btnNext.addEventListener("click", () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+        if(currentStep == 2 && login.length != 0){
+          console.log(1);
+          $("#success3").removeClass('d-none');
+          setTimeout(() => {
+            $("#btnNext").prop("disabled", true);
+          }, 500);
+        } else {
+          $("#success3").addClass('d-none');
+        }
+        updateSteps();
       }
     });
 
-    const percent = (currentStep / (steps.length - 1)) * 100;
-    lineFill.style.width = percent + "%";
-
-    contents.forEach((c, idx) => {
-      c.classList.toggle("d-none", idx !== currentStep);
+    btnBack.addEventListener("click", () => {
+      if (currentStep > 0) {
+        document.getElementById("btnNext").disabled = true;
+        currentStep--;
+        updateSteps();
+      }
     });
 
-    btnBack.disabled = currentStep === 0;
-    btnNext.disabled = currentStep === steps.length - 1;
+    // Bước 2: Cân và phân loại
+    const itemType = document.getElementById("itemType");
+    const itemQty = document.getElementById("itemQty");
+    const itemWeight = document.getElementById("itemWeight");
+    const addItemBtn = document.getElementById("addItem");
+    const itemTableBody = document.querySelector("#itemTable tbody");
 
-    // Khi đến bước đơn giá -> render bảng đơn giá
-    if (currentStep === 2) {
-      renderPriceTable();
-    }
-  }
+    addItemBtn.addEventListener("click", () => {
+      const type = itemType.value.trim();
+      const qty = parseInt(itemQty.value);
+      const weight = parseFloat(itemWeight.value);
 
-  btnNext.addEventListener("click", () => {
-    if (currentStep < steps.length - 1) {
-      currentStep++;
-      updateSteps();
-    }
-  });
+      if (!type || qty <= 0 || weight <= 0) {
+        alert("Vui lòng nhập đầy đủ và hợp lệ");
+        return;
+      }
 
-  btnBack.addEventListener("click", () => {
-    if (currentStep > 0) {
-      currentStep--;
-      updateSteps();
-    }
-  });
-
-  // Bước 2: Cân và phân loại
-  const itemType = document.getElementById("itemType");
-  const itemQty = document.getElementById("itemQty");
-  const itemWeight = document.getElementById("itemWeight");
-  const addItemBtn = document.getElementById("addItem");
-  const itemTableBody = document.querySelector("#itemTable tbody");
-
-  addItemBtn.addEventListener("click", () => {
-    const type = itemType.value.trim();
-    const qty = parseInt(itemQty.value);
-    const weight = parseFloat(itemWeight.value);
-
-    if (!type || qty <= 0 || weight <= 0) {
-      alert("Vui lòng nhập đầy đủ và hợp lệ");
-      return;
-    }
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
+      const row = document.createElement("tr");
+      row.innerHTML = `
       <td>${type}</td>
       <td>${qty}</td>
       <td>${weight.toFixed(1)}</td>
@@ -760,150 +1109,154 @@
         <button class="btn btn-sm btn-outline-danger delete-item"><i class="bi bi-trash"></i></button>
       </td>
     `;
-    itemTableBody.appendChild(row);
+      itemTableBody.appendChild(row);
 
-    // Reset input
-    itemQty.value = 1;
-    itemWeight.value = 0.5;
-  });
+      // Reset input
+      itemQty.value = 1;
+      itemWeight.value = 0.5;
+    });
 
-  // Xóa hàng
-  itemTableBody.addEventListener("click", (e) => {
-    if (e.target.closest(".delete-item")) {
-      e.target.closest("tr").remove();
-    }
-  });
+    // Xóa hàng
+    itemTableBody.addEventListener("click", (e) => {
+      if (e.target.closest(".delete-item")) {
+        e.target.closest("tr").remove();
+      }
+    });
 
-  // Render bảng đơn giá
-  function renderPriceTable() {
-    const priceTableBody = document.querySelector("#priceTable tbody");
-    const totalAmountEl = document.getElementById("totalAmount");
+    // Render bảng đơn giá
+    function renderPriceTable() {
+      const priceTableBody = document.querySelector("#priceTable tbody");
+      const totalAmountEl = document.getElementById("totalAmount");
 
-    priceTableBody.innerHTML = "";
-    let total = 0;
+      priceTableBody.innerHTML = "";
+      let total = 0;
 
-    document.querySelectorAll("#itemTable tbody tr").forEach(row => {
-      const type = row.cells[0].textContent;
-      const qty = parseInt(row.cells[1].textContent);
-      const weight = parseFloat(row.cells[2].textContent);
+      document.querySelectorAll("#itemTable tbody tr").forEach(row => {
+        const type = row.cells[0].textContent;
+        const qty = parseInt(row.cells[1].textContent);
+        const weight = parseFloat(row.cells[2].textContent);
 
-      const unitPrice = priceList[type] || 0;
-      const amount = unitPrice * weight; // tính theo kg
+        const unitPrice = priceList[type] || 0;
+        const amount = unitPrice * weight; // tính theo kg
 
-      total += amount;
+        total += amount;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
         <td>${type}</td>
         <td>${weight.toFixed(1)} kg</td>
         <td>${unitPrice.toLocaleString()} đ/kg</td>
         <td>${amount.toLocaleString()} đ</td>
       `;
-      priceTableBody.appendChild(tr);
+        priceTableBody.appendChild(tr);
+      });
+
+      totalAmountEl.textContent = total.toLocaleString() + " đ";
+      renderPaymentStep(total);
+      const orderData = createOrderObject(total);
+      itemObj = orderData;
+      console.log(orderData);
+    }
+
+    function renderPaymentStep(totalPriceValue) {
+      document.getElementById("total-price").textContent =
+        totalPriceValue.toLocaleString() + " VND";
+
+      // Xóa QR cũ (nếu có)
+      document.getElementById("qrcode").innerHTML = "";
+
+      // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
+      new QRCode(document.getElementById("qrcode"), {
+        text: "https://thanhtoan.example.com/?amount=" + totalPriceValue,
+        width: 200,
+        height: 200
+      });
+    }
+
+    var swiper = new Swiper(".mySwiper", {
+      spaceBetween: 0,
+      on: {
+        slideChange: function () {
+          let index = this.activeIndex;
+          $("#tabMenu .nav-link").removeClass("active");
+          $('#tabMenu .nav-link[data-index="' + index + '"]').addClass("active");
+          scrollTabToCenter($('#tabMenu .nav-link[data-index="' + index + '"]'));
+        }
+      }
     });
 
-    totalAmountEl.textContent = total.toLocaleString() + " đ";
-    renderPaymentStep(total);
-    const orderData = createOrderObject(total);
-    itemObj = orderData;
-    console.log(orderData);
-  }
-
-  function renderPaymentStep(totalPriceValue) {
-    document.getElementById("total-price").textContent =
-    totalPriceValue.toLocaleString() + " VND";
-
-    // Xóa QR cũ (nếu có)
-    document.getElementById("qrcode").innerHTML = "";
-
-    // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
-    new QRCode(document.getElementById("qrcode"), {
-      text: "https://thanhtoan.example.com/?amount=" + totalPriceValue,
-      width: 200,
-      height: 200
+    // Click tab -> chuyển slide
+    $("#tabMenu .nav-link").on("click", function () {
+      let index = $(this).data("index");
+      swiper.slideTo(index);
     });
-  }
 
-  var swiper = new Swiper(".mySwiper", {
-    spaceBetween: 0,
-    on: {
-      slideChange: function () {
-        let index = this.activeIndex;
-        $("#tabMenu .nav-link").removeClass("active");
-        $('#tabMenu .nav-link[data-index="'+index+'"]').addClass("active");
-        scrollTabToCenter($('#tabMenu .nav-link[data-index="'+index+'"]'));
+    // Auto scroll tab vào giữa
+    function scrollTabToCenter($item) {
+      let $container = $("#tabMenu");
+      let containerWidth = $container.width();
+      let itemPos = $item.position().left + $container.scrollLeft();
+      let itemWidth = $item.outerWidth();
+      let scrollPos = itemPos - (containerWidth / 2) + (itemWidth / 2);
+      $container.animate({ scrollLeft: scrollPos }, 300);
+    }
+
+    function openApp(appName) {
+      if (appName === 'giat') {
+        document.getElementById("create").classList.remove("d-none");
+        document.getElementById("all").classList.add("d-none");
+      } else if (appName === 'check') {
+        createListOrder();
+        document.getElementById("list").classList.remove("d-none");
+        document.getElementById("all").classList.add("d-none");
+      } else if (appName === 'ship') {
+        renderListOrder();
+        document.getElementById("ship").classList.remove("d-none");
+        document.getElementById("all").classList.add("d-none");
+      } else if (appName === 'ca') {
+        renderListOrder();
+        document.getElementById("CaLV").classList.remove("d-none");
+        document.getElementById("all").classList.add("d-none");
+      } else {
+        alert('Mở ứng dụng: ' + appName);
       }
     }
-  });
 
-  // Click tab -> chuyển slide
-  $("#tabMenu .nav-link").on("click", function () {
-    let index = $(this).data("index");
-    swiper.slideTo(index);
-  });
-
-  // Auto scroll tab vào giữa
-  function scrollTabToCenter($item) {
-    let $container = $("#tabMenu");
-    let containerWidth = $container.width();
-    let itemPos = $item.position().left + $container.scrollLeft();
-    let itemWidth = $item.outerWidth();
-    let scrollPos = itemPos - (containerWidth / 2) + (itemWidth / 2);
-    $container.animate({ scrollLeft: scrollPos }, 300);
-  }
-
-  function openApp(appName) {
-    if(appName === 'giat') {
-
+    $(".btnBackHome").click(() => {
+      document.getElementById("list").classList.add("d-none");
+      document.getElementById("create").classList.add("d-none");
+      document.getElementById("ship").classList.add("d-none");
+      document.getElementById("CaLV").classList.add("d-none");
+      document.getElementById("all").classList.remove("d-none");
+    })
+    $(".btnBacklist").click(() => {
+      document.getElementById("orderList").classList.remove("d-none");
+      document.getElementById("orderDetail").classList.add("d-none");
+    })
+    $(".btnBackCreate").click(() => {
+      document.getElementById("bill-view").classList.add("d-none");
       document.getElementById("create").classList.remove("d-none");
-      document.getElementById("all").classList.add("d-none");
-    } else if(appName === 'check'){
-      createListOrder();
-      document.getElementById("list").classList.remove("d-none");
-      document.getElementById("all").classList.add("d-none");
-    } else if(appName === 'ship'){
-      renderListOrder();
-      document.getElementById("ship").classList.remove("d-none");
-      document.getElementById("all").classList.add("d-none");
-    } else {
-      alert('Mở ứng dụng: ' + appName);
-    }
-  }
+    })
+    $(".success").click(() => {
+      let ListAll = JSON.parse(localStorage.getItem("ListAll")) || [];
+      ListAll.push(itemObj);
+      orders = ListAll;
+      localStorage.setItem("ListAll", JSON.stringify(ListAll));
 
-  $(".btnBackHome").click(() => {
-    document.getElementById("list").classList.add("d-none");
-    document.getElementById("create").classList.add("d-none");
-    document.getElementById("ship").classList.add("d-none");
-    document.getElementById("all").classList.remove("d-none");
-  })
-  $(".btnBacklist").click(() => {
-    document.getElementById("orderList").classList.remove("d-none");
-    document.getElementById("orderDetail").classList.add("d-none");
-  })
-  $(".btnBackCreate").click(() => {
-    document.getElementById("bill-view").classList.add("d-none");
-    document.getElementById("create").classList.remove("d-none");
-  })
-  $("#success").click(() => {
-    let ListAll = JSON.parse(localStorage.getItem("ListAll")) || [];
-    ListAll.push(itemObj);
-    orders = ListAll;
-    localStorage.setItem("ListAll", JSON.stringify(ListAll));
+      document.getElementById("create").classList.add("d-none");
+      document.getElementById("all").classList.remove("d-none");
+      toastr.success("Tạo đơn giặt thành công.");
+    })
 
-    document.getElementById("create").classList.add("d-none");
-    document.getElementById("all").classList.remove("d-none");
-    toastr.success("Tạo đơn giặt thành công.");
-  })
+    $("#create-bill").click(() => {
+      document.getElementById("create").classList.add("d-none");
+      document.getElementById("bill-view").classList.remove("d-none");
+      showBill()
+    })
 
-  $("#create-bill").click(() => {
-    document.getElementById("create").classList.add("d-none");
-    document.getElementById("bill-view").classList.remove("d-none");
-    showBill()
-  })
-
-  function createOrderObject(total) {
-    // Lấy thông tin từ form
-    const order = {
+    function createOrderObject(total) {
+      // Lấy thông tin từ form
+      const order = {
         customerName: document.querySelector('input[placeholder="Nhập tên khách hàng"]').value.trim(),
         address: document.querySelector('input[placeholder="Nhập địa chỉ"]').value.trim(),
         phone: document.querySelector('input[placeholder="Nhập số điện thoại"]').value.trim(),
@@ -916,10 +1269,10 @@
         items: [],
         status: 'NEW',
         createdAt: new Date().toLocaleString()
-    };
+      };
 
-    // Lấy danh sách sản phẩm từ bảng #itemTable
-    document.querySelectorAll("#itemTable tbody tr").forEach(row => {
+      // Lấy danh sách sản phẩm từ bảng #itemTable
+      document.querySelectorAll("#itemTable tbody tr").forEach(row => {
         const type = row.cells[0].textContent;
         const qty = parseInt(row.cells[1].textContent);
         const weight = parseFloat(row.cells[2].textContent);
@@ -928,38 +1281,38 @@
         const amount = unitPrice * weight; // tính theo kg
 
         order.items.push({
-            type,
-            qty,
-            weight,
-            amount
+          type,
+          qty,
+          weight,
+          amount
         });
-    });
+      });
 
-    return order;
-  }
+      return order;
+    }
 
-  function createListOrder() {
-    let listAllContainer = document.getElementById("listAll");
-    listAllContainer.innerHTML = "";
+    function createListOrder() {
+      let listAllContainer = document.getElementById("listAll");
+      listAllContainer.innerHTML = "";
 
-    // Hiển thị rút gọn
-    orders
-  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-  .forEach((order, index) => {
-    // Lấy 3-4 số cuối điện thoại
-    const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
+      // Hiển thị rút gọn
+      orders
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .forEach((order, index) => {
+          // Lấy 3-4 số cuối điện thoại
+          const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
 
-    // Format thời gian (cắt ngắn gọn)
-    const timeString = order.createdAt
-      ? new Date(order.createdAt).toLocaleString("vi-VN")
-      : "Chưa có thời gian";
+          // Format thời gian (cắt ngắn gọn)
+          const timeString = order.createdAt
+            ? new Date(order.createdAt).toLocaleString("vi-VN")
+            : "Chưa có thời gian";
 
-    const textButton = order.status == 'ISDONE' ? `<button class="btn btn-sm review-btn" 
+          const textButton = order.status == 'ISDONE' ? `<button class="btn btn-sm review-btn" 
     style="background-color: #f54646; color: white; width: 120px; padding-top: 5px;">
                 Cân lại
               </button>` : ''
 
-    let orderHTML = `
+          let orderHTML = `
       <div class="card mb-2 order-item" data-index="${index}">
         <div class="card-body d-flex justify-content-between align-items-center">
           <div>
@@ -979,11 +1332,11 @@
         </div>
       </div>
     `;
-    listAllContainer.innerHTML += orderHTML;
-  });
+          listAllContainer.innerHTML += orderHTML;
+        });
 
-    document.querySelectorAll(".order-item").forEach(el => {
-      el.addEventListener("click", function(){
+      document.querySelectorAll(".order-item").forEach(el => {
+        el.addEventListener("click", function () {
           let index = this.getAttribute("data-index");
           let o = orders[index];
 
@@ -1030,45 +1383,46 @@
   </div>
 `;
 
+        });
       });
-  });
 
-  // Nút quay lại
-  document.getElementById("btnBack").addEventListener("click", function(){
-      document.getElementById("orderDetail").classList.add("d-none");
-      document.getElementById("orderList").classList.remove("d-none");
-  });
-  }
+      // Nút quay lại
+      document.getElementById("btnBack").addEventListener("click", function () {
+        document.getElementById("orderDetail").classList.add("d-none");
+        document.getElementById("orderList").classList.remove("d-none");
+      });
+    }
 
-  function renderListOrder() {
-    let containers = {
-      all: document.getElementById("listShipAll"),
-      new: document.getElementById("listNew"),
-      inprogress: document.getElementById("listShipping"),
-      done: document.getElementById("listDone"),
-      isDone: document.getElementById("listIsDone")
-    };
+    function renderListOrder() {
+      let containers = {
+        all: document.getElementById("listShipAll"),
+        new: document.getElementById("listNew"),
+        inprogress: document.getElementById("listShipping"),
+        done: document.getElementById("listDone"),
+        isDone: document.getElementById("listIsDone")
+      };
 
-    Object.values(containers).forEach(c => c.innerHTML = "");
+      Object.values(containers).forEach(c => c.innerHTML = "");
 
-    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .forEach((order, index) => {
-        let textButton = '';
-        if (order.status === "ISDONE") {
-          textButton = `
+      orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .forEach((order, index) => {
+          const phoneSuffix = order.phone ? order.phone.slice(-4) : "N/A";
+          let textButton = '';
+          if (order.status === "ISDONE") {
+            textButton = `
             <div class="mt-2" style="display: flex; justify-content: end;">
               <button class="btn btn-sm review-btn" data-index="${index}" style="background-color: #f54646; color: white;">
                 Viết đánh giá
               </button>
             </div>
           `;
-        }
-        let baseHTML = `
+          }
+          let baseHTML = `
           <div class="card mb-2 order-item" data-index="${index}">
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <div class="fw-bold">${order.createdAt || "Chưa có thời gian"}</div>
+                  <div class="fw-bold">${order.customerName} - ${phoneSuffix}</div>
                   <small class="text-muted">${order.status}</small>
                 </div>
                 <div class="fw-bold text-primary" style="text-align: end;">
@@ -1078,86 +1432,86 @@
               </div>
         `;
 
-        
 
-        baseHTML += `</div></div>`;
 
-        containers.all.innerHTML += baseHTML;
-        if (order.status === "NEW") containers.new.innerHTML += baseHTML;
-        if (order.status === "INPROGRESS") containers.inprogress.innerHTML += baseHTML;
-        if (order.status === "ISDONE") containers.isDone.innerHTML += baseHTML;
-      });
+          baseHTML += `</div></div>`;
 
-    // Gán sự kiện mở modal cho nút "Đánh giá"
-    document.querySelectorAll(".review-btn").forEach(btn => {
-      btn.addEventListener("click", function () {
-        let orderIndex = this.getAttribute("data-index");
-
-        // reset modal trước
-        document.querySelectorAll("#reviewModal .star").forEach(s => s.classList.remove("active"));
-        document.getElementById("ratingText").innerText = "Chọn đánh giá";
-        document.getElementById("reviewText").value = "";
-        document.getElementById("charCount").innerText = "0";
-        document.querySelectorAll(".tag-btn").forEach(t => t.classList.remove("active"));
-        document.getElementById("anonymousCheck").checked = false;
-        document.getElementById("uploadFile").value = "";
-
-        // mở modal
-        let modal = new bootstrap.Modal(document.getElementById('reviewModal'));
-        modal.show();
-
-        // click sao trong modal
-        document.querySelectorAll("#reviewModal .star").forEach(star => {
-          star.onclick = function () {
-            let value = parseInt(this.getAttribute("data-value"));
-
-            // reset tất cả sao về xám
-            document.querySelectorAll("#reviewModal .star").forEach(s => {
-              s.classList.remove("text-warning");
-              s.classList.add("text-secondary");
-            });
-
-            // tô vàng từ 1 -> value
-            for (let i = 0; i < value; i++) {
-              document.querySelectorAll("#reviewModal .star")[i].classList.remove("text-secondary");
-              document.querySelectorAll("#reviewModal .star")[i].classList.add("text-warning");
-            }
-
-            // đổi text hiển thị
-            const texts = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Xuất sắc"];
-            document.getElementById("ratingText").innerText = texts[value - 1] || "Chọn đánh giá";
-
-            // lưu rating vào modal
-            document.getElementById("reviewModal").setAttribute("data-rating", value);
-          };
+          containers.all.innerHTML += baseHTML;
+          if (order.status === "NEW") containers.new.innerHTML += baseHTML;
+          if (order.status === "INPROGRESS") containers.inprogress.innerHTML += baseHTML;
+          if (order.status === "ISDONE") containers.isDone.innerHTML += baseHTML;
         });
 
-        // đếm ký tự textarea
-        document.getElementById("reviewText").oninput = function () {
-          document.getElementById("charCount").innerText = this.value.length;
-        };
+      // Gán sự kiện mở modal cho nút "Đánh giá"
+      document.querySelectorAll(".review-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+          let orderIndex = this.getAttribute("data-index");
 
-        // chọn tag
-        document.querySelectorAll(".tag-btn").forEach(tag => {
-          tag.onclick = function () {
-            this.classList.toggle("active");
+          // reset modal trước
+          document.querySelectorAll("#reviewModal .star").forEach(s => s.classList.remove("active"));
+          document.getElementById("ratingText").innerText = "Chọn đánh giá";
+          document.getElementById("reviewText").value = "";
+          document.getElementById("charCount").innerText = "0";
+          document.querySelectorAll(".tag-btn").forEach(t => t.classList.remove("active"));
+          document.getElementById("anonymousCheck").checked = false;
+          document.getElementById("uploadFile").value = "";
+
+          // mở modal
+          let modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+          modal.show();
+
+          // click sao trong modal
+          document.querySelectorAll("#reviewModal .star").forEach(star => {
+            star.onclick = function () {
+              let value = parseInt(this.getAttribute("data-value"));
+
+              // reset tất cả sao về xám
+              document.querySelectorAll("#reviewModal .star").forEach(s => {
+                s.classList.remove("text-warning");
+                s.classList.add("text-secondary");
+              });
+
+              // tô vàng từ 1 -> value
+              for (let i = 0; i < value; i++) {
+                document.querySelectorAll("#reviewModal .star")[i].classList.remove("text-secondary");
+                document.querySelectorAll("#reviewModal .star")[i].classList.add("text-warning");
+              }
+
+              // đổi text hiển thị
+              const texts = ["Rất tệ", "Tệ", "Bình thường", "Tốt", "Xuất sắc"];
+              document.getElementById("ratingText").innerText = texts[value - 1] || "Chọn đánh giá";
+
+              // lưu rating vào modal
+              document.getElementById("reviewModal").setAttribute("data-rating", value);
+            };
+          });
+
+          // đếm ký tự textarea
+          document.getElementById("reviewText").oninput = function () {
+            document.getElementById("charCount").innerText = this.value.length;
           };
-        });
 
-        // click vào upload box
-        document.getElementById("uploadBox").onclick = function () {
-          document.getElementById("uploadFile").click();
-        };
+          // chọn tag
+          document.querySelectorAll(".tag-btn").forEach(tag => {
+            tag.onclick = function () {
+              this.classList.toggle("active");
+            };
+          });
 
-        // submit review
-        document.getElementById("submitReview").onclick = () => {
-          let rating = document.getElementById("reviewModal").getAttribute("data-rating") || 0;
-          let text = document.getElementById("reviewText").value;
-          let tags = Array.from(document.querySelectorAll(".tag-btn.active")).map(t => t.innerText);
-          let anonymous = document.getElementById("anonymousCheck").checked;
-          let files = document.getElementById("uploadFile").files;
+          // click vào upload box
+          document.getElementById("uploadBox").onclick = function () {
+            document.getElementById("uploadFile").click();
+          };
 
-          alert(`
+          // submit review
+          document.getElementById("submitReview").onclick = () => {
+            let rating = document.getElementById("reviewModal").getAttribute("data-rating") || 0;
+            let text = document.getElementById("reviewText").value;
+            let tags = Array.from(document.querySelectorAll(".tag-btn.active")).map(t => t.innerText);
+            let anonymous = document.getElementById("anonymousCheck").checked;
+            let files = document.getElementById("uploadFile").files;
+
+            alert(`
             Đánh giá đơn hàng #${orderIndex}
             Sao: ${rating}
             Nội dung: ${text}
@@ -1166,53 +1520,349 @@
             Số file upload: ${files.length}
           `);
 
-          modal.hide();
-        };
+            modal.hide();
+          };
+        });
       });
-    });
-  }
+    }
 
-  function showBill() {
+    function showBill() {
 
-  // Fill data
-  document.getElementById('bill-customerName').textContent = itemObj.customerName;
-  document.getElementById('bill-phone').textContent = itemObj.phone;
+      // Fill data
+      document.getElementById('bill-customerName').textContent = itemObj.customerName;
+      document.getElementById('bill-phone').textContent = itemObj.phone;
 
-  const date = new Date(itemObj.createdAt);
-  document.getElementById('bill-date').textContent = date.toLocaleDateString('vi-VN');
-  document.getElementById('bill-time').textContent = date.toLocaleTimeString('vi-VN');
+      const date = new Date(itemObj.createdAt);
+      document.getElementById('bill-date').textContent = date.toLocaleDateString('vi-VN');
+      document.getElementById('bill-time').textContent = date.toLocaleTimeString('vi-VN');
 
-  let totalWeight = 0;
-  let html = '';
-  itemObj.items.forEach(i => {
-    totalWeight += i.weight;
-    html += `<tr>
+      let totalWeight = 0;
+      let html = '';
+      itemObj.items.forEach(i => {
+        totalWeight += i.weight;
+        html += `<tr>
       <td>${i.type}</td>
       <td>${i.qty}</td>
       <td>${i.weight}</td>
       <td>${i.amount.toLocaleString()}</td>
     </tr>`;
-  });
-  document.getElementById('bill-weight').textContent = totalWeight + " kg";
-  document.getElementById('bill-items').innerHTML = html;
-  document.getElementById('bill-total').textContent = itemObj.items.reduce((sum, i) => sum + i.amount, 0).toLocaleString();
+      });
+      document.getElementById('bill-weight').textContent = totalWeight + " kg";
+      document.getElementById('bill-items').innerHTML = html;
+      document.getElementById('bill-total').textContent = itemObj.items.reduce((sum, i) => sum + i.amount, 0).toLocaleString();
 
-  document.getElementById("qrcodeZalo").innerHTML = "";
+      document.getElementById("qrcodeZalo").innerHTML = "";
 
-    // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
-  new QRCode(document.getElementById("qrcodeZalo"), {
-    text: "https://zalo.me/s/4560528012046048397/",
-    width: 100,
-    height: 100
-  });
-}
+      // Sinh QR code (giả sử nội dung là link thanh toán Momo hoặc thông tin thanh toán)
+      new QRCode(document.getElementById("qrcodeZalo"), {
+        text: "https://zalo.me/s/4560528012046048397/",
+        width: 100,
+        height: 100
+      });
+    }
 
-  function closeBill() {
-    document.getElementById('billView').style.display = 'none';
-  }
+    function closeBill() {
+      document.getElementById('billView').style.display = 'none';
+    }
 
-  updateSteps();
-</script>
+    var sha1Encode = function (message) {
+      function rotate_left(n, s) {
+        return (n << s) | (n >>> (32 - s));
+      }
+
+      function cvt_hex(val) {
+        let str = "";
+        let i;
+        let v;
+        for (i = 7; i >= 0; i--) {
+          v = (val >>> (i * 4)) & 0x0f;
+          str += v.toString(16);
+        }
+        return str;
+      }
+
+      function utf8_encode(str) {
+        return unescape(encodeURIComponent(str));
+      }
+
+      let blockstart;
+      let i, j;
+      const W = new Array(80);
+      let H0 = 0x67452301;
+      let H1 = 0xEFCDAB89;
+      let H2 = 0x98BADCFE;
+      let H3 = 0x10325476;
+      let H4 = 0xC3D2E1F0;
+      let A, B, C, D, E;
+      let temp;
+
+      message = utf8_encode(message);
+      const msg_len = message.length;
+
+      const word_array = [];
+      for (i = 0; i < msg_len - 3; i += 4) {
+        j = (message.charCodeAt(i) << 24) |
+          (message.charCodeAt(i + 1) << 16) |
+          (message.charCodeAt(i + 2) << 8) |
+          message.charCodeAt(i + 3);
+        word_array.push(j);
+      }
+
+      switch (msg_len % 4) {
+        case 0:
+          i = 0x080000000;
+          break;
+        case 1:
+          i = (message.charCodeAt(msg_len - 1) << 24) | 0x0800000;
+          break;
+        case 2:
+          i = (message.charCodeAt(msg_len - 2) << 24) |
+            (message.charCodeAt(msg_len - 1) << 16) |
+            0x08000;
+          break;
+        case 3:
+          i = (message.charCodeAt(msg_len - 3) << 24) |
+            (message.charCodeAt(msg_len - 2) << 16) |
+            (message.charCodeAt(msg_len - 1) << 8) |
+            0x80;
+          break;
+      }
+
+      word_array.push(i);
+
+      while ((word_array.length % 16) !== 14) word_array.push(0);
+
+      word_array.push(msg_len >>> 29);
+      word_array.push((msg_len << 3) & 0x0ffffffff);
+
+      for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+        for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
+        for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+        A = H0;
+        B = H1;
+        C = H2;
+        D = H3;
+        E = H4;
+
+        for (i = 0; i <= 19; i++) {
+          temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+          E = D;
+          D = C;
+          C = rotate_left(B, 30);
+          B = A;
+          A = temp;
+        }
+
+        for (i = 20; i <= 39; i++) {
+          temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+          E = D;
+          D = C;
+          C = rotate_left(B, 30);
+          B = A;
+          A = temp;
+        }
+
+        for (i = 40; i <= 59; i++) {
+          temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+          E = D;
+          D = C;
+          C = rotate_left(B, 30);
+          B = A;
+          A = temp;
+        }
+
+        for (i = 60; i <= 79; i++) {
+          temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+          E = D;
+          D = C;
+          C = rotate_left(B, 30);
+          B = A;
+          A = temp;
+        }
+
+        H0 = (H0 + A) & 0x0ffffffff;
+        H1 = (H1 + B) & 0x0ffffffff;
+        H2 = (H2 + C) & 0x0ffffffff;
+        H3 = (H3 + D) & 0x0ffffffff;
+        H4 = (H4 + E) & 0x0ffffffff;
+      }
+
+      const sha1hash = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+      return sha1hash.toLowerCase();
+    }
+
+    function checkRoleUser(user_id, password, url, check) {
+      let sessionItems = JSON.parse(localStorage.getItem('dataSession')) || [];
+
+      if (check === "Export") {
+        sessionItems = sessionItems.filter(item => item.url !== url);
+        localStorage.setItem('dataSession', JSON.stringify(sessionItems));
+      }
+      // Tìm session trùng với URL
+      const existingSession = sessionItems.find(item => item.url === url);
+
+      if (existingSession) {
+        // Nếu đã có session → trả về luôn
+        return Promise.resolve([{
+          StateName: user_id,
+          StateId: existingSession.sid // giả sử bạn lưu `sid` ở đây
+        }]);
+      }
+      // Nếu chưa có session, gọi API
+      const d = {
+        Uid: user_id,
+        p: password,
+        ip: '0.0.0.0',
+        a: '6fba9a59-46f1-42e6-baea-b2479fa1eb3b'
+      };
+
+      return new Promise((resolve, reject) => {
+        $.ajax({
+          url: url + "GetSessionId?callback=?",
+          type: "GET",
+          dataType: "jsonp",
+          data: d,
+          contentType: "application/json; charset=utf-8",
+          success: function (msg) {
+            try {
+              const state = JSON.parse(msg);
+              const newSession = {
+                url: url,
+                sid: state[0]?.StateId || '', // lưu sid nếu có
+                name: state[0]?.StateName || user_id
+              };
+              console.log(state);
+              // Cập nhật localStorage
+              sessionItems.push(newSession);
+              localStorage.setItem('dataLogin', JSON.stringify(newSession));
+              // localStorage.setItem('dataSession', JSON.stringify(sessionItems));
+              
+              resolve(state);
+            } catch (error) {
+              reject(error);
+            }
+          },
+          error: function (e, t, x) {
+            reject(e);
+          }
+        });
+      });
+    }
+
+    $("#btnLogin").click(()=>{
+      $("#all").addClass("d-none");
+      $("#login").removeClass("d-none");
+    })
+
+    $("#Logout").click(()=>{
+      $("#all").addClass("d-none");
+      $("#login").removeClass("d-none");
+      localStorage.setItem('dataLogin', JSON.stringify([]));
+      $("#Logout").addClass('d-none');
+      $("#btnLogin").removeClass('d-none');
+    })
+
+    $("#backLogin").click(()=>{
+      $("#all").removeClass("d-none");
+      $("#login").addClass("d-none");
+      const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+      if(login.length == 0){
+        $('#step4').removeClass('d-none');
+        $(".userName").text('Khách');
+        $('#shipMenu').addClass('d-none');
+        $('#ca').addClass('d-none');
+        $('#check').removeClass('d-none');
+      }
+    })
+
+    $("#submitLogin").click(async function(e) {
+      e.preventDefault(); // chặn submit mặc định nếu có
+
+      let username = $("#userName").val().trim();
+      let password = $("#password").val().trim();
+
+      if(username === "" || password === ""){
+        toastr.error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+        return;
+      }
+
+      // Xử lý tiếp, ví dụ gọi API
+      console.log("Tên đăng nhập:", username);
+      console.log("Mật khẩu:", password);
+
+      var url = 'https://central.homeos.vn/service_XD/service.svc';
+
+      var dataUser = await checkRoleUser("NHANVIEN", sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url + '/');
+      if(dataUser){
+        toastr.success("đăng nhập thành công!");
+        $("#backLogin").click()
+        const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+        $(".userName").text(login.name);
+        $("#Logout").removeClass('d-none');
+        $("#btnLogin").addClass('d-none');
+        $('#step4').addClass('d-none');
+        $('#ship').removeClass('d-none');
+        $('#ca').removeClass('d-none');
+        $('#check').addClass('d-none');
+      }
+    });
+
+    $(".stat-card").on("click", function(){
+      let type = $(this).data("type"); // NEW, ISDONE, ALL, DONE
+
+      // map trạng thái sang tiêu đề
+      let statusTextMap = {
+          "NEW": "chưa giặt",
+          "DONE": "đã giặt",
+          "ISDONE": "đã giao",
+          "ALL": "đã nhận"
+      };
+
+      $("#modalTitle").text("Chi tiết đơn " + (statusTextMap[type] || ""));
+      $("#orderLists").empty();
+
+      // lọc theo status
+      let filtered = type === "ALL" ? orders : orders.filter(o => o.status === type);
+
+      filtered.forEach(o => {
+        const phoneSuffix = o.phone ? o.phone.slice(-4) : "N/A";
+        let itemHtml = o.items.map(i => `
+          <li class="list-group-item d-flex justify-content-between">
+            <span>${i.type} x${i.qty} (${i.weight} kg)</span>
+            <span>${Number(i.amount || 0).toLocaleString()} đ</span>
+          </li>
+        `).join("");
+
+        $("#orderLists").append(`
+          <div class="card mb-2 shadow-sm border-0 rounded-3">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div>
+                  <div class="fw-bold">${o.customerName} - ${phoneSuffix}</div>
+                  <small class="text-muted">${o.status}</small>
+                </div>
+                <div class="fw-bold text-primary">${o.totalAmount.toLocaleString()} đ</div>
+              </div>
+              <div><strong>Khách:</strong> ${o.customerName}</div>
+              <div><strong>Địa chỉ:</strong> ${o.address}</div>
+              <div><strong>Điện thoại:</strong> ${o.phone}</div>
+              <hr class="my-2">
+              <ul class="list-group list-group-flush">
+                ${itemHtml}
+              </ul>
+            </div>
+          </div>
+        `);
+      });
+
+      new bootstrap.Modal(document.getElementById('detailModal')).show();
+    });
+
+    updateSteps();
+
+  </script>
 
 </body>
+
 </html>

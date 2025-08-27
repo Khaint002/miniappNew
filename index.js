@@ -12,9 +12,9 @@ HOMEOSAPP.apps = [
     { MENU_ID: "WARRANTY", MENU_NAME: "Bảo hành", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Bảo hành sản phẩm", VISIBLE: true },
     { MENU_ID: "CONTROL", MENU_NAME: "Điều khiển", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Giám sát năng lượng", VISIBLE: true },
     { MENU_ID: "SCHEDULE", MENU_NAME: "Lịch công tác", MENU_VERSION: "v1.0.1", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "https://central.homeos.vn/singlepage/PetrolimexHRM/", DESCRIPTION: "Xem lịch làm việc", VISIBLE: true },
-    { MENU_ID: "WAREHOUSE", MENU_NAME: "Kho Hàng", MENU_VERSION: "v1.0.1", MENU_BGCOLOR: "#42a130", MENU_ICON: "bi-box-seam", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/wareHouse.html", DESCRIPTION: "Quản lý kho", VISIBLE: true },
+    { MENU_ID: "WAREHOUSE", MENU_NAME: "Kho Hàng", MENU_VERSION: "v1.0.1", MENU_BGCOLOR: "#42a130", MENU_ICON: "bi-box-seam", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOADMY", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/wareHouse.html", DESCRIPTION: "Quản lý kho", VISIBLE: true },
     { MENU_ID: "DEN", MENU_NAME: "Đèn", MENU_VERSION: "v6.10.24", MENU_BGCOLOR: "#28a745", MENU_ICON: "bi-lightbulb-fill", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: null, MENU_LINK: null, DESCRIPTION: "Chiếu sáng thông minh", VISIBLE: false }
-]; 
+];
 HOMEOSAPP.objApp = {};
 var checkReport = '';
 let historyStack = ['pickApp'];
