@@ -136,6 +136,10 @@ async function pickApp(type) {
     console.log(app);
     HOMEOSAPP.objApp = app;
     switch (app.MENU_TYPE) {
+        case 'LOADMY':
+            HOMEOSAPP.loadPage(app.MENU_LINK)
+            break;
+
         case 'LOAD':
             HOMEOSAPP.application = type;
             HOMEOSAPP.handleAppView(type, 'IN');
