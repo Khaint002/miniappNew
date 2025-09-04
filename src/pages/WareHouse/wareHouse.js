@@ -21,7 +21,7 @@ function renderApps(apps, containerId) {
         const html = `
         <div class="col-6" style="${paddingStyle} margin-bottom: 10px;">
             <div class="card text-center border-0 p-2 app-card" 
-                 id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}')"
+                 id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')"
                  style="cursor: pointer; border-radius: 0.5rem;">
                 <input type="checkbox" id="checkbox-${app.MENU_ID}" class="d-none"/>
                 <div class="card-body d-flex flex-column align-items-center" style="padding: 1.25rem 0;">
@@ -39,8 +39,52 @@ function renderApps(apps, containerId) {
         visibleIndex++;
     });
 }
-function connectAppWaveHouse(ID) {
-    
+function connectAppWaveHouse(ID, NAME) {
+    // Ẩn màn chọn menu
+    document.getElementById("wareHouse-menu").classList.add("d-none");
+    document.getElementById("wareHouse-detail").classList.remove("d-none");
+
+    // Ẩn tất cả màn chức năng
+    document.querySelectorAll(".app-screen").forEach(div => div.classList.add("d-none"));
+    if(ID == 'CREATELOT'){
+        $('#productSelect').select2({
+            placeholder: "-- Chọn sản phẩm --",
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#CREATELOT') // tránh lỗi z-index khi trong modal
+        });
+    }
+    // Hiện màn đúng ID
+    $("#name-detail").text(NAME);
+    const screen = document.getElementById(ID);
+    if (screen) screen.classList.remove("d-none");
 }
+
+function createLot() {
+    const lotName = document.getElementById("lotName").value.trim();
+    const quantity = parseInt(document.getElementById("lotQuantity").value, 10);
+    const product = document.getElementById("productSelect").value;
+  
+    if (!lotName || !quantity || !product) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+  
+    let resultHTML = `
+      <div class="alert alert-success mt-3">
+        <b>Lô đã tạo thành công!</b><br>
+        Tên lô: ${lotName}<br>
+        Số lượng: ${quantity}<br>
+        Sản phẩm: ${product}
+      </div>
+    `;
+  
+    document.getElementById("lotResult").innerHTML = resultHTML;
+}
+
+$('#backWaveHouse').click(() => {
+    document.getElementById("wareHouse-menu").classList.remove("d-none");
+    document.getElementById("wareHouse-detail").classList.add("d-none");
+})
 
 renderApps(apps_waveHouse, 'wareHouse-list');

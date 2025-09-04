@@ -1,95 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <link rel="stylesheet" href="https://miniapp-new.vercel.app/index.css" />
-    <!-- <link rel="stylesheet" href="index.css"></link> -->
-    <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/animation.css" />
-    <!-- <link rel="stylesheet" href="/src/dist/css/animation.css"></link> -->
-    <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/UserSelection.css" />
-    <!-- <link rel="stylesheet" href="/src/dist/css/UserSelection.css"></link> -->
-    <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/schedule.css" />
-    <!-- <link rel="stylesheet" href="/src/dist/css/schedule.css"></link> -->
-    <!-- <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/warehouse.css" /> -->
-    <link rel="stylesheet" href="/src/dist/css/warehouse.css"></link>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://miniapp-new.vercel.app/index.css" />
+  <!-- <link rel="stylesheet" href="index.css"></link> -->
+  <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/animation.css" />
+  <!-- <link rel="stylesheet" href="/src/dist/css/animation.css"></link> -->
+  <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/UserSelection.css" />
+  <!-- <link rel="stylesheet" href="/src/dist/css/UserSelection.css"></link> -->
+  <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/schedule.css" />
+  <!-- <link rel="stylesheet" href="/src/dist/css/schedule.css"></link> -->
+  <!-- <link rel="stylesheet" href="https://miniapp-new.vercel.app/src/dist/css/warehouse.css" /> -->
+  <link rel="stylesheet" href="/src/dist/css/warehouse.css"></link>
 </head>
+
 <body>
-<div class="container" style="overflow-y: auto; height: 100%; background-color: #282d31; padding: 0;">
-    <div class="history-header">
+  <div class="container" style="overflow-y: auto; height: 100%; background-color: #282d31; padding: 0;">
+    <div id="wareHouse-menu">
+      <div class="history-header">
         <div class="history-avt">
-            <div class="d-flex">
-                <img class="userAvt"
-                    src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
-                    alt="">
-                <p class="userName">Khách</p>
-            </div>
+          <div class="d-flex">
+            <img class="userAvt"
+              src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+              alt="">
+            <p class="userName">Khách</p>
+          </div>
         </div>
         <div id="category-back" class="d-none">
-            <button id="backCategory" style="height: 50px; border: none; background-color: #1E2833;" >
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-                </svg>
-            </button>
+          <button id="backCategory" style="height: 50px; border: none; background-color: #1E2833;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+              style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+            </svg>
+          </button>
         </div>
         <div>
-            <div style="line-height: 50px; float: left;" id="extra_view"></div>
-            <div style="line-height: 50px; float: left;">
-                <button id="PickApp-button-scanQR"
-                    style="height: 40px; border: none; background-color: #1E2833;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                    </svg>
-                </button>
-            </div>
-            <div style="line-height: 50px; float: left;">
-                <button class="menuToggle" style="height: 40px; border: none; background-color: #1E2833;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff;"
-                        fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd"
-                            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-                    </svg>
-                </button>
-            </div>
+          <div style="line-height: 50px; float: left;" id="extra_view"></div>
+          <div style="line-height: 50px; float: left;">
+            <button id="PickApp-button-scanQR" style="height: 40px; border: none; background-color: #1E2833;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff" fill="currentColor"
+                class="bi bi-plus" viewBox="0 0 16 16">
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </svg>
+            </button>
+          </div>
+          <div style="line-height: 50px; float: left;">
+          </div>
         </div>
+      </div>
+      <div id="wareHouse-body">
+        <div id="wareHouse-list" class="row"></div>
+      </div>
     </div>
-    <div id="wareHouse-body">
-      <div id="wareHouse-list" class="row" ></div>
-    </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/Draggable.min.js"></script>
-    <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <div id="wareHouse-detail" class="d-none">
+      <div class="history-header">
+        <div class="history-avt">
+          <div class="d-flex">
+            <button id="backWaveHouse" style="height: 50px; border: none; background-color: #1E2833;">
+              <i class="bi bi-arrow-left" style="color: white; font-size: 25px;"></i>
+            </button>
+            <!-- <i class="bi bi-arrow-left" style="color: white; font-size: 25px;"></i> -->
+            <p id="name-detail">Khách</p>
+          </div>
+        </div>
+        <div id="waveHouse-back" class="d-none">
+          <button id="backWaveHouse" style="height: 50px; border: none; background-color: #1E2833;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+              style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+            </svg>
+          </button>
+        </div>
+        <div>
+          <div style="line-height: 50px; float: left;" id="extra_view"></div>
+          <div style="line-height: 50px; float: left;">
+            <button id="PickApp-button-scanQR" class="d-none" style="height: 40px; border: none; background-color: #1E2833;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff" fill="currentColor"
+                class="bi bi-plus" viewBox="0 0 16 16">
+                <path
+                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </svg>
+            </button>
+          </div>
+          <div style="line-height: 50px; float: left;">
+          </div>
+        </div>
+      </div>
+      <div id="CREATELOT" class="app-screen d-none">
+        <div class="card p-4">
+          <div class="mb-3">
+            <label for="lotName" class="form-label">Tên lô</label>
+            <input type="text" id="lotName" class="form-control" placeholder="Nhập tên lô">
+          </div>
+          <div class="mb-3">
+            <label for="lotQuantity" class="form-label">Số lượng</label>
+            <input type="number" id="lotQuantity" class="form-control" placeholder="Nhập số lượng">
+          </div>
+      
+          <div class="mb-3">
+            <label for="productSelect" class="form-label">Chọn sản phẩm</label>
+            <select id="productSelect" class="form-select" data-placeholder="-- Chọn sản phẩm --">
+              <option></option>
+              <option value="SP001">Sản phẩm 1</option>
+              <option value="SP002">Sản phẩm 2</option>
+              <option value="SP003">Sản phẩm 3</option>
+              <option value="SP004">Sản phẩm 4</option>
+              <option value="SP005">Sản phẩm 5</option>
+            </select>
+          </div>
+      
+          <button class="btn btn-primary w-100" onclick="createLot()">
+            <i class="bi bi-plus-circle"></i> Tạo lô
+          </button>
+      
+          <div id="lotResult" class="mt-4"></div>
+        </div>
+      </div>
 
-    <!-- <script src="https://miniapp-new.vercel.app/index.js"></script> -->
-    <!-- <script src="./index.js"></script> -->
-    <!-- <script src="https://miniapp-new.vercel.app/src/api/ajax.js"></script> -->
-    <!-- <script src="/src/api/ajax.js"></script> -->
-    <!-- <script src="https://miniapp-new.vercel.app/src/pages/WareHouse/wareHouse.js"></script> -->
-    <script src="./src/pages/WareHouse/wareHouse.js"></script>
+      <div id="PRQRCODE" class="app-screen d-none">
+        <h2>In mã QR</h2>
+        <!-- code html riêng cho PRQRCODE -->
+      </div>
+
+      <div id="IMPORT" class="app-screen d-none">
+        <h2>Nhập kho</h2>
+        <!-- code html riêng cho IMPORT -->
+      </div>
+
+      <div id="EXPORT" class="app-screen d-none">
+        <h2>Xuất kho</h2>
+        <!-- code html riêng cho EXPORT -->
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/Draggable.min.js"></script>
+  <script type="text/javascript" src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> <!-- rồi mới Select2 -->
+  <!-- <script src="https://miniapp-new.vercel.app/index.js"></script> -->
+  <!-- <script src="./index.js"></script> -->
+  <!-- <script src="https://miniapp-new.vercel.app/src/api/ajax.js"></script> -->
+  <!-- <script src="/src/api/ajax.js"></script> -->
+  <!-- <script src="https://miniapp-new.vercel.app/src/pages/WareHouse/wareHouse.js"></script> -->
+  <script src="./src/pages/WareHouse/wareHouse.js"></script>
 </body>
+
 </html>

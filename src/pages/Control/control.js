@@ -61,9 +61,9 @@ async function accessDevice() {
                 HOMEOSAPP.addObj('CID', checkQRcode[3]);
 
                 localStorage.setItem("itemCondition", JSON.stringify(dataQRCondition));
-                document.getElementById("header-conditionName").textContent =
-                    dataQRCondition[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
-
+                document.getElementById("header-conditionName").textContent = dataQRCondition[0].PRODUCT_NAME + "[" + checkQRcode[3] + "]";
+                console.log(dataQRCondition);
+                
                 getWebSocket("homeos.vn:447");
             }
         } else {
@@ -156,29 +156,33 @@ getWebSocket = async function (value) {
         ws.onopen = () => {
             // ws.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
             // ws.send("10eba031-2203-4105-b80b-04b675dfe576");
-            // ws.send(cabinetID);
+            ws.send(cabinetID);
         };
 
         ws.onmessage = (data) => {
-            if(data.data == 'TYPE DEVICE;'){
-                ws.send(cabinetID);
+            const match = data.match(/\[(\d+)\]/);
+            const id = match ? match[1] : null;
+
+            if(id == cabinetID){
+                // ws.send(cabinetID);
+                wss = new WebSocket(`wss://${value}/controller`);
+                wss.onopen = () => {
+                    // wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
+                    //gọi refresh lần đầu tiên khi truy cập
+                    if(isFirstConnectRefresh){
+                        setTimeout(() => {
+                            sendMessage("REFRESH;");
+                            isFirstConnectRefresh = false;
+                        }, 1000);
+                    }
+                };
                 return;
             }
             handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
         }
 
         // --- WebSocket 2 ---
-        wss = new WebSocket(`wss://${value}/controller`);
-        wss.onopen = () => {
-            // wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
-            //gọi refresh lần đầu tiên khi truy cập
-            if(isFirstConnectRefresh){
-                setTimeout(() => {
-                    sendMessage("REFRESH;");
-                    isFirstConnectRefresh = false;
-                }, 1000);
-            }
-        };
+        
         // Final UI updates
         $("#loading-popup").hide();
         saveCondition(JSON.parse(localStorage.getItem("itemCondition")), datacontrol, dataDevice);
