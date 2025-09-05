@@ -160,29 +160,27 @@ getWebSocket = async function (value) {
         };
 
         ws.onmessage = (data) => {
-            const match = data.match(/\[(\d+)\]/);
-            const id = match ? match[1] : null;
-
-            if(id == cabinetID){
-                // ws.send(cabinetID);
-                wss = new WebSocket(`wss://${value}/controller`);
-                wss.onopen = () => {
-                    // wss.send(`Website/${cabinetID}/00d37cb1-eee8-42ce-9564-91687f9de0dd`);
-                    //gọi refresh lần đầu tiên khi truy cập
-                    if(isFirstConnectRefresh){
-                        setTimeout(() => {
-                            sendMessage("REFRESH;");
-                            isFirstConnectRefresh = false;
-                        }, 1000);
+            if(isFirstConnectRefresh){
+                const match = data.data.match(/\[(\d+)\]/);
+                const id = match ? match[1] : null;
+                console.log(id);
+                
+                if(id == cabinetID){
+                    wss = new WebSocket(`wss://${value}/controller`);
+                    wss.onopen = () => {
+                        if(isFirstConnectRefresh){
+                            setTimeout(() => {
+                                sendMessage("REFRESH;");
+                                isFirstConnectRefresh = false;
+                            }, 1000);
+                        }
                     }
-                };
-                return;
+                }
             }
             handleWSMessage(data, cabinetID, relayCount, qrCodeParts);
         }
 
         // --- WebSocket 2 ---
-        
         // Final UI updates
         $("#loading-popup").hide();
         saveCondition(JSON.parse(localStorage.getItem("itemCondition")), datacontrol, dataDevice);
@@ -609,8 +607,7 @@ $("#online")
     .off("click")
     .click(function () {
         const icon = document.getElementById("btn-online");
-        // $("#online").css("background", "#ceac30");
-        // $("#online").css("box-shadow", "0px 0px 30px 5px" + "#ceac30");
+        isFirstConnect = true;
         $("#btn-online").prop("disabled", true);
         icon.innerHTML = `
             <svg id="load-online" class="bi bi-power" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
@@ -631,7 +628,14 @@ $("#online")
             </svg>
         `;
         }, 15000);
-        sendMessage("REFRESH;");
+        if ($("#online").css("background-color") == "rgb(206, 172, 48)") {
+            sendMessage("REFRESH;");
+        } else {
+            isFirstConnectRefresh = true;
+            onClose();
+            getWebSocket("homeos.vn:447");
+        }
+        
     });
 
 function formatCustomDate(date) {
@@ -1528,10 +1532,6 @@ function initLedDisplay(baseId) {
 
 var onClose = function () {
     console.log("CLOSED: websocket");
-    if (ws != null) {
-        ws.close(1000, "Đóng kết nối bình thường");
-        wss.close(1000, "Đóng kết nối bình thường");
-    }
     ws = null;
     wss = null;
 };
@@ -2190,7 +2190,6 @@ function getCheckedSchedules() {
     return checkedLines;
 }
 
-
 var longPressTimer;
 
 function runScheduleCard(params) {
@@ -2264,7 +2263,6 @@ async function handleChangeSchedule(e) {
         }
     }
 }
-
 
 // Nhấn nút ❌ để hủy chọn
 $('#cancel-select').off('click').on('click', function () {

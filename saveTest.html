@@ -13,8 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -107,7 +106,7 @@
           </div>
         </div>
       </div>
-      <div id="CREATELOT" class="app-screen d-none">
+      <div id="CREATELOT" class="app-screen d-none wareHouse-detail-app">
         <div class="card p-4">
           <div class="mb-3">
             <label for="lotName" class="form-label">Tên lô</label>
@@ -138,9 +137,35 @@
         </div>
       </div>
 
-      <div id="PRQRCODE" class="app-screen d-none">
-        <h2>In mã QR</h2>
-        <!-- code html riêng cho PRQRCODE -->
+      <div id="PRQRCODE" class="app-screen d-none wareHouse-detail-app">
+        <div class="card p-4">
+          <div class="mb-3">
+            <label for="productSelect" class="form-label">Chọn Lô</label>
+            <select id="productSelect" class="form-select" data-placeholder="-- Chọn sản phẩm --">
+              <option></option>
+              <option value="SP001">Sản phẩm 1</option>
+              <option value="SP002">Sản phẩm 2</option>
+              <option value="SP003">Sản phẩm 3</option>
+              <option value="SP004">Sản phẩm 4</option>
+              <option value="SP005">Sản phẩm 5</option>
+            </select>
+          </div>
+
+          <div class="repeat-options" style="margin-top: 10px; background-color: #2a2a2a;">
+            <label class="form-label text-white">Lặp lại:</label>
+            <div class="option selected" data-value="detail">In lẻ</div>
+            <div class="option" data-value="bo">In bộ</div>
+            <div class="option" data-value="all">In Lô</div>
+          </div>  
+          
+          <div id="modeDetails" class="mb-3"></div>
+      
+          <button class="btn btn-primary w-100" onclick="createLot()">
+            <i class="bi bi-plus-circle"></i> Tạo lô
+          </button>
+      
+          <div id="lotResult" class="mt-4"></div>
+        </div>
       </div>
 
       <div id="IMPORT" class="app-screen d-none">

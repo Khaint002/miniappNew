@@ -39,6 +39,7 @@ function renderApps(apps, containerId) {
         visibleIndex++;
     });
 }
+
 function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
     document.getElementById("wareHouse-menu").classList.add("d-none");
@@ -53,6 +54,9 @@ function connectAppWaveHouse(ID, NAME) {
             width: '100%',
             dropdownParent: $('#CREATELOT') // tránh lỗi z-index khi trong modal
         });
+    } else if(ID == 'PRQRCODE'){
+        runOptionS();
+        showPrintOptions('detail');
     }
     // Hiện màn đúng ID
     $("#name-detail").text(NAME);
@@ -78,7 +82,7 @@ function createLot() {
         Sản phẩm: ${product}
       </div>
     `;
-  
+
     document.getElementById("lotResult").innerHTML = resultHTML;
 }
 
@@ -86,5 +90,72 @@ $('#backWaveHouse').click(() => {
     document.getElementById("wareHouse-menu").classList.remove("d-none");
     document.getElementById("wareHouse-detail").classList.add("d-none");
 })
+
+function switchMode(mode) {
+    const container = document.getElementById("modeDetails");
+    container.innerHTML = ""; // clear form cũ
+  
+    if (mode === "single") {
+      container.innerHTML = `
+        <label class="form-label text-white">Chọn QR</label>
+        <select class="form-select">
+          <option value="">-- Chọn QR --</option>
+          <option value="qr1">QR 1</option>
+          <option value="qr2">QR 2</option>
+        </select>
+      `;
+    } else if (mode === "batch") {
+      container.innerHTML = `
+        <label class="form-label text-white">Số lượng</label>
+        <input type="number" class="form-control" placeholder="Nhập số lượng">
+      `;
+    } 
+    // mode all thì không hiện gì thêm
+}
+
+function runOptionS() {
+    const options = document.querySelectorAll(".repeat-options .option");
+  
+    options.forEach(opt => {
+      if (!opt.hasAttribute("data-bound")) {
+        opt.addEventListener("click", () => {
+          // Bỏ selected tất cả
+          options.forEach(o => o.classList.remove("selected"));
+          // Đánh dấu option hiện tại
+          opt.classList.add("selected");
+  
+          // Lấy value để xử lý hiển thị form tương ứng
+          const mode = opt.getAttribute("data-value");
+          showPrintOptions(mode);
+        });
+        opt.setAttribute("data-bound", "true");
+      }
+    });
+}
+  
+  // Hiển thị form theo chế độ in
+function showPrintOptions(mode) {
+    const container = document.getElementById("modeDetails");
+    if (!container) return;
+  
+    container.innerHTML = ""; // clear cũ
+  
+    if (mode === "detail") {
+      container.innerHTML = `
+        <label class="form-label text-white">Chọn QR</label>
+        <select class="form-select">
+          <option>-- Chọn QR --</option>
+          <option>QR 1</option>
+          <option>QR 2</option>
+        </select>
+      `;
+    } else if (mode === "bo") {
+      container.innerHTML = `
+        <label class="form-label text-white">Số lượng</label>
+        <input type="number" class="form-control" placeholder="Nhập số lượng">
+      `;
+    }
+    // mode === "all" thì không hiển thị gì thêm
+}
 
 renderApps(apps_waveHouse, 'wareHouse-list');

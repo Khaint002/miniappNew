@@ -62,14 +62,14 @@ function showAddWorkStationButton() {
 
 // App history 
 
-var ZONE_PROPERTY = 'RD';
-var ZONE_UNIT = ' mm';
-var ZONE_PROPERTY_NNS = 'RT';
-var ZONE_UNIT_NNS = ' °C';
-var ZONE_PROPERTY_TD = 'RN';
-var ZONE_UNIT_TD = ' cm';
-var ZONE_PROPERTY_SL = 'RD';
-var ZONE_UNIT_SL = ' mm';
+// var ZONE_PROPERTY = 'RD';
+// var ZONE_UNIT = ' mm';
+// var ZONE_PROPERTY_NNS = 'RT';
+// var ZONE_UNIT_NNS = ' °C';
+// var ZONE_PROPERTY_TD = 'RN';
+// var ZONE_UNIT_TD = ' cm';
+// var ZONE_PROPERTY_SL = 'RD';
+// var ZONE_UNIT_SL = ' mm';
 
 function getColorByTimeDiff(dateStr) {
     const now = new Date();
@@ -259,6 +259,15 @@ async function startInterval() {
     }, 10000);
 }
 
+var ZONE_PROPERTY = 'RD';
+var ZONE_UNIT = ' mm';
+var ZONE_PROPERTY_NNS = 'RT';
+var ZONE_UNIT_NNS = ' °C';
+var ZONE_PROPERTY_TD = 'RN';
+var ZONE_UNIT_TD = ' cm';
+var ZONE_PROPERTY_SL = 'RD';
+var ZONE_UNIT_SL = ' mm';
+
 function rotateProperties() {
     const props = [
         { prop: 'RD', unit: ' mm' },
@@ -345,6 +354,117 @@ async function updateWorkstationUI(station, data) {
         if (button) button.style.backgroundColor = "#da4a58";
     }
 }
+
+
+// 1. Gộp cấu hình và trạng thái vào các object để dễ quản lý
+// const PROPERTY_CONFIG = {
+//     NAAM: [
+//         { prop: 'RD', unit: ' mm' },
+//         { prop: 'RT', unit: ' °C' },
+//         { prop: 'RH', unit: ' %' },
+//         { prop: 'RP', unit: ' hPa' }
+//     ],
+//     NNS: [
+//         { prop: 'RT', unit: ' °C' },
+//         { prop: 'RN', unit: ' cm' },
+//         { prop: 'SS', unit: ' ppt' },
+//         { prop: 'EC', unit: ' μs/cm' }
+//     ],
+//     TD: [
+//         { prop: 'RN', unit: ' m' },
+//         { prop: 'TN', unit: ' tr.m³' },
+//         { prop: 'QV', unit: ' m³/s' },
+//         { prop: 'QR', unit: ' m³/s' }
+//     ],
+//     NMLLTD: [
+//         { prop: 'RD', unit: ' mm' },
+//         { prop: 'RN', unit: ' m' },
+//         { prop: 'QN', unit: ' m³/s' },
+//         { prop: 'VN', unit: ' m/s' }
+//     ]
+// };
+
+// // Trạng thái hiện tại của các thuộc tính được xoay vòng
+// const currentProperties = {
+//     NAAM: { prop: 'RD', unit: ' mm' },
+//     NNS: { prop: 'RT', unit: ' °C' },
+//     TD: { prop: 'RN', unit: ' cm' },
+//     NMLLTD: { prop: 'RD', unit: ' mm' }
+// };
+
+// // 2. Tạo một hàm chung để xoay vòng thuộc tính, tránh lặp code
+// function rotateSinglePropertyGroup(groupKey) {
+//     const propertyList = PROPERTY_CONFIG[groupKey];
+//     const currentProp = currentProperties[groupKey].prop;
+    
+//     const currentIndex = propertyList.findIndex(p => p.prop === currentProp);
+//     const nextIndex = (currentIndex + 1) % propertyList.length;
+    
+//     currentProperties[groupKey] = propertyList[nextIndex];
+// }
+
+// // Hàm rotateProperties giờ đây rất gọn gàng
+// function rotateProperties() {
+//     rotateSinglePropertyGroup('NAAM');
+//     rotateSinglePropertyGroup('NNS');
+//     rotateSinglePropertyGroup('TD');
+//     rotateSinglePropertyGroup('NMLLTD');
+//     // Hoặc có thể dùng vòng lặp:
+//     // Object.keys(PROPERTY_CONFIG).forEach(rotateSinglePropertyGroup);
+// }
+
+// // 3. Tối ưu hàm updateWorkstationUI
+// async function updateWorkstationUI(station, data) {
+//     const elementValue = document.getElementById('Value' + station.CodeWorkStation);
+//     const button = document.getElementById('App' + station.CodeWorkStation);
+//     const errorColor = "#da4a58";
+
+//     // Lọc dữ liệu một lần duy nhất
+//     const stationData = data.D.filter(item => item.ZONE_ADDRESS === station.CodeWorkStation);
+
+//     if (stationData.length === 0) {
+//         if (button) button.style.backgroundColor = errorColor;
+//         elementValue.textContent = '_';
+//         return;
+//     }
+
+//     // 4. Dùng object mapping thay cho chuỗi if-else
+//     const propSelector = {
+//         NAAM: currentProperties.NAAM.prop,
+//         NNS: currentProperties.NNS.prop,
+//         TD: currentProperties.TD.prop,
+//         NMLLTD: currentProperties.NMLLTD.prop,
+//         N: 'RN',
+//         M: 'RD',
+//         MS: 'RD',
+//         MSL: 'RD'
+//     };
+    
+//     // Mặc định là 'RD' nếu không tìm thấy workstationType
+//     const prop = propSelector[station.workstationType] || 'RD';
+
+//     const dataItem = stationData.find(item => item.ZONE_PROPERTY === prop);
+
+//     // Xử lý hiển thị giá trị
+//     if (dataItem) {
+//         elementValue.textContent = getDisplayValue(dataItem, station.workstationType);
+//     } else if (prop === 'RD') {
+//         elementValue.textContent = "0mm"; // Xử lý trường hợp đặc biệt
+//     } else {
+//         elementValue.textContent = '_';
+//     }
+
+//     // Xử lý màu sắc button
+//     const dataRA = stationData.find(item => item.ZONE_PROPERTY === 'RA');
+//     if (button) {
+//         try {
+//             const color = dataRA ? getColorByTimeDiff(dataRA.DATE_CREATE) : errorColor;
+//             button.style.backgroundColor = color;
+//         } catch (e) {
+//             button.style.backgroundColor = errorColor;
+//         }
+//     }
+// }
 
 async function showHistory(type) {
     const historySetting = document.getElementById("history-setting");

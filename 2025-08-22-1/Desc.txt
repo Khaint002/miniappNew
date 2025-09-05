@@ -1,4 +1,0 @@
-Cập nhật ngày 22/08/2025 lần 1:
-- chỉnh sửa ui cho phần điều khiển đối với thiết bị nhiều điều khiển
-- chỉnh sửa đặt lịch cho phù hợp cả với thiết bị nhiều điều khiển, (chưa test kĩ, chờ Hiếu fix lỗi thiết bị)
-- fix lỗi truy cập sản phẩm bảo hành thông qua link CK code 
