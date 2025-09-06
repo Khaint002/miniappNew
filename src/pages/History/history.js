@@ -62,15 +62,6 @@ function showAddWorkStationButton() {
 
 // App history 
 
-// var ZONE_PROPERTY = 'RD';
-// var ZONE_UNIT = ' mm';
-// var ZONE_PROPERTY_NNS = 'RT';
-// var ZONE_UNIT_NNS = ' °C';
-// var ZONE_PROPERTY_TD = 'RN';
-// var ZONE_UNIT_TD = ' cm';
-// var ZONE_PROPERTY_SL = 'RD';
-// var ZONE_UNIT_SL = ' mm';
-
 function getColorByTimeDiff(dateStr) {
     const now = new Date();
     const providedTime = new Date(dateStr);
@@ -259,212 +250,116 @@ async function startInterval() {
     }, 10000);
 }
 
-var ZONE_PROPERTY = 'RD';
-var ZONE_UNIT = ' mm';
-var ZONE_PROPERTY_NNS = 'RT';
-var ZONE_UNIT_NNS = ' °C';
-var ZONE_PROPERTY_TD = 'RN';
-var ZONE_UNIT_TD = ' cm';
-var ZONE_PROPERTY_SL = 'RD';
-var ZONE_UNIT_SL = ' mm';
-
-function rotateProperties() {
-    const props = [
+//1. Gộp cấu hình và trạng thái vào các object để dễ quản lý
+var PROPERTY_CONFIG = {
+    NAAM: [
         { prop: 'RD', unit: ' mm' },
         { prop: 'RT', unit: ' °C' },
         { prop: 'RH', unit: ' %' },
         { prop: 'RP', unit: ' hPa' }
-    ];
-    const index = props.findIndex(p => p.prop === ZONE_PROPERTY);
-    const next = props[(index + 1) % props.length];
-    ZONE_PROPERTY = next.prop;
-    ZONE_UNIT = next.unit;
-
-    const nnsProps = [
+    ],
+    NNS: [
         { prop: 'RT', unit: ' °C' },
         { prop: 'RN', unit: ' cm' },
         { prop: 'SS', unit: ' ppt' },
         { prop: 'EC', unit: ' μs/cm' }
-    ];
-    const nnsIndex = nnsProps.findIndex(p => p.prop === ZONE_PROPERTY_NNS);
-    const nextNNS = nnsProps[(nnsIndex + 1) % nnsProps.length];
-    ZONE_PROPERTY_NNS = nextNNS.prop;
-    ZONE_UNIT_NNS = nextNNS.unit;
-
-    const TDProps = [
+    ],
+    TD: [
         { prop: 'RN', unit: ' m' },
         { prop: 'TN', unit: ' tr.m³' },
         { prop: 'QV', unit: ' m³/s' },
         { prop: 'QR', unit: ' m³/s' }
-    ];
-
-    const TDIndex = TDProps.findIndex(p => p.prop === ZONE_PROPERTY_TD);
-    const nextTD = TDProps[(TDIndex + 1) % TDProps.length];
-    ZONE_PROPERTY_TD = nextTD.prop;
-    ZONE_UNIT_TD = nextTD.unit;
-
-    const SLProps = [
+    ],
+    NMLLTD: [
         { prop: 'RD', unit: ' mm' },
         { prop: 'RN', unit: ' m' },
         { prop: 'QN', unit: ' m³/s' },
         { prop: 'VN', unit: ' m/s' }
-    ];
+    ]
+};
 
-    const SLIndex = SLProps.findIndex(p => p.prop === ZONE_PROPERTY_SL);
-    const nextSL = SLProps[(SLIndex + 1) % SLProps.length];
-    ZONE_PROPERTY_SL = nextSL.prop;
-    ZONE_UNIT_SL = nextSL.unit;
+// Trạng thái hiện tại của các thuộc tính được xoay vòng
+var currentProperties = {
+    NAAM: { prop: 'RD', unit: ' mm' },
+    NNS: { prop: 'RT', unit: ' °C' },
+    TD: { prop: 'RN', unit: ' cm' },
+    NMLLTD: { prop: 'RD', unit: ' mm' }
+};
+
+// 2. Tạo một hàm chung để xoay vòng thuộc tính, tránh lặp code
+function rotateSinglePropertyGroup(groupKey) {
+    const propertyList = PROPERTY_CONFIG[groupKey];
+    const currentProp = currentProperties[groupKey].prop;
+    
+    const currentIndex = propertyList.findIndex(p => p.prop === currentProp);
+    const nextIndex = (currentIndex + 1) % propertyList.length;
+    
+    currentProperties[groupKey] = propertyList[nextIndex];
 }
 
+// Hàm rotateProperties giờ đây rất gọn gàng
+function rotateProperties() {
+    rotateSinglePropertyGroup('NAAM');
+    rotateSinglePropertyGroup('NNS');
+    rotateSinglePropertyGroup('TD');
+    rotateSinglePropertyGroup('NMLLTD');
+    // Hoặc có thể dùng vòng lặp:
+    // Object.keys(PROPERTY_CONFIG).forEach(rotateSinglePropertyGroup);
+}
+
+// 3. Tối ưu hàm updateWorkstationUI
 async function updateWorkstationUI(station, data) {
-    const filteredItems = data.D.filter(item => item.ZONE_ADDRESS === station.CodeWorkStation);
     const elementValue = document.getElementById('Value' + station.CodeWorkStation);
     const button = document.getElementById('App' + station.CodeWorkStation);
+    const errorColor = "#da4a58";
 
-    if (filteredItems.length === 0) {
-        if (button) button.style.backgroundColor = "#da4a58";
+    // Lọc dữ liệu một lần duy nhất
+    const stationData = data.D.filter(item => item.ZONE_ADDRESS === station.CodeWorkStation);
+
+    if (stationData.length === 0) {
+        if (button) button.style.backgroundColor = errorColor;
+        elementValue.textContent = '_';
         return;
     }
-    
-    let prop = 'RD';
-    if (station.workstationType === "NAAM") prop = ZONE_PROPERTY;
-    else if (station.workstationType === "N") prop = 'RN';
-    else if (["M", "MS", "MSL"].includes(station.workstationType)) prop = 'RD';
-    else if (station.workstationType === "NNS") prop = ZONE_PROPERTY_NNS;
-    else if (station.workstationType === "TD") prop = ZONE_PROPERTY_TD;
-    else if (station.workstationType === "NMLLTD") prop = ZONE_PROPERTY_SL;
 
-    const dataRD = filteredItems.find(item => item.ZONE_PROPERTY === prop);
-    elementValue.textContent = dataRD ? getDisplayValue(dataRD, station.workstationType) : '_';
-    if(station.workstationType === "NNS"){
-        dataRD
-    }
-    if(prop == 'RD' && !dataRD){
+    // 4. Dùng object mapping thay cho chuỗi if-else
+    const propMap = {
+        NAAM: currentProperties.NAAM,
+        NNS: currentProperties.NNS,
+        TD: currentProperties.TD,
+        NMLLTD: currentProperties.NMLLTD,
+        N: { prop: 'RN', unit: '' },
+        M: { prop: 'RD', unit: '' },
+        MS: { prop: 'RD', unit: '' },
+        MSL: { prop: 'RD', unit: '' }
+    };
+    
+    // Mặc định là 'RD' nếu không tìm thấy workstationType
+    const currentProperty = propMap[station.workstationType] || { prop: 'RD', unit: ''};
+
+    const dataItem = stationData.find(item => item.ZONE_PROPERTY === currentProperty.prop);
+    
+    // Xử lý hiển thị giá trị
+    if (dataItem) {
+        // Gọi hàm mới với đủ tham số
+        elementValue.textContent = getDisplayValue(dataItem, station.workstationType, currentProperty);
+    } else if (currentProperty.prop === 'RD') {
         elementValue.textContent = "0mm";
+    } else {
+        elementValue.textContent = '_';
     }
-    try {
-        const dataRA = filteredItems.find(item => item.ZONE_PROPERTY === 'RA');
-        if (dataRA) {
-            const color = getColorByTimeDiff(dataRA.DATE_CREATE);
-            if (button) button.style.backgroundColor = color;
-        } else {
-            if (button) button.style.backgroundColor = "#da4a58";
+
+    // Xử lý màu sắc button
+    const dataRA = stationData.find(item => item.ZONE_PROPERTY === 'RA');
+    if (button) {
+        try {
+            const color = dataRA ? getColorByTimeDiff(dataRA.DATE_CREATE) : errorColor;
+            button.style.backgroundColor = color;
+        } catch (e) {
+            button.style.backgroundColor = errorColor;
         }
-    } catch (e) {
-        if (button) button.style.backgroundColor = "#da4a58";
     }
 }
-
-
-// 1. Gộp cấu hình và trạng thái vào các object để dễ quản lý
-// const PROPERTY_CONFIG = {
-//     NAAM: [
-//         { prop: 'RD', unit: ' mm' },
-//         { prop: 'RT', unit: ' °C' },
-//         { prop: 'RH', unit: ' %' },
-//         { prop: 'RP', unit: ' hPa' }
-//     ],
-//     NNS: [
-//         { prop: 'RT', unit: ' °C' },
-//         { prop: 'RN', unit: ' cm' },
-//         { prop: 'SS', unit: ' ppt' },
-//         { prop: 'EC', unit: ' μs/cm' }
-//     ],
-//     TD: [
-//         { prop: 'RN', unit: ' m' },
-//         { prop: 'TN', unit: ' tr.m³' },
-//         { prop: 'QV', unit: ' m³/s' },
-//         { prop: 'QR', unit: ' m³/s' }
-//     ],
-//     NMLLTD: [
-//         { prop: 'RD', unit: ' mm' },
-//         { prop: 'RN', unit: ' m' },
-//         { prop: 'QN', unit: ' m³/s' },
-//         { prop: 'VN', unit: ' m/s' }
-//     ]
-// };
-
-// // Trạng thái hiện tại của các thuộc tính được xoay vòng
-// const currentProperties = {
-//     NAAM: { prop: 'RD', unit: ' mm' },
-//     NNS: { prop: 'RT', unit: ' °C' },
-//     TD: { prop: 'RN', unit: ' cm' },
-//     NMLLTD: { prop: 'RD', unit: ' mm' }
-// };
-
-// // 2. Tạo một hàm chung để xoay vòng thuộc tính, tránh lặp code
-// function rotateSinglePropertyGroup(groupKey) {
-//     const propertyList = PROPERTY_CONFIG[groupKey];
-//     const currentProp = currentProperties[groupKey].prop;
-    
-//     const currentIndex = propertyList.findIndex(p => p.prop === currentProp);
-//     const nextIndex = (currentIndex + 1) % propertyList.length;
-    
-//     currentProperties[groupKey] = propertyList[nextIndex];
-// }
-
-// // Hàm rotateProperties giờ đây rất gọn gàng
-// function rotateProperties() {
-//     rotateSinglePropertyGroup('NAAM');
-//     rotateSinglePropertyGroup('NNS');
-//     rotateSinglePropertyGroup('TD');
-//     rotateSinglePropertyGroup('NMLLTD');
-//     // Hoặc có thể dùng vòng lặp:
-//     // Object.keys(PROPERTY_CONFIG).forEach(rotateSinglePropertyGroup);
-// }
-
-// // 3. Tối ưu hàm updateWorkstationUI
-// async function updateWorkstationUI(station, data) {
-//     const elementValue = document.getElementById('Value' + station.CodeWorkStation);
-//     const button = document.getElementById('App' + station.CodeWorkStation);
-//     const errorColor = "#da4a58";
-
-//     // Lọc dữ liệu một lần duy nhất
-//     const stationData = data.D.filter(item => item.ZONE_ADDRESS === station.CodeWorkStation);
-
-//     if (stationData.length === 0) {
-//         if (button) button.style.backgroundColor = errorColor;
-//         elementValue.textContent = '_';
-//         return;
-//     }
-
-//     // 4. Dùng object mapping thay cho chuỗi if-else
-//     const propSelector = {
-//         NAAM: currentProperties.NAAM.prop,
-//         NNS: currentProperties.NNS.prop,
-//         TD: currentProperties.TD.prop,
-//         NMLLTD: currentProperties.NMLLTD.prop,
-//         N: 'RN',
-//         M: 'RD',
-//         MS: 'RD',
-//         MSL: 'RD'
-//     };
-    
-//     // Mặc định là 'RD' nếu không tìm thấy workstationType
-//     const prop = propSelector[station.workstationType] || 'RD';
-
-//     const dataItem = stationData.find(item => item.ZONE_PROPERTY === prop);
-
-//     // Xử lý hiển thị giá trị
-//     if (dataItem) {
-//         elementValue.textContent = getDisplayValue(dataItem, station.workstationType);
-//     } else if (prop === 'RD') {
-//         elementValue.textContent = "0mm"; // Xử lý trường hợp đặc biệt
-//     } else {
-//         elementValue.textContent = '_';
-//     }
-
-//     // Xử lý màu sắc button
-//     const dataRA = stationData.find(item => item.ZONE_PROPERTY === 'RA');
-//     if (button) {
-//         try {
-//             const color = dataRA ? getColorByTimeDiff(dataRA.DATE_CREATE) : errorColor;
-//             button.style.backgroundColor = color;
-//         } catch (e) {
-//             button.style.backgroundColor = errorColor;
-//         }
-//     }
-// }
 
 async function showHistory(type) {
     const historySetting = document.getElementById("history-setting");
@@ -607,7 +502,186 @@ async function showHistory(type) {
     startInterval();
 }
 
+// 1. TÁCH CẤU HÌNH RA RIÊNG -> DỄ BẢO TRÌ
+// var CATEGORY_DISPLAY_TEXT = {
+//     NAAM: "Trạm Mưa, nhiệt, ẩm, áp",
+//     N: "Trạm mực nước",
+//     M: "Trạm Mưa",
+//     MSL: "Trạm Mưa Sơn La",
+//     MS: "Trạm Mưa, sóng",
+//     NNS: "Trạm mặn, nhiệt, mực nước",
+//     TD: "Hồ chứa",
+//     NMLLTD: "Trạm Nước, mưa, lưu lượng, tốc độ",
+//     ALL: "Tất cả trạm",
+//     ADD: " + Thêm danh mục mới",
+// };
 
+// // --- CÁC HÀM TIỆN ÍCH ---
+
+// // Helper để ẩn/hiện element
+// var toggleElement = (el, show) => el.classList.toggle('d-none', !show);
+
+// // Lấy và parse dữ liệu từ localStorage
+// var getFromStorage = (key) => JSON.parse(localStorage.getItem(key)) || [];
+
+// // --- CÁC HÀM CHỨC NĂNG ĐƯỢC TÁCH NHỎ ---
+
+// /** 2. Hàm chỉ để lấy và chuẩn hóa dữ liệu từ localStorage */
+// function getPreparedData() {
+//     let historyItems = getFromStorage('dataHistory');
+//     const dataCategory = getFromStorage('dataCategory');
+//     let hasChanged = false;
+
+//     // Logic di chuyển domain chỉ chạy khi cần
+//     historyItems.forEach(item => {
+//         if (item.domain === "sonla.homeos.vn") {
+//             item.domain = "sonlahpc.hymetco.com";
+//             hasChanged = true;
+//         }
+//     });
+
+//     if (hasChanged) {
+//         localStorage.setItem('dataHistory', JSON.stringify(historyItems));
+//     }
+
+//     return { historyItems, dataCategory };
+// }
+
+// /** 3. Hàm chỉ để lọc dữ liệu theo `type` được chọn */
+// function filterHistoryItems(historyItems, dataCategory, type) {
+//     if (!type || type === "ALL") {
+//         return historyItems; // Trả về tất cả nếu không có type hoặc type là "ALL"
+//     }
+
+//     const categoryMatched = dataCategory.find(cat => cat.NameCategory === type);
+
+//     if (categoryMatched?.itemCategory?.length) {
+//         // Lọc theo danh mục tùy chỉnh
+//         const stationCodes = new Set(categoryMatched.itemCategory.map(c => c.CodeWorkStation));
+//         return historyItems.filter(h => stationCodes.has(h.CodeWorkStation));
+//     } else {
+//         // Lọc theo workstationType
+//         return historyItems.filter(item => item.workstationType === type);
+//     }
+// }
+
+// /** 4. Hàm chỉ để tạo và đổ dữ liệu vào dropdown */
+// function populateCategorySelect(historyItems, dataCategory) {
+//     const historySelect = document.getElementById("historySelect");
+//     if (!historySelect) return;
+
+//     // Dùng Set để lấy danh sách category không trùng lặp, hiệu quả hơn
+//     const categories = new Set(['ADD', 'ALL']);
+//     dataCategory.forEach(cat => categories.add(cat.NameCategory));
+//     historyItems.forEach(item => categories.add(item.workstationType));
+
+//     const sortedCategories = Array.from(categories).reverse();
+    
+//     historySelect.innerHTML = sortedCategories.map(cat => {
+//         const text = CATEGORY_DISPLAY_TEXT[cat] || cat;
+//         const className = cat === 'ADD' ? 'class="custom-option"' : '';
+//         return `<option value="${cat}" ${className}>${text}</option>`;
+//     }).join('');
+// }
+
+
+// /**
+//  * 5. HÀM CHÍNH - Giờ đóng vai trò điều phối (controller)
+//  * Rất gọn gàng và dễ hiểu luồng hoạt động
+//  */
+// async function showHistory(type) {
+//     const historySetting = document.getElementById("history-setting");
+//     const historyHomePage = document.getElementById("history-homePage");
+//     const historyValue = document.getElementById("history-value");
+//     const historyLoading = document.getElementById("history-loading");
+
+//     // Xử lý trường hợp đặc biệt ngay từ đầu
+//     if (type === "ADD") {
+//         toggleElement(historySetting, true);
+//         toggleElement(historyHomePage, false);
+//         OpenAddCategory();
+//         return;
+//     }
+
+//     toggleElement(historyValue, false);
+//     toggleElement(historyLoading, true);
+
+//     const { historyItems, dataCategory } = getPreparedData();
+//     const filteredItems = filterHistoryItems(historyItems, dataCategory, type);
+
+//     // Chỉ tạo dropdown ở lần tải đầu tiên
+//     if (!type) {
+//         populateCategorySelect(historyItems, dataCategory);
+//     }
+
+//     if (!filteredItems.length) {
+//         toggleElement(historyValue, true);
+//         toggleElement(historyLoading, false);
+//         return;
+//     }
+
+//     // Hiển thị danh sách tạm thời trước khi có dữ liệu từ API
+//     historyListDetail.empty(); // Giả sử đây là biến jQuery đã tồn tại
+//     filteredItems.forEach(addItemHistory);
+
+//     // *** 6. CẢI TIẾN HIỆU NĂNG QUAN TRỌNG NHẤT ***
+//     // Gọi tất cả API song song, thay vì tuần tự
+//     try {
+//         const locationPromises = filteredItems.map(item =>
+//             HOMEOSAPP.getDM(
+//                 `https://${item.domain}/service/service.svc`,
+//                 "DM_WORKSTATION",
+//                 `WORKSTATION_ID = '${item.CodeWorkStation}'`,
+//                 "NotCentral"
+//             ).catch(err => {
+//                 console.error(`API call failed for ${item.CodeWorkStation}:`, err);
+//                 return null; // Rất quan trọng: trả về null nếu có lỗi
+//             })
+//         );
+
+//         const results = await Promise.all(locationPromises);
+
+//         const locations = [];
+//         results.forEach((dataWorkstation, index) => {
+//             const originalItem = filteredItems[index];
+
+//             // BƯỚC DEBUG 1: In ra kết quả API của từng item
+//             console.log(`[DEBUG] Processing item ${originalItem.CodeWorkStation}:`, dataWorkstation);
+
+//             // BƯỚC 2: KIỂM TRA "SIÊU AN TOÀN" TRƯỚC KHI XỬ LÝ
+//             // Kiểm tra xem dataWorkstation có tồn tại không, có thuộc tính 'data' không, và mảng 'data' có phần tử không.
+//             if (dataWorkstation && dataWorkstation.data && dataWorkstation.data.length > 0) {
+//                 const workstationData = dataWorkstation.data[0];
+//                 const tooltipTemplate = dataWorkstation.dataSet.DM_TOOLTIP_TEMPLATE;
+
+//                 // Thêm một check nữa để chắc chắn workstationData không bị null/undefined
+//                 if (workstationData) {
+//                     const newLocation = addDataLocation(workstationData, tooltipTemplate, originalItem);
+                    
+//                     // BƯỚC 3: Chỉ push vào mảng nếu `addDataLocation` trả về giá trị hợp lệ
+//                     if (newLocation) {
+//                         locations.push(newLocation);
+//                     } else {
+//                         console.warn(`[DEBUG] addDataLocation returned a falsy value for ${originalItem.CodeWorkStation}`);
+//                     }
+//                 }
+//             } else {
+//                 // Ghi lại cảnh báo để biết item nào không có dữ liệu
+//                 console.warn(`[DEBUG] No valid data returned for ${originalItem.CodeWorkStation}. Skipping.`);
+//             }
+//         });
+        
+//         console.log('[DEBUG] Final locations array for markers:', locations);
+//         addMarkers(locations, "mappingWorkstation");
+
+//     } catch (error) {
+//         console.error("An error occurred while fetching workstation data:", error);
+//     } finally {
+//         toggleElement(historyValue, true);
+//         toggleElement(historyLoading, false);
+//         startInterval();
+//     }
+// }
     
 
 
@@ -626,42 +700,70 @@ function getIconWorkstation(type) {
     }
 }
 
-function getDisplayValue(item, type) {
-    switch (type) {
-        case "NAAM":
-            return item.ZONE_VALUE / 10 + ZONE_UNIT;
-        case "N":
-            return item.ZONE_VALUE + " cm";
-        case "M":
-        case "MS":
-        case "MSL":
-            return item.ZONE_VALUE / 10 + " mm";
-        case "NNS":
-            if (ZONE_PROPERTY_NNS === "SS") {
-                return (item.ZONE_VALUE / 10000).toFixed(2) + ZONE_UNIT_NNS;
-            } else if (ZONE_PROPERTY_NNS === "EC") {
-                return (item.ZONE_VALUE / 1000).toFixed(2) + ZONE_UNIT_NNS;
-            } else if(ZONE_PROPERTY_NNS === "RN") {
-                return item.ZONE_VALUE + ZONE_UNIT_NNS;
-            } else {
-                return item.ZONE_VALUE / 10 + ZONE_UNIT_NNS;
-            }
-        case "TD":
-            if(ZONE_PROPERTY_TD === "RN") {
-                return item.ZONE_VALUE /100 + ' m';
-            } else {
-                return item.ZONE_VALUE / 100 + ZONE_UNIT_TD;
-            }
-        case "NMLLTD":
-            if(ZONE_PROPERTY_SL === "RD") {
-                return item.ZONE_VALUE / 10 + ZONE_UNIT_SL;
-            } else {
-                return item.ZONE_VALUE / 100 + ZONE_UNIT_SL;
-            }
-        default:
-            return "-";
+
+var FORMATTING_RULES = {
+    // Các type có thuộc tính xoay vòng
+    NAAM: {
+        // Áp dụng cho tất cả prop trong NAAM (RD, RT, RH, RP)
+        _default: { divisor: 10 } 
+    },
+    NNS: {
+        SS: { divisor: 10000, decimals: 2 },
+        EC: { divisor: 1000, decimals: 2 },
+        RN: { divisor: 1 },
+        RT: { divisor: 10 }, // Rule cho trường hợp 'else'
+        _default: { divisor: 10 }
+    },
+    TD: {
+        RN: { divisor: 100, unit: ' m' }, // Ghi đè đơn vị mặc định
+        _default: { divisor: 100 }
+    },
+    NMLLTD: {
+        RD: { divisor: 10 },
+        _default: { divisor: 100 }
+    },
+    // Các type có thuộc tính cố định
+    N: {
+        RN: { divisor: 1, unit: ' cm' }
+    },
+    M: {
+        RD: { divisor: 10, unit: ' mm' }
+    },
+    MS: {
+        RD: { divisor: 10, unit: ' mm' }
+    },
+    MSL: {
+        RD: { divisor: 10, unit: ' mm' }
+    },
+    // Quy tắc mặc định cuối cùng nếu không tìm thấy type
+    _fallback: { text: "-" } 
+};
+
+function getDisplayValue(item, type, currentProperty) {
+    const propName = currentProperty.prop;
+    
+    // Tra cứu quy tắc: tìm theo type -> prop, nếu không có thì tìm rule _default của type đó
+    const typeRules = FORMATTING_RULES[type] || {};
+    const rule = typeRules[propName] || typeRules._default || FORMATTING_RULES._fallback;
+
+    // Nếu là quy tắc fallback trả về text, ví dụ "-"
+    if (rule.text) {
+        return rule.text;
     }
+
+    // Áp dụng quy tắc tính toán
+    let value = item.ZONE_VALUE / (rule.divisor || 1);
+
+    if (rule.decimals !== undefined) {
+        value = value.toFixed(rule.decimals);
+    }
+
+    // Lấy đơn vị: ưu tiên unit trong rule, nếu không có thì lấy unit từ currentProperty
+    const unit = rule.unit || currentProperty.unit;
+
+    return value + unit;
 }
+
 
 $("#tab-historys").off("click").click(function (event) {
     openTabHistory(event, 'tabHistory')

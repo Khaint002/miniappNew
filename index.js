@@ -16,6 +16,12 @@ HOMEOSAPP.apps = [
     { MENU_ID: "DEN", MENU_NAME: "Đèn", MENU_VERSION: "v6.10.24", MENU_BGCOLOR: "#28a745", MENU_ICON: "bi-lightbulb-fill", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: null, MENU_LINK: null, DESCRIPTION: "Chiếu sáng thông minh", VISIBLE: false }
 ];
 HOMEOSAPP.objApp = {};
+var URL_CREDENTIALS_CONFIG = {
+    "https://cctl-dongthap.homeos.vn/service/service.svc": { user: "admin", passKey: "123" },
+    "https://pctthn.homeos.vn/service/service.svc": { user: "admin", passKey: "123" },
+    "https://thanthongnhat.homeos.vn/service/service.svc": { user: "admin", passKey: "1" },
+    default: { user: "dev", passKey: "1" }
+};
 var checkReport = '';
 let historyStack = ['pickApp'];
 var UserID = localStorage.getItem("userID");
@@ -58,135 +64,173 @@ HOMEOSAPP.goBack = function () {
     }
 }
 
-HOMEOSAPP.getDM = async function (url, table_name, c, check) {
-    let user_id_getDm = 'admin';
-    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
-    if(check == "NotCentral"){
-        let dataUser;
-        if(url == "https://cctl-dongthap.homeos.vn/service/service.svc" || url == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else if(url == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else {
-            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        }
-         
-        user_id_getDm = dataUser[0].StateName;
-        Sid_getDM = dataUser[0].StateId;
+async function getDynamicCredentials(url) {
+    // Luôn chuyển url về chữ thường để khớp với key trong config
+    const config = URL_CREDENTIALS_CONFIG[url.toLowerCase()] || URL_CREDENTIALS_CONFIG.default;
+    const password = HOMEOSAPP.sha1Encode(config.passKey + "@1B2c3D4e5F6g7H8").toString();
+    
+    const dataUser = await checkRoleUser(config.user, password, url + '/');
+
+    if (!dataUser || dataUser.length === 0) {
+        throw new Error(`Authentication failed for user '${config.user}' at ${url}`);
     }
-    const d = {
-        // Uid: 'vannt',
-        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
-        Uid: user_id_getDm,
-        Sid: Sid_getDM,
-        tablename: table_name,
-        c: c,
-        other: '',
-        cmd: ''
+
+    return {
+        Uid: dataUser[0].StateName,
+        Sid: dataUser[0].StateId
+    };
+}
+
+HOMEOSAPP.getDM = async function (url, table_name, c, check) {
+    try {
+        // Khai báo thông tin đăng nhập mặc định
+        let credentials = {
+            Uid: 'admin',
+            Sid: 'cb880c13-5465-4a1d-a598-28e06be43982'
+        };
+
+        // Nếu là gọi API không tập trung, lấy thông tin đăng nhập động
+        if (check === "NotCentral") {
+            credentials = await getDynamicCredentials(url); // <-- GỌI HÀM POMOCNICZY
+        }
+
+        // Chuẩn bị dữ liệu gửi đi
+        const requestData = {
+            ...credentials,
+            tablename: table_name,
+            c: c,
+            other: '',
+            cmd: ''
+        };
+
+        // Gọi API và await kết quả trực tiếp
+        const rawResponse = await $.ajax({
+            url: url + "/getDm",
+            dataType: "jsonp",
+            data: requestData,
+            contentType: "application/json; charset=utf-8",
+        });
+
+        const state = JSON.parse(rawResponse);
+
+        // Xử lý logic đặc biệt khi session không tồn tại
+        if (state.StateId === "NOT_EXIST_SESSION") {
+            const targetUrl = url + "/";
+            const dataSS = JSON.parse(localStorage.getItem('dataSession')) || [];
+            const updatedDataSS = dataSS.filter(item => item.url !== targetUrl);
+            localStorage.setItem('dataSession', JSON.stringify(updatedDataSS));
+        }
+
+        return state;
+
+    } catch (error) {
+        // Xử lý tập trung mọi lỗi có thể xảy ra
+        HomeOS.Service.SetActionControl(true);
+        HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+        console.error("Error in HOMEOSAPP.getDM:", error);
+        throw error; // Ném lỗi ra để hàm gọi nó biết và xử lý nếu cần
+    }
+};
+
+function updateUserInfoUI(userData) {
+    // Dùng querySelectorAll để cập nhật tất cả các element cùng lúc nếu có
+    document.querySelectorAll(".userName").forEach(el => el.textContent = userData.name);
+    document.querySelectorAll(".userAvt").forEach(el => el.src = userData.avatar);
+}
+
+/**
+ * Tạo một bản ghi WARRANTY_USER mới trong cơ sở dữ liệu.
+ */
+async function createNewWarrantyUser(platformUser) {
+    const newUserPayload = {
+        USER_ID: platformUser.id,
+        USER_NAME: platformUser.name,
+        USER_ROLE: "GUEST",
+        DATE_CREATE: new Date(),
+        DATASTATE: "ADD",
+    };
+    await HOMEOSAPP.add('WARRANTY_USER', newUserPayload);
+    localStorage.setItem('RoleUser', "GUEST");
+    return newUserPayload; // Trả về để có thể dùng ngay
+}
+
+/**
+ * Cập nhật số điện thoại cho người dùng đã tồn tại.
+ */
+async function updateUserPhoneNumber(dbUser) {
+    let phoneNumber = null;
+    if (window.getPhoneNum) {
+        try {
+            const tokenPhone = await window.getPhoneNum();
+            const token = await window.getUserAccessToken();
+            const dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
+            phoneNumber = formatPhoneNumber(dataPhone);
+        } catch (phoneError) {
+            console.error("Could not retrieve phone number:", phoneError);
+            return dbUser; // Trả về user cũ nếu không lấy được SĐT
+        }
+    }
+
+    const updatedUserPayload = {
+        ...dbUser, // Sao chép tất cả thuộc tính của user cũ
+        USER_PHONE_NUM: phoneNumber,
+        DATASTATE: "EDIT",
     };
     
-    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url+"/getDm?callback=?",
-            type: "GET",
-            dataType: "jsonp",
-            data: d,
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    if(state.StateId == "NOT_EXIST_SESSION"){
-                        const targetUrl = url + "/";
-                        const dataSS = JSON.parse(localStorage.getItem('dataSession'));
-                        const result = dataSS.filter(item => item.url !== targetUrl);
-                        localStorage.setItem('dataSession', JSON.stringify(result));
-                    }
-                    resolve(state);  
-                } catch (error) {
-                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
-            },
-            error: function (e, t, x) {
-                HomeOS.Service.SetActionControl(true);
-                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
-                reject(e);  // Trả về lỗi nếu thất bại
-            }
-        });
-    });
+    await HOMEOSAPP.add('WARRANTY_USER', updatedUserPayload);
+    return updatedUserPayload;
 }
 
 HOMEOSAPP.handleUser = async function (type) {
-    if (UserID) {
-        try {
-            if (DataUser && DataUser.id === UserID) {
-                if(type == "home"){
-                    document.getElementById("PickApp-button-login").classList.add("d-none");
-                    document.getElementById("LogoPickScreen").style.paddingTop = "4vh";
-                } else {
-                    $(".userName").text(DataUser.name);
-                    $(".userAvt").attr("src", DataUser.avatar);
-                }
-                const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                if (dataUserResponse.data.length == 0) {
-                    const willInsertData = {
-                        USER_ID: DataUser.id,
-                        USER_NAME: DataUser.name,
-                        USER_ROLE: "GUEST",
-                        DATE_CREATE: new Date(),
-                        DATASTATE: "ADD",
-                    };
-                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-                    localStorage.setItem('RoleUser', "GUEST");
-                } else if(dataUserResponse.data[0].USER_PHONE_NUM == null) {
-                    if(window.getPhoneNum){
-                        const tokenPhone = await window.getPhoneNum();
-                        const token = await window.getUserAccessToken();
-                        dataPhone = await HOMEOSAPP.getPhoneNumberByUserZalo("https://central.homeos.vn/service_XD/service.svc", token, tokenPhone);
-                    }
-                    const data = dataUserResponse.data[0];
-                    const willInsertData = {
-                        PR_KEY: data.PR_KEY,
-                        USER_ID: data.USER_ID,
-                        USER_NAME: data.USER_NAME,
-                        USER_ROLE: data.USER_ROLE,
-                        USER_PHONE_NUM: formatPhoneNumber(dataPhone),
-                        DATE_CREATE: data.DATE_CREATE,
-                        DATASTATE: "EDIT",
-                    };
-                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-                    localStorage.setItem('UserLogin', willInsertData);
-                } else {
-                    localStorage.setItem('RoleUser', dataUserResponse.data[0].USER_ROLE);
-                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
-                }
-            } else if (DataUser != undefined) {
-                const dataUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", "USER_ID='" + UserID + "'");
-                if (dataUserResponse.data.length == 0) {
-                    const willInsertData = {
-                        USER_ID: DataUser.id,
-                        USER_NAME: DataUser.name,
-                        USER_ROLE: "GUEST",
-                        DATE_CREATE: new Date(),
-                        DATASTATE: "ADD",
-                    };
-                    HOMEOSAPP.add('WARRANTY_USER', willInsertData);
-                    localStorage.setItem('UserLogin', dataUserResponse.data[0]);
-                }
-            } else {
-                localStorage.setItem('RoleUser', 'GUEST');
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
-    } else {
+    // --- Guard Clauses: Xử lý các trường hợp đơn giản và thoát sớm ---
+
+    // 1. Nếu không có UserID, ẩn các element liên quan và thoát
+    if (!UserID) {
         document.getElementById("QUYEN")?.classList.add("d-none");
+        return;
     }
-}
+
+    // 2. Nếu không có dữ liệu người dùng từ nền tảng (Zalo), coi như GUEST và thoát
+    if (!DataUser || DataUser.id !== UserID) {
+        localStorage.setItem('RoleUser', 'GUEST');
+        console.warn("No valid DataUser or ID mismatch, setting role to GUEST.");
+        return;
+    }
+
+    // --- Logic chính: Bắt đầu xử lý khi đã có UserID và DataUser hợp lệ ---
+    try {
+        // Chỉ gọi API một lần duy nhất
+        const dbUserResponse = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", "WARRANTY_USER", `USER_ID='${UserID}'`);
+        let userInDb = dbUserResponse.data[0];
+
+        if (!userInDb) {
+            // Trường hợp người dùng chưa tồn tại trong DB của chúng ta
+            userInDb = await createNewWarrantyUser(DataUser);
+        } else if (!userInDb.USER_PHONE_NUM) {
+            // Trường hợp người dùng đã tồn tại nhưng thiếu SĐT
+            userInDb = await updateUserPhoneNumber(userInDb);
+        }
+        
+        // Sau tất cả các bước xử lý, lưu thông tin cuối cùng vào localStorage
+        localStorage.setItem('RoleUser', userInDb.USER_ROLE);
+        // Lưu object hoàn chỉnh thay vì data[0] có thể không an toàn
+        localStorage.setItem('UserLogin', JSON.stringify(userInDb)); 
+
+        // --- Cập nhật giao diện (UI) ---
+        if (type === "home") {
+            document.getElementById("PickApp-button-login")?.classList.add("d-none");
+            const logo = document.getElementById("LogoPickScreen");
+            if (logo) logo.style.paddingTop = "4vh";
+        } else {
+            updateUserInfoUI(DataUser); // Cập nhật avatar và tên
+        }
+
+    } catch (error) {
+        console.error("Error handling user data:", error);
+        // Có thể set vai trò GUEST ở đây nếu có lỗi xảy ra
+        localStorage.setItem('RoleUser', 'GUEST');
+    }
+};
 
 let observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
@@ -233,106 +277,76 @@ async function getListDomain() {
 getListDomain();
 
 HOMEOSAPP.add = async function (table, data, URL, check) {
-    // const d = {Uid: "vannt", Sid:'3d798037-9bd9-4195-8673-a4794547d2fd', tablename:table, jd:JSON.stringify(data), ex:''};
-    let user_id_getDm = 'admin';
-    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
-    let url = 'https://central.homeos.vn/service_XD/service.svc';
-    if(check == "NotCentral"){
-        url = URL;
-        let dataUser;
-        if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else {
-            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
+    try {
+        let credentials = { Uid: 'admin', Sid: 'cb880c13-5465-4a1d-a598-28e06be43982' };
+        let targetUrl = 'https://central.homeos.vn/service_XD/service.svc';
+
+        if (check === "NotCentral") {
+            targetUrl = URL;
+            credentials = await getDynamicCredentials(targetUrl); // <-- GỌI HÀM POMOCNICZY
+        }
+
+        const requestData = { ...credentials, tablename: table, jd: JSON.stringify(data), ex: '' };
+
+        const rawResponse = await $.ajax({
+            url: targetUrl + "/ExecuteData",
+            dataType: "jsonp",
+            data: requestData,
+            contentType: "application/json; charset=utf-8",
+        });
+
+        return JSON.parse(rawResponse);
+
+    } catch (error) {
+        console.error("Error in HOMEOSAPP.add:", error);
+        // Có thể thêm các xử lý lỗi chung ở đây nếu cần
+        throw error;
+    }
+};
+
+
+/**
+ * HÀM `WorkstationStatistics` ĐÃ ĐƯỢC TỐI ƯU
+ */
+HOMEOSAPP.WorkstationStatistics = async function(url, c, check) {
+    try {
+        let credentials = { Uid: 'admin', Sid: 'cb880c13-5465-4a1d-a598-28e06be43982' };
+
+        if (check === "NotCentral") {
+            credentials = await getDynamicCredentials(url); // <-- GỌI HÀM POMOCNICZY
+        }
+
+        const maTram = localStorage.getItem("MATRAM");
+        const requestData = { ...credentials, c: c };
+
+        const rawResponse = await $.ajax({
+            url: url + "/WorkstationStatistics",
+            dataType: "jsonp",
+            data: requestData,
+            contentType: "application/json; charset=utf-8",
+        });
+
+        const state = JSON.parse(rawResponse);
+
+        // Thêm kiểm tra an toàn để tránh lỗi khi API trả về cấu trúc không mong muốn
+        if (!state || !state.DATA) {
+            console.warn("WorkstationStatistics: Response did not contain a 'DATA' property.");
+            return null; // Hoặc trả về mảng rỗng [] tùy theo logic của bạn
         }
         
-        user_id_getDm = dataUser[0].StateName;
-        Sid_getDM = dataUser[0].StateId;
+        const key = "DN" + maTram + "3";
+        const result = state.DATA.find(obj => obj.hasOwnProperty(key));
+
+        // Trả về dữ liệu nếu tìm thấy, ngược lại trả về null/undefined
+        return result ? result[key] : null;
+
+    } catch (error) {
+        HomeOS.Service.SetActionControl(true);
+        HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+        console.error("Error in HOMEOSAPP.WorkstationStatistics:", error);
+        throw error;
     }
-    
-    const d = { Uid: user_id_getDm, Sid: Sid_getDM, tablename: table, jd: JSON.stringify(data), ex: '' };
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            // url: "https://DEV.HOMEOS.vn/service/service.svc/ExecuteData?callback=?",
-            url: url+"/ExecuteData?callback=?",
-            type: "GET",
-            dataType: "jsonp",
-            data: d,
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    resolve(state);  // Trả về dữ liệu khi thành công
-                } catch (error) {
-                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-            },
-            error: function (e, t, x) {
-            }
-        });
-    });
-}
-
-HOMEOSAPP.WorkstationStatistics = async function(url, c, check, code) {
-    let user_id_getDm = 'admin';
-    let Sid_getDM = 'cb880c13-5465-4a1d-a598-28e06be43982';
-    if(check == "NotCentral"){
-        let dataUser;
-        if(url.toLowerCase() == "https://cctl-dongthap.homeos.vn/service/service.svc" || url.toLowerCase() == "https://pctthn.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("123" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else if(url.toLowerCase() == "https://thanthongnhat.homeos.vn/service/service.svc"){
-            dataUser = await checkRoleUser("admin", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        } else {
-            dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), url+'/');
-        }
-        
-        user_id_getDm = dataUser[0].StateName;
-        Sid_getDM = dataUser[0].StateId;
-    }
-    const maTram = localStorage.getItem("MATRAM");
-    const d = {
-        // Uid: 'vannt',
-        // Sid: 'b99213e4-a8a5-45f4-bb5c-cf03ae90d8d7',
-        Uid: user_id_getDm,
-        Sid: Sid_getDM,
-        c: c
-    };
-    
-    // const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
-
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: url+"/WorkstationStatistics?callback=?",
-            type: "GET",
-            dataType: "jsonp",
-            data: d,
-            contentType: "application/json; charset=utf-8",
-            success: function (msg) {
-                try {
-                    let state = JSON.parse(msg);
-                    const result = state.DATA.find(obj => obj.hasOwnProperty("DN"+maTram+"3"));
-                    const dataArray = result["DN"+maTram+"3"];
-                    resolve(dataArray);  // Trả về dữ liệu khi thành công
-                } catch (error) {
-                    reject(error);  // Bắt lỗi nếu JSON parse thất bại
-                }
-            },
-            complete: function (data) {
-                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
-            },
-            error: function (e, t, x) {
-                HomeOS.Service.SetActionControl(true);
-                HomeOS.Service.ShowLabel('Lỗi dữ liệu');
-                reject(e);  // Trả về lỗi nếu thất bại
-            }
-        });
-    });
-}
+};
 
 HOMEOSAPP.getNewData = function (workstation, c, url, key) {
     return new Promise((resolve, reject) => {
@@ -713,20 +727,6 @@ HOMEOSAPP.formatDateTime = function(dateInput, format = "YYYY-MM-DD HH:mm:ss") {
 
     return format.replace(/YYYY|MM|DD|HH|mm|ss/g, (token) => tokens[token]);
 }
-
-// HOMEOSAPP.formatDateTime = function(date) {
-//     const now = new Date(date);
-
-//     const year = now.getFullYear();
-//     const month = String(now.getMonth() + 1).padStart(2, '0');
-//     const day = String(now.getDate()).padStart(2, '0');
-//     const hours = String(now.getHours()).padStart(2, '0');
-//     const minutes = String(now.getMinutes()).padStart(2, '0');
-//     const seconds = String(now.getSeconds()).padStart(2, '0');
-
-//     const formattedDatetime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-//     return formattedDatetime
-// }
 
 HOMEOSAPP.handleControlApp = function(check) {
     HOMEOSAPP.showElement("LoadScreen", "LogoLoadScreen");
