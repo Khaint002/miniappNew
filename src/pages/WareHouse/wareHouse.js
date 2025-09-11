@@ -164,8 +164,8 @@ function showPrintOptions(mode) {
 
 renderApps(apps_waveHouse, 'wareHouse-list');
 // --- DỮ LIỆU MẪU (MOCK DATA) ---
-const generateScannedItems = (count, prefix) => Array.from({ length: count }, (_, i) => `${prefix}-item-${String(i + 1).padStart(4,'0')}`);
-let mockBatches = [
+var generateScannedItems = (count, prefix) => Array.from({ length: count }, (_, i) => `${prefix}-item-${String(i + 1).padStart(4,'0')}`);
+var mockBatches = [
     { batchCode: 'LSP-250911-001', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', bomId: 'BOM_CPU_I9_V1.5', lsx: 'LSX-0987', creationDate: '2025-09-11', status: 'Sẵn sàng nhập kho', active: 0,
       // Identification Data
       quantity: 50000, unit: 'Cái', batchUnit: 'Container', identifiedQuantity: 0, scannedData: {}, palletsPerContainer: 10, cartonsPerPallet: 25, layersPerCarton: 10, itemsPerLayer: 20 },
@@ -179,19 +179,19 @@ let mockBatches = [
       // Identification Data
       quantity: 50, unit: 'Cái', batchUnit: 'Hộp', identifiedQuantity: 0, scannedData: {}, palletsPerContainer: null, cartonsPerPallet: null, layersPerCarton: null, itemsPerLayer: null },
 ];
-const productionOrders = [
+var productionOrders = [
     { id: 'LSX-0987', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', bomId: 'BOM_CPU_I9_V1.5', specs: '14 nhân, 20 luồng', quantity: 100, unit: 'Cái', warranty: '36 tháng' },
     { id: 'LSX-0988', productCode: 'SP-RAM-DDR5', productName: 'RAM DDR5 16GB', bomId: 'BOM_RAM_DDR5_V2.1', specs: 'Kingston Fury, Bus 5200MHz', quantity: 500, unit: 'Thanh', warranty: '24 tháng' },
     { id: 'LSX-0989', productCode: 'SP-SSD-1TB', productName: 'SSD NVMe 1TB', bomId: 'BOM_SSD_NVME_V4.0', specs: 'Samsung 980 Pro', quantity: 250, unit: 'Ổ', warranty: '60 tháng' }
 ];
-const boms = [
+var boms = [
     { id: 'BOM_CPU_I9_V1.5', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', specs: '14 nhân, 20 luồng', unit: 'Cái', warranty: '36 tháng' },
     { id: 'BOM_RAM_DDR5_V2.1', productCode: 'SP-RAM-DDR5', productName: 'RAM DDR5 16GB', specs: 'Kingston Fury, Bus 5200MHz', unit: 'Thanh', warranty: '24 tháng' },
     { id: 'BOM_SSD_NVME_V4.0', productCode: 'SP-SSD-1TB', productName: 'SSD NVMe 1TB', specs: 'Samsung 980 Pro', unit: 'Ổ', warranty: '60 tháng' }
 ];
 
 // --- Lấy các phần tử DOM ---
-const getDomElements = () => ({
+var getDomElements = () => ({
     listScreen: document.getElementById('list-screen'),
     formScreen: document.getElementById('form-screen'),
     productIdScreen: document.getElementById('product-id-screen'),
@@ -260,31 +260,31 @@ const getDomElements = () => ({
     toastTitle: document.getElementById('toast-title'),
     toastBody: document.getElementById('toast-body'),
 });
-const dom = getDomElements();
+var dom = getDomElements();
 
 // --- Biến trạng thái ---
-let currentScreen = 'list';
-let currentFormMode = 'add';
-let editingBatchCode = null;
-let batchCodeToDeleteState = null;
-let openSwipeContainer = null;
-let deleteModal, idScanModal, appToast;
+var currentScreen = 'list';
+var currentFormMode = 'add';
+var editingBatchCode = null;
+var batchCodeToDeleteState = null;
+var openSwipeContainer = null;
+var deleteModal, idScanModal, appToast;
 
 // --- State for Identification Screen ---
-let sessionScannedData = {};
-let sessionScannedCount = 0;
-let currentScanIndices = { pallet: 1, carton: 1, layer: 1 };
-let currentIdBatch = null;
+var sessionScannedData = {};
+var sessionScannedCount = 0;
+var currentScanIndices = { pallet: 1, carton: 1, layer: 1 };
+var currentIdBatch = null;
 
 // --- CÁC HÀM XỬ LÝ CHUNG ---
-const navigateTo = (screen) => {
+var navigateTo = (screen) => {
     currentScreen = screen;
     dom.listScreen.classList.toggle('d-none', screen !== 'list');
     dom.formScreen.classList.toggle('d-none', screen !== 'form');
     dom.productIdScreen.classList.toggle('d-none', screen !== 'details');
 };
 
-const showToast = (message, type = 'success') => {
+var showToast = (message, type = 'success') => {
     dom.toastEl.classList.remove('text-bg-success', 'text-bg-info', 'text-bg-warning', 'text-bg-danger');
     let bgClass = '';
     switch(type) {
@@ -298,12 +298,12 @@ const showToast = (message, type = 'success') => {
     appToast.show();
 };
 
-const getStatusClass = (status) => ({
+var getStatusClass = (status) => ({
     'Sẵn sàng nhập kho': 'text-bg-success', 'Đã qua KCS': 'text-bg-primary',
     'Mới sản xuất': 'text-bg-warning', 'Đã hủy': 'text-bg-danger'
 }[status] || 'text-bg-secondary');
 
-const closeOpenSwipeContainer = (animate = true) => {
+var closeOpenSwipeContainer = (animate = true) => {
     if (openSwipeContainer) {
         const content = openSwipeContainer.querySelector('.swipe-content');
         content.style.transition = animate ? 'transform 0.2s ease-out' : 'none';
@@ -313,7 +313,7 @@ const closeOpenSwipeContainer = (animate = true) => {
 };
 
 // --- Chức năng Màn hình Danh sách ---
-const renderBatches = (batches) => {
+var renderBatches = (batches) => {
   console.log('test');
   
     const activeBatches = batches.filter(b => b.active === 0);
@@ -406,7 +406,7 @@ function initializeSwipeActions() {
     });
 }
 
-const handleSearch = () => {
+var handleSearch = () => {
     const searchTerm = dom.searchInput.value.toLowerCase();
     const filteredBatches = mockBatches.filter(batch => 
         batch.batchCode.toLowerCase().includes(searchTerm) ||
@@ -417,16 +417,16 @@ const handleSearch = () => {
 };
 
 // --- Chức năng Màn hình Form (Sửa/Thêm) ---
-const resetFormFields = () => {
+var resetFormFields = () => {
     dom.form.reset(); dom.batchCreationDate.valueAsDate = new Date();
     clearAutoFilledFields();
 };
-const clearAutoFilledFields = () => {
+var clearAutoFilledFields = () => {
     dom.productCode.value = ''; dom.productName.value = ''; dom.bomDisplay.value = '';
     dom.specifications.value = ''; dom.plannedQuantity.value = ''; dom.unit.value = '';
     dom.warranty.value = '';
 };
-const setupFormForAdd = () => {
+var setupFormForAdd = () => {
     currentFormMode = 'add'; editingBatchCode = null;
     dom.formTitle.textContent = 'Khai Báo Lô Sản Phẩm';
     dom.formSubmitButton.textContent = 'Xác Nhận & Lưu Lô';
@@ -437,7 +437,7 @@ const setupFormForAdd = () => {
     dom.bomSelectorContainer.classList.add('d-none');
     navigateTo('form');
 };
-const setupFormForEdit = (batchCode) => {
+var setupFormForEdit = (batchCode) => {
     const batch = mockBatches.find(b => b.batchCode === batchCode);
     if (!batch) return;
     currentFormMode = 'edit'; editingBatchCode = batchCode;
@@ -461,30 +461,30 @@ const setupFormForEdit = (batchCode) => {
     dom.status.value = batch.status; dom.unit.value = batch.unit; dom.batchUnit.value = batch.batchUnit;
     navigateTo('form');
 };
-const handleDelete = (batchCode) => {
+var handleDelete = (batchCode) => {
     batchCodeToDeleteState = batchCode;
     dom.batchCodeToDelete.textContent = batchCode;
     deleteModal.show();
 };
-const confirmDelete = () => {
+var confirmDelete = () => {
     const batchIndex = mockBatches.findIndex(b => b.batchCode === batchCodeToDeleteState);
     if (batchIndex > -1) mockBatches[batchIndex].active = 1;
     deleteModal.hide(); handleSearch();
 };
-const populateDropdowns = () => {
+var populateDropdowns = () => {
     dom.productionOrderSelect.innerHTML = '<option value="">-- Chọn LSX --</option>';
     dom.bomSelect.innerHTML = '<option value="">-- Chọn BOM --</option>';
     productionOrders.forEach(o => dom.productionOrderSelect.add(new Option(`${o.id} - ${o.productName}`, o.id)));
     boms.forEach(b => dom.bomSelect.add(new Option(`${b.id} - ${b.productName}`, b.id)));
 };
-const fillFormWithData = (data) => {
+var fillFormWithData = (data) => {
     if (!data) { clearAutoFilledFields(); return; }
     dom.productCode.value = data.productCode || ''; dom.productName.value = data.productName || '';
     dom.bomDisplay.value = data.bomId || data.id || ''; dom.specifications.value = data.specs || '';
     dom.plannedQuantity.value = data.quantity || ''; dom.actualQuantity.value = data.quantity || '';
     dom.unit.value = data.unit || ''; dom.warranty.value = data.warranty || '';
 };
-const handleFormSubmit = (e) => {
+var handleFormSubmit = (e) => {
     e.preventDefault();
     const formData = {
         batchCode: dom.batchCode.value, productName: dom.productName.value, bomId: dom.bomDisplay.value,
@@ -504,7 +504,7 @@ const handleFormSubmit = (e) => {
 };
 
 // --- Chức năng Màn hình Định danh (ID Screen) ---
-const setupProductIdScreen = (batchCode) => {
+var setupProductIdScreen = (batchCode) => {
     const foundBatch = mockBatches.find(b => b.batchCode === batchCode);
     if (!foundBatch) { showToast('Lỗi: Không tìm thấy lô sản phẩm.', 'error'); return; }
 
@@ -531,7 +531,7 @@ const setupProductIdScreen = (batchCode) => {
     navigateTo('details');
 };
 
-const handleDeclarationChange = () => {
+var handleDeclarationChange = () => {
     if (!currentIdBatch) return;
     currentIdBatch.itemsPerLayer = parseInt(dom.inputs.itemsPerLayer.value, 10) || null;
     currentIdBatch.layersPerCarton = parseInt(dom.inputs.layersPerCarton.value, 10) || null;
@@ -574,7 +574,7 @@ const handleDeclarationChange = () => {
     updateScanProgressUI(); updateIdButtonStates();
 };
 
-const renderScannedData = (data) => {
+var renderScannedData = (data) => {
     const totalCount = Object.values(data).reduce((pAcc, cartons) => pAcc + Object.values(cartons).reduce((cAcc, layers) => cAcc + Object.values(layers).reduce((lAcc, items) => lAcc + items.length, 0), 0), 0);
     dom.scanCount.textContent = totalCount;
     if (totalCount === 0) {
@@ -592,7 +592,7 @@ const renderScannedData = (data) => {
     dom.idListDetails.innerHTML = html || '<p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>';
 };
 
-const getDeclaration = (batch) => {
+var getDeclaration = (batch) => {
     const b = batch || currentIdBatch;
     if (!b) return { pallets: 1, cartons: 1, layers: 1, items: 1 };
     return {
@@ -601,7 +601,7 @@ const getDeclaration = (batch) => {
     };
 };
 
-const getIndicesFromTotal = (totalScanned, batch) => {
+var getIndicesFromTotal = (totalScanned, batch) => {
     if (!batch) return { pallet: 1, carton: 1, layer: 1 };
     const dec = getDeclaration(batch);
     const itemsPerLayer = dec.items || 1, itemsPerCarton = (dec.layers || 1) * itemsPerLayer, itemsPerPallet = (dec.cartons || 1) * itemsPerCarton;
@@ -629,7 +629,7 @@ const getIndicesFromTotal = (totalScanned, batch) => {
     return { pallet, carton, layer };
 };
 
-const updateScanProgressUI = () => {
+var updateScanProgressUI = () => {
     if (!currentIdBatch) return;
     const dec = getDeclaration();
     const unit = currentIdBatch.batchUnit;
@@ -640,7 +640,7 @@ const updateScanProgressUI = () => {
     if (['Container', 'Pallet', 'Thùng'].includes(unit)) { dom.progress.layer.classList.remove('d-none'); dom.progress.layer.lastElementChild.textContent = `${currentScanIndices.layer} / ${dec.layers || 'N/A'}`; dom.scanProgressContainer.classList.remove('d-none'); }
 };
 
-const handleSimulateScan = () => {
+var handleSimulateScan = () => {
     if (!currentIdBatch) return;
     const totalCanScan = currentIdBatch.quantity - currentIdBatch.identifiedQuantity;
     if (sessionScannedCount >= totalCanScan) {
@@ -691,7 +691,7 @@ const handleSimulateScan = () => {
     updateIdButtonStates();
 };
 
-const handleSaveIdentities = () => {
+var handleSaveIdentities = () => {
     if (dom.saveIdentitiesButton.disabled || !currentIdBatch) return;
     const batchIndex = mockBatches.findIndex(b => b.batchCode === currentIdBatch.batchCode);
     if (batchIndex > -1) {
@@ -714,18 +714,18 @@ const handleSaveIdentities = () => {
     }
 };
 
-const updateIdButtonStates = () => {
+var updateIdButtonStates = () => {
     if (!currentIdBatch) { dom.startScanButton.disabled = true; dom.saveIdentitiesButton.disabled = true; return; };
     const remaining = currentIdBatch.quantity - currentIdBatch.identifiedQuantity;
     dom.startScanButton.disabled = remaining <= 0;
     dom.saveIdentitiesButton.disabled = sessionScannedCount === 0;
 };
 
-const resetIdSession = () => {
+var resetIdSession = () => {
     sessionScannedData = {}; sessionScannedCount = 0; dom.modalScanCount.textContent = 0;
 };
 
-const showDeclarationLevelsByUnit = (unit) => {
+var showDeclarationLevelsByUnit = (unit) => {
     const levels = {
         container: document.getElementById('declaration-container-level'), pallet: document.getElementById('declaration-pallet-level'),
         carton: document.getElementById('declaration-carton-level'), layer: document.getElementById('declaration-layer-level')
@@ -739,7 +739,7 @@ const showDeclarationLevelsByUnit = (unit) => {
 
 
 // --- GÁN CÁC SỰ KIỆN ---
-const addEventListeners = () => {
+var addEventListeners = () => {
     dom.addNewButton.addEventListener('click', setupFormForAdd);
     dom.backToListButton.addEventListener('click', () => navigateTo('list'));
     dom.backToListFromDetailsButton.addEventListener('click', () => navigateTo('list'));
@@ -776,7 +776,7 @@ const addEventListeners = () => {
 };
 
 // --- KHỞI TẠO BAN ĐẦU ---
-const initializeApp = () => {
+var initializeApp = () => {
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
     idScanModal = new bootstrap.Modal(dom.idScanModalEl);
     appToast = new bootstrap.Toast(dom.toastEl);
@@ -789,9 +789,9 @@ initializeApp();
 
 
 // 
-const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
+var currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
 
-            let mockProducts = [
+            var mockProducts = [
                 { id: 1, name: 'CPU Intel Core i9-13900K', sku: 'CPU-I9-13900K', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=CPU' },
                 { id: 2, name: 'RAM DDR5 Kingston Fury 16GB', sku: 'RAM-DDR5-KF16', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=RAM' },
                 { id: 3, name: 'SSD NVMe Samsung 980 Pro 1TB', sku: 'SSD-S980-1TB', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=SSD' },
@@ -800,7 +800,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 { id: 6, name: 'Tản nhiệt Noctua NH-D15', sku: 'COO-NOC-D15', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Cooler' },
             ];
 
-            let mockBatches_2 = [
+            var mockBatches_2 = [
                 { batchId: 101, productId: 1, batchCode: 'L20250901', quantity: 58, unit: 'Cái', location: 'Kho A, Kệ 12', supplier: 'TechSource Inc.', lastUpdated: '10/09/2025', pricePerItem: 15000000, description: 'Lô nhập đầu tháng 9' },
                 { batchId: 102, productId: 2, batchCode: 'L20250901', quantity: 15, unit: 'Thanh', location: 'Kho A, Kệ 12', supplier: 'Memory World', lastUpdated: '09/09/2025', pricePerItem: 2500000, description: 'RAM bus 5600' },
                 { batchId: 103, productId: 4, batchCode: 'L20250902', quantity: 5, unit: 'Cái', location: 'Kho A, Kệ 15', supplier: 'Graphics Direct', lastUpdated: '10/09/2025', pricePerItem: 45000000, description: 'Bản Founder Edition' },
@@ -808,36 +808,36 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 { batchId: 105, productId: 6, batchCode: 'L20250825', quantity: 2, unit: 'Cái', location: 'Kho A, Kệ 22', supplier: 'Cooling Bros', lastUpdated: '08/09/2025', pricePerItem: 2200000, description: 'Màu Chromax Black' },
             ];
             
-            let mockHistory = {
+            var mockHistory = {
                 101: [{ type: 'import', quantity: 60, reason: 'Nhập hàng đầu kỳ', date: '01/09/2025' }, { type: 'export', quantity: 2, reason: 'Bán lẻ', date: '05/09/2025' }],
                 102: [{ type: 'import', quantity: 20, reason: 'Nhập hàng đầu kỳ', date: '01/09/2025' }, { type: 'export', quantity: 5, reason: 'Bán sỉ', date: '06/09/2025' }],
             };
 
-            const appContainer = document.getElementById('app-container');
-            const inventoryListEl = document.getElementById('inventory-list');
-            const searchInputEl = document.getElementById('search-input');
-            const filterButtonsEl = document.getElementById('filter-buttons');
-            let currentFilter = 'all';
-            let currentProductId = null;
+            var appContainer = document.getElementById('app-container');
+            var inventoryListEl = document.getElementById('inventory-list');
+            var searchInputEl = document.getElementById('search-input');
+            var filterButtonsEl = document.getElementById('filter-buttons');
+            var currentFilter = 'all';
+            var currentProductId = null;
 
-            const detailViewElements = { name: document.getElementById('detail-product-name'), image: document.getElementById('detail-image'), sku: document.getElementById('detail-sku'), quantity: document.getElementById('detail-quantity'), statusBadge: document.getElementById('detail-status-badge'), location: document.getElementById('detail-location'), supplier: document.getElementById('detail-supplier'), lastUpdated: document.getElementById('detail-last-updated') };
-            const historyListEl = document.getElementById('history-list');
-            const importViewElements = { select: document.getElementById('import-product-select'), batchCode: document.getElementById('import-batch-code'), quantity: document.getElementById('import-quantity'), unit: document.getElementById('import-unit'), reason: document.getElementById('import-reason-select'), location: document.getElementById('import-location'), priceItem: document.getElementById('import-price-item'), priceTotal: document.getElementById('import-price-total'), description: document.getElementById('import-description') };
-            const exportViewElements = { batchSelect: document.getElementById('export-batch-select'), batchInfo: document.getElementById('export-batch-info'), stockInfo: document.getElementById('export-stock-info'), location: document.getElementById('export-location'), quantity: document.getElementById('export-quantity'), price: document.getElementById('export-price'), totalPrice: document.getElementById('export-total-price'), exporter: document.getElementById('export-exporter'), receiver: document.getElementById('export-receiver'), formSelect: document.getElementById('export-form-select'), reason: document.getElementById('export-reason'), description: document.getElementById('export-description') };
+            var detailViewElements = { name: document.getElementById('detail-product-name'), image: document.getElementById('detail-image'), sku: document.getElementById('detail-sku'), quantity: document.getElementById('detail-quantity'), statusBadge: document.getElementById('detail-status-badge'), location: document.getElementById('detail-location'), supplier: document.getElementById('detail-supplier'), lastUpdated: document.getElementById('detail-last-updated') };
+            var historyListEl = document.getElementById('history-list');
+            var importViewElements = { select: document.getElementById('import-product-select'), batchCode: document.getElementById('import-batch-code'), quantity: document.getElementById('import-quantity'), unit: document.getElementById('import-unit'), reason: document.getElementById('import-reason-select'), location: document.getElementById('import-location'), priceItem: document.getElementById('import-price-item'), priceTotal: document.getElementById('import-price-total'), description: document.getElementById('import-description') };
+            var exportViewElements = { batchSelect: document.getElementById('export-batch-select'), batchInfo: document.getElementById('export-batch-info'), stockInfo: document.getElementById('export-stock-info'), location: document.getElementById('export-location'), quantity: document.getElementById('export-quantity'), price: document.getElementById('export-price'), totalPrice: document.getElementById('export-total-price'), exporter: document.getElementById('export-exporter'), receiver: document.getElementById('export-receiver'), formSelect: document.getElementById('export-form-select'), reason: document.getElementById('export-reason'), description: document.getElementById('export-description') };
             
-            const toastEl = document.getElementById('liveToast');
-            const toastBody = document.getElementById('toast-body');
-            const toast = new bootstrap.Toast(toastEl);
+            var toastEl = document.getElementById('liveToast');
+            var toastBody = document.getElementById('toast-body');
+            var toast = new bootstrap.Toast(toastEl);
 
-            const navigate = (view) => { appContainer.dataset.view = view; };
+            var navigate = (view) => { appContainer.dataset.view = view; };
 
-            const getStockInfo = (quantity) => {
+            var getStockInfo = (quantity) => {
                 if (quantity <= 0) return { text: 'Hết hàng', color: 'danger', bg: 'bg-danger-subtle', text_color: 'text-danger-emphasis' };
                 if (quantity <= 20) return { text: 'Sắp hết hàng', color: 'warning', bg: 'bg-warning-subtle', text_color: 'text-warning-emphasis' };
                 return { text: 'Còn hàng', color: 'success', bg: 'bg-success-subtle', text_color: 'text-success-emphasis' };
             };
 
-            const renderInventory = () => {
+            var renderInventory = () => {
                 const searchTerm = searchInputEl.value.toLowerCase();
                 
                 let productQuantities = mockProducts.map(product => {
@@ -858,7 +858,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 }).join('');
             };
 
-            const showDetailView = (productId) => {
+            var showDetailView = (productId) => {
                 currentProductId = productId;
                 const product = mockProducts.find(item => item.id == productId);
                 if (!product) return;
@@ -882,7 +882,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 navigate('detail');
             };
             
-            const showHistoryView = () => {
+            var showHistoryView = () => {
                 const productBatches = mockBatches_2.filter(b => b.productId == currentProductId);
                 const batchIds = productBatches.map(b => b.batchId);
                 const productHistory = batchIds.flatMap(id => mockHistory[id] || []).sort((a,b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')));
@@ -898,21 +898,21 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 navigate('history');
             };
             
-            const populateProductSelect = (selectEl) => {
+            var populateProductSelect = (selectEl) => {
                 selectEl.innerHTML = '<option value="">-- Chọn sản phẩm --</option>';
                 mockProducts.forEach(p => {
                     selectEl.innerHTML += `<option value="${p.id}">${p.name} (${p.sku})</option>`;
                 });
             };
 
-            const showImportView = () => {
+            var showImportView = () => {
                 populateProductSelect(importViewElements.select);
                 Object.values(importViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
                 importViewElements.priceTotal.value = '0 VNĐ';
                 navigate('import');
             };
 
-            const showExportView = () => {
+            var showExportView = () => {
                 exportViewElements.batchSelect.innerHTML = '<option value="">-- Chọn lô sản phẩm --</option>';
                 const groupedBatches = mockProducts.map(product => ({
                     productName: product.name,
@@ -939,7 +939,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 navigate('export');
             };
             
-            const setTheme = (theme) => {
+            var setTheme = (theme) => {
                 document.documentElement.setAttribute('data-bs-theme', theme);
                 localStorage.setItem('theme', theme);
                 document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
@@ -1068,7 +1068,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
             });
             
             // Initial Theme
-            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             setTheme(savedTheme);
 
             renderInventory();
