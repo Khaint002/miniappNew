@@ -91,6 +91,10 @@ $('#backWaveHouse').click(() => {
     document.getElementById("wareHouse-detail").classList.add("d-none");
 })
 
+$('#backMenuAll').click(() => {
+    HOMEOSAPP.goBack();
+})
+
 function switchMode(mode) {
     const container = document.getElementById("modeDetails");
     container.innerHTML = ""; // clear form cũ
