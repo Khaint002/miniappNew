@@ -310,6 +310,8 @@ const closeOpenSwipeContainer = (animate = true) => {
 
 // --- Chức năng Màn hình Danh sách ---
 const renderBatches = (batches) => {
+  console.log('test');
+  
     const activeBatches = batches.filter(b => b.active === 0);
     dom.batchListContainer.innerHTML = '';
     dom.noResults.classList.toggle('d-none', activeBatches.length > 0);
