@@ -20,9 +20,7 @@
           <div style="line-height: 50px; float: left;" id="extra_view"></div>
           <div style="line-height: 50px; float: left;">
             <button id="PickApp-button-scanQR" style="height: 40px; border: none; background-color: #1E2833;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-              </svg>
+              <i class="bi bi-house" style="color: white; font-size: 20px;"></i>
             </button>
           </div>
           <div style="line-height: 50px; float: left;">
@@ -39,8 +37,13 @@
               <!-- ===== MÀN HÌNH DANH SÁCH LÔ SẢN PHẨM ===== -->
               <div id="list-screen" class="d-flex flex-column h-100 w-100">
                   <header class="bg-dark shadow-sm sticky-top z-1">
-                      <div class="px-3 py-3">
-                           <h1 class="fs-5 fw-bold text-light text-center w-100">Quản Lý Lô Sản Phẩm</h1>
+                      <div class="px-3 py-3 d-flex align-items-center">
+                          <button id="backWaveHouse" class="btn btn-link text-secondary">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                          </button>
+                          <h1 class="fs-5 fw-bold text-light text-center w-100">Quản Lý Lô Sản Phẩm</h1>
+                          <div style="width: 40px;"></div>
+                            
                       </div>
                   </header>
       
@@ -160,7 +163,7 @@
                        </button>
                   </footer>
               </div>
-      
+    
               <!-- ===== MÀN HÌNH ĐỊNH DANH SẢN PHẨM ===== -->
               <div id="product-id-screen" class="d-none d-flex flex-column h-100">
                   <header class="bg-dark shadow-sm z-1 flex-shrink-0 p-3 d-flex align-items-center">
