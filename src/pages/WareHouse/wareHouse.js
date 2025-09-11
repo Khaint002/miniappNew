@@ -86,7 +86,7 @@ function createLot() {
     document.getElementById("lotResult").innerHTML = resultHTML;
 }
 
-$('#backWaveHouse').click(() => {
+$('.backWaveHouse').click(() => {
     document.getElementById("wareHouse-menu").classList.remove("d-none");
     document.getElementById("wareHouse-detail").classList.add("d-none");
 })
@@ -854,7 +854,7 @@ const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nh�
                 }
                 inventoryListEl.innerHTML = filteredInventory.map(item => {
                     const stock = getStockInfo(item.totalQuantity);
-                    return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+                    return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1" style="text-align: start;">${item.name}</p><p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
                 }).join('');
             };
 
