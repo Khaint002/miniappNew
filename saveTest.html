@@ -322,8 +322,114 @@
       </div>
 
       <div id="IMPORT" class="app-screen d-none">
-        <h2>Nhập kho</h2>
-        <!-- code html riêng cho IMPORT -->
+        <div id="app-container" data-view="list" style="max-width: 420px;" class="w-100 bg-body-tertiary shadow-lg d-flex flex-column position-relative overflow-hidden">
+        
+        <!-- List View -->
+        <div id="list-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="px-3 py-3 border-b d-flex align-items-center"><div style="width: 40px;"></div><h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <div class="p-3 bg-body border-b">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search-input" class="form-control border-start-0" placeholder="Tìm theo tên hoặc SKU...">
+                </div>
+                <div id="filter-buttons" class="d-flex gap-2 mt-3">
+                    <button data-filter="all" class="filter-btn btn btn-primary flex-fill rounded-pill">Tất cả</button>
+                    <button data-filter="low_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Sắp hết</button>
+                    <button data-filter="out_of_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Hết hàng</button>
+                </div>
+            </div>
+            <main id="inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-flex gap-3">
+                <button id="show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
+                <button id="show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
+            </footer>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detail-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <main class="flex-grow-1 overflow-y-auto p-3">
+                <div class="mb-3"><img id="detail-image" src="" alt="Product Image" class="w-100 rounded-3 shadow-sm border"></div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <p id="detail-sku" class="text-muted font-monospace small"></p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div>
+                            <p class="small text-muted mb-0">Tồn kho:</p>
+                            <p id="detail-quantity" class="fw-bold display-6 mb-0"></p>
+                        </div>
+                        <span id="detail-status-badge" class="badge fs-6 rounded-pill"></span>
+                    </div>
+                </div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <h3 class="h6 fw-semibold mb-2">Thông tin Vị trí</h3>
+                    <p id="detail-location" class="text-body-emphasis d-flex align-items-center mb-0"></p>
+                </div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <h3 class="h6 fw-semibold mb-2">Thông tin bổ sung</h3>
+                    <p class="small text-muted mb-1">Nhà cung cấp: <span id="detail-supplier" class="fw-medium text-body-emphasis"></span></p>
+                    <p class="small text-muted mb-0">Cập nhật lần cuối: <span id="detail-last-updated" class="fw-medium text-body-emphasis"></span></p>
+                </div>
+            </main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid">
+                <button id="view-history-btn" class="btn btn-secondary rounded-3">Xem Lịch sử</button>
+            </footer>
+        </div>
+
+        <!-- History View -->
+        <div id="history-view" class="view d-flex flex-column">
+             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+             <main id="history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
+        </div>
+
+        <!-- Import View -->
+        <div id="import-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <main class="flex-grow-1 overflow-y-auto p-3">
+                <div class="card card-body border-0 shadow-sm">
+                    <div class="mb-3"><label for="import-product-select" class="form-label fw-semibold">1. Chọn sản phẩm</label><select id="import-product-select" class="form-select"></select></div>
+                    <div class="mb-3"><label for="import-batch-code" class="form-label fw-semibold">2. Mã lô sản phẩm</label><input type="text" id="import-batch-code" placeholder="VD: L20250910" class="form-control"></div>
+                    <div class="row g-3 mb-3">
+                        <div class="col"><label for="import-quantity" class="form-label fw-semibold">3. Số lượng lô</label><input type="number" id="import-quantity" placeholder="VD: 100" class="form-control"></div>
+                        <div class="col"><label for="import-unit" class="form-label fw-semibold">4. Đơn vị</label><input type="text" id="import-unit" placeholder="VD: Cái, Thùng" class="form-control"></div>
+                    </div>
+                    <div class="mb-3"><label for="import-reason-select" class="form-label fw-semibold">5. Lý do nhập</label><select id="import-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
+                    <div class="mb-3"><label for="import-location" class="form-label fw-semibold">6. Vị trí đặt</label><input type="text" id="import-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
+                    <div class="row g-3 mb-3">
+                        <div class="col"><label for="import-price-item" class="form-label fw-semibold">7. Đơn giá</label><input type="number" id="import-price-item" placeholder="VNĐ" class="form-control"></div>
+                        <div class="col"><label for="import-price-total" class="form-label fw-semibold">Tổng giá lô</label><input type="text" id="import-price-total" class="form-control bg-body-secondary" readonly></div>
+                    </div>
+                    <div class="mb-3"><label for="import-description" class="form-label fw-semibold">8. Mô tả</label><textarea id="import-description" rows="2" class="form-control"></textarea></div>
+                    <div><label class="form-label fw-semibold">9. Hình ảnh</label><div class="d-grid gap-2 d-sm-flex"><button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button><button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button></div></div>
+                </div>
+            </main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
+        </div>
+
+        <!-- Export View -->
+        <div id="export-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <main class="flex-grow-1 overflow-y-auto p-3">
+                <div class="card card-body border-0 shadow-sm">
+                    <div class="mb-3"><label for="export-batch-select" class="form-label fw-semibold">1. Chọn lô sản phẩm</label><select id="export-batch-select" class="form-select"></select></div>
+                    <div id="export-batch-info" class="d-none alert alert-info small"><p class="mb-1"><strong>Tồn kho lô:</strong> <span id="export-stock-info" class="fw-medium"></span></p><p class="mb-0"><strong>Kho xuất:</strong> <span id="export-location" class="fw-medium"></span></p></div>
+                    <div class="row g-3 mb-3">
+                        <div class="col"><label for="export-quantity" class="form-label fw-semibold">2. Số lượng xuất</label><input type="number" id="export-quantity" placeholder="0" class="form-control"></div>
+                        <div class="col"><label for="export-price" class="form-label fw-semibold">3. Giá bán / SP</label><input type="number" id="export-price" placeholder="VNĐ" class="form-control"></div>
+                    </div>
+                    <div class="mb-3"><label for="export-total-price" class="form-label fw-semibold">Tổng tiền</label><input type="text" id="export-total-price" class="form-control bg-body-secondary" readonly></div>
+                    <div class="row g-3 mb-3">
+                        <div class="col"><label for="export-exporter" class="form-label fw-semibold">4. Người xuất</label><input type="text" id="export-exporter" class="form-control bg-body-secondary" readonly></div>
+                        <div class="col"><label for="export-receiver" class="form-label fw-semibold">5. Người nhận</label><input type="text" id="export-receiver" class="form-control"></div>
+                    </div>
+                    <div class="mb-3"><label for="export-form-select" class="form-label fw-semibold">6. Hình thức xuất</label><select id="export-form-select" class="form-select"><option>Bán hàng</option><option>Chuyển kho</option><option>Hàng mẫu</option><option>Khác</option></select></div>
+                    <div class="mb-3"><label for="export-reason" class="form-label fw-semibold">7. Lý do xuất</label><input type="text" id="export-reason" class="form-control" placeholder="VD: Bán cho khách hàng A"></div>
+                    <div><label for="export-description" class="form-label fw-semibold">8. Ghi chú (tùy chọn)</label><textarea id="export-description" rows="2" class="form-control"></textarea></div>
+                </div>
+            </main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="save-export-btn" class="btn btn-danger">Lưu Xuất Kho</button></footer>
+        </div>
+        
+      </div>
       </div>
 
       <div id="EXPORT" class="app-screen d-none">
@@ -331,6 +437,26 @@
         <!-- code html riêng cho EXPORT -->
       </div>
     </div>
+
+    <div class="modal fade" id="id-scan-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content bg-transparent border-0">
+              <div class="modal-body text-center text-white">
+                  <div class="scanner-box mx-auto">
+                      <div class="corner-bottom-left"></div>
+                      <div class="corner-bottom-right"></div>
+                      <div class="scanner-content">
+                          <div class="scanner-line"></div>
+                          <p class="position-absolute w-100 text-center text-white small bg-dark p-1" style="top: 1rem; --bs-bg-opacity: .5;">Hướng camera vào mã QR</p>
+                      </div>
+                  </div>
+                  <p class="mt-4 h5">Đã quét: <span id="modal-scan-count" class="fw-bold text-success">0</span></p>
+                  <button id="simulate-scan-button" class="btn btn-success fw-bold py-2 px-4 rounded mt-2">Quét mã giả lập</button>
+                  <button type="button" class="btn btn-link text-white-50 mt-4" data-bs-dismiss="modal">Dừng Quét</button>
+              </div>
+          </div>
+      </div>
+  </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -296,8 +296,57 @@
       </div>
 
       <div id="IMPORT" class="app-screen d-none">
-        <h2>Nhập kho</h2>
-        <!-- code html riêng cho IMPORT -->
+        <div id="app-container" data-view="list" style="max-width: 420px;" class="w-100 bg-body-tertiary shadow-lg d-flex flex-column position-relative overflow-hidden">
+        
+        <!-- List View -->
+        <div id="list-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="px-3 py-3 border-b d-flex align-items-center"><div style="width: 40px;"></div><h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <div class="p-3 bg-body border-b">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search-input" class="form-control border-start-0" placeholder="Tìm theo tên hoặc SKU...">
+                </div>
+                <div id="filter-buttons" class="d-flex gap-2 mt-3">
+                    <button data-filter="all" class="filter-btn btn btn-primary flex-fill rounded-pill">Tất cả</button>
+                    <button data-filter="low_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Sắp hết</button>
+                    <button data-filter="out_of_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Hết hàng</button>
+                </div>
+            </div>
+            <main id="inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-flex gap-3">
+                <button id="show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
+                <button id="show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
+            </footer>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detail-view" class="view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <main class="flex-grow-1 overflow-y-auto p-3">
+                <div class="mb-3"><img id="detail-image" src="" alt="Product Image" class="w-100 rounded-3 shadow-sm border"></div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <p id="detail-sku" class="text-muted font-monospace small"></p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div>
+                            <p class="small text-muted mb-0">Tồn kho:</p>
+                            <p id="detail-quantity" class="fw-bold display-6 mb-0"></p>
+                        </div>
+                        <span id="detail-status-badge" class="badge fs-6 rounded-pill"></span>
+                    </div>
+                </div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <h3 class="h6 fw-semibold mb-2">Thông tin Vị trí</h3>
+                    <p id="detail-location" class="text-body-emphasis d-flex align-items-center mb-0"></p>
+                </div>
+                <div class="card card-body mb-3 border-0 shadow-sm">
+                    <h3 class="h6 fw-semibold mb-2">Thông tin bổ sung</h3>
+                    <p class="small text-muted mb-1">Nhà cung cấp: <span id="detail-supplier" class="fw-medium text-body-emphasis"></span></p>
+                    <p class="small text-muted mb-0">Cập nhật lần cuối: <span id="detail-last-updated" class="fw-medium text-body-emphasis"></span></p>
+                </div>
+            </main>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid">
+                <button id="view-history-btn" class="btn btn-secondary rounded-3">Xem Lịch sử</button>
+            </footer>
       </div>
 
       <div id="EXPORT" class="app-screen d-none">
