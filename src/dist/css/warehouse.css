@@ -10,7 +10,6 @@
     background-color: #1c1c1c;
     color: #f1f1f1;
     min-height: 93vh;
-    padding: 1rem;
   }
 
   .wareHouse-detail-app .card {
@@ -59,6 +58,11 @@
   .wareHouse-detail-app .btn-primary:hover {
     background-color: #0097a7;
   }
+
+  .wareHouse-detail-app .bg-body-secondary {
+    --bs-bg-opacity: 1;
+    background-color: rgb(52 58 64) !important;
+  }
   .select2-selection__rendered {
     line-height: 45px !important;
   }
@@ -87,3 +91,194 @@
     position: relative;
     transition: background 0.3s;
   }
+
+  .app-container {
+    width: 100%;
+    max-width: 28rem; /* tương đương max-w-sm của Tailwind */
+    height: 100vh;
+}
+.form-element {
+    min-height: 2.75rem; 
+}
+.scanner-line {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: rgba(13, 110, 253, 0.7); /* Bootstrap primary color */
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
+    animation: scan 2s infinite linear;
+}
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+/* Tùy chỉnh thanh cuộn */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #212529; /* bg-dark */
+}
+::-webkit-scrollbar-thumb {
+    background: #495057; /* gray-600 */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6c757d; /* gray-500 */
+}
+#wareHouse-list{
+    margin: 0 auto;
+}
+
+#wareHouse-body {
+    padding: 20px;
+}
+
+.wareHouse-detail-app {
+    background-color: #1c1c1c;
+    color: #f1f1f1;
+    min-height: 93vh;
+  }
+
+  .wareHouse-detail-app .card {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    border: none;
+    text-align: left;
+  }
+
+  .wareHouse-detail-app .form-control,
+  .wareHouse-detail-app .form-select,
+  .wareHouse-detail-app .select2-container .select2-selection--single {
+    background-color: #1c1c1c !important;
+    color: #f1f1f1 !important;
+    border: 1px solid #444 !important;
+    border-radius: 8px !important;
+    height: 45px;
+  }
+
+  .wareHouse-detail-app .form-control::placeholder {
+    color: #717171;
+  }
+
+  .wareHouse-detail-app .select2-dropdown {
+    background-color: #2a2a2a !important;
+    color: #fff !important;
+  }
+
+  .wareHouse-detail-app .select2-results__option {
+    color: #fff !important;
+  }
+
+  .wareHouse-detail-app .select2-search__field {
+    background: #1c1c1c !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  .wareHouse-detail-app .btn-primary {
+    background-color: #00bcd4;
+    border: none;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+
+  .wareHouse-detail-app .btn-primary:hover {
+    background-color: #0097a7;
+  }
+
+  .wareHouse-detail-app .bg-body-secondary {
+    --bs-bg-opacity: 1;
+    background-color: rgb(52 58 64) !important;
+  }
+  .select2-selection__rendered {
+    line-height: 45px !important;
+  }
+  .select2-selection__arrow {
+    height: 45px !important;
+  }
+  .select2-dropdown--below {
+    border: 1px solid #555 !important;
+  }
+
+  #qrPrintApp .list-group-item {
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 5px;
+  }
+  #qrPrintApp .list-group-item:hover {
+    background-color: #1f1f1f;
+  }
+
+  .wareHouse-detail-app .option {
+    background: #121212;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 28rem; /* tương đương max-w-sm của Tailwind */
+    height: 100vh;
+}
+.form-element {
+    min-height: 2.75rem; 
+}
+.scanner-line {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: rgba(13, 110, 253, 0.7); /* Bootstrap primary color */
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.7);
+    animation: scan 2s infinite linear;
+}
+@keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+/* Tùy chỉnh thanh cuộn */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #212529; /* bg-dark */
+}
+::-webkit-scrollbar-thumb {
+    background: #495057; /* gray-600 */
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6c757d; /* gray-500 */
+}
+
+.wareHouse-detail-app .segmented-control-group {
+    padding: 4px !important;
+    background-color: #1e1e1e !important; /* nền tối cho cả group */
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    gap: 2px !important;
+}
+
+.wareHouse-detail-app .segmented-control-group .btn {
+    border: none !important;
+    background: transparent !important;
+    color: #9ca3af !important; /* màu chữ xám nhạt khi chưa chọn */
+    font-weight: 600 !important;
+    border-radius: 999px !important;
+    padding: 6px 16px !important;
+    margin-bottom: 0;
+    /* transition: all 0.2s ease !important; */
+}
+
+.wareHouse-detail-app .segmented-control-group .btn-check:checked + .btn {
+    background-color: #2a2a2a !important; /* nền tối hơn khi chọn */
+    color: #ffffff !important; /* chữ trắng khi chọn */
+    box-shadow: none !important;
+}
+
+.wareHouse-detail-app .segmented-control-group .btn:hover:not(.active) {
+    color: #ffffff !important; /* khi hover thì sáng lên */
+}
+

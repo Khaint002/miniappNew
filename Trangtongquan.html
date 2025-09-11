@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Lô Sản Phẩm - Giao diện tối</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Tùy chỉnh màu sắc cho input ở chế độ dark mode */
+        input:read-only, select:disabled, textarea:read-only {
+            background-color: #374151; /* bg-gray-700 */
+            cursor: not-allowed;
+            opacity: 0.7;
+            border-color: #4b5563; /* border-gray-600 */
+        }
+        .hidden { display: none; }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .form-element {
+            height: 2.75rem; 
+        }
+        .scanner-line {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: rgba(59, 130, 246, 0.7); /* blue-500 */
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        /* Tùy chỉnh thanh cuộn cho webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* bg-gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* bg-gray-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* bg-gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex justify-center items-center min-h-screen">
+
+    <div class="w-full max-w-sm h-screen bg-gray-800 shadow-2xl rounded-2xl flex flex-col relative overflow-hidden">
+        
+        <!-- ===== MÀN HÌNH DANH SÁCH LÔ SẢN PHẨM ===== -->
+        <div id="list-screen" class="flex flex-col h-full">
+            <header class="bg-gray-900 shadow-sm z-10 sticky top-0">
+                <div class="px-4 py-3">
+                     <h1 class="text-lg font-bold text-gray-100 text-center w-full">Quản Lý Lô Sản Phẩm</h1>
+                </div>
+            </header>
+
+            <div class="p-4 bg-gray-900 border-b border-gray-700">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                    </div>
+                    <input type="text" id="search-input" class="block w-full bg-gray-700 border border-gray-600 rounded-full py-2 pl-10 pr-4 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Tìm theo mã lô, tên sản phẩm...">
+                </div>
+            </div>
+
+            <main class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900">
+                <div id="batch-list-container" class="space-y-3"></div>
+                <p id="no-results" class="text-center text-gray-400 hidden">Không tìm thấy lô sản phẩm nào.</p>
+            </main>
+            
+            <button id="add-new-button" class="absolute bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105 active:scale-95 z-20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            </button>
+        </div>
+
+        <!-- ===== MÀN HÌNH FORM (Thêm & Sửa Lô) ===== -->
+        <div id="form-screen" class="hidden flex flex-col h-full">
+            <header class="bg-gray-900 shadow-sm z-10 flex-shrink-0">
+                <div class="px-4 py-3 flex items-center">
+                    <button id="back-to-list-button" class="text-gray-300 hover:text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <h1 id="form-title" class="text-lg font-bold text-gray-100 text-center flex-grow"></h1>
+                    <div class="w-6"></div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-5 bg-gray-800">
+                <form id="batch-declaration-form" class="space-y-5">
+                    <div class="relative bg-gray-700 p-1 rounded-full flex">
+                        <span id="tab-indicator" class="absolute h-full top-0 left-0 w-1/2 p-1 transition-transform duration-300 ease-in-out">
+                            <span class="block w-full h-full bg-gray-900 rounded-full shadow-md"></span>
+                        </span>
+                        <div class="flex-1 text-center z-10">
+                            <input type="radio" name="declaration_type" id="type_lsx" value="lsx" class="sr-only peer" checked>
+                            <label for="type_lsx" class="block w-full text-sm font-semibold p-2 rounded-full cursor-pointer transition-colors duration-300 text-gray-400 peer-checked:text-blue-400">Theo Lệnh Sản Xuất</label>
+                        </div>
+                        <div class="flex-1 text-center z-10">
+                            <input type="radio" name="declaration_type" id="type_bom" value="bom" class="sr-only peer">
+                            <label for="type_bom" class="block w-full text-sm font-semibold p-2 rounded-full cursor-pointer transition-colors duration-300 text-gray-400 peer-checked:text-blue-400">Theo BOM</label>
+                        </div>
+                    </div>
+                    <div id="lsx-selector-container">
+                        <label for="production-order" class="block text-sm font-medium text-gray-300 mb-1">Chọn Lệnh sản xuất (LSX)</label>
+                        <select id="production-order" class="form-element w-full p-2.5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white"></select>
+                    </div>
+                    <div id="bom-selector-container" class="hidden">
+                        <label for="bom-select" class="block text-sm font-medium text-gray-300 mb-1">Chọn BOM sản phẩm</label>
+                        <select id="bom-select" class="form-element w-full p-2.5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white"></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="batch-code" class="block text-sm font-medium text-gray-300 mb-1">Mã lô sản phẩm</label>
+                            <input type="text" id="batch-code" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                        </div>
+                         <div>
+                            <label for="batch-creation-date" class="block text-sm font-medium text-gray-300 mb-1">Ngày tạo lô hàng</label>
+                            <input type="date" id="batch-creation-date" class="form-element w-full p-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white">
+                        </div>
+                    </div>
+                    <hr class="my-4 border-t-2 border-dashed border-gray-700">
+                     <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="product-code" class="block text-sm font-medium text-gray-300 mb-1">Mã sản phẩm</label>
+                            <input type="text" id="product-code" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                        </div>
+                         <div>
+                            <label for="product-name" class="block text-sm font-medium text-gray-300 mb-1">Tên sản phẩm</label>
+                            <input type="text" id="product-name" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="bom-display" class="block text-sm font-medium text-gray-300 mb-1">BOM sản phẩm sản xuất</label>
+                        <input type="text" id="bom-display" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                    </div>
+                    <div>
+                        <label for="specifications" class="block text-sm font-medium text-gray-300 mb-1">Thông số kỹ thuật chung</label>
+                        <textarea id="specifications" rows="3" class="w-full p-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white" readonly></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="planned-quantity" class="block text-sm font-medium text-gray-300 mb-1">Số lượng kế hoạch</label>
+                            <input type="number" id="planned-quantity" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" placeholder="Tự động/Nhập tay" readonly>
+                        </div>
+                        <div>
+                            <label for="actual-quantity" class="block text-sm font-medium text-gray-300 mb-1">Số lượng thực tế lô</label>
+                            <input type="number" id="actual-quantity" class="form-element w-full p-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500" placeholder="VD: 100" min="1" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-5">
+                         <div>
+                            <label for="unit" class="block text-sm font-medium text-gray-300 mb-1">ĐVT Sản phẩm</label>
+                            <input type="text" id="unit" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                        </div>
+                         <div>
+                            <label for="batch-unit" class="block text-sm font-medium text-gray-300 mb-1">Đơn vị tính lô</label>
+                             <select id="batch-unit" class="form-element w-full p-2.5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white">
+                                <option>Thùng</option><option>Hộp</option><option>Pallet</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="warranty" class="block text-sm font-medium text-gray-300 mb-1">Thời gian bảo hành</label>
+                            <input type="text" id="warranty" class="form-element w-full p-2.5 border border-gray-600 rounded-lg text-white" readonly>
+                        </div>
+                         <div>
+                            <label for="status" class="block text-sm font-medium text-gray-300 mb-1">Trạng thái lô hàng</label>
+                            <select id="status" class="form-element w-full p-2.5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white">
+                                <option>Mới sản xuất</option><option>Đã qua KCS</option><option>Sẵn sàng nhập kho</option><option>Đã hủy</option>
+                            </select>
+                        </div>
+                     </div>
+                </form>
+            </main>
+            
+            <footer class="p-4 bg-gray-900 border-t border-gray-700 flex-shrink-0">
+                 <button type="submit" id="form-submit-button" form="batch-declaration-form" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md">
+                 </button>
+            </footer>
+        </div>
+
+        <!-- ===== MÀN HÌNH ĐỊNH DANH SẢN PHẨM ===== -->
+        <div id="product-id-screen" class="hidden flex flex-col h-full">
+            <header class="bg-gray-900 shadow-sm z-10 flex-shrink-0">
+                <div class="px-4 py-3 flex items-center">
+                    <button id="back-to-list-from-details-button" class="text-gray-300 hover:text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h1 id="product-id-title" class="text-lg font-bold text-gray-100 text-center flex-grow">Định danh sản phẩm</h1>
+                    <div class="w-6"></div>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto p-5 bg-gray-800">
+                <div id="batch-info-container" class="p-4 bg-blue-900/40 border-l-4 border-blue-500 rounded-r-lg space-y-2 mb-5">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Sản phẩm:</span>
+                        <span id="info-product-name" class="font-semibold text-gray-100 text-right"></span>
+                    </div>
+                     <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Tổng số lượng:</span>
+                        <span id="info-total-quantity" class="font-semibold text-gray-100"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Đã định danh:</span>
+                        <span id="info-identified-quantity" class="font-semibold text-green-400"></span>
+                    </div>
+                     <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Cần quét còn lại:</span>
+                        <span id="info-remaining-quantity" class="font-bold text-red-400 text-base"></span>
+                    </div>
+                </div>
+                 <div id="results-container" class="space-y-4">
+                    <h2 class="font-semibold text-gray-300">Danh sách định danh (<span id="scan-count">0</span>)</h2>
+                    <div id="id-list" class="space-y-2 max-h-60 overflow-y-auto bg-gray-900 p-2 rounded-lg border border-gray-700">
+                    </div>
+                </div>
+            </main>
+
+            <footer class="p-4 bg-gray-900 border-t border-gray-700 flex-shrink-0 flex gap-3">
+                 <button id="scan-new-id-button" class="flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-all shadow-md flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6.5 6.5l-1.5-1.5M4 12H2m17.5-6.5l-1.5 1.5M4.5 19.5l1.5-1.5M12 20v-1m0-15a7 7 0 100 14 7 7 0 000-14z"></path></svg>
+                    Quét
+                </button>
+                <button id="save-identities-button" class="flex-1 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md">
+                    Lưu
+                </button>
+            </footer>
+        </div>
+        
+        <!-- ===== MODALS ===== -->
+        <div id="delete-modal" class="hidden absolute inset-0 bg-black bg-opacity-60 flex justify-center items-center p-4 modal-overlay opacity-0 z-50">
+            <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-xs text-center border border-gray-700">
+                <h3 class="text-lg font-bold text-gray-100">Xác nhận Xóa</h3>
+                <p class="text-sm text-gray-300 mt-2">Bạn có chắc chắn muốn xóa lô sản phẩm <b id="batch-code-to-delete" class="text-yellow-400"></b>? Hành động này không thể hoàn tác.</p>
+                <div class="mt-6 flex justify-center gap-4">
+                    <button id="cancel-delete-button" class="px-4 py-2 bg-gray-600 text-gray-100 rounded-lg hover:bg-gray-500 text-sm font-semibold">Hủy bỏ</button>
+                    <button id="confirm-delete-button" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+        <div id="scan-modal" class="hidden absolute inset-0 z-50 bg-black bg-opacity-80 flex flex-col justify-center items-center p-4">
+            <div class="relative w-full max-w-xs aspect-square bg-gray-700 rounded-lg overflow-hidden border-2 border-blue-500">
+                <div class="scanner-line"></div>
+                <p class="absolute top-4 left-4 text-white text-sm">Hướng camera vào mã QR...</p>
+            </div>
+            <p class="text-white mt-4">Đã quét mới: <span id="modal-scan-count" class="font-bold">0</span></p>
+            <button id="simulate-scan-button" class="mt-4 bg-green-500 text-white font-bold py-2 px-6 rounded-lg">Quét mã giả lập</button>
+            <button id="stop-scan-button" class="mt-8 text-white text-sm">Dừng Quét</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DỮ LIỆU MẪU (MOCK DATA) ---
+        let mockBatches = [
+            { batchCode: 'LSP-240925-001', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', bomId: 'BOM_CPU_I9_V1.5', lsx: 'LSX-0987', quantity: 100, unit: 'Cái', creationDate: '2025-09-25', status: 'Sẵn sàng nhập kho', active: 0 },
+            { batchCode: 'LSP-240925-002', productCode: 'SP-RAM-16DDR5', productName: 'RAM DDR5 16GB', bomId: 'BOM_RAM_DDR5_V2.1', lsx: 'LSX-0988', quantity: 500, unit: 'Thanh', creationDate: '2025-09-25', status: 'Mới sản xuất', active: 0 },
+            { batchCode: 'LSP-240924-005', productCode: 'SP-SSD-1TB-NVME', productName: 'SSD NVMe 1TB', bomId: 'BOM_SSD_NVME_V4.0', lsx: 'LSX-0989', quantity: 245, unit: 'Ổ', creationDate: '2025-09-24', status: 'Đã qua KCS', active: 0 },
+            { batchCode: 'LSP-240924-004', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', bomId: 'BOM_CPU_I9_V1.5', lsx: 'LSX-0987', quantity: 50, unit: 'Cái', creationDate: '2025-09-24', status: 'Đã hủy', active: 0 },
+        ];
+        const productionOrders = [
+            { id: 'LSX-0987', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', bomId: 'BOM_CPU_I9_V1.5', specs: '14 nhân, 20 luồng', quantity: 100, unit: 'Cái', warranty: '36 tháng' },
+            { id: 'LSX-0988', productCode: 'SP-RAM-16DDR5', productName: 'RAM DDR5 16GB', bomId: 'BOM_RAM_DDR5_V2.1', specs: 'Kingston Fury, Bus 5200MHz', quantity: 500, unit: 'Thanh', warranty: '24 tháng' },
+            { id: 'LSX-0989', productCode: 'SP-SSD-1TB-NVME', productName: 'SSD NVMe 1TB', bomId: 'BOM_SSD_NVME_V4.0', specs: 'Samsung 980 Pro', quantity: 250, unit: 'Ổ', warranty: '60 tháng' }
+        ];
+        const boms = [
+            { id: 'BOM_CPU_I9_V1.5', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', specs: '14 nhân, 20 luồng', unit: 'Cái', warranty: '36 tháng' },
+            { id: 'BOM_RAM_DDR5_V2.1', productCode: 'SP-RAM-16DDR5', productName: 'RAM DDR5 16GB', specs: 'Kingston Fury, Bus 5200MHz', unit: 'Thanh', warranty: '24 tháng' },
+            { id: 'BOM_SSD_NVME_V4.0', productCode: 'SP-SSD-1TB-NVME', productName: 'SSD NVMe 1TB', specs: 'Samsung 980 Pro', unit: 'Ổ', warranty: '60 tháng' }
+        ];
+        let mockProductIdentities = {
+            'LSP-240925-001': Array.from({ length: 95 }, (_, i) => `SN-I9-240925-${String(i + 1).padStart(4, '0')}`),
+            'LSP-240925-002': [],
+            'LSP-240924-005': Array.from({ length: 245 }, (_, i) => `SN-SSD-240924-${String(i + 1).padStart(4, '0')}`),
+            'LSP-240924-004': [],
+        };
+
+        // --- Lấy các phần tử DOM ---
+        const dom = {
+            listScreen: document.getElementById('list-screen'),
+            formScreen: document.getElementById('form-screen'),
+            productIdScreen: document.getElementById('product-id-screen'),
+            batchListContainer: document.getElementById('batch-list-container'),
+            searchInput: document.getElementById('search-input'),
+            noResults: document.getElementById('no-results'),
+            addNewButton: document.getElementById('add-new-button'),
+            backToListButton: document.getElementById('back-to-list-button'),
+            backToListFromDetailsButton: document.getElementById('back-to-list-from-details-button'),
+            form: document.getElementById('batch-declaration-form'),
+            formTitle: document.getElementById('form-title'),
+            formSubmitButton: document.getElementById('form-submit-button'),
+            // Delete Modal
+            deleteModal: document.getElementById('delete-modal'),
+            batchCodeToDelete: document.getElementById('batch-code-to-delete'),
+            cancelDeleteButton: document.getElementById('cancel-delete-button'),
+            confirmDeleteButton: document.getElementById('confirm-delete-button'),
+            // Form fields
+            declarationTypeRadios: document.querySelectorAll('input[name="declaration_type"]'),
+            tabIndicator: document.getElementById('tab-indicator'),
+            lsxSelectorContainer: document.getElementById('lsx-selector-container'),
+            bomSelectorContainer: document.getElementById('bom-selector-container'),
+            productionOrderSelect: document.getElementById('production-order'),
+            bomSelect: document.getElementById('bom-select'),
+            batchCode: document.getElementById('batch-code'),
+            batchCreationDate: document.getElementById('batch-creation-date'),
+            productCode: document.getElementById('product-code'),
+            productName: document.getElementById('product-name'),
+            bomDisplay: document.getElementById('bom-display'),
+            specifications: document.getElementById('specifications'),
+            plannedQuantity: document.getElementById('planned-quantity'),
+            actualQuantity: document.getElementById('actual-quantity'),
+            unit: document.getElementById('unit'),
+            batchUnit: document.getElementById('batch-unit'),
+            warranty: document.getElementById('warranty'),
+            status: document.getElementById('status'),
+            // Product ID Screen
+            productIdTitle: document.getElementById('product-id-title'),
+            infoProductName: document.getElementById('info-product-name'),
+            infoTotalQuantity: document.getElementById('info-total-quantity'),
+            infoIdentifiedQuantity: document.getElementById('info-identified-quantity'),
+            infoRemainingQuantity: document.getElementById('info-remaining-quantity'),
+            idList: document.getElementById('id-list'),
+            scanCount: document.getElementById('scan-count'),
+            scanNewIdButton: document.getElementById('scan-new-id-button'),
+            saveIdentitiesButton: document.getElementById('save-identities-button'),
+            // Scan Modal
+            scanModal: document.getElementById('scan-modal'),
+            modalScanCount: document.getElementById('modal-scan-count'),
+            simulateScanButton: document.getElementById('simulate-scan-button'),
+            stopScanButton: document.getElementById('stop-scan-button'),
+        };
+
+        // --- Biến trạng thái ---
+        let currentScreen = 'list';
+        let currentFormMode = 'add';
+        let editingBatchCode = null;
+        let batchCodeToDeleteState = null;
+        let formDeclarationType = 'lsx';
+        let openSwipeContainer = null;
+        let currentViewingBatch = null;
+        let newlyScannedIDs = [];
+
+        // --- CÁC HÀM XỬ LÝ CHÍNH ---
+
+        // Chuyển đổi giữa các màn hình
+        const navigateTo = (screen) => {
+            currentScreen = screen;
+            dom.listScreen.classList.toggle('hidden', screen !== 'list');
+            dom.formScreen.classList.toggle('hidden', screen !== 'form');
+            dom.productIdScreen.classList.toggle('hidden', screen !== 'details');
+        };
+
+        const getStatusClass = (status) => {
+            const classes = {
+                'Sẵn sàng nhập kho': 'bg-green-500/20 text-green-300', 
+                'Đã qua KCS': 'bg-blue-500/20 text-blue-300', 
+                'Mới sản xuất': 'bg-yellow-500/20 text-yellow-300', 
+                'Đã hủy': 'bg-red-500/20 text-red-300'
+            };
+            return classes[status] || 'bg-gray-700 text-gray-300';
+        };
+        
+        const closeOpenSwipeContainer = (animate = true) => {
+            if (openSwipeContainer) {
+                const content = openSwipeContainer.querySelector('.swipe-content');
+                content.style.transition = animate ? 'transform 0.2s ease-out' : 'none';
+                content.style.transform = 'translateX(0px)';
+                openSwipeContainer = null;
+            }
+        };
+
+        // --- Chức năng Màn hình Danh sách ---
+
+        const renderBatches = (batches) => {
+            const activeBatches = batches.filter(b => b.active === 0);
+            dom.batchListContainer.innerHTML = '';
+            dom.noResults.classList.toggle('hidden', activeBatches.length > 0);
+            activeBatches.forEach(batch => {
+                const batchCardHTML = `
+                <div class="swipe-container relative bg-gray-800/50 rounded-xl shadow-sm border border-gray-700 overflow-hidden">
+                    <div class="swipe-actions absolute top-0 right-0 h-full flex items-center">
+                        <button data-action="edit" data-code="${batch.batchCode}" class="h-full bg-blue-600 text-white px-6 flex flex-col items-center justify-center transition-colors hover:bg-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" /></svg>
+                            <span class="text-xs font-semibold pointer-events-none">Sửa</span>
+                        </button>
+                        <button data-action="delete" data-code="${batch.batchCode}" class="h-full bg-red-600 text-white px-6 flex flex-col items-center justify-center transition-colors hover:bg-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            <span class="text-xs font-semibold pointer-events-none">Xóa</span>
+                        </button>
+                    </div>
+                    <div class="swipe-content bg-gray-800 relative z-10 p-4 transition-transform duration-200 ease-out cursor-pointer" data-code="${batch.batchCode}">
+                        <div class="flex justify-between items-start pointer-events-none">
+                            <div>
+                                <p class="font-bold text-gray-100 text-md">${batch.batchCode}</p>
+                                <p class="text-sm text-gray-300">${batch.productName}</p>
+                            </div>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${getStatusClass(batch.status)}">${batch.status}</span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center text-sm text-gray-400 pointer-events-none">
+                            <span>SL: <span class="font-semibold text-gray-200">${batch.quantity} ${batch.unit}</span></span>
+                            <span>Ngày tạo: <span class="font-semibold text-gray-200">${batch.creationDate}</span></span>
+                        </div>
+                    </div>
+                </div>`;
+                dom.batchListContainer.insertAdjacentHTML('beforeend', batchCardHTML);
+            });
+            initializeSwipeActions();
+        };
+        
+        function initializeSwipeActions() {
+            document.querySelectorAll('.swipe-container').forEach(container => {
+                const content = container.querySelector('.swipe-content');
+                const actions = container.querySelector('.swipe-actions');
+                if (!content || !actions) return;
+        
+                const actionsWidth = actions.offsetWidth;
+                let startX, startY, diffX = 0, diffY = 0, isDragging = false, isScrolling = false;
+                const tapThreshold = 10; // Ngưỡng pixel để phân biệt vuốt và chạm
+        
+                content.addEventListener('touchstart', (e) => {
+                    if (openSwipeContainer && openSwipeContainer !== container) {
+                        closeOpenSwipeContainer();
+                    }
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    diffX = 0;
+                    diffY = 0;
+                    isDragging = true;
+                    isScrolling = false;
+                    content.style.transition = 'none';
+                }, { passive: true });
+        
+                content.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    
+                    diffX = e.touches[0].clientX - startX;
+                    diffY = e.touches[0].clientY - startY;
+        
+                    if (!isScrolling && Math.abs(diffY) > Math.abs(diffX) + 5) {
+                         isScrolling = true;
+                    }
+        
+                    if(isScrolling) return;
+        
+                    e.preventDefault();
+        
+                    if (diffX > 0) diffX = 0;
+                    
+                    if (Math.abs(diffX) > actionsWidth) {
+                         const overdrag = Math.abs(diffX) - actionsWidth;
+                         diffX = -actionsWidth - (overdrag / 4);
+                    }
+                    content.style.transform = `translateX(${diffX}px)`;
+                });
+        
+                content.addEventListener('touchend', () => {
+                    if (!isDragging || isScrolling) {
+                        isDragging = false;
+                        return;
+                    }
+                    isDragging = false;
+                    content.style.transition = 'transform 0.2s ease-out';
+                    
+                    if (Math.abs(diffX) < tapThreshold) {
+                        if (openSwipeContainer === container) {
+                            closeOpenSwipeContainer();
+                        } else {
+                            // Đây là hành động chạm -> Mở chi tiết
+                            setupProductIdScreen(content.dataset.code);
+                        }
+                    } 
+                    else if (diffX < -actionsWidth / 2) {
+                        // Vuốt thành công -> Mở Sửa/Xóa
+                        content.style.transform = `translateX(${-actionsWidth}px)`;
+                        openSwipeContainer = container;
+                    } 
+                    else {
+                        // Vuốt không đủ -> Quay lại
+                        content.style.transform = 'translateX(0px)';
+                        if (openSwipeContainer === container) openSwipeContainer = null;
+                    }
+                });
+            });
+        }
+
+        const handleSearch = () => {
+            const searchTerm = dom.searchInput.value.toLowerCase();
+            const filteredBatches = mockBatches.filter(batch => 
+                batch.batchCode.toLowerCase().includes(searchTerm) ||
+                batch.productName.toLowerCase().includes(searchTerm) ||
+                (batch.lsx && batch.lsx.toLowerCase().includes(searchTerm))
+            );
+            renderBatches(filteredBatches);
+        };
+        
+        // --- Chức năng Màn hình Form (Sửa/Thêm) ---
+        
+        const resetFormFields = () => {
+            dom.form.reset();
+            dom.batchCreationDate.valueAsDate = new Date();
+            clearAutoFilledFields();
+        };
+        
+        const clearAutoFilledFields = () => {
+            dom.productCode.value = ''; dom.productName.value = ''; dom.bomDisplay.value = '';
+            dom.specifications.value = ''; dom.plannedQuantity.value = ''; dom.unit.value = '';
+            dom.warranty.value = '';
+        };
+
+        const setupFormForAdd = () => {
+            currentFormMode = 'add'; editingBatchCode = null;
+            dom.formTitle.textContent = 'Khai Báo Lô Sản Phẩm';
+            dom.formSubmitButton.textContent = 'Xác Nhận & Lưu Lô';
+            dom.batchCode.value = `LSP-${new Date().toISOString().slice(2,10).replace(/-/g,"")}-${String(mockBatches.length + 1).padStart(3, '0')}`;
+            resetFormFields(); populateDropdowns();
+            dom.declarationTypeRadios[0].checked = true;
+            dom.tabIndicator.style.transform = 'translateX(0%)';
+            formDeclarationType = 'lsx';
+            dom.lsxSelectorContainer.classList.remove('hidden');
+            dom.bomSelectorContainer.classList.add('hidden');
+            navigateTo('form');
+        };
+        
+        const setupFormForEdit = (batchCode) => {
+            const batch = mockBatches.find(b => b.batchCode === batchCode);
+            if (!batch) return;
+            currentFormMode = 'edit'; editingBatchCode = batchCode;
+            dom.formTitle.textContent = 'Chỉnh Sửa Lô Sản Phẩm';
+            dom.formSubmitButton.textContent = 'Cập Nhật Lô';
+            
+            populateDropdowns(); 
+            clearAutoFilledFields();
+
+            if (batch.lsx) {
+                formDeclarationType = 'lsx'; 
+                dom.declarationTypeRadios[0].checked = true;
+                dom.tabIndicator.style.transform = 'translateX(0%)';
+                dom.lsxSelectorContainer.classList.remove('hidden'); 
+                dom.bomSelectorContainer.classList.add('hidden');
+                dom.productionOrderSelect.value = batch.lsx;
+                const sourceData = productionOrders.find(o => o.id === batch.lsx);
+                if (sourceData) fillFormWithData(sourceData);
+            } else if (batch.bomId) {
+                formDeclarationType = 'bom'; 
+                dom.declarationTypeRadios[1].checked = true;
+                dom.tabIndicator.style.transform = 'translateX(100%)';
+                dom.lsxSelectorContainer.classList.add('hidden'); 
+                dom.bomSelectorContainer.classList.remove('hidden');
+                dom.bomSelect.value = batch.bomId;
+                const sourceData = boms.find(b => b.id === batch.bomId);
+                if (sourceData) fillFormWithData(sourceData);
+            }
+            
+            dom.batchCode.value = batch.batchCode; 
+            dom.productName.value = batch.productName;
+            dom.batchCreationDate.value = batch.creationDate;
+            dom.actualQuantity.value = batch.quantity; 
+            dom.status.value = batch.status;
+            dom.unit.value = batch.unit;
+            dom.batchUnit.value = 'Thùng'; 
+
+            navigateTo('form');
+        };
+
+        const handleDelete = (batchCode) => {
+            batchCodeToDeleteState = batchCode;
+            dom.batchCodeToDelete.textContent = batchCode;
+            dom.deleteModal.classList.remove('hidden');
+            setTimeout(() => dom.deleteModal.classList.remove('opacity-0'), 10);
+        };
+        
+        const confirmDelete = () => {
+            const batchIndex = mockBatches.findIndex(b => b.batchCode === batchCodeToDeleteState);
+            if (batchIndex > -1) mockBatches[batchIndex].active = 1;
+            closeDeleteModal(); handleSearch();
+        };
+
+        const closeDeleteModal = () => {
+            dom.deleteModal.classList.add('opacity-0');
+            setTimeout(() => dom.deleteModal.classList.add('hidden'), 300);
+        };
+        
+        const populateDropdowns = () => {
+            dom.productionOrderSelect.innerHTML = '<option value="">-- Vui lòng chọn LSX --</option>';
+            dom.bomSelect.innerHTML = '<option value="">-- Vui lòng chọn BOM --</option>';
+            productionOrders.forEach(o => dom.productionOrderSelect.add(new Option(`${o.id} - ${o.productName}`, o.id)));
+            boms.forEach(b => dom.bomSelect.add(new Option(`${b.id} - ${b.productName}`, b.id)));
+        };
+        
+        const fillFormWithData = (data) => {
+            dom.productCode.value = data.productCode || ''; dom.productName.value = data.productName || '';
+            dom.bomDisplay.value = data.bomId || data.id || ''; dom.specifications.value = data.specs || '';
+            dom.plannedQuantity.value = data.quantity || ''; dom.actualQuantity.value = data.quantity || '';
+            dom.unit.value = data.unit || ''; dom.warranty.value = data.warranty || '';
+        };
+
+        const handleFormSubmit = (e) => {
+            e.preventDefault();
+            const formData = {
+                batchCode: dom.batchCode.value, productName: dom.productName.value, bomId: dom.bomDisplay.value,
+                lsx: formDeclarationType === 'lsx' ? dom.productionOrderSelect.value : null,
+                quantity: parseInt(dom.actualQuantity.value), unit: dom.unit.value,
+                creationDate: dom.batchCreationDate.value, status: dom.status.value, active: 0
+            };
+            if (currentFormMode === 'add') {
+                mockBatches.unshift(formData);
+                mockProductIdentities[formData.batchCode] = [];
+            } else {
+                const batchIndex = mockBatches.findIndex(b => b.batchCode === editingBatchCode);
+                if (batchIndex > -1) mockBatches[batchIndex] = {...mockBatches[batchIndex], ...formData};
+            }
+            handleSearch(); navigateTo('list');
+        };
+
+        // --- Chức năng Màn hình Định danh ---
+
+        const setupProductIdScreen = (batchCode) => {
+            currentViewingBatch = mockBatches.find(b => b.batchCode === batchCode);
+            if (!currentViewingBatch) return;
+
+            const existingIDs = mockProductIdentities[batchCode] || [];
+            const remaining = currentViewingBatch.quantity - existingIDs.length;
+
+            dom.productIdTitle.textContent = `Định danh lô: ${batchCode}`;
+            dom.infoProductName.textContent = currentViewingBatch.productName;
+            dom.infoTotalQuantity.textContent = currentViewingBatch.quantity;
+            dom.infoIdentifiedQuantity.textContent = existingIDs.length;
+            dom.infoRemainingQuantity.textContent = remaining;
+
+            renderIdentityList(existingIDs);
+            newlyScannedIDs = []; // Reset danh sách quét mới
+            navigateTo('details');
+        };
+        
+        const renderIdentityList = (idList) => {
+            dom.idList.innerHTML = idList.length > 0 ? 
+                idList.map(id => `<p class="font-mono text-sm bg-gray-700 text-gray-200 p-2 rounded border border-gray-600">${id}</p>`).join('') :
+                '<p class="text-center text-gray-400 text-sm p-4">Chưa có định danh nào.</p>';
+            dom.scanCount.textContent = idList.length;
+        };
+        
+        const handleSimulateScan = () => {
+            if (!currentViewingBatch) return;
+
+            const existingIDs = mockProductIdentities[currentViewingBatch.batchCode] || [];
+            const allKnownIDs = [...existingIDs, ...newlyScannedIDs];
+            const remaining = currentViewingBatch.quantity - allKnownIDs.length;
+
+            if (remaining <= 0) {
+                alert('Đã quét đủ số lượng cho lô này.');
+                dom.scanModal.classList.add('hidden');
+                return;
+            }
+            
+            const scannedId = `${currentViewingBatch.productCode}-SN-${Date.now().toString().slice(-6)}`;
+            
+            if (allKnownIDs.includes(scannedId)) {
+                console.warn(`Mã ${scannedId} đã được quét.`);
+                return; // Giả lập quét trùng, không thêm
+            }
+
+            newlyScannedIDs.push(scannedId);
+            const itemHTML = `<p class="font-mono text-sm bg-green-900/50 text-green-300 p-2 rounded border border-green-700">${scannedId} (mới)</p>`;
+            if(allKnownIDs.length === 0) dom.idList.innerHTML = ''; // Xóa placeholder nếu là item đầu tiên
+            dom.idList.insertAdjacentHTML('beforeend', itemHTML);
+            
+            dom.scanCount.textContent = allKnownIDs.length;
+            dom.modalScanCount.textContent = newlyScannedIDs.length;
+        };
+
+        const handleSaveIdentities = () => {
+            if (newlyScannedIDs.length === 0) {
+                alert('Không có định danh mới nào để lưu.');
+                return;
+            }
+            
+            mockProductIdentities[currentViewingBatch.batchCode].push(...newlyScannedIDs);
+            alert(`Đã lưu thành công ${newlyScannedIDs.length} mã định danh mới.`);
+            setupProductIdScreen(currentViewingBatch.batchCode); // Refresh lại màn hình
+        };
+
+        // --- GÁN CÁC SỰ KIỆN ---
+        dom.addNewButton.addEventListener('click', setupFormForAdd);
+        dom.backToListButton.addEventListener('click', () => navigateTo('list'));
+        dom.backToListFromDetailsButton.addEventListener('click', () => navigateTo('list'));
+        dom.searchInput.addEventListener('input', handleSearch);
+        dom.form.addEventListener('submit', handleFormSubmit);
+
+        dom.batchListContainer.addEventListener('click', (e) => {
+            // Chỉ xử lý sự kiện cho các nút Sửa/Xóa
+            const actionButton = e.target.closest('.swipe-actions button');
+            if (actionButton) {
+                const action = actionButton.dataset.action;
+                const code = actionButton.dataset.code;
+                closeOpenSwipeContainer();
+                if (action === 'edit') setupFormForEdit(code);
+                if (action === 'delete') handleDelete(code);
+            }
+        });
+        
+        document.body.addEventListener('click', (e) => {
+            if (currentScreen === 'list' && openSwipeContainer && !openSwipeContainer.contains(e.target)) {
+                closeOpenSwipeContainer();
+            }
+        });
+        
+        dom.cancelDeleteButton.addEventListener('click', closeDeleteModal);
+        dom.confirmDeleteButton.addEventListener('click', confirmDelete);
+
+        dom.declarationTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                formDeclarationType = event.target.value;
+                clearAutoFilledFields();
+                dom.productionOrderSelect.value = ''; dom.bomSelect.value = '';
+                dom.lsxSelectorContainer.classList.toggle('hidden', formDeclarationType !== 'lsx');
+                dom.bomSelectorContainer.classList.toggle('hidden', formDeclarationType !== 'bom');
+                dom.tabIndicator.style.transform = formDeclarationType === 'lsx' ? 'translateX(0%)' : 'translateX(100%)';
+            });
+        });
+        
+        dom.productionOrderSelect.addEventListener('change', (e) => {
+            const order = productionOrders.find(o => o.id === e.target.value);
+            if(order) fillFormWithData(order); else clearAutoFilledFields();
+        });
+
+        dom.bomSelect.addEventListener('change', (e) => {
+            const bom = boms.find(b => b.id === e.target.value);
+            if (bom) fillFormWithData(bom); else clearAutoFilledFields();
+        });
+
+        // Event for product ID screen
+        dom.scanNewIdButton.addEventListener('click', () => {
+             dom.modalScanCount.textContent = 0;
+             dom.scanModal.classList.remove('hidden');
+        });
+        dom.stopScanButton.addEventListener('click', () => dom.scanModal.classList.add('hidden'));
+        dom.simulateScanButton.addEventListener('click', handleSimulateScan);
+        dom.saveIdentitiesButton.addEventListener('click', handleSaveIdentities);
+
+        // --- KHỞI TẠO BAN ĐẦU ---
+        renderBatches(mockBatches);
+    });
+    </script>
+</body>
+</html>

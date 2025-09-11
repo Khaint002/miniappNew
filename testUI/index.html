@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ - Quản Lý Kho</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --bs-border-radius: 0.5rem;
+            --bs-border-radius-lg: 0.8rem;
+            --bs-body-font-family: 'Be Vietnam Pro', sans-serif;
+            --bs-body-font-size: 0.9rem;
+        }
+
+        body {
+            background-color: #f7f9fc;
+            overflow: hidden;
+            font-weight: 400;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background-color: #fff;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            transition: margin-left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #5a5c69;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.85rem 1.5rem;
+            white-space: nowrap;
+        }
+
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            color: #0d6efd;
+            background-color: #f0f5ff;
+        }
+        
+        .sidebar .nav-link.active-parent {
+             color: #0d6efd;
+             background-color: #f0f5ff;
+        }
+        
+        .sidebar .sub-menu .nav-link.active {
+             border-left: 3px solid #0d6efd;
+             padding-left: calc(3.5rem - 3px);
+             font-weight: 600;
+        }
+
+        .sidebar .nav-link .bi {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            vertical-align: middle;
+        }
+        
+        .sidebar .nav-link[data-bs-toggle="collapse"] {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+            transition: transform 0.2s ease-in-out;
+            font-size: 0.8rem;
+        }
+        .sidebar .nav-link[data-bs-toggle="collapse"]:not(.collapsed) .bi-chevron-down {
+            transform: rotate(-180deg);
+        }
+        
+        .sub-menu .nav-link {
+            padding-left: 3.5rem !important;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #6c757d;
+        }
+        .sub-menu .nav-link .bi {
+             font-size: 0.7rem !important;
+             margin-right: 1rem;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .main-content-header {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+        }
+
+        .main-content > main {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .main-content .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card {
+            border: 1px solid #e3e6f0;
+            border-radius: var(--bs-border-radius-lg);
+        }
+
+        h1,h2,h3,h4,h5,h6 {
+            font-weight: 600;
+        }
+        
+        .nav-tabs-bordered {
+            border-bottom: 1px solid #e3e6f0;
+        }
+        .nav-tabs-bordered .nav-link {
+            margin-bottom: -1px;
+            border: none;
+            color: #555;
+            font-weight: 500;
+        }
+        .nav-tabs-bordered .nav-link.active {
+            color: var(--bs-primary);
+            background-color: transparent;
+            border-bottom: 2px solid var(--bs-primary);
+        }
+        
+        .pagination .page-link {
+            cursor: pointer;
+        }
+        
+        .pagination .ellipsis .page-link {
+            cursor: default;
+            background-color: transparent;
+            border-color: transparent;
+        }
+
+        @media (max-width: 991.98px) {
+            body { overflow: auto; }
+            .app-container { flex-direction: column; height: auto; min-height: 100vh; }
+            .main-content { height: auto; overflow: visible; }
+            .main-content > main { overflow-y: visible; }
+            .sidebar {
+                position: fixed; top: 0; bottom: 0;
+                left: calc(-1 * var(--sidebar-width));
+                transition: left 0.3s ease; z-index: 1045;
+                height: 100vh; overflow-y: auto;
+            }
+            .sidebar.show { left: 0; }
+            .sidebar-overlay {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1040; display: none;
+            }
+            .sidebar.show + .sidebar-overlay { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="sidebar p-3" id="sidebarMenu">
+        <h1 class="h4 text-primary fw-bold text-center mb-4 mt-2">
+            <i class="bi bi-box-seam-fill"></i> Quản Lý Kho
+        </h1>
+        <ul class="nav flex-column" id="sidebarNav">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#" data-content="dashboard-content">
+                    <i class="bi bi-speedometer2"></i>Tổng quan
+                </a>
+            </li>
+
+            <li class="nav-item mt-3">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#danhMucCollapse" role="button" aria-expanded="false" aria-controls="danhMucCollapse">
+                    <span><i class="bi bi-journal-album"></i>Danh Mục</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse" id="danhMucCollapse" data-bs-parent="#sidebarNav">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="nhom-vat-tu-content"><i class="bi bi-dot"></i>Nhóm vật tư</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="nhom-san-pham-content"><i class="bi bi-dot"></i>Nhóm sản phẩm</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="danh-muc-vat-tu-content"><i class="bi bi-dot"></i>Danh mục Vật tư</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="danh-muc-san-pham-content"><i class="bi bi-dot"></i>Danh mục Sản phẩm</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="bom-san-pham-content"><i class="bi bi-dot"></i>BOM Sản phẩm</a></li>
+                    </ul>
+                </div>
+            </li>
+            
+             <li class="nav-item mt-2">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#khoVatTuCollapse" role="button" aria-expanded="false" aria-controls="khoVatTuCollapse">
+                    <span><i class="bi bi-box-seam"></i>Kho Vật Tư</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse" id="khoVatTuCollapse" data-bs-parent="#sidebarNav">
+                     <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="nhap-kho-vt-content"><i class="bi bi-dot"></i>Nhập kho</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="xuat-kho-vt-content"><i class="bi bi-dot"></i>Xuất kho</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex justify-content-between align-items-center" href="#" data-content="ton-kho-vt-content">
+                                <span><i class="bi bi-dot"></i>Tồn kho</span>
+                                <span class="badge rounded-pill bg-danger">15</span>
+                            </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="placeholder-content" data-title="Kiểm kê Vật tư"><i class="bi bi-dot"></i>Kiểm kê</a></li>
+                    </ul>
+                </div>
+            </li>
+             <li class="nav-item mt-2">
+                 <a class="nav-link collapsed" data-bs-toggle="collapse" href="#sanXuatCollapse" role="button" aria-expanded="false" aria-controls="sanXuatCollapse">
+                     <span><i class="bi bi-tools"></i>Sản Xuất</span>
+                     <i class="bi bi-chevron-down"></i>
+                 </a>
+                 <div class="collapse" id="sanXuatCollapse" data-bs-parent="#sidebarNav">
+                     <ul class="nav flex-column sub-menu">
+                         <li class="nav-item"><a class="nav-link" href="#" data-content="lenh-san-xuat-content"><i class="bi bi-dot"></i>Lệnh sản xuất</a></li>
+                         <li class="nav-item"><a class="nav-link" href="#" data-content="placeholder-content" data-title="Theo dõi tiến độ"><i class="bi bi-dot"></i>Theo dõi tiến độ</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item mt-2">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#khoSanPhamCollapse" role="button" aria-expanded="false" aria-controls="khoSanPhamCollapse">
+                    <span><i class="bi bi-archive-fill"></i>Kho Sản Phẩm</span>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse" id="khoSanPhamCollapse" data-bs-parent="#sidebarNav">
+                     <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="placeholder-content" data-title="Nhập từ Sản xuất"><i class="bi bi-dot"></i>Nhập từ Sản xuất</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="placeholder-content" data-title="Xuất bán"><i class="bi bi-dot"></i>Xuất bán</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex justify-content-between align-items-center" href="#" data-content="placeholder-content" data-title="Tồn kho Sản phẩm">
+                                <span><i class="bi bi-dot"></i>Tồn kho</span>
+                                <span class="badge rounded-pill bg-warning text-dark">8</span>
+                            </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-content="placeholder-content" data-title="Báo cáo"><i class="bi bi-dot"></i>Báo cáo</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-overlay"></div>
+
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg bg-light shadow-sm main-content-header">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
+                                <i class="bi bi-bell-fill fs-5"></i>
+                                <span class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 0.6em; margin-top: -8px;">3+</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="width: 350px;">
+                                <li class="dropdown-header">Bạn có 3 thông báo mới</li>
+                                <li><a class="dropdown-item d-flex align-items-start gap-2 py-2" href="#"><i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i><div><strong class="d-block">Hết hàng: Vít M3x10</strong><small class="text-body-secondary">Cần nhập thêm 25 cái</small></div></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                 <li><a class="dropdown-item d-flex align-items-start gap-2 py-2" href="#"><i class="bi bi-check-circle-fill text-success fs-4"></i><div><strong class="d-block">Nhập kho thành công</strong><small class="text-body-secondary">Lô hàng #PNK-00125 đã được ghi nhận.</small></div></a></li>
+                                 <li><hr class="dropdown-divider"></li>
+                                 <li><a class="dropdown-item text-center" href="#">Xem tất cả thông báo</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item py-1"><div class="vr d-none d-lg-block mx-2"></div></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-5 me-2"></i>
+                                <span class="d-none d-sm-inline">Admin</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-person-fill me-2"></i>Thông tin cá nhân</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill me-2"></i>Cài đặt</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="p-lg-4 p-3">
+            <div id="dashboard-content" class="page-content-section">
+                <h2 class="h4 mb-4">Tổng quan Kho</h2>
+                <div class="row g-4">
+                    <div class="col-lg-6"><div class="card h-100 shadow-sm"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center"><h3 class="h5 card-title mb-0">Kho Vật Tư</h3><span class="badge bg-primary-subtle text-primary-emphasis rounded-pill px-3 py-2">Tổng quan</span></div><p class="card-subtitle mt-2 text-body-secondary small">Tình hình nhập, xuất và tồn kho nguyên vật liệu.</p><div class="row g-4 mt-3"><div class="col-sm-6"><div class="card kpi-card bg-primary-subtle text-primary-emphasis p-3 rounded-4"><p class="mb-1">Tổng loại vật tư</p><p class="display-4 mb-0">1,250</p></div></div><div class="col-sm-6"><div class="card kpi-card bg-danger-subtle text-danger-emphasis p-3 rounded-4"><p class="mb-1">Vật tư sắp hết hàng</p><p class="display-4 mb-0">15</p></div></div></div><div class="mt-4 pt-3"><h4 class="fs-6 fw-semibold text-body-secondary">Cảnh báo tồn kho thấp</h4><ul class="list-group list-group-flush mt-2"><li class="list-group-item d-flex justify-content-between align-items-center px-0"><span>Vít M3x10</span><span class="text-danger fw-semibold">Còn <strong>25</strong> / Tối thiểu 50</span></li><li class="list-group-item d-flex justify-content-between align-items-center px-0"><span>Tụ điện 100uF</span><span class="text-danger fw-semibold">Còn <strong>12</strong> / Tối thiểu 20</span></li></ul></div></div></div></div>
+                    <div class="col-lg-6"><div class="card h-100 shadow-sm"><div class="card-body p-4"><div class="d-flex justify-content-between align-items-center"><h3 class="h5 card-title mb-0">Kho Sản Phẩm</h3><span class="badge bg-success-subtle text-success-emphasis rounded-pill px-3 py-2">Thành phẩm</span></div><p class="card-subtitle mt-2 text-body-secondary small">Theo dõi thành phẩm từ sản xuất và giao hàng.</p><div class="row g-4 mt-3"><div class="col-sm-6"><div class="card kpi-card bg-success-subtle text-success-emphasis p-3 rounded-4"><p class="mb-1">Tổng loại sản phẩm</p><p class="display-4 mb-0">85</p></div></div><div class="col-sm-6"><div class="card kpi-card bg-warning-subtle text-warning-emphasis p-3 rounded-4"><p class="mb-1">Đơn hàng chờ xuất</p><p class="display-4 mb-0">8</p></div></div></div><div class="mt-4 pt-3"><h4 class="fs-6 fw-semibold text-body-secondary">Mới hoàn thành từ sản xuất</h4><ul class="list-group list-group-flush mt-2"><li class="list-group-item d-flex justify-content-between align-items-center px-0"><div><p class="mb-0 fw-medium">Sản phẩm Model A</p><p class="mb-0 text-body-secondary small">LSX-00123</p></div><span class="fw-semibold">+ 50 cái</span></li><li class="list-group-item d-flex justify-content-between align-items-center px-0"><div><p class="mb-0 fw-medium">Sản phẩm Model B</p><p class="mb-0 text-body-secondary small">LSX-00122</p></div><span class="fw-semibold">+ 200 cái</span></li></ul></div></div></div></div>
+                </div>
+            </div>
+            <div id="nhom-vat-tu-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4">Quản lý Nhóm vật tư</h2><div class="card shadow-sm h-100"><div class="card-body p-4"><div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4"><div class="input-group" style="max-width: 400px;"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" id="nhom-vat-tu-search-input" class="form-control border-start-0" placeholder="Tìm kiếm theo mã hoặc tên nhóm..."></div><button class="btn btn-primary d-flex align-items-center"><i class="bi bi-plus-circle me-2"></i>Thêm mới</button></div><div class="table-responsive table-container-scrollable"><table id="nhom-vat-tu-table" class="table table-striped table-hover align-middle"><thead class="table-light"><tr><th scope="col">#</th><th>Mã nhóm</th><th>Tên nhóm</th><th>Loại</th><th>Mô tả</th><th>Ngày tạo</th><th>Người tạo</th><th class="text-center">Hành động</th></tr></thead><tbody></tbody></table></div><nav class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top"><div class="d-flex align-items-center text-body-secondary small">Hiển thị <select class="form-select form-select-sm mx-2" style="width: auto;" id="nhom-vat-tu-items-per-page"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select> bản ghi.</div><ul class="pagination mb-0" id="nhom-vat-tu-pagination"></ul></nav></div></div></div>
+            <div id="nhom-san-pham-content" class="page-content-section" style="display: none;">
+                <h2 class="h4 mb-4">Quản lý Nhóm sản phẩm</h2>
+                <div class="card shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
+                            <div class="input-group" style="max-width: 400px;">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                                <input type="text" id="nhom-san-pham-search-input" class="form-control border-start-0" placeholder="Tìm theo mã hoặc tên sản phẩm...">
+                            </div>
+                            <button class="btn btn-primary d-flex align-items-center"><i class="bi bi-plus-circle me-2"></i>Thêm mới</button>
+                        </div>
+                        <div class="table-responsive table-container-scrollable">
+                            <table id="nhom-san-pham-table" class="table table-striped table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Mã Sản phẩm</th>
+                                        <th>Tên Sản phẩm</th>
+                                        <th>Đơn vị tính</th>
+                                        <th>Mô tả</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Người tạo</th>
+                                        <th class="text-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    </tbody>
+                            </table>
+                        </div>
+                        <nav class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <div class="d-flex align-items-center text-body-secondary small">
+                                Hiển thị 
+                                <select class="form-select form-select-sm mx-2" style="width: auto;" id="nhom-san-pham-items-per-page">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                </select> 
+                                bản ghi.
+                            </div>
+                            <ul class="pagination mb-0" id="nhom-san-pham-pagination">
+                                </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div id="danh-muc-vat-tu-content" class="page-content-section" style="display: none;"><div class="row g-4"><div id="vat-tu-table-container" class="col-12"><h2 class="h4 mb-4">Quản lý Danh mục vật tư</h2><div class="card shadow-sm h-100"><div class="card-body p-4"><div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-4"><div class="input-group" style="max-width: 400px;"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" id="vat-tu-search-input" class="form-control border-start-0" placeholder="Tìm kiếm..."></div><div class="btn-toolbar"><div class="btn-group me-2"><button class="btn btn-primary" data-bs-toggle="tooltip" title="Thêm vật tư"><i class="bi bi-plus-circle"></i></button></div><div class="btn-group"><button id="edit-vat-tu-btn" class="btn btn-outline-secondary" disabled data-bs-toggle="tooltip" title="Sửa"><i class="bi bi-pencil-square"></i></button><button id="delete-vat-tu-btn" class="btn btn-outline-danger" disabled data-bs-toggle="tooltip" title="Xóa"><i class="bi bi-trash-fill"></i></button></div></div></div><div class="table-responsive table-container-scrollable"><table id="vat-tu-table" class="table table-hover align-middle"><thead class="table-light"><tr><th>Tên vật tư</th><th>Vị trí</th><th>ĐVT</th></tr></thead><tbody><tr class="table-light"><td colspan="3" class="fw-bold"><i class="bi bi-tags me-2"></i>Linh kiện điện tử</td></tr><tr class="vat-tu-item" style="cursor: pointer;" data-img-src="https://placehold.co/120x120/EFEFEF/333333?text=IC"><td><strong>Vi mạch IC-XYZ</strong><p class="small text-body-secondary mb-0">VT0001</p></td><td>Kệ A1-05</td><td>Cái</td></tr><tr class="table-light"><td colspan="3" class="fw-bold"><i class="bi bi-tags me-2"></i>Vật tư cơ khí</td></tr><tr class="vat-tu-item" style="cursor: pointer;" data-img-src="https://placehold.co/120x120/EFEFEF/333333?text=VÍT"><td><strong>Vít M3x10</strong><p class="small text-body-secondary mb-0">VT0002</p></td><td>Kệ B2-11</td><td>Cái</td></tr></tbody></table></div><nav class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top"><div class="d-flex align-items-center text-body-secondary small">Hiển thị <select class="form-select form-select-sm mx-2" style="width: auto;"><option selected>10</option></select> bản ghi.</div><ul class="pagination mb-0"><li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li></ul></nav></div></div></div><div id="vat-tu-detail-container" class="col-lg-6 d-none"><h2 class="h4 mb-4 invisible">Chi tiết</h2><div class="card shadow-sm sticky-top" style="top: 1.5rem;"><div class="card-body p-4 position-relative"><button type="button" class="btn-close position-absolute" style="top: 1rem; right: 1rem;" id="close-vat-tu-detail"></button><div class="text-center mb-3"><img src="https://placehold.co/120x120/EFEFEF/333333?text=IC" class="rounded-circle border" alt="Vi mạch IC-XYZ" id="detail-img" style="width: 100px; height: 100px; object-fit: cover;"><h5 class="mt-3 mb-1" id="detail-ten-vat-tu">Vi mạch IC-XYZ</h5><p class="text-body-secondary small mb-0" id="detail-ma-vat-tu">VT0001</p></div><hr><h6><i class="bi bi-file-earmark-text me-2 text-primary"></i>Mô tả</h6><p class="text-body-secondary small" id="detail-mo-ta">Vi mạch tích hợp...</p></div></div></div></div></div>
+            <div id="danh-muc-san-pham-content" class="page-content-section" style="display: none;"><div class="row g-4"><div id="san-pham-table-container" class="col-12"><h2 class="h4 mb-4">Quản lý Danh mục sản phẩm</h2><div class="card shadow-sm h-100"><div class="card-body p-4"><div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-4"><div class="input-group" style="max-width: 400px;"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" id="san-pham-search-input" class="form-control border-start-0" placeholder="Tìm kiếm..."></div><div class="btn-toolbar"><div class="btn-group me-2"><button class="btn btn-primary" data-bs-toggle="tooltip" title="Thêm sản phẩm"><i class="bi bi-plus-circle"></i></button></div><div class="btn-group"><button id="edit-san-pham-btn" class="btn btn-outline-secondary" disabled data-bs-toggle="tooltip" title="Sửa"><i class="bi bi-pencil-square"></i></button><button id="delete-san-pham-btn" class="btn btn-outline-danger" disabled data-bs-toggle="tooltip" title="Xóa"><i class="bi bi-trash-fill"></i></button></div></div></div><div class="table-responsive table-container-scrollable"><table id="san-pham-table" class="table table-hover align-middle"><thead class="table-light"><tr><th>Tên sản phẩm</th><th>Phiên bản</th><th>ĐVT</th></tr></thead><tbody><tr class="table-light"><td colspan="3" class="fw-bold"><i class="bi bi-tags me-2"></i>Điện thoại</td></tr><tr class="san-pham-item" style="cursor: pointer;" data-img-src="https://placehold.co/120x120/2d3748/ffffff?text=IP16"><td><strong>iPhone 16 Pro</strong><p class="small text-body-secondary mb-0">SP0001</p></td><td>256GB</td><td>Cái</td></tr><tr class="san-pham-item" style="cursor: pointer;" data-img-src="https://placehold.co/120x120/333333/ffffff?text=S25"><td><strong>Galaxy S25 Ultra</strong><p class="small text-body-secondary mb-0">SP0002</p></td><td>512GB</td><td>Cái</td></tr></tbody></table></div><nav class="d-flex flex-wrap justify-content-between align-items-center mt-3 pt-3 border-top"><div class="d-flex align-items-center text-body-secondary small">Hiển thị <select class="form-select form-select-sm mx-2" style="width: auto;"><option selected>10</option></select> bản ghi.</div><ul class="pagination mb-0"><li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li></ul></nav></div></div></div><div id="san-pham-detail-container" class="col-lg-6 d-none"><h2 class="h4 mb-4 invisible">Chi tiết</h2><div class="card shadow-sm sticky-top" style="top: 1.5rem;"><div class="card-body p-4 position-relative"><button type="button" class="btn-close position-absolute" style="top: 1rem; right: 1rem;" id="close-san-pham-detail"></button><div class="text-center mb-3"><img src="https://placehold.co/120x120/EFEFEF/333333?text=SP" class="rounded-circle border" alt="Tên sản phẩm" id="detail-sp-img" style="width: 100px; height: 100px; object-fit: cover;"><h5 class="mt-3 mb-1" id="detail-sp-ten">Sản phẩm</h5><p class="text-body-secondary small mb-0" id="detail-sp-ma">SP000</p></div><hr><h6><i class="bi bi-card-text me-2 text-primary"></i>Thông số</h6><p class="text-body-secondary small" id="detail-sp-mo-ta">Màn hình Super Retina...</p></div></div></div></div></div>
+            <div id="bom-san-pham-content" class="page-content-section" style="display: none;">
+                <h2 class="h4 mb-4">Quản lý BOM Sản phẩm</h2>
+                <div class="row g-4" style="height: calc(100vh - 160px);">
+                    <div class="col-lg-4 h-100">
+                        <div class="card shadow-sm d-flex flex-column h-100">
+                             <div class="card-header bg-white p-3">
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <div class="input-group input-group-sm flex-grow-1">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control border-start-0" placeholder="Tìm kiếm BOM...">
+                                    </div>
+                                    <button class="btn btn-primary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#addBomModal" title="Tạo BOM mới"><i class="bi bi-plus-lg"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0 flex-grow-1" style="overflow-y: auto;">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action active" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">BOM - iPhone 16 Pro</h6><small>v1.0.2</small></div><p class="mb-1 small text-body-secondary">BOM cho iPhone 16 Pro 256GB.</p></a>
+                                    <a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">BOM - Galaxy S25 Ultra</h6><small class="text-body-secondary">v2.1.0</small></div><p class="mb-1 small text-body-secondary">BOM cho Galaxy S25 Ultra 512GB.</p></a>
+                                    <a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">BOM - Macbook Air M4</h6><small class="text-body-secondary">v1.0.0</small></div><p class="mb-1 small text-body-secondary">BOM cho Macbook Air M4 13-inch.</p></a>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                               <nav class="d-flex flex-wrap justify-content-between align-items-center"><div class="d-flex align-items-center text-body-secondary small">Hiển thị <select class="form-select form-select-sm mx-2" style="width: auto;"><option selected>10</option></select></div><ul class="pagination pagination-sm mb-0"><li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li></ul></nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 h-100">
+                        <div class="card shadow-sm d-flex flex-column h-100">
+                            <div class="card-header bg-white p-0 pt-3">
+                                <ul class="nav nav-tabs nav-tabs-bordered px-4" id="bomTab" role="tablist">
+                                    <li class="nav-item" role="presentation"><button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button"><i class="bi bi-info-circle-fill me-2"></i>Thông tin chung</button></li>
+                                    <li class="nav-item" role="presentation"><button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config-tab-pane" type="button"><i class="bi bi-wrench-adjustable-circle-fill me-2"></i>Cấu hình vật tư</button></li>
+                                </ul>
+                            </div>
+                            <div class="card-body p-0 flex-grow-1" style="overflow-y: auto;">
+                                <div class="tab-content p-4" id="bomTabContent">
+                                    <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel">
+                                        <div class="row g-3">
+                                            <div class="col-lg-8"><label class="form-label">Tên sản phẩm</label><input type="text" class="form-control" value="iPhone 16 Pro" readonly></div>
+                                            <div class="col-lg-4"><label class="form-label">Người thiết kế</label><input type="text" class="form-control" value="Admin" readonly></div>
+                                            <div class="col-12"><label class="form-label">Mô tả BOM</label><textarea class="form-control" rows="2">BOM sản xuất cho iPhone 16 Pro bản 256GB - Titan tự nhiên, áp dụng từ Q4/2025.</textarea></div>
+                                            <div class="col-12"><label class="form-label">Ghi chú</label><textarea class="form-control" rows="2">Lưu ý kiểm tra phiên bản vi mạch XYZ trước khi lắp ráp.</textarea></div>
+                                            <div class="col-md-6"><label class="form-label">Tài liệu kỹ thuật</label><div class="card p-2 border"><ul class="list-group list-group-flush" id="tech-doc-list"><li class="list-group-item d-flex justify-content-between align-items-center py-1"><span class="small text-truncate"><i class="bi bi-file-earmark-zip me-2"></i> ban-ve-ky-thuat-v1.zip</span><button type="button" class="btn-close btn-sm"></button></li><li class="list-group-item d-flex justify-content-between align-items-center py-1"><span class="small text-truncate"><i class="bi bi-file-earmark-pdf me-2"></i> dac-ta-linh-kien.pdf</span><button type="button" class="btn-close btn-sm"></button></li></ul><button class="btn btn-outline-secondary btn-sm mt-2" onclick="document.getElementById('tech-doc-input').click()"><i class="bi bi-plus-circle"></i> Thêm tệp</button><input type="file" id="tech-doc-input" class="d-none" multiple></div></div>
+                                            <div class="col-md-6"><label class="form-label">Tài liệu mô tả</label><div class="card p-2 border"><ul class="list-group list-group-flush" id="desc-doc-list"><li class="list-group-item d-flex justify-content-between align-items-center py-1"><span class="small text-truncate"><i class="bi bi-file-earmark-word me-2"></i> huong-dan-lap-rap.docx</span><button type="button" class="btn-close btn-sm"></button></li></ul><button class="btn btn-outline-secondary btn-sm mt-2" onclick="document.getElementById('desc-doc-input').click()"><i class="bi bi-plus-circle"></i> Thêm tệp</button><input type="file" id="desc-doc-input" class="d-none" multiple></div></div>
+                                            <div class="col-12 mt-4 pt-3 border-top text-end"><button type="button" class="btn btn-secondary me-2">Hủy thay đổi</button><button type="button" class="btn btn-primary"><i class="bi bi-save me-2"></i>Lưu thay đổi</button></div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="config-tab-pane" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0 fw-bold">Danh sách vật tư cấu thành</h5><button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#configBomModal"><i class="bi bi-gear-fill me-2"></i>Cấu hình BOM</button></div>
+                                        <div class="table-responsive" style="max-height: 40vh; overflow-y: auto;"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>#</th><th>Mã VT</th><th>Tên vật tư</th><th>Số lượng</th><th>ĐVT</th><th>Ghi chú</th><th class="text-center">Hành động</th></tr></thead><tbody><tr class="table-light"><td colspan="7" class="fw-bold"><i class="bi bi-tags me-2"></i>Linh kiện điện tử</td></tr><tr><td>1</td><td>VT0001</td><td><strong>Vi mạch IC-XYZ</strong></td><td><input type="number" class="form-control form-control-sm" value="1" style="width: 80px;"></td><td>Cái</td><td>Linh kiện chính</td><td class="text-center"><div class="btn-group btn-group-sm"><button class="btn btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button></div></td></tr><tr class="table-light"><td colspan="7" class="fw-bold"><i class="bi bi-tags me-2"></i>Vật tư cơ khí</td></tr><tr><td>2</td><td>VT0002</td><td><strong>Vít M3x10</strong></td><td><input type="number" class="form-control form-control-sm" value="8" style="width: 80px;"></td><td>Cái</td><td></td><td class="text-center"><div class="btn-group btn-group-sm"><button class="btn btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button></div></td></tr></tbody></table></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div id="nhap-kho-vt-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4">Quản lý Nhập kho Vật tư</h2><div class="row g-4" style="height: calc(100vh - 160px);"><div class="col-lg-4 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-3"><div class="d-flex justify-content-between align-items-center gap-2"><div class="input-group input-group-sm flex-grow-1"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" class="form-control border-start-0" placeholder="Tìm phiếu nhập..."></div><button class="btn btn-primary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#addNhapKhoVTModal" title="Tạo phiếu nhập"><i class="bi bi-plus-lg"></i></button></div></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="list-group list-group-flush"><a href="#" class="list-group-item list-group-item-action active" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 fw-bold">PNK20250908-001</h6><small>Hôm nay</small></div><p class="mb-1 small text-body-secondary">NCC: Công ty A</p></a><a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 fw-bold">PNK20250907-005</h6><small class="text-body-secondary">Hôm qua</small></div><p class="mb-1 small text-body-secondary">NCC: Nhà cung cấp B</p></a></div></div></div></div><div class="col-lg-8 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-0 pt-3"><ul class="nav nav-tabs nav-tabs-bordered px-4" role="tablist"><li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#nk-info-pane" type="button"><i class="bi bi-info-circle-fill me-2"></i>Thông tin chung</button></li><li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#nk-materials-pane" type="button"><i class="bi bi-list-check me-2"></i>Danh sách vật tư</button></li></ul></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="tab-content p-4"><div class="tab-pane fade show active" id="nk-info-pane" role="tabpanel"><h5 class="mb-3">Phiếu nhập: PNK20250908-001</h5><div class="row g-3"><div class="col-md-6"><label class="form-label">Nhà cung cấp</label><input type="text" class="form-control" value="Công ty TNHH Vật tư A" readonly></div><div class="col-md-6"><label class="form-label">Người tạo</label><input type="text" class="form-control" value="Admin" readonly></div><div class="col-md-6"><label class="form-label">Loại kho</label><select class="form-select"><option selected>Kho nguyên vật liệu</option><option>Kho phụ liệu</option></select></div><div class="col-md-6"><label class="form-label">Hình thức nhập</label><select class="form-select"><option selected>Nhập mua hàng</option><option>Nhập sản xuất</option></select></div><div class="col-12"><label class="form-label">Ghi chú</label><textarea class="form-control" rows="3">Hàng nhập theo đơn đặt hàng #PO123</textarea></div></div></div><div class="tab-pane fade" id="nk-materials-pane" role="tabpanel"><div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>#</th><th>Tên vật tư</th><th>Số lô</th><th>SL</th><th>ĐVT</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody><tr><td>1</td><td><strong>Vi mạch IC-XYZ</strong><br><small class="text-muted">VT0001</small></td><td>L20250908</td><td>100</td><td>Cái</td><td class="text-end">150,000</td><td class="text-end fw-bold">15,000,000</td></tr><tr><td>2</td><td><strong>Vít M3x10</strong><br><small class="text-muted">VT0002</small></td><td>L20250908</td><td>500</td><td>Cái</td><td class="text-end">500</td><td class="text-end fw-bold">250,000</td></tr></tbody></table></div></div></div></div></div></div></div></div>
+             <div id="xuat-kho-vt-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4">Quản lý Xuất kho Vật tư</h2><div class="row g-4" style="height: calc(100vh - 160px);"><div class="col-lg-4 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-3"><div class="d-flex justify-content-between align-items-center gap-2"><div class="input-group input-group-sm flex-grow-1"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" class="form-control border-start-0" placeholder="Tìm phiếu xuất..."></div><button class="btn btn-primary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#addXuatKhoVTModal" title="Tạo phiếu xuất"><i class="bi bi-plus-lg"></i></button></div></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="list-group list-group-flush"><a href="#" class="list-group-item list-group-item-action active" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 fw-bold">PXK20250908-002</h6><small>Hôm nay</small></div><p class="mb-1 small text-body-secondary">Lý do: Xuất cho sản xuất (LSX-00123)</p></a></div></div></div></div><div class="col-lg-8 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-0 pt-3"><ul class="nav nav-tabs nav-tabs-bordered px-4" role="tablist"><li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#xk-info-pane" type="button"><i class="bi bi-info-circle-fill me-2"></i>Thông tin chung</button></li><li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#xk-materials-pane" type="button"><i class="bi bi-list-check me-2"></i>Danh sách vật tư</button></li></ul></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="tab-content p-4"><div class="tab-pane fade show active" id="xk-info-pane" role="tabpanel"><h5 class="mb-3">Phiếu xuất: PXK20250908-002</h5><div class="row g-3"><div class="col-md-6"><label class="form-label">Kho xuất</label><select class="form-select"><option selected>Kho nguyên vật liệu chính</option><option>Kho phụ</option></select></div><div class="col-md-6"><label class="form-label">Dự án / BOM sản phẩm</label><select class="form-select"><option selected>BOM - iPhone 16 Pro (v1.0.2)</option><option>Dự án ABC</option></select></div><div class="col-md-6"><label class="form-label">Người xuất</label><input type="text" class="form-control" value="Admin" readonly></div><div class="col-md-6"><label class="form-label">Số lượng sản phẩm</label><input type="number" class="form-control" value="50"></div><div class="col-12"><label class="form-label">Lý do xuất</label><select class="form-select"><option selected>Xuất mới cho sản xuất</option><option>Xuất bổ sung cho sản phẩm</option><option>Xuất cho R&D</option></select></div><div class="col-12"><label class="form-label">Mô tả / Ghi chú</label><textarea class="form-control" rows="3">Xuất vật tư cho Lệnh sản xuất #LSX-00123</textarea></div></div></div><div class="tab-pane fade" id="xk-materials-pane" role="tabpanel"><div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>#</th><th>Tên vật tư</th><th>Số lô</th><th>Số lượng</th><th>ĐVT</th></tr></thead><tbody><tr><td>1</td><td><strong>Vi mạch IC-XYZ</strong><br><small class="text-muted">VT0001</small></td><td>L20250908</td><td>50</td><td>Cái</td></tr></tbody></table></div></div></div></div></div></div></div></div>
+            <div id="ton-kho-vt-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4">Kho vật tư</h2><div class="card shadow-sm h-100"><div class="card-body p-4"><div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4"><div class="input-group" style="max-width: 400px;"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" id="ton-kho-search-input" class="form-control border-start-0" placeholder="Tìm vật tư..."></div><div class="d-flex gap-2"><select class="form-select" style="width: auto;"><option selected>Tất cả kho</option><option>Kho chính</option></select><select class="form-select" style="width: auto;"><option selected>Tất cả nhóm</option><option>Linh kiện điện tử</option></select><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taoDeNghiModal"><i class="bi bi-plus-circle me-2"></i>Tạo Phiếu Đề Nghị</button></div></div><div class="table-responsive table-container-scrollable"><table id="ton-kho-table" class="table table-sm table-hover align-middle"><thead class="table-light"><tr><th class="ps-3">Tên vật tư</th><th>Vị trí</th><th>ĐVT</th><th class="text-end">Tổng Tồn</th><th>Ngày xuất cuối</th><th>Người xuất cuối</th></tr></thead><tbody><tr class="table-secondary fw-bold"><td colspan="6" class="ps-2">Kho: Kho nguyên vật liệu chính</td></tr><tr class="table-light"><td colspan="6" class="ps-3 fw-semibold">Nhóm vật tư: Linh kiện điện tử</td></tr><tr class="ton-kho-item" style="cursor: pointer;" data-material-name="Vi mạch IC-XYZ" data-lots='[{"lot": "L20250908", "in": 100, "out": 50, "avail": 50, "date": "08/09/2025"},{"lot": "L20250815", "in": 50, "out": 50, "avail": 0, "date": "15/08/2025"}]'><td class="ps-4"><strong>Vi mạch IC-XYZ</strong><br><small class="text-muted">VT0001</small></td><td>Kệ A1-05</td><td>Cái</td><td class="text-end text-primary fw-bold">50</td><td>08/09/2025</td><td>Admin</td></tr><tr class="ton-kho-item" style="cursor: pointer;" data-material-name="Tụ điện 100uF" data-lots='[{"lot": "L20250901", "in": 200, "out": 188, "avail": 12, "date": "01/09/2025"}]'><td class="ps-4"><strong>Tụ điện 100uF</strong><br><small class="text-muted">VT0005</small></td><td>Kệ A1-06</td><td>Cái</td><td class="text-end text-danger fw-bold">12</td><td>07/09/2025</td><td>an.nguyen</td></tr><tr class="table-light"><td colspan="6" class="ps-3 fw-semibold">Nhóm vật tư: Vật tư cơ khí</td></tr><tr class="ton-kho-item" style="cursor: pointer;" data-material-name="Vít M3x10" data-lots='[{"lot": "L20250908", "in": 500, "out": 475, "avail": 25, "date": "08/09/2025"}]'><td class="ps-4"><strong>Vít M3x10</strong><br><small class="text-muted">VT0002</small></td><td>Kệ B2-11</td><td>Cái</td><td class="text-end text-danger fw-bold">25</td><td>08/09/2025</td><td>Admin</td></tr></tbody></table></div></div></div></div>
+            <div id="lenh-san-xuat-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4">Quản lý Lệnh sản xuất</h2><div class="row g-4" style="height: calc(100vh - 160px);"><div class="col-lg-4 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-3"><div class="d-flex justify-content-between align-items-center gap-2"><div class="input-group input-group-sm flex-grow-1"><span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span><input type="text" class="form-control border-start-0" placeholder="Tìm lệnh sản xuất..."></div><button class="btn btn-primary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#addPoModal" title="Tạo Lệnh sản xuất"><i class="bi bi-plus-lg"></i></button></div></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="list-group list-group-flush"><a href="#" class="list-group-item list-group-item-action active" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 fw-bold">LSX20250908-001</h6><span class="badge bg-primary">Đang sản xuất</span></div><p class="mb-1 small">Sản phẩm: iPhone 16 Pro (50 cái)</p></a><a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 fw-bold">LSX20250907-003</h6><span class="badge bg-success">Hoàn thành</span></div><p class="mb-1 small text-body-secondary">Sản phẩm: Macbook Air M4 (20 cái)</p></a></div></div></div></div><div class="col-lg-8 h-100"><div class="card shadow-sm d-flex flex-column h-100"><div class="card-header bg-white p-0 pt-3"><ul class="nav nav-tabs nav-tabs-bordered px-4" role="tablist"><li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#po-info-pane" type="button"><i class="bi bi-info-circle-fill me-2"></i>Thông tin chung</button></li><li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#po-materials-pane" type="button"><i class="bi bi-list-check me-2"></i>Danh sách vật tư</button></li></ul></div><div class="card-body p-0 flex-grow-1" style="overflow-y: auto;"><div class="tab-content p-4"><div class="tab-pane fade show active" id="po-info-pane" role="tabpanel"><h5 class="mb-3">Lệnh sản xuất: LSX20250908-001</h5><div class="row g-3"><div class="col-md-6"><label class="form-label">Sản phẩm</label><input type="text" class="form-control" value="iPhone 16 Pro" readonly></div><div class="col-md-6"><label class="form-label">BOM áp dụng</label><input type="text" class="form-control" value="BOM - iPhone 16 Pro (v1.0.2)" readonly></div><div class="col-md-6"><label class="form-label">Số lượng sản xuất</label><input type="number" class="form-control" value="50"></div><div class="col-md-6"><label class="form-label">Trạng thái</label><select class="form-select"><option>Mới tạo</option><option selected>Đang sản xuất</option><option>Hoàn thành</option></select></div><div class="col-12"><label class="form-label">Ghi chú</label><textarea class="form-control" rows="3"></textarea></div></div></div><div class="tab-pane fade" id="po-materials-pane" role="tabpanel"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0 fw-bold">Danh sách vật tư</h5><button class="btn btn-primary btn-sm create-stock-issue-slip"><i class="bi bi-box-arrow-up me-2"></i>Xuất kho cho Lệnh sản xuất</button></div><div class="table-responsive"><table id="po-materials-table" class="table table-sm table-hover align-middle"><thead class="table-light"><tr><th>Tên vật tư</th><th class="text-end">SL Cần</th><th class="text-end">Tồn kho</th><th class="text-end">Bù hao (%)</th><th class="text-end">Cần Xuất</th></tr></thead><tbody><tr data-name="Vi mạch IC-XYZ" data-stock="50" data-required="53"><td><strong>Vi mạch IC-XYZ</strong><br><small class="text-muted">VT0001</small></td><td class="text-end">50</td><td class="text-end">50</td><td class="text-end"><input type="number" class="form-control form-control-sm d-inline-block" value="5" style="width: 70px;"></td><td class="text-end fw-bold text-danger">53</td></tr><tr data-name="Vít M3x10" data-stock="25" data-required="420"><td><strong>Vít M3x10</strong><br><small class="text-muted">VT0002</small></td><td class="text-end">400</td><td class="text-end text-danger">25</td><td class="text-end"><input type="number" class="form-control form-control-sm d-inline-block" value="5" style="width: 70px;"></td><td class="text-end fw-bold text-danger">420</td></tr></tbody></table></div></div></div></div></div></div></div></div>
+            <div id="placeholder-content" class="page-content-section" style="display: none;"><h2 class="h4 mb-4" id="placeholder-title">Chức năng</h2><div class="card border-0 shadow-sm rounded-4"><div class="card-body p-5 text-center text-body-secondary"><i class="bi bi-gear-wide-connected fs-1 mb-3"></i><p class="h5">Chức năng đang được xây dựng</p><p>Nội dung cho màn hình <strong id="placeholder-text">này</strong> sẽ được hiển thị tại đây.</p></div></div></div>
+        </main>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <i class="bi bi-check-circle-fill rounded me-2 text-success"></i>
+      <strong class="me-auto">Thông báo</strong>
+      <small>Vừa xong</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="lotDetailModal" tabindex="-1" aria-labelledby="lotDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="lotDetailModalLabel">Chi tiết theo lô</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Mã lô</th>
+                <th class="text-end">SL Nhập</th>
+                <th class="text-end">SL Xuất</th>
+                <th class="text-end">Tồn kho</th>
+                <th>Ngày nhập</th>
+              </tr>
+            </thead>
+            <tbody id="lotDetailTableBody">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="taoDeNghiModal" tabindex="-1" aria-labelledby="taoDeNghiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="taoDeNghiModalLabel"><i class="bi bi-journal-plus me-2"></i>Tạo Phiếu Đề Nghị Mua Vật Tư</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Hệ thống đã tự động thêm các vật tư có tồn kho dưới mức tối thiểu. Bạn có thể thêm hoặc điều chỉnh lại danh sách.</p>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên vật tư</th>
+                                <th style="width: 20%;">SL Đề nghị</th>
+                                <th style="width: 10%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Tụ điện 100uF</strong><br><small class="text-muted">Tồn kho hiện tại: 12</small></td>
+                                <td><input type="number" class="form-control form-control-sm" value="50"></td>
+                                <td class="text-center"><button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button></td>
+                            </tr>
+                             <tr>
+                                <td><strong>Vít M3x10</strong><br><small class="text-muted">Tồn kho hiện tại: 25</small></td>
+                                <td><input type="number" class="form-control form-control-sm" value="100"></td>
+                                <td class="text-center"><button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <button class="btn btn-sm btn-outline-secondary mt-2"><i class="bi bi-plus-circle"></i> Thêm vật tư khác</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary"><i class="bi bi-send-fill me-2"></i>Gửi đề nghị</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addNhapKhoVTModal" tabindex="-1" aria-labelledby="addNhapKhoVTModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addNhapKhoVTModalLabel"><i class="bi bi-plus-circle me-2"></i>Tạo Phiếu Nhập Kho Vật Tư</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+          <p>Form chi tiết để tạo phiếu nhập kho vật tư...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary"><i class="bi bi-save me-2"></i>Lưu Phiếu Nhập</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addXuatKhoVTModal" tabindex="-1" aria-labelledby="addXuatKhoVTModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addXuatKhoVTModalLabel"><i class="bi bi-plus-circle me-2"></i>Tạo Phiếu Xuất Kho Vật Tư</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+           <p>Form chi tiết để tạo phiếu xuất kho vật tư...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary"><i class="bi bi-save me-2"></i>Lưu Phiếu Xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+    // Self-invoking anonymous function to avoid polluting the global scope
+    (function() {
+        // --- CACHED DOM ELEMENTS & INSTANCES ---
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const lotDetailModal = new bootstrap.Modal(document.getElementById('lotDetailModal'));
+        const liveToast = new bootstrap.Toast(document.getElementById('liveToast'));
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        
+        /**
+         * Tiện ích chung: Xóa dấu tiếng Việt để tìm kiếm.
+         */
+        function removeVietnameseTones(str) {
+            if (!str) return "";
+            return str.normalize('NFD').replace(/[\u300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+        }
+        
+        /**
+         * Tiện ích chung: Tạo mảng các số trang và dấu "..." cho thanh phân trang thông minh.
+         */
+        function getPaginationItems(totalPages, currentPage) {
+            const delta = 1; 
+            const range = [];
+            for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+                range.push(i);
+            }
+            if (currentPage - delta > 2) range.unshift('...');
+            if (currentPage + delta < totalPages - 1) range.push('...');
+            range.unshift(1);
+            if (totalPages > 1) range.push(totalPages);
+            return [...new Set(range)];
+        }
+
+        // ===================================================================
+        // NOTE: CODE DÀNH RIÊNG CHO CHỨC NĂNG "NHÓM VẬT TƯ" (DM_ITEM_CLASS)
+        // ===================================================================
+        
+        let allMaterialGroups = [], filteredMaterialGroups = [];
+        let mgCurrentPage = 1, mgItemsPerPage = 10;
+
+        function renderMaterialGroupsPage(page) {
+            mgCurrentPage = page;
+            const tableBody = $('#nhom-vat-tu-table tbody');
+            tableBody.empty();
+
+            if (filteredMaterialGroups.length === 0) {
+                tableBody.html('<tr><td colspan="8" class="text-center p-4">Không tìm thấy kết quả phù hợp.</td></tr>');
+                renderMaterialGroupPagination();
+                return;
+            }
+
+            const start = (page - 1) * mgItemsPerPage;
+            const end = start + mgItemsPerPage;
+            const paginatedItems = filteredMaterialGroups.slice(start, end);
+
+            paginatedItems.forEach((item, index) => {
+                const createdDate = item.DATE_CREATE ? new Date(item.DATE_CREATE).toLocaleDateString('vi-VN') : 'N/A';
+                const rowHtml = `
+                    <tr>
+                        <td>${start + index + 1}</td>
+                        <td>${item.ITEM_CLASS_ID || 'N/A'}</td>
+                        <td><strong>${item.ITEM_CLASS_NAME || 'N/A'}</strong></td>
+                        <td><span class="badge bg-primary-subtle text-primary-emphasis">${item.PRODUCT_LINE || 'Chung'}</span></td>
+                        <td>${item.DESCRIPTION || ''}</td>
+                        <td>${createdDate}</td>
+                        <td>${item.USER_CREATE || 'System'}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" title="Sửa"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-outline-danger" title="Xóa"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.append(rowHtml);
+            });
+            renderMaterialGroupPagination();
+        }
+        
+        function renderMaterialGroupPagination() {
+            const paginationUl = $('#nhom-vat-tu-pagination');
+            paginationUl.empty();
+            const totalPages = Math.ceil(filteredMaterialGroups.length / mgItemsPerPage);
+
+            if (totalPages <= 1) return;
+
+            paginationUl.append(`<li class="page-item ${mgCurrentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${mgCurrentPage - 1}"><i class="bi bi-chevron-left"></i></a></li>`);
+            
+            getPaginationItems(totalPages, mgCurrentPage).forEach(item => {
+                const liClass = item === '...' ? 'page-item ellipsis disabled' : `page-item ${item === mgCurrentPage ? 'active' : ''}`;
+                const linkContent = item === '...' ? `<span class="page-link">...</span>` : `<a class="page-link" href="#" data-page="${item}">${item}</a>`;
+                paginationUl.append(`<li class="${liClass}">${linkContent}</li>`);
+            });
+
+            paginationUl.append(`<li class="page-item ${mgCurrentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${mgCurrentPage + 1}"><i class="bi bi-chevron-right"></i></a></li>`);
+        }
+
+        function loadMaterialGroups() {
+            const tableBody = $('#nhom-vat-tu-table tbody');
+            const apiUrl = 'https://erp.homeos.vn/service_XD/Service.svc/GetDm';
+            const params = {
+                tablename: 'DM_ITEM_CLASS', c: '1=1',
+                Sid: 'fde6cbe1-7149-4ab2-9308-9db1527730bb', Uid: 'quy.cao'
+            };
+
+            tableBody.html('<tr><td colspan="8" class="text-center p-4"><div class="spinner-border spinner-border-sm" role="status"></div> Đang tải dữ liệu...</td></tr>');
+            $('#nhom-vat-tu-pagination').empty();
+
+            $.ajax({
+                url: apiUrl, dataType: 'jsonp', data: params,
+                success: function(response) {
+                    try {
+                        const result = JSON.parse(response);
+                        if (result && Array.isArray(result.data)) {
+                            allMaterialGroups = result.data;
+                            filteredMaterialGroups = [...allMaterialGroups];
+                            renderMaterialGroupsPage(1);
+                        } else {
+                           allMaterialGroups = []; filteredMaterialGroups = [];
+                           renderMaterialGroupsPage(1);
+                        }
+                    } catch (e) {
+                        tableBody.html('<tr><td colspan="8" class="text-center p-4 text-danger">Lỗi xử lý dữ liệu trả về.</td></tr>');
+                    }
+                },
+                error: function() {
+                    tableBody.html('<tr><td colspan="8" class="text-center p-4 text-danger">Không thể tải dữ liệu. Vui lòng thử lại.</td></tr>');
+                }
+            });
+        }
+
+        // ===================================================================
+        // NOTE: CODE DÀNH RIÊNG CHO CHỨC NĂNG "NHÓM SẢN PHẨM" (MD_PRODUCT)
+        // ===================================================================
+        
+        let allProducts = [], filteredProducts = [];
+        let pCurrentPage = 1, pItemsPerPage = 10;
+
+        function renderProductsPage(page) {
+            pCurrentPage = page;
+            const tableBody = $('#nhom-san-pham-table tbody');
+            tableBody.empty();
+
+            if (filteredProducts.length === 0) {
+                tableBody.html('<tr><td colspan="8" class="text-center p-4">Không tìm thấy sản phẩm nào.</td></tr>');
+                renderProductPagination();
+                return;
+            }
+
+            const start = (page - 1) * pItemsPerPage;
+            const end = start + pItemsPerPage;
+            const paginatedItems = filteredProducts.slice(start, end);
+
+            paginatedItems.forEach((item, index) => {
+                const createdDate = item.DATE_CREATE ? new Date(item.DATE_CREATE).toLocaleDateString('vi-VN') : 'N/A';
+                const rowHtml = `
+                    <tr>
+                        <td>${start + index + 1}</td>
+                        <td>${item.PRODUCT_ID || 'N/A'}</td>
+                        <td><strong>${item.PRODUCT_NAME || 'N/A'}</strong></td>
+                        <td>${item.UNIT || 'N/A'}</td>
+                        <td>${item.DESCRIPTION || ''}</td>
+                        <td>${createdDate}</td>
+                        <td>${item.USER_CREATE || 'System'}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" title="Sửa"><i class="bi bi-pencil-square"></i></button>
+                                <button class="btn btn-outline-danger" title="Xóa"><i class="bi bi-trash-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tableBody.append(rowHtml);
+            });
+            renderProductPagination();
+        }
+        
+        function renderProductPagination() {
+            const paginationUl = $('#nhom-san-pham-pagination');
+            paginationUl.empty();
+            const totalPages = Math.ceil(filteredProducts.length / pItemsPerPage);
+
+            if (totalPages <= 1) return;
+
+            paginationUl.append(`<li class="page-item ${pCurrentPage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${pCurrentPage - 1}"><i class="bi bi-chevron-left"></i></a></li>`);
+            
+            getPaginationItems(totalPages, pCurrentPage).forEach(item => {
+                const liClass = item === '...' ? 'page-item ellipsis disabled' : `page-item ${item === pCurrentPage ? 'active' : ''}`;
+                const linkContent = item === '...' ? `<span class="page-link">...</span>` : `<a class="page-link" href="#" data-page="${item}">${item}</a>`;
+                paginationUl.append(`<li class="${liClass}">${linkContent}</li>`);
+            });
+
+            paginationUl.append(`<li class="page-item ${pCurrentPage === totalPages ? 'disabled' : ''}"><a class="page-link" href="#" data-page="${pCurrentPage + 1}"><i class="bi bi-chevron-right"></i></a></li>`);
+        }
+
+        function loadProducts() {
+            const tableBody = $('#nhom-san-pham-table tbody');
+            const apiUrl = 'https://erp.homeos.vn/service_XD/Service.svc/GetDm';
+            const params = {
+                tablename: 'DM_PRODUCT', c: '1=1',
+                Sid: 'fde6cbe1-7149-4ab2-9308-9db1527730bb', Uid: 'quy.cao'
+            };
+
+            tableBody.html('<tr><td colspan="8" class="text-center p-4"><div class="spinner-border spinner-border-sm" role="status"></div> Đang tải dữ liệu...</td></tr>');
+            $('#nhom-san-pham-pagination').empty();
+
+            $.ajax({
+                url: apiUrl, dataType: 'jsonp', data: params,
+                success: function(response) {
+                    try {
+                        const result = JSON.parse(response);
+                        if (result && Array.isArray(result.data)) {
+                            allProducts = result.data;
+                            filteredProducts = [...allProducts];
+                            renderProductsPage(1);
+                        } else {
+                           allProducts = []; filteredProducts = [];
+                           renderProductsPage(1);
+                        }
+                    } catch (e) {
+                        tableBody.html('<tr><td colspan="8" class="text-center p-4 text-danger">Lỗi xử lý dữ liệu trả về.</td></tr>');
+                        showToast('Lỗi xử lý dữ liệu từ server.', true);
+                    }
+                },
+                error: function() {
+                    tableBody.html('<tr><td colspan="8" class="text-center p-4 text-danger">Không thể tải dữ liệu. Vui lòng thử lại.</td></tr>');
+                    showToast('Không thể kết nối đến máy chủ.', true);
+                }
+            });
+        }
+
+        // ===================================================================
+        // NOTE: CÁC HÀM VÀ SỰ KIỆN CHUNG CỦA TOÀN BỘ ỨNG DỤNG
+        // ===================================================================
+        
+        function showContent(contentId, element) {
+            $('.page-content-section').hide();
+            $(`#${contentId}`).show();
+            
+            const title = $(element).data('title');
+            if (contentId === 'placeholder-content' && title) {
+                $('#placeholder-title, #placeholder-text').text(title);
+            }
+            
+            // Tải dữ liệu lần đầu tiên khi người dùng nhấp vào tab tương ứng
+            if (contentId === 'nhom-vat-tu-content' && allMaterialGroups.length === 0) {
+                loadMaterialGroups();
+            }
+            if (contentId === 'nhom-san-pham-content' && allProducts.length === 0) {
+                loadProducts();
+            }
+            
+            updateActiveLink(element);
+            if (window.innerWidth < 992 && sidebarMenu.classList.contains('show')) {
+                toggleSidebar();
+            }
+        }
+
+        function updateActiveLink(element) {
+            $('.sidebar .nav-link').removeClass('active active-parent');
+            $(element).addClass('active');
+            $(element).closest('.collapse').prev('.nav-link').addClass('active-parent');
+        }
+
+        function toggleSidebar() {
+            sidebarMenu.classList.toggle('show');
+        }
+        
+        function showToast(message, isError = false) {
+            const toastBody = $('#liveToast .toast-body');
+            const toastIcon = $('#liveToast .toast-header i');
+            toastBody.text(message);
+            toastIcon.removeClass('text-success text-danger').addClass(isError ? 'bi-exclamation-triangle-fill text-danger' : 'bi-check-circle-fill text-success');
+            liveToast.show();
+        }
+        
+        // --- GÁN SỰ KIỆN KHI TRANG TẢI XONG ---
+        $(document).ready(function() {
+            // Điều hướng sidebar
+            $('.sidebar .nav-link').on('click', function(e) {
+                if ($(this).attr('data-bs-toggle') !== 'collapse') {
+                    e.preventDefault();
+                    showContent($(this).data('content'), this);
+                }
+            });
+
+            // Mở/đóng sidebar trên mobile
+            $('.navbar-toggler, .sidebar-overlay').on('click', toggleSidebar);
+            
+            // --- Gán sự kiện cho "Nhóm vật tư" ---
+            $('#nhom-vat-tu-pagination').on('click', '.page-link', function(e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                if (page && page !== mgCurrentPage) renderMaterialGroupsPage(page);
+            });
+            $('#nhom-vat-tu-items-per-page').on('change', function() {
+                mgItemsPerPage = parseInt($(this).val());
+                renderMaterialGroupsPage(1);
+            });
+            $('#nhom-vat-tu-search-input').on('input', function() {
+                const searchTerm = removeVietnameseTones($(this).val().toLowerCase());
+                filteredMaterialGroups = searchTerm === '' ? [...allMaterialGroups] : allMaterialGroups.filter(item => 
+                    removeVietnameseTones(item.ITEM_CLASS_ID || '').toLowerCase().includes(searchTerm) || 
+                    removeVietnameseTones(item.ITEM_CLASS_NAME || '').toLowerCase().includes(searchTerm)
+                );
+                renderMaterialGroupsPage(1);
+            });
+
+            // --- Gán sự kiện cho "Nhóm sản phẩm" ---
+            $('#nhom-san-pham-pagination').on('click', '.page-link', function(e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                if (page && page !== pCurrentPage) renderProductsPage(page);
+            });
+            $('#nhom-san-pham-items-per-page').on('change', function() {
+                pItemsPerPage = parseInt($(this).val());
+                renderProductsPage(1);
+            });
+            $('#nhom-san-pham-search-input').on('input', function() {
+                const searchTerm = removeVietnameseTones($(this).val().toLowerCase());
+                filteredProducts = searchTerm === '' ? [...allProducts] : allProducts.filter(item => 
+                    removeVietnameseTones(item.PRODUCT_ID || '').toLowerCase().includes(searchTerm) || 
+                    removeVietnameseTones(item.PRODUCT_NAME || '').toLowerCase().includes(searchTerm)
+                );
+                renderProductsPage(1);
+            });
+        });
+
+    })(); // Kết thúc IIFE
+</script>
+</body>
+</html>

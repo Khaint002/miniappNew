@@ -1,237 +1,298 @@
-<div class="background">
-    <div id="bgWarranty"></div>
-</div>
-<div class="container-homePage" style="padding: 0; width: 100%;">
-    <div class="homePage-header history-header" style="background-color: #282d31; z-index: 1001; position: fixed; height: 50px; top: 0; left: 0;"">
-        <div style="line-height: 50px; justify-content: flex-start;" class="d-flex">
-            <button class="WarrantyScanNext" style="height: 40px; border: none; background-color: #282d31;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-                </svg>
-            </button>
-            <p id="header-productName" style="width: 250px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">-</p>
+<div class="container" style="overflow-y: auto; height: 100%; background-color: #282d31; padding: 0;">
+    <div id="wareHouse-menu">
+      <div class="history-header">
+        <div class="history-avt">
+          <div class="d-flex">
+            <img class="userAvt"
+              src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+              alt="">
+            <p class="userName">Khách</p>
+          </div>
         </div>
-        <div class="d-flex" style="line-height: 50px;">
-            <button id="errorWarranty"
-                style="height: 40px; border: none; background-color: #282d31; padding: 0;margin-right: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" style="color: #fff;"
-                    fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                    <path
-                        d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z" />
-                </svg>
-            </button>
-            <button id="share-warranty" style="height: 40px; border: none; background-color: #282d31; padding: 0;margin-right: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" style="color: #fff;" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                    <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-                </svg>
-            </button>
+        <div id="category-back" class="d-none">
+          <button id="backCategory" style="height: 50px; border: none; background-color: #1E2833;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px;" class="bi bi-arrow-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+            </svg>
+          </button>
         </div>
+        <div>
+          <div style="line-height: 50px; float: left;" id="extra_view"></div>
+          <div style="line-height: 50px; float: left;">
+            <button id="PickApp-button-scanQR" style="height: 40px; border: none; background-color: #1E2833;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="color: #fff" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+              </svg>
+            </button>
+          </div>
+          <div style="line-height: 50px; float: left;">
+          </div>
+        </div>
+      </div>
+      <div id="wareHouse-body">
+        <div id="wareHouse-list" class="row"></div>
+      </div>
     </div>
-    <div style="height: 50px;">-</div>
-    <div class="mt-1" id="warranty-body">
-        <div class="content" style="padding-bottom: 80px;">
-            <!-- Tab Content -->
-            <div id="tab-0" class="tab-content">
-                <div>
-                    <div class="d-flex" style="color: #fff; padding-left: 10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                            class="bi bi-clock-history" viewBox="0 0 16 16">
-                            <path
-                                d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" />
-                            <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
-                            <path
-                                d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
-                        </svg>
-                        <h6 style="padding-left: 10px; padding-left: 10px;">Lịch sử bảo hành sản phẩm:</h6>
-                    </div>
-                </div>
-                <ul id="history-warranty-detail"
-                    style="overflow-y: auto; max-height: 538px; padding: 10px 0 0px;">
-                    <h5 style="color: #fff;">Sản phẩm chưa từng bảo hành</h5>
-                </ul>
-            </div>
-
-            <div id="tab-1" class="tab-content">
-                <div class="row">
-                    <!-- Ô hiển thị thông tin sản phẩm -->
-                    <div class="col-12 p-2 position-relative">
-                        <div class="box-value" style="height: 170px; margin: 0; position: relative;">
-                            <button id="btn-guide" class="d-none" style="position: absolute; top: 8px; right: 8px; background-color: #444; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 18px; cursor: pointer;" title="Thông tin sản phẩm" >
-                                ?
-                            </button>
-                            <!-- Nội dung -->
-                            <div class="d-flex justify-content-center">
-                                <p style="padding-left: 5px;">Thông tin sản phẩm</p>
-                            </div>
-                            <h6 id="productName">Sản phẩm: -</h6>
-                            <h6 id="productCode">Mã định danh: -</h6>
-                            <h6 id="productSeri">Số seri: -</h6>
-                            <h6 id="productOwner">Chủ sở hữu: Chưa có chủ sở hữu</h6>
-                        </div>
-                    </div>
-                    <div class=" col-6 p-2">
-                        <div class="box-value" style="height: 116px; margin: 0;">
-                            <div class="d-flex justify-content-center">
-                                <p style="padding-left: 5px;">Bảo hành</p>
-                            </div>
-                            <h6 id="warrantyActive">-</h6>
-                            <h6 id="warrantyTimeActive"></h6>
-                        </div>
-                    </div>
-                    <div class=" col-6 p-2">
-                        <div class="box-value" style="height: 116px; margin: 0; padding: 1rem 0 0 0;">
-                            <div class="d-flex justify-content-center">
-                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-moisture" viewBox="0 0 16 16">
-                                    <path d="M13.5 0a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V7.5h-1.5a.5.5 0 0 0 0 1H15v2.75h-.5a.5.5 0 0 0 0 1h.5V15h-1.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5zM7 1.5l.364-.343a.5.5 0 0 0-.728 0l-.002.002-.006.007-.022.023-.08.088a29 29 0 0 0-1.274 1.517c-.769.983-1.714 2.325-2.385 3.727C2.368 7.564 2 8.682 2 9.733 2 12.614 4.212 15 7 15s5-2.386 5-5.267c0-1.05-.368-2.169-.867-3.212-.671-1.402-1.616-2.744-2.385-3.727a29 29 0 0 0-1.354-1.605l-.022-.023-.006-.007-.002-.001zm0 0-.364-.343zm-.016.766L7 2.247l.016.019c.24.274.572.667.944 1.144.611.781 1.32 1.776 1.901 2.827H4.14c.58-1.051 1.29-2.046 1.9-2.827.373-.477.706-.87.945-1.144zM3 9.733c0-.755.244-1.612.638-2.496h6.724c.395.884.638 1.741.638 2.496C11 12.117 9.182 14 7 14s-4-1.883-4-4.267" />
-                                </svg> -->
-                                <p style="padding-left: 5px;">Thời gian Bảo hành</p>
-                            </div>
-                            <h6 id="warrantyTime">-</h6>
-                        </div>
-                    </div>
-                    <div class="col-12 p-2">
-                        <div class="d-flex justify-content-between pt-2">
-                            <button id="product-buyagain" class="btn d-flex align-items-center justify-content-center gap-2"
-                                style="width: 47%; color: #fff; height: 40px; ">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                    class="bi bi-cart-plus" viewBox="0 0 16 16">
-                                    <path
-                                        d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9z" />
-                                    <path
-                                        d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
-                                </svg>
-                                <span>Mua lại</span>
-                            </button>
-
-                            <button id="product-guide" class="btn d-flex align-items-center justify-content-center gap-2" 
-                                style=" width: 47%; color: #fff; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="color: #ffffff;" fill="currentColor" class="bi bi-clipboard2" viewBox="0 0 16 16">
-                                    <path d="M3.5 2a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-12a.5.5 0 0 0-.5-.5H12a.5.5 0 0 1 0-1h.5A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1H4a.5.5 0 0 1 0 1z"/>
-                                    <path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5"/>
-                                </svg>
-                                <span>Xem hướng dẫn</span>
-                            </button>
-
-                            <button id="product-Control" class="btn d-none align-items-center justify-content-center gap-2" 
-                                style=" width: 47%; color: #fff; height: 40px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="color: #ffffff;" fill="currentColor" class="bi bi-toggles" viewBox="0 0 16 16">
-                                    <path d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7zm7 6a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5m2.45 0A3.5 3.5 0 0 1 8 3.5 3.5 3.5 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7"/>
-                                </svg>
-                                <span>Điều khiển tủ</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- <div class=" col-12 p-2">
-                        <div class="box-value" style="height: 250px; margin: 0; padding: 0;">
-                            <img id="deviceImg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" src="" alt="">
-                        </div>
-                    </div> -->
-                    <div class="col-12 p-2">
-                        <div id="deviceCarousel" class="carousel slide pointer-event" data-ride="carousel" style="height: 250px; border-radius: 4px; overflow: hidden;">
-                            <div id="deviceImg" class="carousel-inner h-100">
-                            </div>
-                          
-                            <!-- Nút điều hướng -->
-                            <a class="carousel-control-prev" href="#deviceCarousel" role="button" data-slide="prev">
-                              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </a>
-                            <a class="carousel-control-next" href="#deviceCarousel" role="button" data-slide="next">
-                              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </a>
+    <div id="wareHouse-detail" style="padding: 0px;" class="d-none">
+      <div id="CREATELOT" class="app-screen d-none wareHouse-detail-app">
+          <div class="app-container bg-body-secondary shadow-lg rounded-4 d-flex flex-column position-relative overflow-hidden">
+              <!-- ===== MÀN HÌNH DANH SÁCH LÔ SẢN PHẨM ===== -->
+              <div id="list-screen" class="d-flex flex-column h-100 w-100">
+                  <header class="bg-dark shadow-sm sticky-top z-1">
+                      <div class="px-3 py-3">
+                           <h1 class="fs-5 fw-bold text-light text-center w-100">Quản Lý Lô Sản Phẩm</h1>
+                      </div>
+                  </header>
+      
+                  <div class="p-3 bg-dark border-bottom border-secondary">
+                      <div class="position-relative">
+                          <div class="position-absolute top-50 start-0 translate-middle-y ps-3 pe-none">
+                              <svg class="h-5 w-5 text-secondary" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 S0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+                          </div>
+                          <input type="text" id="search-input" class="form-control rounded-pill ps-5" placeholder="Tìm theo mã lô, tên sản phẩm...">
+                      </div>
+                  </div>
+      
+                  <main class="flex-grow-1 overflow-y-auto p-3 bg-dark">
+                      <div id="batch-list-container" class="d-flex flex-column gap-3"></div>
+                      <p id="no-results" class="text-center text-secondary d-none">Không tìm thấy lô sản phẩm nào.</p>
+                  </main>
+                  
+                  <button id="add-new-button" class="btn btn-primary btn-lg rounded-circle position-absolute bottom-0 end-0 m-3 z-2 d-flex justify-content-center align-items-center" style="width: 56px; height: 56px;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/></svg>
+                  </button>
+              </div>
+      
+              <!-- ===== MÀN HÌNH FORM (Thêm & Sửa Lô) ===== -->
+              <div id="form-screen" class="d-none d-flex flex-column h-100">
+                  <header class="bg-dark shadow-sm z-1 flex-shrink-0">
+                      <div class="px-3 py-3 d-flex align-items-center">
+                          <button id="back-to-list-button" class="btn btn-link text-secondary">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                          </button>
+                          <h1 id="form-title" class="fs-5 fw-bold text-light text-center flex-grow-1"></h1>
+                          <div style="width: 40px;"></div>
+                      </div>
+                  </header>
+      
+                  <main class="flex-grow-1 overflow-y-auto p-4 bg-dark">
+                      <form id="batch-declaration-form" class="d-flex flex-column gap-4">
+                          <div class="btn-group w-100 segmented-control-group" role="group" aria-label="Loại khai báo">
+                              <input type="radio" class="btn-check" name="declaration_type" id="type_lsx" value="lsx" autocomplete="off" checked>
+                              <label class="btn" for="type_lsx">Theo Lệnh Sản Xuất</label>
+                              <input type="radio" class="btn-check" name="declaration_type" id="type_bom" value="bom" autocomplete="off">
+                              <label class="btn" for="type_bom">Theo BOM</label>
                           </div>
                           
-                    </div>
-                      
-                </div>
-            </div>
-            
-            <div id="tab-2" class="tab-content">
-                <div id="notPermission">
-                    <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
-                    <h5 style="color: #fff; margin-top: 10px; margin-bottom: 30px;">Kích hoạt quyền sở hữu và bảo hành</h5>
-                    <div class="content-form" style="background-color: rgb(0, 0, 0, 0); padding: 0">
-                        <div class="form-group content-detail">
-                            <label class="form-label content-label" for="phoneNumberInput">Số điện thoại:<span class="required-star">*</span></label>
-                            <input type="text" id="phoneNumberInput" class="form-control content-input" placeholder="Nhập số điện thoại..." />
-                        </div>
-                        <div class="form-group content-detail">
-                            <label class="form-label content-label" for="productCodeInput">Mã định danh sản phẩm:</label>
-                            <input type="text" id="productCodeInput" class="form-control content-input" placeholder="Nhập Mã định danh sản phẩm..." />
-                        </div>
-                        <div id="oaWidget" class="form-group content-detail">
+                          <div id="lsx-selector-container">
+                              <label for="production-order" class="form-label">Chọn Lệnh sản xuất (LSX)</label>
+                              <select id="production-order" class="form-select form-element"></select>
+                          </div>
+                          <div id="bom-selector-container" class="d-none">
+                              <label for="bom-select" class="form-label">Chọn BOM sản phẩm</label>
+                              <select id="bom-select" class="form-select form-element"></select>
+                          </div>
+                          <div class="row g-3">
+                              <div class="col-6">
+                                  <label for="batch-code" class="form-label">Mã lô sản phẩm</label>
+                                  <input type="text" id="batch-code" class="form-control form-element" readonly>
+                              </div>
+                               <div class="col-6">
+                                  <label for="batch-creation-date" class="form-label">Ngày tạo lô hàng</label>
+                                  <input type="date" id="batch-creation-date" class="form-control form-element">
+                              </div>
+                          </div>
+                           <div class="row g-3">
+                              <div class="col-6">
+                                  <label for="product-code" class="form-label">Mã sản phẩm</label>
+                                  <input type="text" id="product-code" class="form-control form-element" readonly>
+                              </div>
+                               <div class="col-6">
+                                  <label for="product-name" class="form-label">Tên sản phẩm</label>
+                                  <input type="text" id="product-name" class="form-control form-element" readonly>
+                              </div>
+                          </div>
+                          <div>
+                              <label for="bom-display" class="form-label">BOM sản phẩm sản xuất</label>
+                              <input type="text" id="bom-display" class="form-control form-element" readonly>
+                          </div>
+                          <div>
+                              <label for="specifications" class="form-label">Thông số kỹ thuật chung</label>
+                              <textarea id="specifications" rows="3" class="form-control" readonly></textarea>
+                          </div>
+                          <div class="row g-3">
+                              <div class="col-6">
+                                  <label for="planned-quantity" class="form-label">Số lượng kế hoạch</label>
+                                  <input type="number" id="planned-quantity" class="form-control form-element" placeholder="Tự động/Nhập tay" readonly>
+                              </div>
+                              <div class="col-6">
+                                  <label for="actual-quantity" class="form-label">Số lượng thực tế lô</label>
+                                  <input type="number" id="actual-quantity" class="form-control form-element" placeholder="VD: 100" min="1" required>
+                              </div>
+                          </div>
+                          <div class="row g-3">
+                               <div class="col-6">
+                                  <label for="unit" class="form-label">ĐVT Sản phẩm</label>
+                                  <input type="text" id="unit" class="form-control form-element" readonly>
+                              </div>
+                               <div class="col-6">
+                                  <label for="batch-unit" class="form-label">Đơn vị tính lô</label>
+                                   <select id="batch-unit" class="form-select form-element">
+                                      <option>Thùng</option><option>Hộp</option><option>Pallet</option>
+                                  </select>
+                              </div>
+                              <div class="col-6">
+                                  <label for="warranty" class="form-label">Thời gian bảo hành</label>
+                                  <input type="text" id="warranty" class="form-control form-element" readonly>
+                              </div>
+                               <div class="col-6">
+                                  <label for="status" class="form-label">Trạng thái lô hàng</label>
+                                  <select id="status" class="form-select form-element">
+                                      <option>Mới sản xuất</option><option>Đã qua KCS</option><option>Sẵn sàng nhập kho</option><option>Đã hủy</option>
+                                  </select>
+                              </div>
+                           </div>
+                      </form>
+                  </main>
+                  
+                  <footer class="p-3 bg-dark border-top border-secondary flex-shrink-0">
+                       <button type="submit" id="form-submit-button" form="batch-declaration-form" class="btn btn-primary btn-lg w-100 fw-bold shadow">
+                       </button>
+                  </footer>
+              </div>
+      
+              <!-- ===== MÀN HÌNH ĐỊNH DANH SẢN PHẨM ===== -->
+              <div id="product-id-screen" class="d-none d-flex flex-column h-100">
+                  <header class="bg-dark shadow-sm z-1 flex-shrink-0 p-3 d-flex align-items-center">
+                    <button id="back-to-list-from-details-button" class="btn btn-link text-secondary p-0 me-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                    </button>
+                    <h1 id="product-id-title" class="fs-5 fw-bold text-light text-center flex-grow-1 m-0">Định Danh Sản Phẩm</h1>
+                    <div style="width: 40px;"></div>
+                </header>
 
+                <main class="flex-grow-1 overflow-y-auto p-3 p-md-4">
+                    <div id="batch-info-container" class="alert alert-primary p-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center small"><span class="text-body-secondary">Sản phẩm:</span><span id="info-product-name" class="fw-bold text-light text-end"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đơn vị lô:</span><span id="info-unit" class="fw-bold badge bg-primary px-2 py-1"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Tổng số SP trong lô:</span><span id="info-total-quantity" class="fw-bold text-light"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đã định danh (SP):</span><span id="info-identified-quantity" class="fw-bold text-success"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Cần quét còn lại (SP):</span><span id="info-remaining-quantity" class="fw-bolder text-danger fs-6 m-0"></span></div>
+                    </div>
+                    <div id="packaging-declaration-container" class="d-none border rounded p-3 mb-4 bg-body-tertiary">
+                        <h3 class="h6 fw-bold text-light">Khai báo cấu trúc đóng gói</h3>
+                        <div class="row mt-3 g-2">
+                            <div id="declaration-layer-level" class="col-6 mb-2"><label for="items-per-layer" class="d-block small fw-medium text-body-secondary mb-1">Số SP / Lớp</label><input type="number" id="items-per-layer" class="form-control text-center"></div>
+                            <div id="declaration-carton-level" class="col-6 mb-2"><label for="layers-per-carton" class="d-block small fw-medium text-body-secondary mb-1">Số Lớp / Thùng</label><input type="number" id="layers-per-carton" class="form-control text-center"></div>
+                            <div id="declaration-pallet-level" class="col-6 mb-2"><label for="cartons-per-pallet" class="d-block small fw-medium text-body-secondary mb-1">Số Thùng / Pallet</label><input type="number" id="cartons-per-pallet" class="form-control text-center"></div>
+                            <div id="declaration-container-level" class="col-6 mb-2"><label for="pallets-per-container" class="d-block small fw-medium text-body-secondary mb-1">Số Pallet / Cont.</label><input type="number" id="pallets-per-container" class="form-control text-center"></div>
+                        </div>
+                        <div class="mt-3 p-2 bg-dark border rounded">
+                            <p class="small text-body-secondary m-0 d-none" id="calc-carton-row">Tổng SP / Thùng: <strong id="calc-items-per-carton" class="text-light">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-pallet-row">Tổng SP / Pallet: <strong id="calc-items-per-pallet" class="text-light">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-container-row">Tổng SP / Cont.: <strong id="calc-items-per-container" class="text-light">0</strong></p>
+                            <hr class="my-2 d-none" id="calc-divider">
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-cartons-row">Tổng số Thùng (dự kiến): <strong id="calc-total-cartons" class="text-primary fw-bold">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-pallets-row">Tổng số Pallet (dự kiến): <strong id="calc-total-pallets" class="text-primary fw-bold">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-containers-row">Tổng số Cont. (dự kiến): <strong id="calc-total-containers" class="text-primary fw-bold">0</strong></p>
+                        </div>
+                        <div id="remainder-alert" class="alert alert-warning mt-2 p-2 small d-none" role="alert">
+                            <strong class="d-block">Lưu ý:</strong> <span id="remainder-text"></span>
                         </div>
                     </div>
-                    
-                    <button id="btnPermission" class="btn btn-warning" style="background-color: #f39c12;margin-top: 20px; border: solid 1px #f39c12; width: 100%; height: 35px; color: #fff;">Xác nhận</button>
-                    
-                    <div class="box-value mt-3 px-3 py-2" style="text-align: left;">
-                        <h6 class="text-white mb-2" style="font-weight: 500;">Chính sách bảo hành:</h6>
-                        <ul class="pl-3 mb-0 text-white" style="list-style: none;">
-                            <li>✅ Bảo hành 1 đổi 1 trong 1 năm</li>
-                            <li>✅ Được hỗ trợ vận chuyển</li>
-                            <li>✅ Quan tâm OA: Sẽ được bảo hành miễn phí 1 lần sau khi hết bảo hành 1 năm</li>
-                        </ul>
+                    <div id="scan-progress-container" class="d-none alert alert-warning p-3 mb-4">
+                        <h3 class="h6 fw-bold text-dark">Tiến độ quét hiện tại</h3>
+                        <div class="row text-center small mt-2">
+                            <div id="progress-pallet" class="col d-none"><p class="text-muted m-0">Pallet</p><p class="fw-bold text-warning-dark m-0"></p></div>
+                            <div id="progress-carton" class="col d-none"><p class="text-muted m-0">Thùng</p><p class="fw-bold text-warning-dark m-0"></p></div>
+                            <div id="progress-layer" class="col d-none"><p class="text-muted m-0">Lớp</p><p class="fw-bold text-warning-dark m-0"></p></div>
+                        </div>
                     </div>
-                </div>
-                <div id="isPermission" class="d-none">
-                    <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
-                    <h5 style="color: #fff; margin-top: 10px; margin-bottom: 30px;">Chuyển quyền sở hữu</h5>
-                    <div class="content-form" style="background-color: rgb(0, 0, 0, 0); padding: 0">
-                        <label class="form-label content-label" >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
-                                <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
-                            </svg>
-                            Lưu ý: Khi người được bạn chuyển quyền sở hữu xác nhận, bạn sẽ mất quyền truy cập thiết bị.
-                        </label>
-                        <div id="oa1Widget" class="form-group content-detail">
+                    <div class="mb-4">
+                        <label class="d-block fw-medium text-body-secondary mb-2 small">Quét mã sản phẩm</label>
+                        <button type="button" id="start-scan-button" class="btn btn-light btn-lg w-100 fw-bold shadow" data-bs-toggle="modal" data-bs-target="#id-scan-modal">Bắt Đầu Quét</button>
+                    </div>
+                    <div id="results-container">
+                        <h2 class="h6 fw-bold text-body-secondary">Sản Phẩm Đã Quét (<span id="scan-count">0</span>)</h2>
+                        <div id="id-list-details" class="bg-dark p-3 rounded border" style="max-height: 200px; overflow-y: auto;">
+                            <p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>
+                        </div>
+                    </div>
+                </main>
+                <footer class="p-3 bg-dark border-top border-secondary flex-shrink-0">
+                    <button type="button" id="save-identities-button" class="btn btn-primary btn-lg w-100 fw-bold shadow">Lưu Thông Tin</button>
+                </footer>
+              </div>
+              
+              <!-- ===== MODALS ===== -->
+              <div id="delete-modal" class="modal fade" tabindex="-1" style="--bs-modal-bg: #343a40;">
+                  <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content border-secondary">
+                          <div class="modal-body text-center p-4">
+                              <h3 class="fs-5 fw-bold text-light">Xác nhận Xóa</h3>
+                              <p class="small text-body-secondary mt-2">Bạn có chắc chắn muốn xóa lô sản phẩm <b id="batch-code-to-delete" class="text-warning"></b>? Hành động này không thể hoàn tác.</p>
+                              <div class="mt-4 d-flex justify-content-center gap-3">
+                                  <button type="button" id="cancel-delete-button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">Hủy bỏ</button>
+                                  <button type="button" id="confirm-delete-button" class="btn btn-danger fw-semibold">Xác nhận</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+      
+              <div id="scan-modal" class="d-none position-fixed top-0 start-0 w-100 vh-100 z-3 bg-black bg-opacity-75 d-flex flex-column justify-content-center align-items-center p-4">
+                  <div class="position-relative w-100 aspect-square bg-secondary rounded-3 overflow-hidden border-2 border-primary" style="max-width: 20rem;">
+                      <div class="scanner-line"></div>
+                      <p class="position-absolute top-0 start-0 m-3 text-white small">Hướng camera vào mã QR...</p>
+                  </div>
+                  <p class="text-white mt-4">Đã quét mới: <span id="modal-scan-count" class="fw-bold">0</span></p>
+                  <button id="simulate-scan-button" class="btn btn-success fw-bold mt-4 py-2 px-4">Quét mã giả lập</button>
+                  <button id="stop-scan-button" class="btn btn-link text-white mt-4 small">Dừng Quét</button>
+              </div>
+          </div>
+      </div>
 
-                        </div>
-                    </div>
-                    
-                    <button id="outPermission" class="btn btn-warning" style="background-color: #f39c12;margin-top: 20px; border: solid 1px #f39c12; width: 100%; height: 35px; color: #fff;">Chuyển quyền sở hữu</button>
-                </div>
-            </div>
+      <div id="PRQRCODE" class="app-screen d-none wareHouse-detail-app">
+        <div class="card p-4">
+          <div class="mb-3">
+            <label for="productSelect" class="form-label">Chọn Lô</label>
+            <select id="productSelect" class="form-select" data-placeholder="-- Chọn sản phẩm --">
+              <option></option>
+              <option value="SP001">Sản phẩm 1</option>
+              <option value="SP002">Sản phẩm 2</option>
+              <option value="SP003">Sản phẩm 3</option>
+              <option value="SP004">Sản phẩm 4</option>
+              <option value="SP005">Sản phẩm 5</option>
+            </select>
+          </div>
+
+          <div class="repeat-options" style="margin-top: 10px; background-color: #2a2a2a;">
+            <label class="form-label text-white">Lặp lại:</label>
+            <div class="option selected" data-value="detail">In lẻ</div>
+            <div class="option" data-value="bo">In bộ</div>
+            <div class="option" data-value="all">In Lô</div>
+          </div>  
+          
+          <div id="modeDetails" class="mb-3"></div>
+      
+          <button class="btn btn-primary w-100" onclick="createLot()">
+            <i class="bi bi-plus-circle"></i> Tạo lô
+          </button>
+      
+          <div id="lotResult" class="mt-4"></div>
         </div>
+      </div>
 
-        <!-- Bottom Navigation -->
-        <div id="menu-warranty" class="bottom-navigation d-none">
-            <button id="warranty-permission" class="btn-tab1" data-tab="2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                    class="bi bi-qr-code" viewBox="0 0 16 16">
-                    <path d="M2 2h2v2H2z" />
-                    <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z" />
-                    <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z" />
-                    <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z" />
-                    <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z" />
-                </svg>
-                Quyền sở hữu
-            </button>
-            <button id="btn-tab1" class="btn-tab1" data-tab="1">
-                <!-- <img src="https://cdn-icons-png.flaticon.com/512/3409/3409588.png" alt="Quét QR"> -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                    class="bi bi-list-ul" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                        d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
-                </svg>
-                Chi tiết
-            </button>
-            <button id="warranty-history" class="btn-tab1" data-tab="0">
-                <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Tạo QR"> -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                    class="bi bi-clock-history" viewBox="0 0 16 16">
-                    <path
-                        d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" />
-                    <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
-                    <path
-                        d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
-                </svg>
-                Lịch sử
-            </button>
-        </div>
+      <div id="IMPORT" class="app-screen d-none">
+        <h2>Nhập kho</h2>
+        <!-- code html riêng cho IMPORT -->
+      </div>
+
+      <div id="EXPORT" class="app-screen d-none">
+        <h2>Xuất kho</h2>
+        <!-- code html riêng cho EXPORT -->
+      </div>
     </div>
-</div>
+  </div>
 <!-- <script src="https://miniapp-new.vercel.app/src/pages/Warranty/warranty.js"></script> -->
 <script src="./src/pages/Warranty/warranty.js"></script>

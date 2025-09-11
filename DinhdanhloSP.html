@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Định Danh Sản Phẩm Theo Lô (Bootstrap 4)</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" xintegrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f8f9fa;
+            color: #212529;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .app-wrapper {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .scanner-line {
+            position: absolute; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #28a745, transparent);
+            box-shadow: 0 0 10px #28a745; animation: scan 2s infinite linear;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .scanner-box {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            padding-top: 100%; /* Aspect ratio 1:1 */
+        }
+        .scanner-box::before, .scanner-box::after, .scanner-box .corner-top-right, .scanner-box .corner-bottom-left, .scanner-box .corner-bottom-right {
+            content: ''; position: absolute; width: 30px; height: 30px; border-color: #17a2b8; border-style: solid;
+        }
+        .scanner-box::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .scanner-box::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+        .scanner-box .corner-bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .scanner-box .corner-bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+        .scanner-box .scanner-content { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        
+        #id-list details { border-left: 1px solid #dee2e6; margin-left: 0.5rem; }
+        #id-list summary { cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        #id-list summary:hover { background-color: #e9ecef; }
+        #id-list .item-code { padding: 0.25rem 0.5rem 0.25rem 1.5rem; }
+        .toast-container {
+            position: fixed;
+            z-index: 1050;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .dark-mode .app-wrapper, .dark-mode .bg-white {
+            background-color: #1e1e1e !important;
+        }
+        .dark-mode .border, .dark-mode .border-bottom, .dark-mode .border-top {
+            border-color: #444 !important;
+        }
+        .dark-mode .text-dark {
+            color: #f8f9fa !important;
+        }
+        .dark-mode .text-muted {
+            color: #adb5bd !important;
+        }
+        .dark-mode .bg-light {
+            background-color: #333 !important;
+        }
+        .dark-mode .custom-select, .dark-mode .form-control {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        .dark-mode .custom-select:focus, .dark-mode .form-control:focus {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .dark-mode .alert-info {
+            background-color: #004085;
+            color: #cce5ff;
+            border-color: #b8daff;
+        }
+        .dark-mode .badge-primary {
+             background-color: #004085;
+             color: #cce5ff;
+        }
+        .dark-mode .alert-warning {
+             background-color: #856404;
+             color: #ffeeba;
+             border-color: #ffeeba;
+        }
+        .dark-mode #id-list summary:hover {
+            background-color: #444;
+        }
+        .dark-mode .btn-light {
+            background-color: #3a3b3c;
+            border-color: #3a3b3c;
+            color: #e4e6eb;
+        }
+        .dark-mode .toast {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        .dark-mode .toast-header {
+             background-color: #444;
+             color: #e0e0e0;
+             border-bottom-color: #555;
+        }
+         .dark-mode .close {
+            color: #fff;
+            text-shadow: none;
+        }
+        .theme-toggler {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="d-flex justify-content-center align-items-center">
+
+    <div class="bg-white rounded app-wrapper">
+        
+        <header class="p-3 border-bottom d-flex align-items-center">
+            <button class="btn btn-light rounded-circle p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+            </button>
+            <h1 class="h5 font-weight-bold text-dark text-center flex-grow-1 m-0">Định Danh Sản Phẩm</h1>
+            <div id="theme-toggler" class="theme-toggler p-1 text-center" style="width: 40px;">
+                <!-- Sun Icon -->
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-sun-fill" viewBox="0 0 16 16">
+                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707z"/>
+                </svg>
+                <!-- Moon Icon -->
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-moon-fill d-none" viewBox="0 0 16 16">
+                    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+                </svg>
+            </div>
+        </header>
+
+        <main class="main-content p-3 p-md-4">
+            <div class="mb-4">
+                <label for="batch-select" class="d-block font-weight-medium text-muted mb-1 small">1. Chọn lô sản phẩm</label>
+                <select id="batch-select" class="custom-select custom-select-lg">
+                    <option value="">-- Vui lòng chọn lô --</option>
+                </select>
+            </div>
+
+            <div id="batch-info-container" class="d-none alert alert-info p-3 mb-4">
+                 <div class="d-flex justify-content-between align-items-center small"><span class="text-muted">Sản phẩm:</span><span id="info-product-name" class="font-weight-bold text-dark text-right"></span></div>
+                 <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-muted">Đơn vị lô:</span><span id="info-unit" class="font-weight-bold badge badge-primary px-2 py-1"></span></div>
+                 <div class="d-flex justify-content-between align-items-center small mt-2"><span id="info-total-quantity-label" class="text-muted">Tổng số SP trong lô:</span><span id="info-total-quantity" class="font-weight-bold text-dark"></span></div>
+                 <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-muted">Đã định danh (SP):</span><span id="info-identified-quantity" class="font-weight-bold text-success"></span></div>
+                 <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-muted">Cần quét còn lại (SP):</span><span id="info-remaining-quantity" class="font-weight-bolder text-danger h6 m-0"></span></div>
+            </div>
+
+            <div id="packaging-declaration-container" class="d-none border rounded p-3 mb-4 bg-light">
+                <h3 class="h6 font-weight-bold text-dark">2. Khai báo cấu trúc đóng gói</h3>
+                <div class="row mt-3">
+                    <div id="declaration-layer-level" class="col-6 mb-2"><label for="items-per-layer" class="d-block small font-weight-medium text-muted mb-1">Số SP / Lớp</label><input type="number" id="items-per-layer" class="form-control text-center"></div>
+                    <div id="declaration-carton-level" class="col-6 mb-2"><label for="layers-per-carton" class="d-block small font-weight-medium text-muted mb-1">Số Lớp / Thùng</label><input type="number" id="layers-per-carton" class="form-control text-center"></div>
+                    <div id="declaration-pallet-level" class="col-6 mb-2"><label for="cartons-per-pallet" class="d-block small font-weight-medium text-muted mb-1">Số Thùng / Pallet</label><input type="number" id="cartons-per-pallet" class="form-control text-center"></div>
+                    <div id="declaration-container-level" class="col-6 mb-2"><label for="pallets-per-container" class="d-block small font-weight-medium text-muted mb-1">Số Pallet / Container</label><input type="number" id="pallets-per-container" class="form-control text-center"></div>
+                </div>
+                <div class="mt-3 p-2 bg-white border rounded">
+                    <p class="small text-muted m-0 d-none" id="calc-carton-row">Tổng SP / Thùng: <strong id="calc-items-per-carton" class="text-dark">0</strong></p>
+                    <p class="small text-muted m-0 d-none" id="calc-pallet-row">Tổng SP / Pallet: <strong id="calc-items-per-pallet" class="text-dark">0</strong></p>
+                    <p class="small text-muted m-0 d-none" id="calc-container-row">Tổng SP / Container: <strong id="calc-items-per-container" class="text-dark">0</strong></p>
+                    <hr class="my-2 d-none" id="calc-divider">
+                    <p class="small text-muted m-0 d-none" id="calc-total-cartons-row">Tổng số Thùng (dự kiến): <strong id="calc-total-cartons" class="text-primary font-weight-bold">0</strong></p>
+                    <p class="small text-muted m-0 d-none" id="calc-total-pallets-row">Tổng số Pallet (dự kiến): <strong id="calc-total-pallets" class="text-primary font-weight-bold">0</strong></p>
+                    <p class="small text-muted m-0 d-none" id="calc-total-containers-row">Tổng số Container (dự kiến): <strong id="calc-total-containers" class="text-primary font-weight-bold">0</strong></p>
+                </div>
+                <div id="remainder-alert" class="alert alert-warning mt-2 p-2 small d-none" role="alert">
+                    <strong class="d-block">Lưu ý:</strong>
+                    <span id="remainder-text"></span>
+                </div>
+            </div>
+            
+            <div id="scan-progress-container" class="d-none alert alert-warning p-3 mb-4">
+                 <h3 class="h6 font-weight-bold text-dark">Tiến độ quét hiện tại</h3>
+                 <div class="row text-center small mt-2">
+                     <div id="progress-pallet" class="col d-none"><p class="text-muted m-0">Pallet</p><p class="font-weight-bold text-warning-dark m-0"></p></div>
+                     <div id="progress-carton" class="col d-none"><p class="text-muted m-0">Thùng</p><p class="font-weight-bold text-warning-dark m-0"></p></div>
+                     <div id="progress-layer" class="col d-none"><p class="text-muted m-0">Lớp</p><p class="font-weight-bold text-warning-dark m-0"></p></div>
+                 </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="d-block font-weight-medium text-muted mb-1 small">3. Quét mã sản phẩm</label>
+                <button type="button" id="start-scan-button" class="btn btn-dark btn-lg btn-block font-weight-bold shadow" data-toggle="modal" data-target="#scan-modal">
+                    Bắt Đầu Quét
+                </button>
+            </div>
+
+            <div id="results-container">
+                <h2 class="h6 font-weight-bold text-muted">Sản Phẩm Đã Quét (<span id="scan-count">0</span>)</h2>
+                <div id="id-list" class="bg-light p-3 rounded border" style="max-height: 200px; overflow-y: auto;">
+                    <p class="text-center text-muted small m-0">Chưa có sản phẩm nào được quét.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="p-3 bg-white border-top">
+             <button type="button" id="save-button" class="btn btn-primary btn-lg btn-block font-weight-bold shadow">
+                Lưu Thông Tin
+            </button>
+        </footer>
+    </div>
+
+    <!-- Scan Modal -->
+    <div class="modal fade" id="scan-modal" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-body text-center text-white">
+                    <div class="scanner-box mx-auto">
+                        <div class="corner-bottom-left"></div>
+                        <div class="corner-bottom-right"></div>
+                        <div class="scanner-content">
+                            <div class="scanner-line"></div>
+                            <p class="position-absolute w-100 text-center text-white small bg-dark p-1" style="top: 1rem; --bs-bg-opacity: .5;">Hướng camera vào mã QR</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 h5">Đã quét: <span id="modal-scan-count" class="font-weight-bold text-success">0</span></p>
+                    <button id="simulate-scan-button" class="btn btn-success font-weight-bold py-2 px-4 rounded mt-2">Quét mã giả lập</button>
+                    <button type="button" class="btn btn-link text-white-50 mt-4" data-dismiss="modal">Dừng Quét</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+            <div class="toast-header">
+                <strong class="mr-auto" id="toast-title">Thông báo</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body" id="toast-body">
+                Toast message body
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" xintegrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateScannedItems = (count, prefix) => Array.from({ length: count }, (_, i) => `${prefix}-item-${i + 1}`);
+            
+            const mockBatches = [
+                // Total items: 50000. Unit: Container. 
+                { batchCode: 'LSP-240925-001', productCode: 'SP-CPU-I9', productName: 'CPU Intel Core i9', unit: 'Container', totalItemQuantity: 50000, identifiedQuantity: 0, scannedData: {}, palletsPerContainer: 10, cartonsPerPallet: 25, layersPerCarton: 10, itemsPerLayer: 20 },
+                // Total items: 482. Unit: Thùng (Carton)
+                { batchCode: 'LSP-240925-002', productCode: 'SP-RAM-DDR5', productName: 'RAM DDR5 16GB', unit: 'Thùng', totalItemQuantity: 482, identifiedQuantity: 22, scannedData: {"pallet_1":{"carton_1":{"layer_1": generateScannedItems(20, "P1-C1-L1"), "layer_2": generateScannedItems(2, "P1-C1-L2")}}}, palletsPerContainer: null, cartonsPerPallet: null, layersPerCarton: 5, itemsPerLayer: 20 },
+                // Total items: 120. Unit: Pallet
+                { batchCode: 'LSP-240924-005', productCode: 'SP-SSD-1TB', productName: 'SSD NVMe 1TB', unit: 'Pallet', totalItemQuantity: 120, identifiedQuantity: 0, scannedData: {}, palletsPerContainer: null, cartonsPerPallet: 3, layersPerCarton: 4, itemsPerLayer: 10 },
+            ];
+            
+            let sessionScannedData = {};
+            let sessionScannedCount = 0;
+            let currentScanIndices = { pallet: 1, carton: 1, layer: 1 };
+            let currentBatch = null;
+
+            const dom = {
+                batchSelect: document.getElementById('batch-select'),
+                batchInfoContainer: document.getElementById('batch-info-container'),
+                packagingContainer: document.getElementById('packaging-declaration-container'),
+                infoUnit: document.getElementById('info-unit'),
+                infoTotalQuantityLabel: document.getElementById('info-total-quantity-label'),
+                infoTotalQuantity: document.getElementById('info-total-quantity'),
+                infoIdentifiedQuantity: document.getElementById('info-identified-quantity'),
+                infoRemainingQuantity: document.getElementById('info-remaining-quantity'),
+                scanProgressContainer: document.getElementById('scan-progress-container'),
+                progress: {
+                    pallet: document.getElementById('progress-pallet'),
+                    carton: document.getElementById('progress-carton'),
+                    layer: document.getElementById('progress-layer'),
+                },
+                inputs: {
+                    palletsPerContainer: document.getElementById('pallets-per-container'),
+                    cartonsPerPallet: document.getElementById('cartons-per-pallet'),
+                    layersPerCarton: document.getElementById('layers-per-carton'),
+                    itemsPerLayer: document.getElementById('items-per-layer'),
+                },
+                idList: document.getElementById('id-list'),
+                scanCount: document.getElementById('scan-count'),
+                saveButton: document.getElementById('save-button'),
+                startScanButton: document.getElementById('start-scan-button'),
+                modalScanCount: document.getElementById('modal-scan-count'),
+                theme: {
+                    toggler: document.getElementById('theme-toggler'),
+                    sunIcon: document.getElementById('sun-icon'),
+                    moonIcon: document.getElementById('moon-icon'),
+                }
+            };
+
+            const showToast = (message, type = 'success') => {
+                const toastEl = $('#toast');
+                const toastTitleEl = $('#toast-title');
+                const toastBodyEl = $('#toast-body');
+                toastEl.removeClass('bg-success bg-info bg-warning bg-danger text-white');
+                toastTitleEl.removeClass('text-white');
+                let bgClass = '', textClass = '';
+                switch(type) {
+                    case 'info': bgClass = 'bg-info'; textClass = 'text-white'; break;
+                    case 'warning': bgClass = 'bg-warning'; break;
+                    case 'error': bgClass = 'bg-danger'; textClass = 'text-white'; break;
+                    default: bgClass = 'bg-success'; textClass = 'text-white'; break;
+                }
+                toastEl.addClass(bgClass).addClass(textClass);
+                if (textClass) toastTitleEl.addClass(textClass);
+                toastBodyEl.text(message);
+                toastEl.toast('show');
+            };
+            
+             const getDeclaration = (batch) => {
+                const b = batch || currentBatch;
+                if (!b) return { pallets: 1, cartons: 1, layers: 1, items: 1 };
+                return {
+                    pallets: b.palletsPerContainer || 1,
+                    cartons: b.cartonsPerPallet || 1,
+                    layers: b.layersPerCarton || 1,
+                    items: b.itemsPerLayer || 1,
+                };
+            };
+
+            const getIndicesFromTotal = (totalScanned, batch) => {
+                if (!batch) return { pallet: 1, carton: 1, layer: 1 };
+                const dec = getDeclaration(batch);
+                const itemsPerLayer = dec.items || 1;
+                const itemsPerCarton = (dec.layers || 1) * itemsPerLayer;
+                const itemsPerPallet = (dec.cartons || 1) * itemsPerCarton;
+                const scannedIndex = totalScanned;
+                let pallet = 1, carton = 1, layer = 1;
+                switch (batch.unit) {
+                    case 'Container':
+                        pallet = itemsPerPallet > 0 ? Math.floor(scannedIndex / itemsPerPallet) + 1 : 1;
+                        const remainderForPallet = itemsPerPallet > 0 ? scannedIndex % itemsPerPallet : scannedIndex;
+                        carton = itemsPerCarton > 0 ? Math.floor(remainderForPallet / itemsPerCarton) + 1 : 1;
+                        const remainderForCarton = itemsPerCarton > 0 ? remainderForPallet % itemsPerCarton : remainderForPallet;
+                        layer = itemsPerLayer > 0 ? Math.floor(remainderForCarton / itemsPerLayer) + 1 : 1;
+                        break;
+                    case 'Pallet':
+                        pallet = 1; 
+                        carton = itemsPerCarton > 0 ? Math.floor(scannedIndex / itemsPerCarton) + 1 : 1;
+                        const remainderForCartonP = itemsPerCarton > 0 ? scannedIndex % itemsPerCarton : scannedIndex;
+                        layer = itemsPerLayer > 0 ? Math.floor(remainderForCartonP / itemsPerLayer) + 1 : 1;
+                        break;
+                    case 'Thùng':
+                        pallet = 1; // Logical pallet
+                        const itemsPerCartonT = (dec.layers || 1) * itemsPerLayer;
+                        carton = itemsPerCartonT > 0 ? Math.floor(scannedIndex / itemsPerCartonT) + 1 : 1;
+                        const remainderForCartonT = itemsPerCartonT > 0 ? scannedIndex % itemsPerCartonT : scannedIndex;
+                        layer = itemsPerLayer > 0 ? Math.floor(remainderForCartonT / itemsPerLayer) + 1 : 1;
+                        break;
+                }
+                return { pallet, carton, layer };
+            };
+
+            const updateScanProgressUI = () => {
+                if (!currentBatch) return;
+                const dec = getDeclaration();
+                const unit = currentBatch.unit;
+                
+                dom.progress.pallet.classList.add('d-none');
+                dom.progress.carton.classList.add('d-none');
+                dom.progress.layer.classList.add('d-none');
+                dom.scanProgressContainer.classList.add('d-none');
+
+                if (unit === 'Container') {
+                    dom.progress.pallet.classList.remove('d-none');
+                    dom.progress.pallet.lastElementChild.textContent = `${currentScanIndices.pallet} / ${dec.pallets || 'N/A'}`;
+                }
+                if (unit === 'Container' || unit === 'Pallet') {
+                    dom.progress.carton.classList.remove('d-none');
+                    dom.progress.carton.lastElementChild.textContent = `${currentScanIndices.carton} / ${dec.cartons || 'N/A'}`;
+                }
+                if (unit === 'Container' || unit === 'Pallet' || unit === 'Thùng') {
+                    dom.progress.layer.classList.remove('d-none');
+                    dom.progress.layer.lastElementChild.textContent = `${currentScanIndices.layer} / ${dec.layers || 'N/A'}`;
+                    dom.scanProgressContainer.classList.remove('d-none');
+                }
+            };
+            
+            const renderScannedData = (data) => {
+                const totalCount = Object.values(data).reduce((pAcc, cartons) => pAcc + Object.values(cartons).reduce((cAcc, layers) => cAcc + Object.values(layers).reduce((lAcc, items) => lAcc + items.length, 0), 0), 0);
+                dom.scanCount.textContent = totalCount;
+                if (totalCount === 0) {
+                    dom.idList.innerHTML = '<p class="text-center text-muted small m-0">Chưa có sản phẩm nào được quét.</p>';
+                    return;
+                }
+                let html = '';
+                const unit = currentBatch ? currentBatch.unit : 'Container';
+                const renderLayers = (layers, indentClass = 'ml-4') => {
+                    let layersHtml = '';
+                    for (const [layerKey, items] of Object.entries(layers)) {
+                        layersHtml += `<details open><summary class="${indentClass}">Lớp ${layerKey.split('_')[1]} (${items.length} SP)</summary>`;
+                        items.forEach(item => { layersHtml += `<p class="item-code font-monospace small">${item}</p>`; });
+                        layersHtml += `</details>`;
+                    }
+                    return layersHtml;
+                };
+                const renderCartons = (cartons, indentClass = 'ml-2') => {
+                    let cartonsHtml = '';
+                    for (const [cartonKey, layers] of Object.entries(cartons)) {
+                        cartonsHtml += `<details open><summary class="font-weight-bold ${indentClass}">Thùng ${cartonKey.split('_')[1]}</summary>`;
+                        cartonsHtml += renderLayers(layers);
+                        cartonsHtml += `</details>`;
+                    }
+                    return cartonsHtml;
+                };
+                switch(unit) {
+                    case 'Container':
+                        for (const [palletKey, cartons] of Object.entries(data)) {
+                             html += `<details open><summary class="font-weight-bolder">Pallet ${palletKey.split('_')[1]}</summary>`;
+                             html += renderCartons(cartons);
+                             html += `</details>`;
+                        }
+                        break;
+                    case 'Pallet': case 'Thùng':
+                        if (data.pallet_1) html += renderCartons(data.pallet_1, 'ml-0 font-weight-bold');
+                        break;
+                    default:
+                         for (const [palletKey, cartons] of Object.entries(data)) {
+                             html += `<details open><summary class="font-weight-bolder">Pallet ${palletKey.split('_')[1]}</summary>`;
+                             html += renderCartons(cartons);
+                             html += `</details>`;
+                        }
+                        break;
+                }
+                dom.idList.innerHTML = html || '<p class="text-center text-muted small m-0">Chưa có sản phẩm nào được quét.</p>';
+            };
+
+            const resetSession = () => {
+                sessionScannedData = {};
+                sessionScannedCount = 0;
+                dom.modalScanCount.textContent = 0;
+            };
+
+            function handleDeclarationChange() {
+                if (!currentBatch) return;
+
+                // A. Update batch object from inputs
+                currentBatch.itemsPerLayer = parseInt(dom.inputs.itemsPerLayer.value, 10) || null;
+                currentBatch.layersPerCarton = parseInt(dom.inputs.layersPerCarton.value, 10) || null;
+                currentBatch.cartonsPerPallet = parseInt(dom.inputs.cartonsPerPallet.value, 10) || null;
+                currentBatch.palletsPerContainer = parseInt(dom.inputs.palletsPerContainer.value, 10) || null;
+                
+                // B. Perform calculations
+                const unit = currentBatch.unit;
+                const totalItemsInBatch = currentBatch.totalItemQuantity;
+
+                const itemsPerLayer = currentBatch.itemsPerLayer || 0;
+                const layersPerCarton = currentBatch.layersPerCarton || 0;
+                const cartonsPerPallet = currentBatch.cartonsPerPallet || 0;
+                const palletsPerContainer = currentBatch.palletsPerContainer || 0;
+
+                const itemsPerCarton = itemsPerLayer * layersPerCarton;
+                const itemsPerPallet = itemsPerCarton * cartonsPerPallet;
+                const itemsPerContainer = itemsPerPallet * palletsPerContainer;
+                
+                const totalContainers = itemsPerContainer > 0 ? Math.ceil(totalItemsInBatch / itemsPerContainer) : 0;
+                const totalPallets = itemsPerPallet > 0 ? Math.ceil(totalItemsInBatch / itemsPerPallet) : 0;
+                const totalCartons = itemsPerCarton > 0 ? Math.ceil(totalItemsInBatch / itemsPerCarton) : 0;
+
+                // C. Update intermediate calculation UI
+                const calcCartonRow = document.getElementById('calc-carton-row');
+                const calcPalletRow = document.getElementById('calc-pallet-row');
+                const calcContainerRow = document.getElementById('calc-container-row');
+                const calcDivider = document.getElementById('calc-divider');
+                const calcTotalCartonsRow = document.getElementById('calc-total-cartons-row');
+                const calcTotalPalletsRow = document.getElementById('calc-total-pallets-row');
+                const calcTotalContainersRow = document.getElementById('calc-total-containers-row');
+                let shouldShowDivider = false;
+
+                calcCartonRow.classList.add('d-none');
+                calcPalletRow.classList.add('d-none');
+                calcContainerRow.classList.add('d-none');
+                calcTotalCartonsRow.classList.add('d-none');
+                calcTotalPalletsRow.classList.add('d-none');
+                calcTotalContainersRow.classList.add('d-none');
+
+                if (unit === 'Thùng' || unit === 'Pallet' || unit === 'Container') {
+                    document.getElementById('calc-items-per-carton').textContent = itemsPerCarton > 0 ? itemsPerCarton.toLocaleString('vi-VN') : '-';
+                    calcCartonRow.classList.remove('d-none');
+                    if (totalCartons > 0) {
+                        document.getElementById('calc-total-cartons').textContent = totalCartons.toLocaleString('vi-VN');
+                        calcTotalCartonsRow.classList.remove('d-none');
+                        shouldShowDivider = true;
+                    }
+                }
+                if (unit === 'Pallet' || unit === 'Container') {
+                    document.getElementById('calc-items-per-pallet').textContent = itemsPerPallet > 0 ? itemsPerPallet.toLocaleString('vi-VN') : '-';
+                    calcPalletRow.classList.remove('d-none');
+                    if (totalPallets > 0) {
+                        document.getElementById('calc-total-pallets').textContent = totalPallets.toLocaleString('vi-VN');
+                        calcTotalPalletsRow.classList.remove('d-none');
+                        shouldShowDivider = true;
+                    }
+                }
+                if (unit === 'Container') {
+                    document.getElementById('calc-items-per-container').textContent = itemsPerContainer > 0 ? itemsPerContainer.toLocaleString('vi-VN') : '-';
+                    calcContainerRow.classList.remove('d-none');
+                    if (totalContainers > 0) {
+                        document.getElementById('calc-total-containers').textContent = totalContainers.toLocaleString('vi-VN');
+                        calcTotalContainersRow.classList.remove('d-none');
+                        shouldShowDivider = true;
+                    }
+                }
+                
+                if (shouldShowDivider) {
+                    calcDivider.classList.remove('d-none');
+                } else {
+                    calcDivider.classList.add('d-none');
+                }
+                
+                // D. Calculate and display remainder info
+                const remainderAlert = document.getElementById('remainder-alert');
+                const remainderText = document.getElementById('remainder-text');
+                let itemsPerMainUnit = 0;
+                switch(unit) {
+                    case 'Container': itemsPerMainUnit = itemsPerContainer; break;
+                    case 'Pallet': itemsPerMainUnit = itemsPerPallet; break;
+                    case 'Thùng': itemsPerMainUnit = itemsPerCarton; break;
+                    default: itemsPerMainUnit = itemsPerLayer; break;
+                }
+
+                if (itemsPerMainUnit > 0 && totalItemsInBatch > 0) {
+                    const totalFullUnits = Math.floor(totalItemsInBatch / itemsPerMainUnit);
+                    const remainderItems = totalItemsInBatch % itemsPerMainUnit;
+                    
+                    if (remainderItems > 0) {
+                        remainderText.textContent = `Lô sẽ có ${totalFullUnits} ${unit.toLowerCase()} đầy đủ và ${remainderItems} sản phẩm lẻ.`;
+                        remainderAlert.classList.remove('d-none');
+                    } else {
+                        remainderAlert.classList.add('d-none');
+                    }
+                } else {
+                    remainderAlert.classList.add('d-none');
+                }
+                updateScanProgressUI();
+                updateButtonStates();
+            }
+
+            const updateButtonStates = () => {
+                if (!currentBatch) {
+                    dom.startScanButton.disabled = true;
+                    dom.saveButton.disabled = true;
+                    return;
+                };
+                const remaining = currentBatch.totalItemQuantity - currentBatch.identifiedQuantity;
+                dom.startScanButton.disabled = remaining <= 0;
+                dom.saveButton.disabled = sessionScannedCount === 0;
+            };
+
+            dom.batchSelect.addEventListener('change', () => {
+                const selectedCode = dom.batchSelect.value;
+                resetSession();
+                if (!selectedCode) {
+                    currentBatch = null;
+                    dom.batchInfoContainer.classList.add('d-none');
+                    dom.packagingContainer.classList.add('d-none');
+                    dom.scanProgressContainer.classList.add('d-none');
+                    renderScannedData({});
+                } else {
+                    const foundBatch = mockBatches.find(b => b.batchCode === selectedCode);
+                    if (foundBatch) {
+                        // Create a deep copy to avoid modifying the original mock data
+                        currentBatch = JSON.parse(JSON.stringify(foundBatch));
+                        
+                        const unit = currentBatch.unit || 'Cái';
+                        const remaining = currentBatch.totalItemQuantity - currentBatch.identifiedQuantity;
+                        
+                        document.getElementById('info-product-name').textContent = currentBatch.productName;
+                        dom.infoUnit.textContent = unit;
+                        dom.infoTotalQuantity.textContent = currentBatch.totalItemQuantity.toLocaleString('vi-VN');
+                        dom.infoIdentifiedQuantity.textContent = currentBatch.identifiedQuantity.toLocaleString('vi-VN');
+                        dom.infoRemainingQuantity.textContent = remaining.toLocaleString('vi-VN');
+                        dom.batchInfoContainer.classList.remove('d-none');
+
+                        showDeclarationLevelsByUnit(unit);
+                        dom.inputs.palletsPerContainer.value = currentBatch.palletsPerContainer || '';
+                        dom.inputs.cartonsPerPallet.value = currentBatch.cartonsPerPallet || '';
+                        dom.inputs.layersPerCarton.value = currentBatch.layersPerCarton || '';
+                        dom.inputs.itemsPerLayer.value = currentBatch.itemsPerLayer || '';
+                        
+                        currentScanIndices = getIndicesFromTotal(currentBatch.identifiedQuantity, currentBatch);
+                        renderScannedData(currentBatch.scannedData);
+                        handleDeclarationChange();
+                    }
+                }
+                updateButtonStates();
+            });
+            
+            document.getElementById('simulate-scan-button').addEventListener('click', () => {
+                if (!currentBatch) return;
+                const totalItemsInBatch = currentBatch.totalItemQuantity;
+                const totalCanScan = totalItemsInBatch - currentBatch.identifiedQuantity;
+                if (sessionScannedCount >= totalCanScan) {
+                    showToast('Đã quét đủ số lượng còn lại cho lô này.', 'warning');
+                    $('#scan-modal').modal('hide'); 
+                    return;
+                }
+                const dec = getDeclaration();
+                const totalBeforeScan = currentBatch.identifiedQuantity + sessionScannedCount;
+                const indicesForNewItem = getIndicesFromTotal(totalBeforeScan, currentBatch);
+                const { pallet, carton, layer } = indicesForNewItem;
+                const palletKey = `pallet_${pallet}`;
+                const cartonKey = `carton_${carton}`;
+                const layerKey = `layer_${layer}`;
+                sessionScannedData[palletKey] = sessionScannedData[palletKey] || {};
+                sessionScannedData[palletKey][cartonKey] = sessionScannedData[palletKey][cartonKey] || {};
+                sessionScannedData[palletKey][cartonKey][layerKey] = sessionScannedData[palletKey][cartonKey][layerKey] || [];
+                const previouslyScannedInLayer = currentBatch.scannedData?.[palletKey]?.[cartonKey]?.[layerKey]?.length || 0;
+                const sessionScannedInLayer = sessionScannedData[palletKey][cartonKey][layerKey].length;
+                const scannedId = `${currentBatch.productCode}-P${pallet}-C${carton}-L${layer}-${previouslyScannedInLayer + sessionScannedInLayer + 1}`;
+                sessionScannedData[palletKey][cartonKey][layerKey].push(scannedId);
+                sessionScannedCount++;
+                dom.modalScanCount.textContent = sessionScannedCount;
+
+                const totalAfterScan = totalBeforeScan + 1;
+                const itemsPerLayer = dec.items;
+                const itemsPerCarton = dec.layers * itemsPerLayer;
+                const itemsPerPallet = dec.cartons * itemsPerCarton;
+                if (totalAfterScan > 0 && itemsPerLayer > 0 && totalAfterScan % itemsPerLayer === 0) {
+                    showToast(`Đã hoàn thành Lớp ${layer}!`, 'info');
+                    if (itemsPerCarton > 0 && totalAfterScan % itemsPerCarton === 0) {
+                        showToast(`Đã hoàn thành Thùng ${carton}!`, 'success');
+                        if (currentBatch.unit === 'Container' && itemsPerPallet > 0 && totalAfterScan % itemsPerPallet === 0) {
+                            showToast(`Đã hoàn thành Pallet ${pallet}!`, 'success');
+                        }
+                    }
+                }
+                currentScanIndices = getIndicesFromTotal(totalAfterScan, currentBatch);
+                const mergedData = JSON.parse(JSON.stringify(currentBatch.scannedData));
+                for(const [pKey, pVal] of Object.entries(sessionScannedData)) {
+                    mergedData[pKey] = mergedData[pKey] || {};
+                    for(const [cKey, cVal] of Object.entries(pVal)) {
+                        mergedData[pKey][cKey] = mergedData[pKey][cKey] || {};
+                         for(const [lKey, lVal] of Object.entries(cVal)) {
+                            let targetLayer = mergedData[pKey][cKey][lKey] || [];
+                            mergedData[pKey][cKey][lKey] = targetLayer.concat(lVal);
+                        }
+                    }
+                }
+                renderScannedData(mergedData);
+                updateScanProgressUI();
+                updateButtonStates();
+            });
+
+            const showDeclarationLevelsByUnit = (unit) => {
+                const levels = { container: document.getElementById('declaration-container-level'), pallet: document.getElementById('declaration-pallet-level'), carton: document.getElementById('declaration-carton-level'), layer: document.getElementById('declaration-layer-level') };
+                Object.values(levels).forEach(l => l.classList.add('d-none'));
+                switch(unit){
+                    case 'Container': Object.values(levels).forEach(l => l.classList.remove('d-none')); break;
+                    case 'Pallet': levels.pallet.classList.remove('d-none'); levels.carton.classList.remove('d-none'); levels.layer.classList.remove('d-none'); break;
+                    case 'Thùng': levels.carton.classList.remove('d-none'); levels.layer.classList.remove('d-none'); break;
+                }
+                if(unit && unit !== 'Cái') dom.packagingContainer.classList.remove('d-none');
+                else dom.packagingContainer.classList.add('d-none');
+            };
+            
+            dom.saveButton.addEventListener('click', () => {
+                if (dom.saveButton.disabled || !currentBatch) return;
+                const batchIndex = mockBatches.findIndex(b => b.batchCode === currentBatch.batchCode);
+                if (batchIndex > -1) {
+                    mockBatches[batchIndex].identifiedQuantity += sessionScannedCount;
+                    const mainData = mockBatches[batchIndex].scannedData;
+                    for(const [pKey, pVal] of Object.entries(sessionScannedData)) {
+                        mainData[pKey] = mainData[pKey] || {};
+                        for(const [cKey, cVal] of Object.entries(pVal)) {
+                            mainData[pKey][cKey] = mainData[pKey][cKey] || {};
+                            for(const [lKey, lVal] of Object.entries(cVal)) {
+                                let targetLayer = mainData[pKey][cKey][lKey] || [];
+                                mainData[pKey][cKey][lKey] = targetLayer.concat(lVal);
+                            }
+                        }
+                    }
+                    showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
+                    dom.batchSelect.dispatchEvent(new Event('change'));
+                } else {
+                    showToast('Lỗi: Không tìm thấy lô hàng để lưu.', 'error');
+                }
+            });
+
+            Object.values(dom.inputs).forEach(input => {
+                input.addEventListener('input', handleDeclarationChange);
+            });
+
+            function populateBatchSelect(){
+                mockBatches.forEach(b => {
+                    dom.batchSelect.add(new Option(`${b.batchCode} - ${b.productName}`, b.batchCode));
+                });
+            }
+
+            // Theme Switcher Logic
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    dom.theme.sunIcon.classList.add('d-none');
+                    dom.theme.moonIcon.classList.remove('d-none');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    dom.theme.sunIcon.classList.remove('d-none');
+                    dom.theme.moonIcon.classList.add('d-none');
+                }
+            }
+
+            dom.theme.toggler.addEventListener('click', () => {
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            // Load saved theme on startup
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            }
+
+
+            // Initial setup
+            populateBatchSelect();
+            updateButtonStates();
+        });
+    </script>
+</body>
+</html>
+
