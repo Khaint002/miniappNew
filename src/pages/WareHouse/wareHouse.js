@@ -979,13 +979,13 @@ var currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
             document.getElementById('show-import-view-btn').addEventListener('click', showImportView);
             document.getElementById('show-export-view-btn').addEventListener('click', showExportView);
 
-            [importViewElements.quantity, importViewElements.priceItem].forEach(el => {
-                el.addEventListener('input', () => {
-                    const quantity = parseInt(importViewElements.quantity.value) || 0;
-                    const price = parseFloat(importViewElements.priceItem.value) || 0;
-                    importViewElements.priceTotal.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
-                });
-            });
+            // [importViewElements.quantity, importViewElements.priceItem].forEach(el => {
+            //     el.addEventListener('input', () => {
+            //         const quantity = parseInt(importViewElements.quantity.value) || 0;
+            //         const price = parseFloat(importViewElements.priceItem.value) || 0;
+            //         importViewElements.priceTotal.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
+            //     });
+            // });
 
             document.getElementById('save-import-btn').addEventListener('click', () => {
                 const productId = parseInt(importViewElements.select.value);
@@ -1022,50 +1022,50 @@ var currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
                 exportViewElements.totalPrice.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
             };
 
-            [exportViewElements.quantity, exportViewElements.price].forEach(el => el.addEventListener('input', calculateExportTotal));
+            // [exportViewElements.quantity, exportViewElements.price].forEach(el => el.addEventListener('input', calculateExportTotal));
             
-            exportViewElements.batchSelect.addEventListener('change', (e) => {
-                 const batchId = e.target.value;
-                 if (!batchId) {
-                    exportViewElements.batchInfo.classList.add('d-none');
-                    return;
-                }
-                const batch = mockBatches_2.find(b => b.batchId == batchId);
-                exportViewElements.stockInfo.textContent = `${batch.quantity} ${batch.unit}`;
-                exportViewElements.location.textContent = batch.location;
-                exportViewElements.price.value = batch.pricePerItem; // Suggest price
-                exportViewElements.batchInfo.classList.remove('d-none');
-                calculateExportTotal();
-            });
+            // exportViewElements.batchSelect.addEventListener('change', (e) => {
+            //      const batchId = e.target.value;
+            //      if (!batchId) {
+            //         exportViewElements.batchInfo.classList.add('d-none');
+            //         return;
+            //     }
+            //     const batch = mockBatches_2.find(b => b.batchId == batchId);
+            //     exportViewElements.stockInfo.textContent = `${batch.quantity} ${batch.unit}`;
+            //     exportViewElements.location.textContent = batch.location;
+            //     exportViewElements.price.value = batch.pricePerItem; // Suggest price
+            //     exportViewElements.batchInfo.classList.remove('d-none');
+            //     calculateExportTotal();
+            // });
 
-             document.getElementById('save-export-btn').addEventListener('click', () => {
-                const batchId = parseInt(exportViewElements.batchSelect.value);
-                const quantity = parseInt(exportViewElements.quantity.value);
-                const price = parseFloat(exportViewElements.price.value);
-                const exporter = exportViewElements.exporter.value.trim();
-                const receiver = exportViewElements.receiver.value.trim();
-                const form = exportViewElements.formSelect.value;
-                const reason = exportViewElements.reason.value.trim();
-                const description = exportViewElements.description.value.trim();
+            //  document.getElementById('save-export-btn').addEventListener('click', () => {
+            //     const batchId = parseInt(exportViewElements.batchSelect.value);
+            //     const quantity = parseInt(exportViewElements.quantity.value);
+            //     const price = parseFloat(exportViewElements.price.value);
+            //     const exporter = exportViewElements.exporter.value.trim();
+            //     const receiver = exportViewElements.receiver.value.trim();
+            //     const form = exportViewElements.formSelect.value;
+            //     const reason = exportViewElements.reason.value.trim();
+            //     const description = exportViewElements.description.value.trim();
                 
-                if (!batchId || !quantity || quantity <= 0 || !price || !receiver || !reason) {
-                    showToast('Vui lòng điền đầy đủ các trường bắt buộc.', 'error'); return;
-                }
+            //     if (!batchId || !quantity || quantity <= 0 || !price || !receiver || !reason) {
+            //         showToast('Vui lòng điền đầy đủ các trường bắt buộc.', 'error'); return;
+            //     }
 
-                const batch = mockBatches_2.find(b => b.batchId === batchId);
-                if (quantity > batch.quantity) {
-                    showToast('Số lượng xuất vượt quá tồn kho của lô.', 'error'); return;
-                }
+            //     const batch = mockBatches_2.find(b => b.batchId === batchId);
+            //     if (quantity > batch.quantity) {
+            //         showToast('Số lượng xuất vượt quá tồn kho của lô.', 'error'); return;
+            //     }
 
-                batch.quantity -= quantity;
-                batch.lastUpdated = new Date().toLocaleDateString('vi-VN');
-                if (!mockHistory[batch.batchId]) mockHistory[batch.batchId] = [];
-                mockHistory[batch.batchId].push({ type: 'export', quantity, reason, date: batch.lastUpdated, price, exporter, receiver, form, description });
+            //     batch.quantity -= quantity;
+            //     batch.lastUpdated = new Date().toLocaleDateString('vi-VN');
+            //     if (!mockHistory[batch.batchId]) mockHistory[batch.batchId] = [];
+            //     mockHistory[batch.batchId].push({ type: 'export', quantity, reason, date: batch.lastUpdated, price, exporter, receiver, form, description });
 
-                showToast(`Xuất kho thành công ${quantity} sản phẩm từ lô ${batch.batchCode}!`);
-                navigate('list');
-                renderInventory();
-            });
+            //     showToast(`Xuất kho thành công ${quantity} sản phẩm từ lô ${batch.batchCode}!`);
+            //     navigate('list');
+            //     renderInventory();
+            // });
             
             // Initial Theme
             var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
