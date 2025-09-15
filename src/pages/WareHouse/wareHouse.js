@@ -1098,7 +1098,7 @@ document.getElementById('save-import-btn').addEventListener('click', () => {
     renderInventory();
 });
 
-const calculateExportTotal = () => {
+var calculateExportTotal = () => {
     const quantity = parseInt(exportViewElements.quantity.value) || 0;
     const price = parseFloat(exportViewElements.price.value) || 0;
     exportViewElements.totalPrice.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
