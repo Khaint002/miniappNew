@@ -1,91 +1,124 @@
+// var apps_waveHouse = [
+//     { MENU_ID: "CREATELOT", MENU_NAME: "Tạo lô", MENU_VERSION: "v1.1.5", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-cloud-sun", MENU_SHARE_OWNER: "WID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quản lý lô hàng", VISIBLE: true },
+//     { MENU_ID: "PRQRCODE", MENU_NAME: "In mã QR", MENU_VERSION: "v4.56 Pro", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "http://devices.homeos.vn/", DESCRIPTION: "In mã QR", VISIBLE: true },
+//     { MENU_ID: "IMPORT", MENU_NAME: "Kho sản phẩm", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Tồn kho", VISIBLE: true },
+//     { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
+// ];
 var apps_waveHouse = [
-    { MENU_ID: "CREATELOT", MENU_NAME: "Tạo lô", MENU_VERSION: "v1.1.5", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-cloud-sun", MENU_SHARE_OWNER: "WID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quản lý lô hàng", VISIBLE: true },
-    { MENU_ID: "PRQRCODE", MENU_NAME: "In mã QR", MENU_VERSION: "v4.56 Pro", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "http://devices.homeos.vn/", DESCRIPTION: "In mã QR", VISIBLE: true },
-    { MENU_ID: "IMPORT", MENU_NAME: "Kho sản phẩm", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Tồn kho", VISIBLE: true },
-    { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
+    { MENU_ID: "IMPORT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true },
+    { MENU_ID: "MATERIAL_WAREHOUSE", MENU_NAME: "Kho Vật Tư", MENU_ICON: "bi-tools", MENU_BGCOLOR_CLASS: "bg-success", DESCRIPTION: "Quản lý vật tư sản xuất", VISIBLE: true },
+    { MENU_ID: "CREATELOT", MENU_NAME: "Quản Lý Lô", MENU_ICON: "bi-stack", MENU_BGCOLOR_CLASS: "bg-warning", DESCRIPTION: "Tạo và sửa lô hàng", VISIBLE: true },
+    { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR Sản Phẩm", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true },
+    { MENU_ID: "BOM_DECLARATION", MENU_NAME: "Khai báo BOM", MENU_ICON: "bi-diagram-3", MENU_BGCOLOR_CLASS: "bg-secondary", DESCRIPTION: "Định mức nguyên vật liệu", VISIBLE: true },
+    { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true }
 ];
 
+// --- FUNCTIONS ---
 function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = "";
 
-    let visibleIndex = 0;
-    
     apps.forEach(app => {
         if (!app.VISIBLE) return;
-
-        const paddingStyle = (visibleIndex % 2 === 0)
-            ? 'padding-right: 10px; padding-left: 0;'
-            : 'padding-left: 10px; padding-right: 0;';
+        
+        // Determine text color based on background class for better contrast
+        const textClass = ['bg-success', 'bg-warning', 'bg-info'].includes(app.MENU_BGCOLOR_CLASS) ? 'text-dark' : 'text-white';
 
         const html = `
-        <div class="col-6" style="${paddingStyle} margin-bottom: 10px;">
-            <div class="card text-center border-0 p-2 app-card" 
-                 id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')"
-                 style="cursor: pointer; border-radius: 0.5rem;">
-                <input type="checkbox" id="checkbox-${app.MENU_ID}" class="d-none"/>
-                <div class="card-body d-flex flex-column align-items-center" style="padding: 1.25rem 0;">
-                    <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
-                         style="background-color: ${app.MENU_BGCOLOR}; width: 60px; height: 60px;">
-                        <i class="bi ${app.MENU_ICON} text-white fs-3" style="font-size: 25px"></i>
-                    </div>
-                    <h6 class="mb-1">${app.MENU_NAME}</h6>
-                    <p class="mb-1 small" style="color: gray;">${app.DESCRIPTION}</p>
-                </div>
+        <div class="col-6">
+            <div class="card p-3 text-center rounded-4 h-100" id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')">
+                <div class="icon-box ${app.MENU_BGCOLOR_CLASS} ${textClass} mx-auto mb-2"><i class="${app.MENU_ICON}"></i></div>
+                <h3 class="h6 fw-semibold mb-1 text-body-emphasis">${app.MENU_NAME}</h3>
+                <p class="small text-secondary mb-0">${app.DESCRIPTION}</p>
             </div>
-        </div>
-        `;
-        container.innerHTML += html;
-        visibleIndex++;
+        </div>`;
+        container.insertAdjacentHTML('beforeend', html);
     });
-
-    // --- Theme Switcher Logic ---
-    const themeToggle = document.getElementById('theme-checkbox');
-    const htmlElement = document.documentElement;
+    // // --- Theme Switcher Logic ---
+    // const themeToggle = document.getElementById('theme-checkbox');
+    // const htmlElement = document.documentElement;
     
-    // Function to set the theme
-    const setTheme = (theme) => {
-        htmlElement.setAttribute('data-bs-theme', theme);
-        localStorage.setItem('theme', theme);
-        themeToggle.checked = theme === 'dark';
-    };
+    // // Function to set the theme
+    // const setTheme = (theme) => {
+    //     htmlElement.setAttribute('data-bs-theme', theme);
+    //     localStorage.setItem('theme', theme);
+    //     themeToggle.checked = theme === 'dark';
+    // };
 
-    // Event listener for the toggle
-    themeToggle.addEventListener('change', () => {
-        if (themeToggle.checked) {
-            setTheme('dark');
-        } else {
-            setTheme('light');
-        }
-    });
+    // // Event listener for the toggle
+    // themeToggle.addEventListener('change', () => {
+    //     if (themeToggle.checked) {
+    //         setTheme('dark');
+    //     } else {
+    //         setTheme('light');
+    //     }
+    // });
 
-    // Check for saved theme in localStorage or system preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // // Check for saved theme in localStorage or system preference
+    // const savedTheme = localStorage.getItem('theme');
+    // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    if (savedTheme) {
-        setTheme(savedTheme);
-    } else if (prefersDark) {
-        setTheme('dark');
-    } else {
-        setTheme('light');
-    }
+    // if (savedTheme) {
+    //     setTheme(savedTheme);
+    // } else if (prefersDark) {
+    //     setTheme('dark');
+    // } else {
+    //     setTheme('light');
+    // }
 
-    // --- Greeting Logic ---
-    const dateElement = document.getElementById('current-date');
-    const now = new Date();
-    const hours = now.getHours();
+    // // --- Greeting Logic ---
+    // const dateElement = document.getElementById('current-date');
+    // const now = new Date();
+    // const hours = now.getHours();
     
-    let greeting = 'Chào bạn!';
-    if (hours < 12) {
-        greeting = 'Chào buổi sáng!';
-    } else if (hours < 18) {
-        greeting = 'Chào buổi chiều!';
-    } else {
-        greeting = 'Chào buổi tối!';
-    }
-    dateElement.textContent = greeting;
+    // let greeting = 'Chào bạn!';
+    // if (hours < 12) {
+    //     greeting = 'Chào buổi sáng!';
+    // } else if (hours < 18) {
+    //     greeting = 'Chào buổi chiều!';
+    // } else {
+    //     greeting = 'Chào buổi tối!';
+    // }
+    // dateElement.textContent = greeting;
 }
+
+// function renderApps(apps, containerId) {
+//     const container = document.getElementById(containerId);
+//     container.innerHTML = "";
+
+//     let visibleIndex = 0;
+    
+//     apps.forEach(app => {
+//         if (!app.VISIBLE) return;
+
+//         const paddingStyle = (visibleIndex % 2 === 0)
+//             ? 'padding-right: 10px; padding-left: 0;'
+//             : 'padding-left: 10px; padding-right: 0;';
+
+//         const html = `
+//         <div class="col-6" style="${paddingStyle} margin-bottom: 10px;">
+//             <div class="card text-center border-0 p-2 app-card" 
+//                  id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')"
+//                  style="cursor: pointer; border-radius: 0.5rem;">
+//                 <input type="checkbox" id="checkbox-${app.MENU_ID}" class="d-none"/>
+//                 <div class="card-body d-flex flex-column align-items-center" style="padding: 1.25rem 0;">
+//                     <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
+//                          style="background-color: ${app.MENU_BGCOLOR}; width: 60px; height: 60px;">
+//                         <i class="bi ${app.MENU_ICON} text-white fs-3" style="font-size: 25px"></i>
+//                     </div>
+//                     <h6 class="mb-1">${app.MENU_NAME}</h6>
+//                     <p class="mb-1 small" style="color: gray;">${app.DESCRIPTION}</p>
+//                 </div>
+//             </div>
+//         </div>
+//         `;
+//         container.innerHTML += html;
+//         visibleIndex++;
+//     });
+
+    
+// }
 
 function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
@@ -106,7 +139,8 @@ function connectAppWaveHouse(ID, NAME) {
         showPrintOptions('detail');
     }
     // Hiện màn đúng ID
-    $("#name-detail").text(NAME);
+    // $("#name-detail").text(NAME);
+    $("#footer-wareHouse").addClass("d-none");
     const screen = document.getElementById(ID);
     if (screen) screen.classList.remove("d-none");
 }
@@ -120,7 +154,7 @@ function createLot() {
       alert("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
-  
+
     let resultHTML = `
       <div class="alert alert-success mt-3">
         <b>Lô đã tạo thành công!</b><br>
