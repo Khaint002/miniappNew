@@ -1,2 +1,0 @@
-Cập nhật ngày 04/09/2025 lần 1:
-- chỉnh sửa cách kết nối webSocket và việc loà refresh
