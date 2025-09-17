@@ -5,7 +5,7 @@
 //     { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
 // ];
 var apps_waveHouse = [
-    { MENU_ID: "IMPORT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true },
+    { MENU_ID: "WAREHOUSE_PRODUCT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true },
     { MENU_ID: "MATERIAL", MENU_NAME: "Kho Vật Tư", MENU_ICON: "bi-tools", MENU_BGCOLOR_CLASS: "bg-success", DESCRIPTION: "Quản lý vật tư sản xuất", VISIBLE: true },
     { MENU_ID: "CREATELOT", MENU_NAME: "Quản Lý Lô", MENU_ICON: "bi-stack", MENU_BGCOLOR_CLASS: "bg-warning", DESCRIPTION: "Tạo và sửa lô hàng", VISIBLE: true },
     { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR Sản Phẩm", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true },
@@ -29,7 +29,7 @@ function renderApps(apps, containerId) {
         <div class="col-6">
             <div class="card p-3 text-center rounded-4 h-100" id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')">
                 <div class="icon-box ${app.MENU_BGCOLOR_CLASS} ${textClass} mx-auto mb-2"><i class="${app.MENU_ICON}"></i></div>
-                <h3 class="h6 fw-semibold mb-1 text-body-emphasis">${app.MENU_NAME}</h3>
+                <h3 class="h6 mb-1 text-body-emphasis">${app.MENU_NAME}</h3>
                 <p class="small text-secondary mb-0">${app.DESCRIPTION}</p>
             </div>
         </div>`;
@@ -83,43 +83,6 @@ function renderApps(apps, containerId) {
     // dateElement.textContent = greeting;
 }
 
-// function renderApps(apps, containerId) {
-//     const container = document.getElementById(containerId);
-//     container.innerHTML = "";
-
-//     let visibleIndex = 0;
-    
-//     apps.forEach(app => {
-//         if (!app.VISIBLE) return;
-
-//         const paddingStyle = (visibleIndex % 2 === 0)
-//             ? 'padding-right: 10px; padding-left: 0;'
-//             : 'padding-left: 10px; padding-right: 0;';
-
-//         const html = `
-//         <div class="col-6" style="${paddingStyle} margin-bottom: 10px;">
-//             <div class="card text-center border-0 p-2 app-card" 
-//                  id="app-${app.MENU_ID}" onclick="connectAppWaveHouse('${app.MENU_ID}', '${app.MENU_NAME}')"
-//                  style="cursor: pointer; border-radius: 0.5rem;">
-//                 <input type="checkbox" id="checkbox-${app.MENU_ID}" class="d-none"/>
-//                 <div class="card-body d-flex flex-column align-items-center" style="padding: 1.25rem 0;">
-//                     <div class="icon-wrapper rounded-circle d-flex align-items-center justify-content-center mb-3"
-//                          style="background-color: ${app.MENU_BGCOLOR}; width: 60px; height: 60px;">
-//                         <i class="bi ${app.MENU_ICON} text-white fs-3" style="font-size: 25px"></i>
-//                     </div>
-//                     <h6 class="mb-1">${app.MENU_NAME}</h6>
-//                     <p class="mb-1 small" style="color: gray;">${app.DESCRIPTION}</p>
-//                 </div>
-//             </div>
-//         </div>
-//         `;
-//         container.innerHTML += html;
-//         visibleIndex++;
-//     });
-
-    
-// }
-
 function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
     document.getElementById("wareHouse-menu").classList.add("d-none");
@@ -137,7 +100,7 @@ function connectAppWaveHouse(ID, NAME) {
     } else if(ID == 'PRQRCODE'){
         runOptionS();
         showPrintOptions('detail');
-    }
+    } 
     // Hiện màn đúng ID
     // $("#name-detail").text(NAME);
     $("#footer-wareHouse").addClass("d-none");
@@ -396,8 +359,7 @@ var closeOpenSwipeContainer = (animate = true) => {
 
 // --- Chức năng Màn hình Danh sách ---
 var renderBatches = (batches) => {
-  console.log('test');
-  
+    
     const activeBatches = batches.filter(b => b.active === 0);
     dom.batchListContainer.innerHTML = '';
     dom.noResults.classList.toggle('d-none', activeBatches.length > 0);
@@ -407,11 +369,11 @@ var renderBatches = (batches) => {
             <div class="swipe-actions position-absolute top-0 end-0 h-100 d-flex align-items-center">
                 <button data-action="edit" data-code="${batch.batchCode}" class="h-100 btn btn-primary rounded-0 px-4 d-flex flex-column align-items-center justify-content-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mb-1 pe-none" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V12h2.293z"/></svg>
-                    <span class="small fw-semibold pe-none">Sửa</span>
+                    <span class="small pe-none">Sửa</span>
                 </button>
                 <button data-action="delete" data-code="${batch.batchCode}" class="h-100 btn btn-danger rounded-0 px-4 d-flex flex-column align-items-center justify-content-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="mb-1 pe-none" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>
-                    <span class="small fw-semibold pe-none">Xóa</span>
+                    <span class="small pe-none">Xóa</span>
                 </button>
             </div>
             <div class="swipe-content bg-body-secondary position-relative z-1 p-3" style="transition: transform 0.2s ease-out; cursor: pointer;" data-code="${batch.batchCode}">
@@ -423,8 +385,8 @@ var renderBatches = (batches) => {
                     <span class="badge rounded-pill small ${getStatusClass(batch.status)}">${batch.status}</span>
                 </div>
                 <div class="mt-3 d-flex justify-content-between align-items-center small text-secondary pe-none">
-                    <span>SL: <span class="fw-semibold text-light">${batch.quantity} ${batch.unit}</span></span>
-                    <span>Ngày tạo: <span class="fw-semibold text-light">${batch.creationDate}</span></span>
+                    <span>SL: <span class= text-light">${batch.quantity} ${batch.unit}</span></span>
+                    <span>Ngày tạo: <span class= text-light">${batch.creationDate}</span></span>
                 </div>
             </div>
         </div>`;
@@ -936,7 +898,20 @@ var renderInventory = () => {
     }
     inventoryListEl.innerHTML = filteredInventory.map(item => {
         const stock = getStockInfo(item.totalQuantity);
-        return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1" style="text-align: start;">${item.name}</p><p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+        return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3">
+            <img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+            <div class="flex-grow-1">
+                <p class="fw-bold text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
+                <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span>
+                    <div>
+                        <span class="small text-muted">Tổng tồn:</span> 
+                        <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span>
+                    </div>
+                </div>
+            </div>
+        </div>`;
     }).join('');
 };
 
@@ -1030,7 +1005,7 @@ var setTheme = (theme) => {
 };
 
 // Event Listeners
-searchInputEl.addEventListener('input', renderInventory);
+searchInputEl.addEventListener('change', renderInventory);
 filterButtonsEl.addEventListener('click', (e) => {
     const button = e.target.closest('.filter-btn');
     if (!button) return;
@@ -1153,4 +1128,3 @@ exportViewElements.batchSelect.addEventListener('change', (e) => {
 var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 setTheme(savedTheme);
 
-renderInventory();
