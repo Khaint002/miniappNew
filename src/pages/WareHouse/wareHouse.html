@@ -561,7 +561,14 @@
                 </main>
                 <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-export-btn" class="btn btn-danger">Lưu Xuất Kho</button></footer>
             </div>
-            
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                <div id="mt-liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div id="mt-toast-body" class="toast-body"></div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
 

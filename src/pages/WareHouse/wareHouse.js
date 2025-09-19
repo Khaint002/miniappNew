@@ -1131,6 +1131,7 @@ exportViewElements.batchSelect.addEventListener('change', (e) => {
 // Initial Theme
 var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 setTheme(savedTheme);
+
 function initializeMaterialInventoryApp() {
     const mt_currentUser = 'Nguyễn Văn A'; 
 
@@ -1171,7 +1172,7 @@ function initializeMaterialInventoryApp() {
     const mt_toastBody = document.getElementById('mt-toast-body');
     const mt_toast = new bootstrap.Toast(mt_toastEl);
 
-    const mt_navigate = (view) => { mt_appContainer.dataset.view = view; };
+    const mt_navigate = (view) => { mt_appContainer.dataset.view = view;};
     const mt_showToast = (message, type = 'success') => {
         mt_toastEl.className = `toast text-white ${type === 'success' ? 'bg-success' : 'bg-danger'}`;
         mt_toastBody.textContent = message;
@@ -1312,6 +1313,8 @@ function initializeMaterialInventoryApp() {
     });
 
     document.querySelectorAll('.mt-back-btn').forEach(btn => {
+        console.log(1);
+        
         btn.addEventListener('click', (e) => mt_navigate(e.currentTarget.dataset.target));
     });
     
