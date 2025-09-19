@@ -101,8 +101,9 @@ function connectAppWaveHouse(ID, NAME) {
         runOptionS();
         showPrintOptions('detail');
     } else if(ID == 'WAREHOUSE_PRODUCT') {
-        HOMEOSAPP.getDm
         renderInventory();
+    } else if(ID == 'MATERIAL') {
+        initializeMaterialInventoryApp();
     }
     // Hiện màn đúng ID
     // $("#name-detail").text(NAME);
@@ -1424,4 +1425,4 @@ function initializeMaterialInventoryApp() {
 }
 
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
-initializeMaterialInventoryApp();
+// 
