@@ -350,7 +350,7 @@
 #MATERIAL [data-view="export"] #list-view { transform: translateX(-100%); }
 #MATERIAL [data-view="export"] #export-view { transform: translateX(0); }
 
-#MATERIAL #app-container {
+#MATERIAL #app-container-material {
     height: 100vh;
     max-height: 100vh;
     border-radius: 1.5rem;
