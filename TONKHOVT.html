@@ -19,35 +19,35 @@
             background-color: #e2e8f0;
         }
 
-        .view {
+        .mt-view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             transition: transform 0.3s ease-in-out;
             background-color: var(--bs-tertiary-bg);
         }
-        #list-view, #detail-view, #history-view, #import-view, #export-view {
+        #mt-list-view, #mt-detail-view, #mt-history-view, #mt-import-view, #mt-export-view {
             transform: translateX(100%);
         }
-        [data-view="list"] #list-view { transform: translateX(0); }
-        [data-view="detail"] #list-view { transform: translateX(-100%); }
-        [data-view="detail"] #detail-view { transform: translateX(0); }
-        [data-view="history"] #detail-view { transform: translateX(-100%); }
-        [data-view="history"] #history-view { transform: translateX(0); }
-        [data-view="import"] #list-view { transform: translateX(-100%); }
-        [data-view="import"] #import-view { transform: translateX(0); }
-        [data-view="export"] #list-view { transform: translateX(-100%); }
-        [data-view="export"] #export-view { transform: translateX(0); }
+        [data-view="mt-list"] #mt-list-view { transform: translateX(0); }
+        [data-view="mt-detail"] #mt-list-view { transform: translateX(-100%); }
+        [data-view="mt-detail"] #mt-detail-view { transform: translateX(0); }
+        [data-view="mt-history"] #mt-detail-view { transform: translateX(-100%); }
+        [data-view="mt-history"] #mt-history-view { transform: translateX(0); }
+        [data-view="mt-import"] #mt-list-view { transform: translateX(-100%); }
+        [data-view="mt-import"] #mt-import-view { transform: translateX(0); }
+        [data-view="mt-export"] #mt-list-view { transform: translateX(-100%); }
+        [data-view="mt-export"] #mt-export-view { transform: translateX(0); }
         
-        #app-container {
+        #mt-app-container {
             height: 100vh;
             max-height: 100vh;
             border-radius: 1.5rem;
         }
 
-        .material-card {
+        .mt-material-card {
             transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             cursor: pointer;
         }
-        .material-card:hover {
+        .mt-material-card:hover {
             background-color: var(--bs-secondary-bg);
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
@@ -56,120 +56,121 @@
 </head>
 <body class="d-flex justify-content-center align-items-center min-vh-100 p-3">
 
-    <div id="app-container" data-view="list" style="max-width: 420px;" class="w-100 bg-body-tertiary shadow-lg d-flex flex-column position-relative overflow-hidden">
+    <!-- Container này sẽ được đặt vào file chính của bạn -->
+    <div id="mt-app-container" data-view="mt-list" style="max-width: 420px;" class="w-100 bg-body-tertiary shadow-lg d-flex flex-column position-relative overflow-hidden">
         
         <!-- List View -->
-        <div id="list-view" class="view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="px-3 py-3 border-b d-flex align-items-center"><div style="width: 40px;"></div><h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Vật Tư</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+        <div id="mt-list-view" class="mt-view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="px-3 py-3 border-b d-flex align-items-center"><div style="width: 40px;"></div><h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Vật Tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <div class="p-3 bg-body border-b">
                 <div class="input-group">
                     <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
-                    <input type="text" id="search-input" class="form-control border-start-0" placeholder="Tìm theo tên hoặc Mã VT...">
+                    <input type="text" id="mt-search-input" class="form-control border-start-0" placeholder="Tìm theo tên hoặc Mã VT...">
                 </div>
-                <div id="filter-buttons" class="d-flex gap-2 mt-3">
-                    <button data-filter="all" class="filter-btn btn btn-primary flex-fill rounded-pill">Tất cả</button>
-                    <button data-filter="low_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Sắp hết</button>
-                    <button data-filter="out_of_stock" class="filter-btn btn btn-secondary flex-fill rounded-pill">Hết hàng</button>
+                <div id="mt-filter-buttons" class="d-flex gap-2 mt-3">
+                    <button data-filter="all" class="mt-filter-btn btn btn-primary flex-fill rounded-pill">Tất cả</button>
+                    <button data-filter="low_stock" class="mt-filter-btn btn btn-secondary flex-fill rounded-pill">Sắp hết</button>
+                    <button data-filter="out_of_stock" class="mt-filter-btn btn btn-secondary flex-fill rounded-pill">Hết hàng</button>
                 </div>
             </div>
-            <main id="inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
+            <main id="mt-inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-flex gap-3">
-                <button id="show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
-                <button id="show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
+                <button id="mt-show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
+                <button id="mt-show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
             </footer>
         </div>
 
         <!-- Detail View -->
-        <div id="detail-view" class="view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-material-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+        <div id="mt-detail-view" class="mt-view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 id="mt-detail-material-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
-                <div class="mb-3"><img id="detail-image" src="" alt="Material Image" class="w-100 rounded-3 shadow-sm border"></div>
+                <div class="mb-3"><img id="mt-detail-image" src="" alt="Material Image" class="w-100 rounded-3 shadow-sm border"></div>
                 <div class="card card-body mb-3 border-0 shadow-sm">
-                    <p id="detail-sku" class="text-muted font-monospace small"></p>
+                    <p id="mt-detail-sku" class="text-muted font-monospace small"></p>
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div>
                             <p class="small text-muted mb-0">Tồn kho:</p>
-                            <p id="detail-quantity" class="fw-bold display-6 mb-0"></p>
+                            <p id="mt-detail-quantity" class="fw-bold display-6 mb-0"></p>
                         </div>
-                        <span id="detail-status-badge" class="badge fs-6 rounded-pill"></span>
+                        <span id="mt-detail-status-badge" class="badge fs-6 rounded-pill"></span>
                     </div>
                 </div>
                 <div class="card card-body mb-3 border-0 shadow-sm">
                     <h3 class="h6 fw-semibold mb-2">Thông tin Vị trí</h3>
-                    <p id="detail-location" class="text-body-emphasis d-flex align-items-center mb-0"></p>
+                    <p id="mt-detail-location" class="text-body-emphasis d-flex align-items-center mb-0"></p>
                 </div>
                 <div class="card card-body mb-3 border-0 shadow-sm">
                     <h3 class="h6 fw-semibold mb-2">Thông tin bổ sung</h3>
-                    <p class="small text-muted mb-1">Nhà cung cấp: <span id="detail-supplier" class="fw-medium text-body-emphasis"></span></p>
-                    <p class="small text-muted mb-0">Cập nhật lần cuối: <span id="detail-last-updated" class="fw-medium text-body-emphasis"></span></p>
+                    <p class="small text-muted mb-1">Nhà cung cấp: <span id="mt-detail-supplier" class="fw-medium text-body-emphasis"></span></p>
+                    <p class="small text-muted mb-0">Cập nhật lần cuối: <span id="mt-detail-last-updated" class="fw-medium text-body-emphasis"></span></p>
                 </div>
             </main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-grid">
-                <button id="view-history-btn" class="btn btn-secondary rounded-3">Xem Lịch sử</button>
+                <button id="mt-view-history-btn" class="btn btn-secondary rounded-3">Xem Lịch sử</button>
             </footer>
         </div>
 
         <!-- History View -->
-        <div id="history-view" class="view d-flex flex-column">
-             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
-             <main id="history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
+        <div id="mt-history-view" class="mt-view d-flex flex-column">
+             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+             <main id="mt-history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
         </div>
 
         <!-- Import View -->
-        <div id="import-view" class="view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+        <div id="mt-import-view" class="mt-view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
-                    <div class="mb-3"><label for="import-material-select" class="form-label fw-semibold">1. Chọn vật tư</label><select id="import-material-select" class="form-select"></select></div>
-                    <div class="mb-3"><label for="import-batch-code" class="form-label fw-semibold">2. Mã lô vật tư</label><input type="text" id="import-batch-code" placeholder="VD: L20250910" class="form-control"></div>
+                    <div class="mb-3"><label for="mt-import-material-select" class="form-label fw-semibold">1. Chọn vật tư</label><select id="mt-import-material-select" class="form-select"></select></div>
+                    <div class="mb-3"><label for="mt-import-batch-code" class="form-label fw-semibold">2. Mã lô vật tư</label><input type="text" id="mt-import-batch-code" placeholder="VD: L20250910" class="form-control"></div>
                     <div class="row g-3 mb-3">
-                        <div class="col"><label for="import-quantity" class="form-label fw-semibold">3. Số lượng lô</label><input type="number" id="import-quantity" placeholder="VD: 100" class="form-control"></div>
-                        <div class="col"><label for="import-unit" class="form-label fw-semibold">4. Đơn vị</label><input type="text" id="import-unit" placeholder="VD: Tấm, Kg" class="form-control"></div>
+                        <div class="col"><label for="mt-import-quantity" class="form-label fw-semibold">3. Số lượng lô</label><input type="number" id="mt-import-quantity" placeholder="VD: 100" class="form-control"></div>
+                        <div class="col"><label for="mt-import-unit" class="form-label fw-semibold">4. Đơn vị</label><input type="text" id="mt-import-unit" placeholder="VD: Tấm, Kg" class="form-control"></div>
                     </div>
-                    <div class="mb-3"><label for="import-reason-select" class="form-label fw-semibold">5. Lý do nhập</label><select id="import-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
-                    <div class="mb-3"><label for="import-location" class="form-label fw-semibold">6. Vị trí đặt</label><input type="text" id="import-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
+                    <div class="mb-3"><label for="mt-import-reason-select" class="form-label fw-semibold">5. Lý do nhập</label><select id="mt-import-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
+                    <div class="mb-3"><label for="mt-import-location" class="form-label fw-semibold">6. Vị trí đặt</label><input type="text" id="mt-import-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
                     <div class="row g-3 mb-3">
-                        <div class="col"><label for="import-price-item" class="form-label fw-semibold">7. Đơn giá</label><input type="number" id="import-price-item" placeholder="VNĐ" class="form-control"></div>
-                        <div class="col"><label for="import-price-total" class="form-label fw-semibold">Tổng giá lô</label><input type="text" id="import-price-total" class="form-control bg-body-secondary" readonly></div>
+                        <div class="col"><label for="mt-import-price-item" class="form-label fw-semibold">7. Đơn giá</label><input type="number" id="mt-import-price-item" placeholder="VNĐ" class="form-control"></div>
+                        <div class="col"><label for="mt-import-price-total" class="form-label fw-semibold">Tổng giá lô</label><input type="text" id="mt-import-price-total" class="form-control bg-body-secondary" readonly></div>
                     </div>
-                    <div class="mb-3"><label for="import-description" class="form-label fw-semibold">8. Mô tả</label><textarea id="import-description" rows="2" class="form-control"></textarea></div>
+                    <div class="mb-3"><label for="mt-import-description" class="form-label fw-semibold">8. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
                     <div><label class="form-label fw-semibold">9. Hình ảnh</label><div class="d-grid gap-2 d-sm-flex"><button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button><button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button></div></div>
                 </div>
             </main>
-            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
         </div>
 
         <!-- Export View -->
-        <div id="export-view" class="view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+        <div id="mt-export-view" class="mt-view d-flex flex-column">
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
-                    <div class="mb-3"><label for="export-batch-select" class="form-label fw-semibold">1. Chọn lô vật tư</label><select id="export-batch-select" class="form-select"></select></div>
-                    <div id="export-batch-info" class="d-none alert alert-info small"><p class="mb-1"><strong>Tồn kho lô:</strong> <span id="export-stock-info" class="fw-medium"></span></p><p class="mb-0"><strong>Kho xuất:</strong> <span id="export-location" class="fw-medium"></span></p></div>
+                    <div class="mb-3"><label for="mt-export-batch-select" class="form-label fw-semibold">1. Chọn lô vật tư</label><select id="mt-export-batch-select" class="form-select"></select></div>
+                    <div id="mt-export-batch-info" class="d-none alert alert-info small"><p class="mb-1"><strong>Tồn kho lô:</strong> <span id="mt-export-stock-info" class="fw-medium"></span></p><p class="mb-0"><strong>Kho xuất:</strong> <span id="mt-export-location" class="fw-medium"></span></p></div>
                     <div class="row g-3 mb-3">
-                        <div class="col"><label for="export-quantity" class="form-label fw-semibold">2. Số lượng xuất</label><input type="number" id="export-quantity" placeholder="0" class="form-control"></div>
-                        <div class="col"><label for="export-price" class="form-label fw-semibold">3. Giá xuất / ĐV</label><input type="number" id="export-price" placeholder="VNĐ" class="form-control"></div>
+                        <div class="col"><label for="mt-export-quantity" class="form-label fw-semibold">2. Số lượng xuất</label><input type="number" id="mt-export-quantity" placeholder="0" class="form-control"></div>
+                        <div class="col"><label for="mt-export-price" class="form-label fw-semibold">3. Giá xuất / ĐV</label><input type="number" id="mt-export-price" placeholder="VNĐ" class="form-control"></div>
                     </div>
-                    <div class="mb-3"><label for="export-total-price" class="form-label fw-semibold">Tổng tiền</label><input type="text" id="export-total-price" class="form-control bg-body-secondary" readonly></div>
+                    <div class="mb-3"><label for="mt-export-total-price" class="form-label fw-semibold">Tổng tiền</label><input type="text" id="mt-export-total-price" class="form-control bg-body-secondary" readonly></div>
                     <div class="row g-3 mb-3">
-                        <div class="col"><label for="export-exporter" class="form-label fw-semibold">4. Người xuất</label><input type="text" id="export-exporter" class="form-control bg-body-secondary" readonly></div>
-                        <div class="col"><label for="export-receiver" class="form-label fw-semibold">5. Người nhận</label><input type="text" id="export-receiver" class="form-control"></div>
+                        <div class="col"><label for="mt-export-exporter" class="form-label fw-semibold">4. Người xuất</label><input type="text" id="mt-export-exporter" class="form-control bg-body-secondary" readonly></div>
+                        <div class="col"><label for="mt-export-receiver" class="form-label fw-semibold">5. Người nhận</label><input type="text" id="mt-export-receiver" class="form-control"></div>
                     </div>
-                    <div class="mb-3"><label for="export-form-select" class="form-label fw-semibold">6. Hình thức xuất</label><select id="export-form-select" class="form-select"><option>Xuất cho sản xuất</option><option>Chuyển kho</option><option>Xuất trả NCC</option><option>Khác</option></select></div>
-                    <div class="mb-3"><label for="export-reason" class="form-label fw-semibold">7. Lý do xuất</label><input type="text" id="export-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
-                    <div><label for="export-description" class="form-label fw-semibold">8. Ghi chú (tùy chọn)</label><textarea id="export-description" rows="2" class="form-control"></textarea></div>
+                    <div class="mb-3"><label for="mt-export-form-select" class="form-label fw-semibold">6. Hình thức xuất</label><select id="mt-export-form-select" class="form-select"><option>Xuất cho sản xuất</option><option>Chuyển kho</option><option>Xuất trả NCC</option><option>Khác</option></select></div>
+                    <div class="mb-3"><label for="mt-export-reason" class="form-label fw-semibold">7. Lý do xuất</label><input type="text" id="mt-export-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
+                    <div><label for="mt-export-description" class="form-label fw-semibold">8. Ghi chú (tùy chọn)</label><textarea id="mt-export-description" rows="2" class="form-control"></textarea></div>
                 </div>
             </main>
-            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="save-export-btn" class="btn btn-danger">Lưu Xuất Kho</button></footer>
+            <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-export-btn" class="btn btn-danger">Lưu Xuất Kho</button></footer>
         </div>
         
     </div>
     
     <!-- Toast container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div id="mt-liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
-            <div id="toast-body" class="toast-body"></div>
+            <div id="mt-toast-body" class="toast-body"></div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>
@@ -178,11 +179,14 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script này bạn sẽ copy vào file wareHouse.js -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
+        // Bọc toàn bộ logic vào một hàm khởi tạo
+        function initializeMaterialInventoryApp() {
+            const mt_currentUser = 'Nguyễn Văn A'; 
 
-            let mockMaterials = [
+            let mt_mockMaterials = [
                 { id: 1, name: 'Thép tấm SPHC 2.0mm', sku: 'VT-STEEL-SPHC-20', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Thép' },
                 { id: 2, name: 'Bulong lục giác M10', sku: 'VT-BOLT-M10', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Bulong' },
                 { id: 3, name: 'Sơn chống gỉ xám 5L', sku: 'VT-PAINT-GREY-5L', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Sơn' },
@@ -190,7 +194,7 @@
                 { id: 5, name: 'Dầu thủy lực Caltex Rando 68', sku: 'VT-OIL-CALTEX-68', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Dầu' },
             ];
 
-            let mockBatches = [
+            let mt_mockBatches = [
                 { batchId: 101, materialId: 1, batchCode: 'L20250901', quantity: 58, unit: 'Tấm', location: 'Kho A, Kệ 12', supplier: 'Hòa Phát', lastUpdated: '10/09/2025', pricePerItem: 750000, description: 'Lô nhập đầu tháng 9' },
                 { batchId: 102, materialId: 2, batchCode: 'L20250901', quantity: 2500, unit: 'Cái', location: 'Kho A, Kệ 12', supplier: 'Bulong Comat', lastUpdated: '09/09/2025', pricePerItem: 1500, description: 'Bulong Inox 304' },
                 { batchId: 103, materialId: 3, batchCode: 'L20250902', quantity: 5, unit: 'Thùng', location: 'Kho A, Kệ 15', supplier: 'Sơn Jotun', lastUpdated: '10/09/2025', pricePerItem: 1200000, description: 'Sơn lót' },
@@ -198,120 +202,120 @@
                 { batchId: 105, materialId: 5, batchCode: 'L20250825', quantity: 2, unit: 'Xô', location: 'Kho A, Kệ 22', supplier: 'Caltex Việt Nam', lastUpdated: '08/09/2025', pricePerItem: 1800000, description: 'Xô 18L' },
             ];
             
-            let mockHistory = {
+            let mt_mockHistory = {
                 101: [{ type: 'import', quantity: 60, reason: 'Nhập hàng từ NCC', date: '01/09/2025' }, { type: 'export', quantity: 2, reason: 'Xuất cho SX', date: '05/09/2025' }],
                 102: [{ type: 'import', quantity: 3000, reason: 'Nhập hàng từ NCC', date: '01/09/2025' }, { type: 'export', quantity: 500, reason: 'Xuất cho SX', date: '06/09/2025' }],
             };
 
-            const appContainer = document.getElementById('app-container');
-            const inventoryListEl = document.getElementById('inventory-list');
-            const searchInputEl = document.getElementById('search-input');
-            const filterButtonsEl = document.getElementById('filter-buttons');
-            let currentFilter = 'all';
-            let currentMaterialId = null;
+            const mt_appContainer = document.getElementById('mt-app-container');
+            const mt_inventoryListEl = document.getElementById('mt-inventory-list');
+            const mt_searchInputEl = document.getElementById('mt-search-input');
+            const mt_filterButtonsEl = document.getElementById('mt-filter-buttons');
+            let mt_currentFilter = 'all';
+            let mt_currentMaterialId = null;
 
-            const detailViewElements = { name: document.getElementById('detail-material-name'), image: document.getElementById('detail-image'), sku: document.getElementById('detail-sku'), quantity: document.getElementById('detail-quantity'), statusBadge: document.getElementById('detail-status-badge'), location: document.getElementById('detail-location'), supplier: document.getElementById('detail-supplier'), lastUpdated: document.getElementById('detail-last-updated') };
-            const historyListEl = document.getElementById('history-list');
-            const importViewElements = { select: document.getElementById('import-material-select'), batchCode: document.getElementById('import-batch-code'), quantity: document.getElementById('import-quantity'), unit: document.getElementById('import-unit'), reason: document.getElementById('import-reason-select'), location: document.getElementById('import-location'), priceItem: document.getElementById('import-price-item'), priceTotal: document.getElementById('import-price-total'), description: document.getElementById('import-description') };
-            const exportViewElements = { batchSelect: document.getElementById('export-batch-select'), batchInfo: document.getElementById('export-batch-info'), stockInfo: document.getElementById('export-stock-info'), location: document.getElementById('export-location'), quantity: document.getElementById('export-quantity'), price: document.getElementById('export-price'), totalPrice: document.getElementById('export-total-price'), exporter: document.getElementById('export-exporter'), receiver: document.getElementById('export-receiver'), formSelect: document.getElementById('export-form-select'), reason: document.getElementById('export-reason'), description: document.getElementById('export-description') };
+            const mt_detailViewElements = { name: document.getElementById('mt-detail-material-name'), image: document.getElementById('mt-detail-image'), sku: document.getElementById('mt-detail-sku'), quantity: document.getElementById('mt-detail-quantity'), statusBadge: document.getElementById('mt-detail-status-badge'), location: document.getElementById('mt-detail-location'), supplier: document.getElementById('mt-detail-supplier'), lastUpdated: document.getElementById('mt-detail-last-updated') };
+            const mt_historyListEl = document.getElementById('mt-history-list');
+            const mt_importViewElements = { select: document.getElementById('mt-import-material-select'), batchCode: document.getElementById('mt-import-batch-code'), quantity: document.getElementById('mt-import-quantity'), unit: document.getElementById('mt-import-unit'), reason: document.getElementById('mt-import-reason-select'), location: document.getElementById('mt-import-location'), priceItem: document.getElementById('mt-import-price-item'), priceTotal: document.getElementById('mt-import-price-total'), description: document.getElementById('mt-import-description') };
+            const mt_exportViewElements = { batchSelect: document.getElementById('mt-export-batch-select'), batchInfo: document.getElementById('mt-export-batch-info'), stockInfo: document.getElementById('mt-export-stock-info'), location: document.getElementById('mt-export-location'), quantity: document.getElementById('mt-export-quantity'), price: document.getElementById('mt-export-price'), totalPrice: document.getElementById('mt-export-total-price'), exporter: document.getElementById('mt-export-exporter'), receiver: document.getElementById('mt-export-receiver'), formSelect: document.getElementById('mt-export-form-select'), reason: document.getElementById('mt-export-reason'), description: document.getElementById('mt-export-description') };
             
-            const toastEl = document.getElementById('liveToast');
-            const toastBody = document.getElementById('toast-body');
-            const toast = new bootstrap.Toast(toastEl);
+            const mt_toastEl = document.getElementById('mt-liveToast');
+            const mt_toastBody = document.getElementById('mt-toast-body');
+            const mt_toast = new bootstrap.Toast(mt_toastEl);
 
-            const navigate = (view) => { appContainer.dataset.view = view; };
-            const showToast = (message, type = 'success') => {
-                toastEl.className = `toast text-white ${type === 'success' ? 'bg-success' : 'bg-danger'}`;
-                toastBody.textContent = message;
-                toast.show();
+            const mt_navigate = (view) => { mt_appContainer.dataset.view = view; };
+            const mt_showToast = (message, type = 'success') => {
+                mt_toastEl.className = `toast text-white ${type === 'success' ? 'bg-success' : 'bg-danger'}`;
+                mt_toastBody.textContent = message;
+                mt_toast.show();
             };
 
-            const getStockInfo = (quantity) => {
+            const mt_getStockInfo = (quantity) => {
                 if (quantity <= 0) return { text: 'Hết hàng', color: 'danger', bg: 'bg-danger-subtle', text_color: 'text-danger-emphasis' };
                 if (quantity <= 20) return { text: 'Sắp hết hàng', color: 'warning', bg: 'bg-warning-subtle', text_color: 'text-warning-emphasis' };
                 return { text: 'Còn hàng', color: 'success', bg: 'bg-success-subtle', text_color: 'text-success-emphasis' };
             };
 
-            const renderMaterialList = () => {
-                const searchTerm = searchInputEl.value.toLowerCase();
+            const mt_renderMaterialList = () => {
+                const searchTerm = mt_searchInputEl.value.toLowerCase();
                 
-                let materialQuantities = mockMaterials.map(material => {
-                    const totalQuantity = mockBatches.filter(batch => batch.materialId === material.id).reduce((sum, batch) => sum + batch.quantity, 0);
+                let materialQuantities = mt_mockMaterials.map(material => {
+                    const totalQuantity = mt_mockBatches.filter(batch => batch.materialId === material.id).reduce((sum, batch) => sum + batch.quantity, 0);
                     return { ...material, totalQuantity };
                 });
 
                 let filteredInventory = materialQuantities.filter(item => item.name.toLowerCase().includes(searchTerm) || item.sku.toLowerCase().includes(searchTerm));
-                if (currentFilter === 'low_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity > 0 && item.totalQuantity <= 20);
-                else if (currentFilter === 'out_of_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity <= 0);
+                if (mt_currentFilter === 'low_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity > 0 && item.totalQuantity <= 20);
+                else if (mt_currentFilter === 'out_of_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity <= 0);
                 
                 if (filteredInventory.length === 0) {
-                    inventoryListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Không tìm thấy vật tư nào.</p></div>`; return;
+                    mt_inventoryListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Không tìm thấy vật tư nào.</p></div>`; return;
                 }
-                inventoryListEl.innerHTML = filteredInventory.map(item => {
-                    const stock = getStockInfo(item.totalQuantity);
-                    return `<div data-id="${item.id}" class="material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+                mt_inventoryListEl.innerHTML = filteredInventory.map(item => {
+                    const stock = mt_getStockInfo(item.totalQuantity);
+                    return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
                 }).join('');
             };
 
-            const showMaterialDetailView = (materialId) => {
-                currentMaterialId = materialId;
-                const material = mockMaterials.find(item => item.id == materialId);
+            const mt_showMaterialDetailView = (materialId) => {
+                mt_currentMaterialId = materialId;
+                const material = mt_mockMaterials.find(item => item.id == materialId);
                 if (!material) return;
                 
-                const materialBatches = mockBatches.filter(b => b.materialId == materialId);
+                const materialBatches = mt_mockBatches.filter(b => b.materialId == materialId);
                 const totalQuantity = materialBatches.reduce((sum, b) => sum + b.quantity, 0);
                 const latestBatch = materialBatches.sort((a,b) => new Date(b.lastUpdated.split('/').reverse().join('-')) - new Date(a.lastUpdated.split('/').reverse().join('-')))[0] || {};
 
-                const stock = getStockInfo(totalQuantity);
-                detailViewElements.name.textContent = material.name;
-                detailViewElements.image.src = material.imageUrl;
-                detailViewElements.image.alt = material.name;
-                detailViewElements.sku.textContent = material.sku;
-                detailViewElements.quantity.textContent = totalQuantity;
-                detailViewElements.quantity.className = `fw-bold display-6 mb-0 text-${stock.color}`;
-                detailViewElements.statusBadge.textContent = stock.text;
-                detailViewElements.statusBadge.className = `badge fs-6 rounded-pill ${stock.bg} ${stock.text_color}`;
-                detailViewElements.location.innerHTML = `<i class="bi bi-geo-alt-fill me-2 text-muted"></i> ${[...new Set(materialBatches.map(b => b.location))].join(', ') || 'Chưa có vị trí'}`;
-                detailViewElements.supplier.textContent = latestBatch.supplier || 'N/A';
-                detailViewElements.lastUpdated.textContent = latestBatch.lastUpdated || 'N/A';
-                navigate('detail');
+                const stock = mt_getStockInfo(totalQuantity);
+                mt_detailViewElements.name.textContent = material.name;
+                mt_detailViewElements.image.src = material.imageUrl;
+                mt_detailViewElements.image.alt = material.name;
+                mt_detailViewElements.sku.textContent = material.sku;
+                mt_detailViewElements.quantity.textContent = totalQuantity;
+                mt_detailViewElements.quantity.className = `fw-bold display-6 mb-0 text-${stock.color}`;
+                mt_detailViewElements.statusBadge.textContent = stock.text;
+                mt_detailViewElements.statusBadge.className = `badge fs-6 rounded-pill ${stock.bg} ${stock.text_color}`;
+                mt_detailViewElements.location.innerHTML = `<i class="bi bi-geo-alt-fill me-2 text-muted"></i> ${[...new Set(materialBatches.map(b => b.location))].join(', ') || 'Chưa có vị trí'}`;
+                mt_detailViewElements.supplier.textContent = latestBatch.supplier || 'N/A';
+                mt_detailViewElements.lastUpdated.textContent = latestBatch.lastUpdated || 'N/A';
+                mt_navigate('mt-detail');
             };
             
-            const showMaterialHistoryView = () => {
-                const materialBatches = mockBatches.filter(b => b.materialId == currentMaterialId);
+            const mt_showMaterialHistoryView = () => {
+                const materialBatches = mt_mockBatches.filter(b => b.materialId == mt_currentMaterialId);
                 const batchIds = materialBatches.map(b => b.batchId);
-                const materialHistory = batchIds.flatMap(id => mockHistory[id] || []).sort((a,b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')));
+                const materialHistory = batchIds.flatMap(id => mt_mockHistory[id] || []).sort((a,b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')));
 
                 if (materialHistory.length === 0) {
-                    historyListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Chưa có lịch sử cho vật tư này.</p></div>`;
+                    mt_historyListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Chưa có lịch sử cho vật tư này.</p></div>`;
                 } else {
-                    historyListEl.innerHTML = materialHistory.map(entry => {
+                    mt_historyListEl.innerHTML = materialHistory.map(entry => {
                         const isImport = entry.type === 'import';
                         return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class="fw-bold fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
                     }).join('');
                 }
-                navigate('history');
+                mt_navigate('mt-history');
             };
             
-            const populateMaterialsForSelect = (selectEl) => {
+            const mt_populateMaterialsForSelect = (selectEl) => {
                 selectEl.innerHTML = '<option value="">-- Chọn vật tư --</option>';
-                mockMaterials.forEach(material => {
+                mt_mockMaterials.forEach(material => {
                     selectEl.innerHTML += `<option value="${material.id}">${material.name} (${material.sku})</option>`;
                 });
             };
 
-            const showMaterialImportView = () => {
-                populateMaterialsForSelect(importViewElements.select);
-                Object.values(importViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
-                importViewElements.priceTotal.value = '0 VNĐ';
-                navigate('import');
+            const mt_showMaterialImportView = () => {
+                mt_populateMaterialsForSelect(mt_importViewElements.select);
+                Object.values(mt_importViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
+                mt_importViewElements.priceTotal.value = '0 VNĐ';
+                mt_navigate('mt-import');
             };
 
-            const showMaterialExportView = () => {
-                exportViewElements.batchSelect.innerHTML = '<option value="">-- Chọn lô vật tư --</option>';
-                const groupedBatches = mockMaterials.map(material => ({
+            const mt_showMaterialExportView = () => {
+                mt_exportViewElements.batchSelect.innerHTML = '<option value="">-- Chọn lô vật tư --</option>';
+                const groupedBatches = mt_mockMaterials.map(material => ({
                     materialName: material.name,
-                    batches: mockBatches.filter(b => b.materialId === material.id && b.quantity > 0)
+                    batches: mt_mockBatches.filter(b => b.materialId === material.id && b.quantity > 0)
                 })).filter(group => group.batches.length > 0);
 
                 groupedBatches.forEach(group => {
@@ -323,77 +327,77 @@
                         option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
                         optgroup.appendChild(option);
                     });
-                    exportViewElements.batchSelect.appendChild(optgroup);
+                    mt_exportViewElements.batchSelect.appendChild(optgroup);
                 });
 
-                Object.values(exportViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
-                exportViewElements.exporter.value = currentUser; // Auto-fill exporter
-                exportViewElements.batchInfo.classList.add('d-none');
-                exportViewElements.totalPrice.value = "0 VNĐ";
+                Object.values(mt_exportViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
+                mt_exportViewElements.exporter.value = mt_currentUser; 
+                mt_exportViewElements.batchInfo.classList.add('d-none');
+                mt_exportViewElements.totalPrice.value = "0 VNĐ";
 
-                navigate('export');
+                mt_navigate('mt-export');
             };
             
-            const setTheme = (theme) => {
+            const mt_setTheme = (theme) => {
                 document.documentElement.setAttribute('data-bs-theme', theme);
                 localStorage.setItem('theme', theme);
-                document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+                document.querySelectorAll('.mt-theme-switcher-btn').forEach(btn => {
                     btn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
                 });
             };
 
             // Event Listeners
-            searchInputEl.addEventListener('input', renderMaterialList);
-            filterButtonsEl.addEventListener('click', (e) => {
-                const button = e.target.closest('.filter-btn');
+            mt_searchInputEl.addEventListener('input', mt_renderMaterialList);
+            mt_filterButtonsEl.addEventListener('click', (e) => {
+                const button = e.target.closest('.mt-filter-btn');
                 if (!button) return;
-                currentFilter = button.dataset.filter;
-                document.querySelectorAll('#filter-buttons .filter-btn').forEach(btn => {btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary');});
+                mt_currentFilter = button.dataset.filter;
+                document.querySelectorAll('#mt-filter-buttons .mt-filter-btn').forEach(btn => {btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary');});
                 button.classList.add('btn-primary');
                 button.classList.remove('btn-secondary');
-                renderMaterialList();
+                mt_renderMaterialList();
             });
 
-            inventoryListEl.addEventListener('click', (e) => {
-                const card = e.target.closest('.material-card');
-                if(card) showMaterialDetailView(card.dataset.id);
+            mt_inventoryListEl.addEventListener('click', (e) => {
+                const card = e.target.closest('.mt-material-card');
+                if(card) mt_showMaterialDetailView(card.dataset.id);
             });
 
-            document.querySelectorAll('.back-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => navigate(e.currentTarget.dataset.target));
+            document.querySelectorAll('.mt-back-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => mt_navigate(e.currentTarget.dataset.target));
             });
             
-            document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+            document.querySelectorAll('.mt-theme-switcher-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-                    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+                    mt_setTheme(currentTheme === 'dark' ? 'light' : 'dark');
                 });
             });
 
-            document.getElementById('view-history-btn').addEventListener('click', showMaterialHistoryView);
-            document.getElementById('show-import-view-btn').addEventListener('click', showMaterialImportView);
-            document.getElementById('show-export-view-btn').addEventListener('click', showMaterialExportView);
+            document.getElementById('mt-view-history-btn').addEventListener('click', mt_showMaterialHistoryView);
+            document.getElementById('mt-show-import-view-btn').addEventListener('click', mt_showMaterialImportView);
+            document.getElementById('mt-show-export-view-btn').addEventListener('click', mt_showMaterialExportView);
 
-            [importViewElements.quantity, importViewElements.priceItem].forEach(el => {
+            [mt_importViewElements.quantity, mt_importViewElements.priceItem].forEach(el => {
                 el.addEventListener('input', () => {
-                    const quantity = parseInt(importViewElements.quantity.value) || 0;
-                    const price = parseFloat(importViewElements.priceItem.value) || 0;
-                    importViewElements.priceTotal.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
+                    const quantity = parseInt(mt_importViewElements.quantity.value) || 0;
+                    const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
+                    mt_importViewElements.priceTotal.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
                 });
             });
 
-            document.getElementById('save-import-btn').addEventListener('click', () => {
-                const materialId = parseInt(importViewElements.select.value);
-                const batchCode = importViewElements.batchCode.value.trim();
-                const quantity = parseInt(importViewElements.quantity.value);
-                const unit = importViewElements.unit.value.trim();
-                const reason = importViewElements.reason.value;
-                const location = importViewElements.location.value.trim();
-                const pricePerItem = parseFloat(importViewElements.priceItem.value);
-                const description = importViewElements.description.value.trim();
+            document.getElementById('mt-save-import-btn').addEventListener('click', () => {
+                const materialId = parseInt(mt_importViewElements.select.value);
+                const batchCode = mt_importViewElements.batchCode.value.trim();
+                const quantity = parseInt(mt_importViewElements.quantity.value);
+                const unit = mt_importViewElements.unit.value.trim();
+                const reason = mt_importViewElements.reason.value;
+                const location = mt_importViewElements.location.value.trim();
+                const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
+                const description = mt_importViewElements.description.value.trim();
 
                 if (!materialId || !batchCode || !quantity || !unit || !location || !pricePerItem) {
-                    showToast('Vui lòng điền đầy đủ thông tin.', 'error'); return;
+                    mt_showToast('Vui lòng điền đầy đủ thông tin.', 'error'); return;
                 }
                 
                 const newBatch = {
@@ -401,74 +405,75 @@
                     supplier: 'Nhà cung cấp mới',
                     lastUpdated: new Date().toLocaleDateString('vi-VN'),
                 };
-                mockBatches.push(newBatch);
+                mt_mockBatches.push(newBatch);
                 
-                if (!mockHistory[newBatch.batchId]) mockHistory[newBatch.batchId] = [];
-                mockHistory[newBatch.batchId].push({ type: 'import', quantity, reason, date: newBatch.lastUpdated });
+                if (!mt_mockHistory[newBatch.batchId]) mt_mockHistory[newBatch.batchId] = [];
+                mt_mockHistory[newBatch.batchId].push({ type: 'import', quantity, reason, date: newBatch.lastUpdated });
                 
-                showToast(`Nhập kho thành công lô ${batchCode}!`);
-                navigate('list');
-                renderMaterialList();
+                mt_showToast(`Nhập kho thành công lô ${batchCode}!`);
+                mt_navigate('mt-list');
+                mt_renderMaterialList();
             });
             
-            const calculateExportTotal = () => {
-                const quantity = parseInt(exportViewElements.quantity.value) || 0;
-                const price = parseFloat(exportViewElements.price.value) || 0;
-                exportViewElements.totalPrice.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
+            const mt_calculateExportTotal = () => {
+                const quantity = parseInt(mt_exportViewElements.quantity.value) || 0;
+                const price = parseFloat(mt_exportViewElements.price.value) || 0;
+                mt_exportViewElements.totalPrice.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
             };
 
-            [exportViewElements.quantity, exportViewElements.price].forEach(el => el.addEventListener('input', calculateExportTotal));
+            [mt_exportViewElements.quantity, mt_exportViewElements.price].forEach(el => el.addEventListener('input', mt_calculateExportTotal));
             
-            exportViewElements.batchSelect.addEventListener('change', (e) => {
+            mt_exportViewElements.batchSelect.addEventListener('change', (e) => {
                  const batchId = e.target.value;
                  if (!batchId) {
-                    exportViewElements.batchInfo.classList.add('d-none');
+                    mt_exportViewElements.batchInfo.classList.add('d-none');
                     return;
                 }
-                const batch = mockBatches.find(b => b.batchId == batchId);
-                exportViewElements.stockInfo.textContent = `${batch.quantity} ${batch.unit}`;
-                exportViewElements.location.textContent = batch.location;
-                exportViewElements.price.value = batch.pricePerItem; // Suggest price
-                exportViewElements.batchInfo.classList.remove('d-none');
-                calculateExportTotal();
+                const batch = mt_mockBatches.find(b => b.batchId == batchId);
+                mt_exportViewElements.stockInfo.textContent = `${batch.quantity} ${batch.unit}`;
+                mt_exportViewElements.location.textContent = batch.location;
+                mt_exportViewElements.price.value = batch.pricePerItem; 
+                mt_exportViewElements.batchInfo.classList.remove('d-none');
+                mt_calculateExportTotal();
             });
 
-             document.getElementById('save-export-btn').addEventListener('click', () => {
-                const batchId = parseInt(exportViewElements.batchSelect.value);
-                const quantity = parseInt(exportViewElements.quantity.value);
-                const price = parseFloat(exportViewElements.price.value);
-                const exporter = exportViewElements.exporter.value.trim();
-                const receiver = exportViewElements.receiver.value.trim();
-                const form = exportViewElements.formSelect.value;
-                const reason = exportViewElements.reason.value.trim();
-                const description = exportViewElements.description.value.trim();
+             document.getElementById('mt-save-export-btn').addEventListener('click', () => {
+                const batchId = parseInt(mt_exportViewElements.batchSelect.value);
+                const quantity = parseInt(mt_exportViewElements.quantity.value);
+                const price = parseFloat(mt_exportViewElements.price.value);
+                const exporter = mt_exportViewElements.exporter.value.trim();
+                const receiver = mt_exportViewElements.receiver.value.trim();
+                const form = mt_exportViewElements.formSelect.value;
+                const reason = mt_exportViewElements.reason.value.trim();
+                const description = mt_exportViewElements.description.value.trim();
                 
                 if (!batchId || !quantity || quantity <= 0 || !price || !receiver || !reason) {
-                    showToast('Vui lòng điền đầy đủ các trường bắt buộc.', 'error'); return;
+                    mt_showToast('Vui lòng điền đầy đủ các trường bắt buộc.', 'error'); return;
                 }
 
-                const batch = mockBatches.find(b => b.batchId === batchId);
+                const batch = mt_mockBatches.find(b => b.batchId === batchId);
                 if (quantity > batch.quantity) {
-                    showToast('Số lượng xuất vượt quá tồn kho của lô.', 'error'); return;
+                    mt_showToast('Số lượng xuất vượt quá tồn kho của lô.', 'error'); return;
                 }
 
                 batch.quantity -= quantity;
                 batch.lastUpdated = new Date().toLocaleDateString('vi-VN');
-                if (!mockHistory[batch.batchId]) mockHistory[batch.batchId] = [];
-                mockHistory[batch.batchId].push({ type: 'export', quantity, reason, date: batch.lastUpdated, price, exporter, receiver, form, description });
+                if (!mt_mockHistory[batch.batchId]) mt_mockHistory[batch.batchId] = [];
+                mt_mockHistory[batch.batchId].push({ type: 'export', quantity, reason, date: batch.lastUpdated, price, exporter, receiver, form, description });
 
-                showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
-                navigate('list');
-                renderMaterialList();
+                mt_showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
+                mt_navigate('mt-list');
+                mt_renderMaterialList();
             });
             
-            // Initial Theme
             const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            setTheme(savedTheme);
+            mt_setTheme(savedTheme);
 
-            renderMaterialList();
-        });
+            mt_renderMaterialList();
+        }
+
+        // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
+         initializeMaterialInventoryApp();
     </script>
 </body>
 </html>
-

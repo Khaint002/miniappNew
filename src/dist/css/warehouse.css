@@ -332,35 +332,35 @@
   margin-bottom: 100px;
 }
 
-#MATERIAL .view {
+#MATERIAL .mt-view {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     transition: transform 0.3s ease-in-out;
     background-color: var(--bs-tertiary-bg);
 }
-#MATERIAL #list-view,#MATERIAL  #detail-view,#MATERIAL  #history-view,#MATERIAL  #import-view,#MATERIAL  #export-view {
+#MATERIAL #mt-list-view, #MATERIAL #mt-detail-view, #MATERIAL #mt-history-view, #MATERIAL #mt-import-view, #MATERIAL #MATERIAL #mt-export-view {
     transform: translateX(100%);
 }
-#MATERIAL [data-view="list"] #list-view { transform: translateX(0); }
-#MATERIAL [data-view="detail"] #list-view { transform: translateX(-100%); }
-#MATERIAL [data-view="detail"] #detail-view { transform: translateX(0); }
-#MATERIAL [data-view="history"] #detail-view { transform: translateX(-100%); }
-#MATERIAL [data-view="history"] #history-view { transform: translateX(0); }
-#MATERIAL [data-view="import"] #list-view { transform: translateX(-100%); }
-#MATERIAL [data-view="import"] #import-view { transform: translateX(0); }
-#MATERIAL [data-view="export"] #list-view { transform: translateX(-100%); }
-#MATERIAL [data-view="export"] #export-view { transform: translateX(0); }
+#MATERIAL [data-view="mt-list"] #mt-list-view { transform: translateX(0); }
+#MATERIAL [data-view="mt-detail"] #mt-list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="mt-detail"] #mt-detail-view { transform: translateX(0); }
+#MATERIAL [data-view="mt-history"] #mt-detail-view { transform: translateX(-100%); }
+#MATERIAL [data-view="mt-history"] #mt-history-view { transform: translateX(0); }
+#MATERIAL [data-view="mt-import"] #mt-list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="mt-import"] #mt-import-view { transform: translateX(0); }
+#MATERIAL [data-view="mt-export"] #mt-list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="mt-export"] #mt-export-view { transform: translateX(0); }
 
-#MATERIAL #app-container-material {
+#MATERIAL #mt-app-container {
     height: 100vh;
     max-height: 100vh;
     border-radius: 1.5rem;
 }
 
-#MATERIAL .material-card {
+#MATERIAL .mt-material-card {
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     cursor: pointer;
 }
-#MATERIAL .material-card:hover {
+#MATERIAL .mt-material-card:hover {
     background-color: var(--bs-secondary-bg);
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
