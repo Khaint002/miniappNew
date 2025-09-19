@@ -305,6 +305,9 @@
   color: white;
   border: var(--bs-border-width) solid var(--bs-border-color);
 }
+#WAREHOUSE_PRODUCT #import-view label, #WAREHOUSE_PRODUCT #export-view label {
+  color: #cccccc;
+}
 #WAREHOUSE_PRODUCT #app-container {
     height: 100vh;
     max-height: 100vh;
@@ -370,6 +373,9 @@
   height: 40px;
   color: white;
   border: var(--bs-border-width) solid var(--bs-border-color);
+}
+#mt-app-container #mt-import-view label, #mt-app-container #mt-export-view label {
+  color: rgb(169, 169, 169);
 }
 #mt-app-container .mt-material-card {
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
