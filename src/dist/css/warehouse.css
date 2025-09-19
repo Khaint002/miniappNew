@@ -296,10 +296,15 @@
 #WAREHOUSE_PRODUCT [data-view="history"] #detail-view { transform: translateX(-100%); }
 #WAREHOUSE_PRODUCT [data-view="history"] #history-view { transform: translateX(0); }
 #WAREHOUSE_PRODUCT [data-view="import"] #list-view { transform: translateX(-100%); }
-#WAREHOUSE_PRODUCT [data-view="import"] #import-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="import"] #import-view { transform: translateX(0); text-align: start;}
 #WAREHOUSE_PRODUCT [data-view="export"] #list-view { transform: translateX(-100%); }
-#WAREHOUSE_PRODUCT [data-view="export"] #export-view { transform: translateX(0); }
-
+#WAREHOUSE_PRODUCT [data-view="export"] #export-view { transform: translateX(0); text-align: start;}
+#WAREHOUSE_PRODUCT #import-view select, #WAREHOUSE_PRODUCT #export-view select {
+  background-color: #212529;
+  height: 40px;
+  color: white;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+}
 #WAREHOUSE_PRODUCT #app-container {
     height: 100vh;
     max-height: 100vh;
@@ -357,10 +362,15 @@
 #mt-app-container[data-view="mt-history"] #mt-detail-view { transform: translateX(-100%); }
 #mt-app-container[data-view="mt-history"] #mt-history-view { transform: translateX(0); }
 #mt-app-container[data-view="mt-import"] #mt-list-view { transform: translateX(-100%); }
-#mt-app-container[data-view="mt-import"] #mt-import-view { transform: translateX(0); }
+#mt-app-container[data-view="mt-import"] #mt-import-view { transform: translateX(0); text-align: start;}
 #mt-app-container[data-view="mt-export"] #mt-list-view { transform: translateX(-100%); }
-#mt-app-container[data-view="mt-export"] #mt-export-view { transform: translateX(0); }
-
+#mt-app-container[data-view="mt-export"] #mt-export-view { transform: translateX(0); text-align: start;}
+#mt-app-container #mt-import-view select, #mt-app-container #mt-export-view select {
+  background-color: #212529;
+  height: 40px;
+  color: white;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+}
 #mt-app-container .mt-material-card {
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     cursor: pointer;

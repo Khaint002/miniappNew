@@ -31,17 +31,17 @@
         <section class="mb-4">
             <div class="card p-3 rounded-4">
                 <div class="card-body">
-                    <h2 class="h6 fw-bold mb-3">Tổng quan</h2>
+                    <h2 class="h6 mb-3">Tổng quan</h2>
                     <div class="row text-center">
-                        <div class="col"><p class="h3 fw-bold text-primary mb-1">1,250</p><p class="small text-secondary mb-0">Sản phẩm</p></div>
-                        <div class="col"><p class="h3 fw-bold text-success mb-1">312</p><p class="small text-secondary mb-0">Vật tư</p></div>
-                        <div class="col"><p class="h3 fw-bold text-danger mb-1">12</p><p class="small text-secondary mb-0">Sắp hết hạn</p></div>
+                        <div class="col"><p class="h3 text-primary mb-1">1,250</p><p class="small text-secondary mb-0">Sản phẩm</p></div>
+                        <div class="col"><p class="h3 text-success mb-1">312</p><p class="small text-secondary mb-0">Vật tư</p></div>
+                        <div class="col"><p class="h3 text-danger mb-1">12</p><p class="small text-secondary mb-0">Sắp hết hạn</p></div>
                     </div>
                 </div>
             </div>
         </section>
         <main>
-            <h2 class="h6 fw-bold mb-3">Chức năng chính</h2>
+            <h2 class="h6 mb-3">Chức năng chính</h2>
             <div id="wareHouse-list" class="row g-3">
                 <!-- Menu items will be rendered here by JavaScript -->
             </div>
@@ -58,7 +58,7 @@
                           <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                           </button>
-                          <h1 class="fs-5 fw-bold text-light text-center w-100 mt-3">Quản Lý Lô Sản Phẩm</h1>
+                          <h1 class="fs-5 text-light text-center w-100 mt-3">Quản Lý Lô Sản Phẩm</h1>
                           <div style="width: 40px;"></div>
                       </div>
                   </header>
@@ -89,7 +89,7 @@
                           <button id="back-to-list-button" class="btn btn-link text-secondary" style="padding: 0;">
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                           </button>
-                          <h1 id="form-title" class="fs-5 fw-bold text-light text-center flex-grow-1 mt-3"></h1>
+                          <h1 id="form-title" class="fs-5 text-light text-center flex-grow-1 mt-3"></h1>
                           <div style="width: 40px;"></div>
                       </div>
                   </header>
@@ -175,7 +175,7 @@
                   </main>
                   
                   <footer class="p-3 bg-dark border-top border-secondary flex-shrink-0">
-                       <button type="submit" id="form-submit-button" form="batch-declaration-form" class="btn btn-primary btn-lg w-100 fw-bold shadow">
+                       <button type="submit" id="form-submit-button" form="batch-declaration-form" class="btn btn-primary btn-lg w-100 shadow">
                        </button>
                   </footer>
               </div>
@@ -186,20 +186,20 @@
                     <button id="back-to-list-from-details-button" class="btn btn-link text-secondary p-0 me-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                     </button>
-                    <h1 id="product-id-title" class="fs-5 fw-bold text-light text-center flex-grow-1 m-0">Định Danh Sản Phẩm</h1>
+                    <h1 id="product-id-title" class="fs-5 text-light text-center flex-grow-1 m-0">Định Danh Sản Phẩm</h1>
                     <div style="width: 40px;"></div>
                 </header>
 
                 <main class="flex-grow-1 overflow-y-auto p-3 p-md-4">
                     <div id="batch-info-container" class="alert alert-primary p-3 mb-4">
-                        <div class="d-flex justify-content-between align-items-center small"><span class="text-body-secondary">Sản phẩm:</span><span id="info-product-name" class="fw-bold text-light text-end"></span></div>
-                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đơn vị lô:</span><span id="info-unit" class="fw-bold badge bg-primary px-2 py-1"></span></div>
-                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Tổng số SP trong lô:</span><span id="info-total-quantity" class="fw-bold text-light"></span></div>
-                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đã định danh (SP):</span><span id="info-identified-quantity" class="fw-bold text-success"></span></div>
-                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Cần quét còn lại (SP):</span><span id="info-remaining-quantity" class="fw-bolder text-danger fs-6 m-0"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small"><span class="text-body-secondary">Sản phẩm:</span><span id="info-product-name" class= text-light text-end"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đơn vị lô:</span><span id="info-unit" class= badge bg-primary px-2 py-1"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Tổng số SP trong lô:</span><span id="info-total-quantity" class= text-light"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Đã định danh (SP):</span><span id="info-identified-quantity" class= text-success"></span></div>
+                        <div class="d-flex justify-content-between align-items-center small mt-2"><span class="text-body-secondary">Cần quét còn lại (SP):</span><span id="info-remaining-quantity" class=er text-danger fs-6 m-0"></span></div>
                     </div>
                     <div id="packaging-declaration-container" class="d-none border rounded p-3 mb-4 bg-body-tertiary">
-                        <h3 class="h6 fw-bold text-light">Khai báo cấu trúc đóng gói</h3>
+                        <h3 class="h6 text-light">Khai báo cấu trúc đóng gói</h3>
                         <div class="row mt-3 g-2">
                             <div id="declaration-layer-level" class="col-6 mb-2"><label for="items-per-layer" class="d-block small fw-medium text-body-secondary mb-1">Số SP / Lớp</label><input type="number" id="items-per-layer" class="form-control text-center"></div>
                             <div id="declaration-carton-level" class="col-6 mb-2"><label for="layers-per-carton" class="d-block small fw-medium text-body-secondary mb-1">Số Lớp / Thùng</label><input type="number" id="layers-per-carton" class="form-control text-center"></div>
@@ -211,35 +211,35 @@
                             <p class="small text-body-secondary m-0 d-none" id="calc-pallet-row">Tổng SP / Pallet: <strong id="calc-items-per-pallet" class="text-light">0</strong></p>
                             <p class="small text-body-secondary m-0 d-none" id="calc-container-row">Tổng SP / Cont.: <strong id="calc-items-per-container" class="text-light">0</strong></p>
                             <hr class="my-2 d-none" id="calc-divider">
-                            <p class="small text-body-secondary m-0 d-none" id="calc-total-cartons-row">Tổng số Thùng (dự kiến): <strong id="calc-total-cartons" class="text-primary fw-bold">0</strong></p>
-                            <p class="small text-body-secondary m-0 d-none" id="calc-total-pallets-row">Tổng số Pallet (dự kiến): <strong id="calc-total-pallets" class="text-primary fw-bold">0</strong></p>
-                            <p class="small text-body-secondary m-0 d-none" id="calc-total-containers-row">Tổng số Cont. (dự kiến): <strong id="calc-total-containers" class="text-primary fw-bold">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-cartons-row">Tổng số Thùng (dự kiến): <strong id="calc-total-cartons" class="text-primary">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-pallets-row">Tổng số Pallet (dự kiến): <strong id="calc-total-pallets" class="text-primary">0</strong></p>
+                            <p class="small text-body-secondary m-0 d-none" id="calc-total-containers-row">Tổng số Cont. (dự kiến): <strong id="calc-total-containers" class="text-primary">0</strong></p>
                         </div>
                         <div id="remainder-alert" class="alert alert-warning mt-2 p-2 small d-none" role="alert">
                             <strong class="d-block">Lưu ý:</strong> <span id="remainder-text"></span>
                         </div>
                     </div>
                     <div id="scan-progress-container" class="d-none alert alert-warning p-3 mb-4">
-                        <h3 class="h6 fw-bold text-dark">Tiến độ quét hiện tại</h3>
+                        <h3 class="h6 text-dark">Tiến độ quét hiện tại</h3>
                         <div class="row text-center small mt-2">
-                            <div id="progress-pallet" class="col d-none"><p class="text-muted m-0">Pallet</p><p class="fw-bold text-warning-dark m-0"></p></div>
-                            <div id="progress-carton" class="col d-none"><p class="text-muted m-0">Thùng</p><p class="fw-bold text-warning-dark m-0"></p></div>
-                            <div id="progress-layer" class="col d-none"><p class="text-muted m-0">Lớp</p><p class="fw-bold text-warning-dark m-0"></p></div>
+                            <div id="progress-pallet" class="col d-none"><p class="text-muted m-0">Pallet</p><p class= text-warning-dark m-0"></p></div>
+                            <div id="progress-carton" class="col d-none"><p class="text-muted m-0">Thùng</p><p class= text-warning-dark m-0"></p></div>
+                            <div id="progress-layer" class="col d-none"><p class="text-muted m-0">Lớp</p><p class= text-warning-dark m-0"></p></div>
                         </div>
                     </div>
                     <div class="mb-4">
                         <label class="d-block fw-medium text-body-secondary mb-2 small">Quét mã sản phẩm</label>
-                        <button type="button" id="start-scan-button" class="btn btn-light btn-lg w-100 fw-bold shadow" data-bs-toggle="modal" data-bs-target="#id-scan-modal">Bắt Đầu Quét</button>
+                        <button type="button" id="start-scan-button" class="btn btn-light btn-lg w-100 shadow" data-bs-toggle="modal" data-bs-target="#id-scan-modal">Bắt Đầu Quét</button>
                     </div>
                     <div id="results-container">
-                        <h2 class="h6 fw-bold text-body-secondary">Sản Phẩm Đã Quét (<span id="scan-count">0</span>)</h2>
+                        <h2 class="h6 text-body-secondary">Sản Phẩm Đã Quét (<span id="scan-count">0</span>)</h2>
                         <div id="id-list-details" class="bg-dark p-3 rounded border" style="max-height: 200px; overflow-y: auto;">
                             <p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>
                         </div>
                     </div>
                 </main>
                 <footer class="p-3 bg-dark border-top border-secondary flex-shrink-0">
-                    <button type="button" id="save-identities-button" class="btn btn-primary btn-lg w-100 fw-bold shadow">Lưu Thông Tin</button>
+                    <button type="button" id="save-identities-button" class="btn btn-primary btn-lg w-100 shadow">Lưu Thông Tin</button>
                 </footer>
               </div>
               
@@ -248,7 +248,7 @@
                   <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content border-secondary">
                           <div class="modal-body text-center p-4">
-                              <h3 class="fs-5 fw-bold text-light">Xác nhận Xóa</h3>
+                              <h3 class="fs-5 text-light">Xác nhận Xóa</h3>
                               <p class="small text-body-secondary mt-2">Bạn có chắc chắn muốn xóa lô sản phẩm <b id="batch-code-to-delete" class="text-warning"></b>? Hành động này không thể hoàn tác.</p>
                               <div class="mt-4 d-flex justify-content-center gap-3">
                                   <button type="button" id="cancel-delete-button" class="btn btn-secondary " data-bs-dismiss="modal">Hủy bỏ</button>
@@ -271,8 +271,8 @@
                                     <p class="position-absolute w-100 text-center text-white small bg-dark p-1" style="top: 1rem; --bs-bg-opacity: .5;">Hướng camera vào mã QR</p>
                                 </div>
                             </div>
-                            <p class="mt-4 h5">Đã quét: <span id="modal-scan-count" class="fw-bold text-success">0</span></p>
-                            <button id="simulate-scan-button" class="btn btn-success fw-bold py-2 px-4 rounded mt-2">Quét mã giả lập</button>
+                            <p class="mt-4 h5">Đã quét: <span id="modal-scan-count" class= text-success">0</span></p>
+                            <button id="simulate-scan-button" class="btn btn-success py-2 px-4 rounded mt-2">Quét mã giả lập</button>
                             <button type="button" class="btn btn-link text-white-50 mt-4" data-bs-dismiss="modal">Dừng Quét</button>
                         </div>
                     </div>
@@ -287,7 +287,7 @@
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                 </button>
-                <h1 class="fs-5 fw-bold text-light text-center w-100 mt-3">In mã QR</h1>
+                <h1 class="fs-5 text-light text-center w-100 mt-3">In mã QR</h1>
                 <div style="width: 40px;"></div>
             </div>
         </header>
@@ -332,7 +332,7 @@
                         <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                         </button>
-                        <h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1>
+                        <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1>
                         <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
                             <i class="bi bi-moon-stars-fill"></i>
                         </button>
@@ -351,14 +351,14 @@
                 </div>
                 <main id="inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
                 <footer class="p-3 bg-body border-top flex-shrink-0 d-flex gap-3">
-                    <button id="show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
-                    <button id="show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
+                    <button id="show-import-view-btn" class="btn btn-success-subtle text-success-emphasis flex-fill py-2 rounded-3">Nhập Kho</button>
+                    <button id="show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis flex-fill py-2 rounded-3">Xuất Kho</button>
                 </footer>
             </div>
 
             <!-- Detail View -->
             <div id="detail-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="mb-3"><img id="detail-image" src="" alt="Product Image" class="w-100 rounded-3 shadow-sm border"></div>
                     <div class="card card-body mb-3 border-0 shadow-sm">
@@ -366,7 +366,7 @@
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <div>
                                 <p class="small text-muted mb-0">Tồn kho:</p>
-                                <p id="detail-quantity" class="fw-bold display-6 mb-0"></p>
+                                <p id="detail-quantity" class= display-6 mb-0"></p>
                             </div>
                             <span id="detail-status-badge" class="badge fs-6 rounded-pill"></span>
                         </div>
@@ -388,13 +388,13 @@
 
             <!-- History View -->
             <div id="history-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main id="history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
             </div>
 
             <!-- Import View -->
             <div id="import-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="card card-body border-0 shadow-sm">
                         <div class="mb-3"><label for="import-product-select" class="form-label ">1. Chọn sản phẩm</label><select id="import-product-select" class="form-select"></select></div>
@@ -418,7 +418,7 @@
 
             <!-- Export View -->
             <div id="export-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="card card-body border-0 shadow-sm">
                         <div class="mb-3"><label for="export-batch-select" class="form-label ">1. Chọn lô sản phẩm</label><select id="export-batch-select" class="form-select"></select></div>
@@ -453,7 +453,7 @@
                     <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                     </button>
-                    <h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho vật tư</h1>
+                    <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho vật tư</h1>
                     <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
                         <i class="bi bi-moon-stars-fill"></i>
                     </button>
@@ -472,14 +472,14 @@
             </div>
             <main id="mt-inventory-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-flex gap-3">
-                <button id="mt-show-import-view-btn" class="btn btn-success-subtle text-success-emphasis fw-bold flex-fill py-2 rounded-3">Nhập Kho</button>
-                <button id="mt-show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis fw-bold flex-fill py-2 rounded-3">Xuất Kho</button>
+                <button id="mt-show-import-view-btn" class="btn btn-success-subtle text-success-emphasis flex-fill py-2 rounded-3">Nhập Kho</button>
+                <button id="mt-show-export-view-btn" class="btn btn-danger-subtle text-danger-emphasis flex-fill py-2 rounded-3">Xuất Kho</button>
             </footer>
         </div>
 
         <!-- Detail View -->
         <div id="mt-detail-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 id="mt-detail-material-name" class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 id="mt-detail-material-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="mb-3"><img id="mt-detail-image" src="" alt="Material Image" class="w-100 rounded-3 shadow-sm border"></div>
                 <div class="card card-body mb-3 border-0 shadow-sm">
@@ -487,7 +487,7 @@
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div>
                             <p class="small text-muted mb-0">Tồn kho:</p>
-                            <p id="mt-detail-quantity" class="fw-bold display-6 mb-0"></p>
+                            <p id="mt-detail-quantity" class= display-6 mb-0"></p>
                         </div>
                         <span id="mt-detail-status-badge" class="badge fs-6 rounded-pill"></span>
                     </div>
@@ -509,13 +509,13 @@
 
         <!-- History View -->
         <div id="mt-history-view" class="mt-view d-flex flex-column">
-             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
              <main id="mt-history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
         </div>
 
         <!-- Import View -->
         <div id="mt-import-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
                     <div class="mb-3"><label for="mt-import-material-select" class="form-label fw-semibold">1. Chọn vật tư</label><select id="mt-import-material-select" class="form-select"></select></div>
@@ -539,7 +539,7 @@
 
         <!-- Export View -->
         <div id="mt-export-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 fw-bold text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
                     <div class="mb-3"><label for="mt-export-batch-select" class="form-label fw-semibold">1. Chọn lô vật tư</label><select id="mt-export-batch-select" class="form-select"></select></div>
@@ -571,7 +571,7 @@
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                 </button>
-                <h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Khai báo BOM</h1>
+                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Khai báo BOM</h1>
                 <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
                     <i class="bi bi-moon-stars-fill"></i>
                 </button>
@@ -586,7 +586,7 @@
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                 </button>
-                <h1 class="h5 fw-bold text-body-emphasis text-center m-0 flex-grow-1">Tạo lệnh sản xuất</h1>
+                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tạo lệnh sản xuất</h1>
                 <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
                     <i class="bi bi-moon-stars-fill"></i>
                 </button>

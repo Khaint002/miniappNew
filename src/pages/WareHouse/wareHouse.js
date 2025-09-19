@@ -383,7 +383,7 @@ var renderBatches = (batches) => {
             <div class="swipe-content bg-body-secondary position-relative z-1 p-3" style="transition: transform 0.2s ease-out; cursor: pointer;" data-code="${batch.batchCode}">
                 <div class="d-flex justify-content-between align-items-start pe-none">
                     <div>
-                        <p class="fw-bold text-light mb-1">${batch.batchCode}</p>
+                        <p class=" text-light mb-1">${batch.batchCode}</p>
                         <p class="small text-body mb-0">${batch.productName}</p>
                     </div>
                     <span class="badge rounded-pill small ${getStatusClass(batch.status)}">${batch.status}</span>
@@ -630,12 +630,12 @@ var renderScannedData = (data) => {
     }
     let html = '';
     const renderLayers = (layers, indentClass = 'ms-4') => Object.entries(layers).map(([layerKey, items]) => `<details open><summary class="${indentClass}">Lớp ${layerKey.split('_')[1]} (${items.length} SP)</summary>${items.map(item => `<p class="item-code font-monospace small">${item}</p>`).join('')}</details>`).join('');
-    const renderCartons = (cartons, indentClass = 'ms-2') => Object.entries(cartons).map(([cartonKey, layers]) => `<details open><summary class="fw-bold ${indentClass}">Thùng ${cartonKey.split('_')[1]}</summary>${renderLayers(layers)}</details>`).join('');
+    const renderCartons = (cartons, indentClass = 'ms-2') => Object.entries(cartons).map(([cartonKey, layers]) => `<details open><summary class=" ${indentClass}">Thùng ${cartonKey.split('_')[1]}</summary>${renderLayers(layers)}</details>`).join('');
     
     if (currentIdBatch.batchUnit === 'Container') {
-          html = Object.entries(data).map(([palletKey, cartons]) => `<details open><summary class="fw-bolder">Pallet ${palletKey.split('_')[1]}</summary>${renderCartons(cartons)}</details>`).join('');
+          html = Object.entries(data).map(([palletKey, cartons]) => `<details open><summary class="er">Pallet ${palletKey.split('_')[1]}</summary>${renderCartons(cartons)}</details>`).join('');
     } else if (data.pallet_1) {
-        html = renderCartons(data.pallet_1, 'ms-0 fw-bold');
+        html = renderCartons(data.pallet_1, 'ms-0 ');
     }
     dom.idListDetails.innerHTML = html || '<p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>';
 };
@@ -906,13 +906,13 @@ var renderInventory = () => {
         return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3">
             <img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
             <div class="flex-grow-1">
-                <p class="fw-bold text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
+                <p class=" text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
                 <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span>
                     <div>
                         <span class="small text-muted">Tổng tồn:</span> 
-                        <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span>
+                        <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span>
                     </div>
                 </div>
             </div>
@@ -935,7 +935,7 @@ var showDetailView = (productId) => {
     detailViewElements.image.alt = product.name;
     detailViewElements.sku.textContent = product.sku;
     detailViewElements.quantity.textContent = totalQuantity;
-    detailViewElements.quantity.className = `fw-bold display-6 mb-0 text-${stock.color}`;
+    detailViewElements.quantity.className = ` display-6 mb-0 text-${stock.color}`;
     detailViewElements.statusBadge.textContent = stock.text;
     detailViewElements.statusBadge.className = `badge fs-6 rounded-pill ${stock.bg} ${stock.text_color}`;
     detailViewElements.location.innerHTML = `<i class="bi bi-geo-alt-fill me-2 text-muted"></i> ${[...new Set(productBatches.map(b => b.location))].join(', ') || 'Chưa có vị trí'}`;
@@ -954,7 +954,7 @@ var showHistoryView = () => {
     } else {
         historyListEl.innerHTML = productHistory.map(entry => {
             const isImport = entry.type === 'import';
-            return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class="fw-bold fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
+            return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class=" fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
         }).join('');
     }
     navigate('history');
@@ -1203,7 +1203,7 @@ function initializeMaterialInventoryApp() {
         }
         mt_inventoryListEl.innerHTML = filteredInventory.map(item => {
             const stock = mt_getStockInfo(item.totalQuantity);
-            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class=" text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
         }).join('');
     };
 
@@ -1222,7 +1222,7 @@ function initializeMaterialInventoryApp() {
         mt_detailViewElements.image.alt = material.name;
         mt_detailViewElements.sku.textContent = material.sku;
         mt_detailViewElements.quantity.textContent = totalQuantity;
-        mt_detailViewElements.quantity.className = `fw-bold display-6 mb-0 text-${stock.color}`;
+        mt_detailViewElements.quantity.className = ` display-6 mb-0 text-${stock.color}`;
         mt_detailViewElements.statusBadge.textContent = stock.text;
         mt_detailViewElements.statusBadge.className = `badge fs-6 rounded-pill ${stock.bg} ${stock.text_color}`;
         mt_detailViewElements.location.innerHTML = `<i class="bi bi-geo-alt-fill me-2 text-muted"></i> ${[...new Set(materialBatches.map(b => b.location))].join(', ') || 'Chưa có vị trí'}`;
@@ -1241,7 +1241,7 @@ function initializeMaterialInventoryApp() {
         } else {
             mt_historyListEl.innerHTML = materialHistory.map(entry => {
                 const isImport = entry.type === 'import';
-                return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class="fw-bold fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
+                return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class=" fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
             }).join('');
         }
         mt_navigate('mt-history');
