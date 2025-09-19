@@ -219,11 +219,18 @@
     transition: background 0.3s;
   }
 
+  .wareHouse-detail-app #form-screen #batch-declaration-form{
+    text-align: start;
+  }
+  .wareHouse-detail-app #status {
+    width: 100%;
+  }
   .app-container {
     width: 100%;
     max-width: 28rem; /* tương đương max-w-sm của Tailwind */
     height: 100vh;
 }
+
 .form-element {
     min-height: 2.75rem; 
 }
@@ -308,6 +315,7 @@
 #WAREHOUSE_PRODUCT #import-view label, #WAREHOUSE_PRODUCT #export-view label {
   color: #cccccc;
 }
+
 #WAREHOUSE_PRODUCT #app-container {
     height: 100vh;
     max-height: 100vh;
