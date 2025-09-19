@@ -100,7 +100,10 @@ function connectAppWaveHouse(ID, NAME) {
     } else if(ID == 'PRQRCODE'){
         runOptionS();
         showPrintOptions('detail');
-    } 
+    } else if(ID == 'WAREHOUSE_PRODUCT') {
+        HOMEOSAPP.getDm
+        renderInventory();
+    }
     // Hiện màn đúng ID
     // $("#name-detail").text(NAME);
     $("#footer-wareHouse").addClass("d-none");
@@ -158,7 +161,7 @@ function switchMode(mode) {
         <label class="form-label text-white">Số lượng</label>
         <input type="number" class="form-control" placeholder="Nhập số lượng">
       `;
-    } 
+    }
     // mode all thì không hiện gì thêm
 }
 
@@ -190,14 +193,14 @@ function showPrintOptions(mode) {
     container.innerHTML = ""; // clear cũ
   
     if (mode === "detail") {
-      container.innerHTML = `
-        <label class="form-label text-white">Chọn QR</label>
-        <select class="form-select">
-          <option>-- Chọn QR --</option>
-          <option>QR 1</option>
-          <option>QR 2</option>
-        </select>
-      `;
+        container.innerHTML = `
+            <label class="form-label text-white">Chọn QR</label>
+            <select class="form-select">
+                <option>-- Chọn QR --</option>
+                <option>QR 1</option>
+                <option>QR 2</option>
+            </select>
+        `;
     } else if (mode === "bo") {
       container.innerHTML = `
         <label class="form-label text-white">Số lượng</label>
@@ -820,7 +823,10 @@ var addEventListeners = () => {
 };
 
 // --- KHỞI TẠO BAN ĐẦU ---
-var initializeApp = () => {
+var initializeApp = async () => {
+    var dataPR = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'DM_PRODUCT', "1=1");
+    console.log(dataPR);
+
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
     idScanModal = new bootstrap.Modal(dom.idScanModalEl);
     appToast = new bootstrap.Toast(dom.toastEl);
@@ -829,8 +835,6 @@ var initializeApp = () => {
 };
 
 initializeApp();
-
-
 
 // 
 var currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
@@ -1128,3 +1132,288 @@ exportViewElements.batchSelect.addEventListener('change', (e) => {
 var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 setTheme(savedTheme);
 
+var mockMaterials = [
+    { id: 1, name: 'Thép tấm SPHC 2.0mm', sku: 'VT-STEEL-SPHC-20', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Thép' },
+    { id: 2, name: 'Bulong lục giác M10', sku: 'VT-BOLT-M10', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Bulong' },
+    { id: 3, name: 'Sơn chống gỉ xám 5L', sku: 'VT-PAINT-GREY-5L', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Sơn' },
+    { id: 4, name: 'Que hàn J421 3.2mm', sku: 'VT-WELD-J421-32', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Que+Hàn' },
+    { id: 5, name: 'Dầu thủy lực Caltex Rando 68', sku: 'VT-OIL-CALTEX-68', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Dầu' },
+];
+
+var mockBatches = [
+    { batchId: 101, materialId: 1, batchCode: 'L20250901', quantity: 58, unit: 'Tấm', location: 'Kho A, Kệ 12', supplier: 'Hòa Phát', lastUpdated: '10/09/2025', pricePerItem: 750000, description: 'Lô nhập đầu tháng 9' },
+    { batchId: 102, materialId: 2, batchCode: 'L20250901', quantity: 2500, unit: 'Cái', location: 'Kho A, Kệ 12', supplier: 'Bulong Comat', lastUpdated: '09/09/2025', pricePerItem: 1500, description: 'Bulong Inox 304' },
+    { batchId: 103, materialId: 3, batchCode: 'L20250902', quantity: 5, unit: 'Thùng', location: 'Kho A, Kệ 15', supplier: 'Sơn Jotun', lastUpdated: '10/09/2025', pricePerItem: 1200000, description: 'Sơn lót' },
+    { batchId: 104, materialId: 4, batchCode: 'L20250820', quantity: 120, unit: 'Kg', location: 'Kho B, Kệ 1', supplier: 'Que hàn Kim Tín', lastUpdated: '01/09/2025', pricePerItem: 40000, description: '' },
+    { batchId: 105, materialId: 5, batchCode: 'L20250825', quantity: 2, unit: 'Xô', location: 'Kho A, Kệ 22', supplier: 'Caltex Việt Nam', lastUpdated: '08/09/2025', pricePerItem: 1800000, description: 'Xô 18L' },
+];
+
+var mockHistory = {
+    101: [{ type: 'import', quantity: 60, reason: 'Nhập hàng từ NCC', date: '01/09/2025' }, { type: 'export', quantity: 2, reason: 'Xuất cho SX', date: '05/09/2025' }],
+    102: [{ type: 'import', quantity: 3000, reason: 'Nhập hàng từ NCC', date: '01/09/2025' }, { type: 'export', quantity: 500, reason: 'Xuất cho SX', date: '06/09/2025' }],
+};
+
+var appContainer = document.getElementById('app-container');
+var inventoryListEl = document.getElementById('inventory-list');
+var searchInputEl = document.getElementById('search-input');
+var filterButtonsEl = document.getElementById('filter-buttons');
+var currentFilter = 'all';
+var currentMaterialId = null;
+
+var detailViewElements = { name: document.getElementById('detail-material-name'), image: document.getElementById('detail-image'), sku: document.getElementById('detail-sku'), quantity: document.getElementById('detail-quantity'), statusBadge: document.getElementById('detail-status-badge'), location: document.getElementById('detail-location'), supplier: document.getElementById('detail-supplier'), lastUpdated: document.getElementById('detail-last-updated') };
+var historyListEl = document.getElementById('history-list');
+var importViewElements = { select: document.getElementById('import-material-select'), batchCode: document.getElementById('import-batch-code'), quantity: document.getElementById('import-quantity'), unit: document.getElementById('import-unit'), reason: document.getElementById('import-reason-select'), location: document.getElementById('import-location'), priceItem: document.getElementById('import-price-item'), priceTotal: document.getElementById('import-price-total'), description: document.getElementById('import-description') };
+var exportViewElements = { batchSelect: document.getElementById('export-batch-select'), batchInfo: document.getElementById('export-batch-info'), stockInfo: document.getElementById('export-stock-info'), location: document.getElementById('export-location'), quantity: document.getElementById('export-quantity'), price: document.getElementById('export-price'), totalPrice: document.getElementById('export-total-price'), exporter: document.getElementById('export-exporter'), receiver: document.getElementById('export-receiver'), formSelect: document.getElementById('export-form-select'), reason: document.getElementById('export-reason'), description: document.getElementById('export-description') };
+
+var toastEl = document.getElementById('liveToast');
+var toastBody = document.getElementById('toast-body');
+var toast = new bootstrap.Toast(toastEl);
+
+var navigate = (view) => { appContainer.dataset.view = view; };
+var showToast = (message, type = 'success') => {
+    toastEl.className = `toast text-white ${type === 'success' ? 'bg-success' : 'bg-danger'}`;
+    toastBody.textContent = message;
+    toast.show();
+};
+
+var getStockInfo = (quantity) => {
+    if (quantity <= 0) return { text: 'Hết hàng', color: 'danger', bg: 'bg-danger-subtle', text_color: 'text-danger-emphasis' };
+    if (quantity <= 20) return { text: 'Sắp hết hàng', color: 'warning', bg: 'bg-warning-subtle', text_color: 'text-warning-emphasis' };
+    return { text: 'Còn hàng', color: 'success', bg: 'bg-success-subtle', text_color: 'text-success-emphasis' };
+};
+
+var renderMaterialList = () => {
+    const searchTerm = searchInputEl.value.toLowerCase();
+    
+    let materialQuantities = mockMaterials.map(material => {
+        const totalQuantity = mockBatches.filter(batch => batch.materialId === material.id).reduce((sum, batch) => sum + batch.quantity, 0);
+        return { ...material, totalQuantity };
+    });
+
+    let filteredInventory = materialQuantities.filter(item => item.name.toLowerCase().includes(searchTerm) || item.sku.toLowerCase().includes(searchTerm));
+    if (currentFilter === 'low_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity > 0 && item.totalQuantity <= 20);
+    else if (currentFilter === 'out_of_stock') filteredInventory = filteredInventory.filter(item => item.totalQuantity <= 0);
+    
+    if (filteredInventory.length === 0) {
+        inventoryListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Không tìm thấy vật tư nào.</p></div>`; return;
+    }
+    inventoryListEl.innerHTML = filteredInventory.map(item => {
+        const stock = getStockInfo(item.totalQuantity);
+        return `<div data-id="${item.id}" class="material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class="fw-bold text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class="fw-bold fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+    }).join('');
+};
+
+var showMaterialDetailView = (materialId) => {
+    currentMaterialId = materialId;
+    const material = mockMaterials.find(item => item.id == materialId);
+    if (!material) return;
+    
+    const materialBatches = mockBatches.filter(b => b.materialId == materialId);
+    const totalQuantity = materialBatches.reduce((sum, b) => sum + b.quantity, 0);
+    const latestBatch = materialBatches.sort((a,b) => new Date(b.lastUpdated.split('/').reverse().join('-')) - new Date(a.lastUpdated.split('/').reverse().join('-')))[0] || {};
+
+    const stock = getStockInfo(totalQuantity);
+    detailViewElements.name.textContent = material.name;
+    detailViewElements.image.src = material.imageUrl;
+    detailViewElements.image.alt = material.name;
+    detailViewElements.sku.textContent = material.sku;
+    detailViewElements.quantity.textContent = totalQuantity;
+    detailViewElements.quantity.className = `fw-bold display-6 mb-0 text-${stock.color}`;
+    detailViewElements.statusBadge.textContent = stock.text;
+    detailViewElements.statusBadge.className = `badge fs-6 rounded-pill ${stock.bg} ${stock.text_color}`;
+    detailViewElements.location.innerHTML = `<i class="bi bi-geo-alt-fill me-2 text-muted"></i> ${[...new Set(materialBatches.map(b => b.location))].join(', ') || 'Chưa có vị trí'}`;
+    detailViewElements.supplier.textContent = latestBatch.supplier || 'N/A';
+    detailViewElements.lastUpdated.textContent = latestBatch.lastUpdated || 'N/A';
+    navigate('detail');
+};
+
+var showMaterialHistoryView = () => {
+    const materialBatches = mockBatches.filter(b => b.materialId == currentMaterialId);
+    const batchIds = materialBatches.map(b => b.batchId);
+    const materialHistory = batchIds.flatMap(id => mockHistory[id] || []).sort((a,b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')));
+
+    if (materialHistory.length === 0) {
+        historyListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Chưa có lịch sử cho vật tư này.</p></div>`;
+    } else {
+        historyListEl.innerHTML = materialHistory.map(entry => {
+            const isImport = entry.type === 'import';
+            return `<div class="card card-body border-0 shadow-sm"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">${entry.reason}</h6><span class="fw-bold fs-5 ${isImport ? 'text-success' : 'text-danger'}">${isImport ? '+' : '-'}${entry.quantity}</span></div><small class="text-muted">${entry.date}</small></div>`;
+        }).join('');
+    }
+    navigate('history');
+};
+
+var populateMaterialsForSelect = (selectEl) => {
+    selectEl.innerHTML = '<option value="">-- Chọn vật tư --</option>';
+    mockMaterials.forEach(material => {
+        selectEl.innerHTML += `<option value="${material.id}">${material.name} (${material.sku})</option>`;
+    });
+};
+
+var showMaterialImportView = () => {
+    populateMaterialsForSelect(importViewElements.select);
+    Object.values(importViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
+    importViewElements.priceTotal.value = '0 VNĐ';
+    navigate('import');
+};
+
+var showMaterialExportView = () => {
+    exportViewElements.batchSelect.innerHTML = '<option value="">-- Chọn lô vật tư --</option>';
+    const groupedBatches = mockMaterials.map(material => ({
+        materialName: material.name,
+        batches: mockBatches.filter(b => b.materialId === material.id && b.quantity > 0)
+    })).filter(group => group.batches.length > 0);
+
+    groupedBatches.forEach(group => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = group.materialName;
+        group.batches.forEach(b => {
+            const option = document.createElement('option');
+            option.value = b.batchId;
+            option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
+            optgroup.appendChild(option);
+        });
+        exportViewElements.batchSelect.appendChild(optgroup);
+    });
+
+    Object.values(exportViewElements).forEach(el => { if(el.tagName !== 'SELECT') el.value = ''; });
+    exportViewElements.exporter.value = currentUser; // Auto-fill exporter
+    exportViewElements.batchInfo.classList.add('d-none');
+    exportViewElements.totalPrice.value = "0 VNĐ";
+
+    navigate('export');
+};
+
+var setTheme = (theme) => {
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    localStorage.setItem('theme', theme);
+    document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+        btn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+    });
+};
+
+// Event Listeners
+searchInputEl.addEventListener('input', renderMaterialList);
+filterButtonsEl.addEventListener('click', (e) => {
+    const button = e.target.closest('.filter-btn');
+    if (!button) return;
+    currentFilter = button.dataset.filter;
+    document.querySelectorAll('#filter-buttons .filter-btn').forEach(btn => {btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary');});
+    button.classList.add('btn-primary');
+    button.classList.remove('btn-secondary');
+    renderMaterialList();
+});
+
+inventoryListEl.addEventListener('click', (e) => {
+    const card = e.target.closest('.material-card');
+    if(card) showMaterialDetailView(card.dataset.id);
+});
+
+document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => navigate(e.currentTarget.dataset.target));
+});
+
+document.querySelectorAll('.theme-switcher-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+});
+
+document.getElementById('view-history-btn').addEventListener('click', showMaterialHistoryView);
+document.getElementById('show-import-view-btn').addEventListener('click', showMaterialImportView);
+document.getElementById('show-export-view-btn').addEventListener('click', showMaterialExportView);
+
+[importViewElements.quantity, importViewElements.priceItem].forEach(el => {
+    el.addEventListener('input', () => {
+        const quantity = parseInt(importViewElements.quantity.value) || 0;
+        const price = parseFloat(importViewElements.priceItem.value) || 0;
+        importViewElements.priceTotal.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
+    });
+});
+
+document.getElementById('save-import-btn').addEventListener('click', () => {
+    const materialId = parseInt(importViewElements.select.value);
+    const batchCode = importViewElements.batchCode.value.trim();
+    const quantity = parseInt(importViewElements.quantity.value);
+    const unit = importViewElements.unit.value.trim();
+    const reason = importViewElements.reason.value;
+    const location = importViewElements.location.value.trim();
+    const pricePerItem = parseFloat(importViewElements.priceItem.value);
+    const description = importViewElements.description.value.trim();
+
+    if (!materialId || !batchCode || !quantity || !unit || !location || !pricePerItem) {
+        showToast('Vui lòng điền đầy đủ thông tin.', 'error'); return;
+    }
+    
+    const newBatch = {
+        batchId: Date.now(), materialId, batchCode, quantity, unit, location, pricePerItem, description,
+        supplier: 'Nhà cung cấp mới',
+        lastUpdated: new Date().toLocaleDateString('vi-VN'),
+    };
+    mockBatches.push(newBatch);
+    
+    if (!mockHistory[newBatch.batchId]) mockHistory[newBatch.batchId] = [];
+    mockHistory[newBatch.batchId].push({ type: 'import', quantity, reason, date: newBatch.lastUpdated });
+    
+    showToast(`Nhập kho thành công lô ${batchCode}!`);
+    navigate('list');
+    renderMaterialList();
+});
+
+var calculateExportTotal = () => {
+    const quantity = parseInt(exportViewElements.quantity.value) || 0;
+    const price = parseFloat(exportViewElements.price.value) || 0;
+    exportViewElements.totalPrice.value = (quantity * price).toLocaleString('vi-VN') + ' VNĐ';
+};
+
+[exportViewElements.quantity, exportViewElements.price].forEach(el => el.addEventListener('input', calculateExportTotal));
+
+exportViewElements.batchSelect.addEventListener('change', (e) => {
+        const batchId = e.target.value;
+        if (!batchId) {
+        exportViewElements.batchInfo.classList.add('d-none');
+        return;
+    }
+    const batch = mockBatches.find(b => b.batchId == batchId);
+    exportViewElements.stockInfo.textContent = `${batch.quantity} ${batch.unit}`;
+    exportViewElements.location.textContent = batch.location;
+    exportViewElements.price.value = batch.pricePerItem; // Suggest price
+    exportViewElements.batchInfo.classList.remove('d-none');
+    calculateExportTotal();
+});
+
+    document.getElementById('save-export-btn').addEventListener('click', () => {
+    const batchId = parseInt(exportViewElements.batchSelect.value);
+    const quantity = parseInt(exportViewElements.quantity.value);
+    const price = parseFloat(exportViewElements.price.value);
+    const exporter = exportViewElements.exporter.value.trim();
+    const receiver = exportViewElements.receiver.value.trim();
+    const form = exportViewElements.formSelect.value;
+    const reason = exportViewElements.reason.value.trim();
+    const description = exportViewElements.description.value.trim();
+    
+    if (!batchId || !quantity || quantity <= 0 || !price || !receiver || !reason) {
+        showToast('Vui lòng điền đầy đủ các trường bắt buộc.', 'error'); return;
+    }
+
+    const batch = mockBatches.find(b => b.batchId === batchId);
+    if (quantity > batch.quantity) {
+        showToast('Số lượng xuất vượt quá tồn kho của lô.', 'error'); return;
+    }
+
+    batch.quantity -= quantity;
+    batch.lastUpdated = new Date().toLocaleDateString('vi-VN');
+    if (!mockHistory[batch.batchId]) mockHistory[batch.batchId] = [];
+    mockHistory[batch.batchId].push({ type: 'export', quantity, reason, date: batch.lastUpdated, price, exporter, receiver, form, description });
+
+    showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
+    navigate('list');
+    renderMaterialList();
+});
+
+// Initial Theme
+var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+setTheme(savedTheme);
+
+renderMaterialList();

@@ -282,38 +282,38 @@
     color: #ffffff !important; /* khi hover thì sáng lên */
 }
 
-#IMPORT .view {
+#WAREHOUSE_PRODUCT .view {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     transition: transform 0.3s ease-in-out;
     background-color: var(--bs-tertiary-bg);
 }
-#IMPORT #list-view, #IMPORT #detail-view, #IMPORT #history-view, #IMPORT #import-view, #IMPORT #export-view {
+#WAREHOUSE_PRODUCT #list-view, #WAREHOUSE_PRODUCT #detail-view, #WAREHOUSE_PRODUCT #history-view, #WAREHOUSE_PRODUCT #import-view, #WAREHOUSE_PRODUCT #export-view {
     transform: translateX(100%);
 }
-#IMPORT [data-view="list"] #list-view { transform: translateX(0); }
-#IMPORT [data-view="detail"] #list-view { transform: translateX(-100%); }
-#IMPORT [data-view="detail"] #detail-view { transform: translateX(0); }
-#IMPORT [data-view="history"] #detail-view { transform: translateX(-100%); }
-#IMPORT [data-view="history"] #history-view { transform: translateX(0); }
-#IMPORT [data-view="import"] #list-view { transform: translateX(-100%); }
-#IMPORT [data-view="import"] #import-view { transform: translateX(0); }
-#IMPORT [data-view="export"] #list-view { transform: translateX(-100%); }
-#IMPORT [data-view="export"] #export-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="list"] #list-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="detail"] #list-view { transform: translateX(-100%); }
+#WAREHOUSE_PRODUCT [data-view="detail"] #detail-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="history"] #detail-view { transform: translateX(-100%); }
+#WAREHOUSE_PRODUCT [data-view="history"] #history-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="import"] #list-view { transform: translateX(-100%); }
+#WAREHOUSE_PRODUCT [data-view="import"] #import-view { transform: translateX(0); }
+#WAREHOUSE_PRODUCT [data-view="export"] #list-view { transform: translateX(-100%); }
+#WAREHOUSE_PRODUCT [data-view="export"] #export-view { transform: translateX(0); }
 
-#IMPORT #app-container {
+#WAREHOUSE_PRODUCT #app-container {
     height: 100vh;
     max-height: 100vh;
     border-radius: 1.5rem;
 }
 
-#IMPORT .product-card {
+#WAREHOUSE_PRODUCT .product-card {
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     cursor: pointer;
 }
-#IMPORT .product-card img {
+#WAREHOUSE_PRODUCT .product-card img {
     margin: 0;
 }
-#IMPORT .product-card:hover {
+#WAREHOUSE_PRODUCT .product-card:hover {
     background-color: var(--bs-secondary-bg);
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
@@ -330,4 +330,37 @@
 
 #wareHouse-body {
   margin-bottom: 100px;
+}
+
+#MATERIAL .view {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    transition: transform 0.3s ease-in-out;
+    background-color: var(--bs-tertiary-bg);
+}
+#MATERIAL #list-view,#MATERIAL  #detail-view,#MATERIAL  #history-view,#MATERIAL  #import-view,#MATERIAL  #export-view {
+    transform: translateX(100%);
+}
+#MATERIAL [data-view="list"] #list-view { transform: translateX(0); }
+#MATERIAL [data-view="detail"] #list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="detail"] #detail-view { transform: translateX(0); }
+#MATERIAL [data-view="history"] #detail-view { transform: translateX(-100%); }
+#MATERIAL [data-view="history"] #history-view { transform: translateX(0); }
+#MATERIAL [data-view="import"] #list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="import"] #import-view { transform: translateX(0); }
+#MATERIAL [data-view="export"] #list-view { transform: translateX(-100%); }
+#MATERIAL [data-view="export"] #export-view { transform: translateX(0); }
+
+#MATERIAL #app-container {
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 1.5rem;
+}
+
+#MATERIAL .material-card {
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+}
+#MATERIAL .material-card:hover {
+    background-color: var(--bs-secondary-bg);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
