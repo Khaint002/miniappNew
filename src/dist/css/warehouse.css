@@ -583,3 +583,142 @@
 .select2-results__option { color: var(--text-primary); }
 .select2-container--default .select2-results__option--selected { background-color: #555; }
 .select2-selection__clear { color: var(--text-secondary) !important; font-size: 1.2rem !important; }
+
+#BOM_DECLARATION {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+}
+
+#BOM_DECLARATION .app-header {
+    background-color: var(--surface-color);
+    color: var(--text-white);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border-bottom: 1px solid var(--primary-border-color);
+}
+
+#BOM_DECLARATION .app-header .title { font-size: 1.25rem; font-weight: 600; }
+#BOM_DECLARATION .app-header .btn-icon { color: var(--text-white); font-size: 1.5rem; background: none; border: none; }
+
+#BOM_DECLARATION .page { display: none; padding-bottom: 80px; }
+#BOM_DECLARATION .page.active { display: block; }
+
+#BOM_DECLARATION .list-item-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+#BOM_DECLARATION .list-item-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+}
+#BOM_DECLARATION .action-button {
+    width: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-white);
+    border: none;
+    font-size: 0.9rem;
+}
+#BOM_DECLARATION .action-button i { font-size: 1.2rem; margin-bottom: 4px; }
+#BOM_DECLARATION .action-edit { background-color: var(--accent-color); }
+#BOM_DECLARATION .action-delete { background-color: var(--delete-color); }
+
+#BOM_DECLARATION .list-item-content {
+    background-color: var(--surface-color);
+    border: 1px solid var(--primary-border-color);
+    color: var(--text-primary);
+    position: relative;
+    transition: transform 0.3s ease-out;
+    padding: 0.75rem 1.25rem;
+}
+#BOM_DECLARATION .list-item-content.swiped {
+    transform: translateX(-150px);
+}
+#BOM_DECLARATION .bom-version-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2em 0.6em;
+    border-radius: 50rem;
+    background-color: var(--secondary-border-color);
+    color: var(--text-primary);
+}
+
+#BOM_DECLARATION .card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: 0.5rem;
+}
+#BOM_DECLARATION .card-title { color: var(--text-white); }
+#BOM_DECLARATION .detail-value { color: var(--text-white); }
+
+#BOM_DECLARATION .fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 1030;
+}
+
+/* Stepper Styles */
+#BOM_DECLARATION .stepper-wrapper { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+#BOM_DECLARATION .stepper-item { position: relative; display: flex; flex-direction: column; align-items: center; flex: 1; }
+#BOM_DECLARATION .stepper-item::before { position: absolute; content: ""; border-bottom: 3px solid var(--secondary-border-color); width: 100%; top: 15px; left: -50%; z-index: 2; }
+#BOM_DECLARATION .stepper-item:first-child::before { display: none; }
+#BOM_DECLARATION .stepper-item.completed::before { border-color: var(--success-color); }
+#BOM_DECLARATION .step-counter { height: 30px; width: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--secondary-border-color); color: var(--text-secondary); margin-bottom: 6px; z-index: 5; font-weight: bold; }
+#BOM_DECLARATION .stepper-item.active .step-counter { background-color: var(--accent-color); color: var(--text-white); }
+#BOM_DECLARATION .stepper-item.completed .step-counter { background-color: var(--success-color); color: var(--text-white); font-size: 1rem; }
+#BOM_DECLARATION .step-name { font-size: 0.9rem; color: var(--text-secondary); }
+#BOM_DECLARATION .stepper-item.active .step-name { color: var(--accent-color); }
+#BOM_DECLARATION .stepper-item.completed .step-name { color: var(--text-primary); }
+
+#BOM_DECLARATION .form-control, #BOM_DECLARATION textarea.form-control { background-color: var(--primary-border-color); color: var(--text-white); border: 1px solid var(--secondary-border-color); }
+#BOM_DECLARATION .form-control:focus { background-color: var(--primary-border-color); color: var(--text-white); border-color: var(--accent-color); box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
+#BOM_DECLARATION .form-control::placeholder { color: var(--text-secondary); }
+
+/* Sliding Pill Tab Styles */
+#BOM_DECLARATION .custom-tabs-wrapper { background-color: var(--primary-border-color); border-radius: 50rem; padding: 4px; width: 100%; box-sizing: border-box; }
+#BOM_DECLARATION .custom-tabs { display: flex; position: relative; }
+#BOM_DECLARATION .tab-item { padding: 0.5rem 1rem; color: var(--text-secondary); font-weight: 600; text-align: center; cursor: pointer; white-space: nowrap; transition: color 0.3s ease; border: none; background: none; flex: 1; z-index: 2; }
+#BOM_DECLARATION .tab-item.active { color: var(--text-white); }
+#BOM_DECLARATION .tab-indicator { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--surface-color); border-radius: 50rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }
+
+/* Isolated Tab Panes */
+#BOM_DECLARATION .po-tab-content > .tab-pane { display: none; }
+#BOM_DECLARATION .po-tab-content > .tab-pane.active.show { display: block; }
+
+/* Material List Styles */
+#BOM_DECLARATION #formAddMaterial, #BOM_DECLARATION #formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
+#BOM_DECLARATION #formAddMaterial .select2-container, #BOM_DECLARATION #formEditMaterial .select2-container { flex-grow: 1; }
+#BOM_DECLARATION #formAddMaterial #materialQty, #BOM_DECLARATION #formEditMaterial #editMaterialQty { width: 70px; flex-shrink: 0; }
+#BOM_DECLARATION #formAddMaterial .btn-info, #BOM_DECLARATION #formEditMaterial .btn-info { width: 42px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
+#BOM_DECLARATION #addedMaterialsList .list-group-item, #BOM_DECLARATION #editedMaterialsList .list-group-item { background-color: var(--surface-color); color: var(--text-primary); border-radius: 0.25rem; margin-bottom: 0.5rem; border: 1px solid var(--primary-border-color); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
+#BOM_DECLARATION #addedMaterialsList .btn-delete-material, #BOM_DECLARATION #editedMaterialsList .btn-delete-material { background-color: var(--delete-color); color: var(--text-white); border: none; width: 35px; height: 35px; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; padding: 0; }
+
+/* Detail Material Table */
+#BOM_DECLARATION .detail-materials-table.table-dark th { background-color: var(--surface-color); }
+#BOM_DECLARATION .detail-materials-table th { border-top: none; font-weight: 600; color: var(--text-secondary); }
+#BOM_DECLARATION .detail-materials-table td { vertical-align: middle; }
+#BOM_DECLARATION .card-body .table { margin-bottom: 0; }

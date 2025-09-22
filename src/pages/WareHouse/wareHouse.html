@@ -565,18 +565,186 @@
       </div>
 
       <div id="BOM_DECLARATION" class="app-screen d-none">
-        <header class="bg-body shadow-sm flex-shrink-0">
+        
+        <!-- Main View: BOM List -->
+        <div id="bomListView" class="page active">
+            <header class="bg-body shadow-sm flex-shrink-0">
             <div class="px-3 py-3 border-b d-flex align-items-center">
                 <div style="width: 40px;"></div>
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                 </button>
-                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Khai báo BOM</h1>
-                <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
+                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">BOM sản xuất</h1>
+                <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
                     <i class="bi bi-moon-stars-fill"></i>
                 </button>
             </div>
         </header>
+            <div class="container-fluid pt-3">
+                <div id="bomListContainer"></div>
+            </div>
+            <a href="#" id="btnAddBom" class="fab">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+        
+        <!-- Detail View: BOM Details -->
+        <div id="detailView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title" id="detailBomTitle">Chi tiết BOM</span>
+                    <div style="width: 24px;"></div>
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="custom-tabs-wrapper">
+                    <div class="custom-tabs" id="detailTabs">
+                        <button class="tab-item active" data-target="#detailGeneralInfo">Thông Tin Chung</button>
+                        <button class="tab-item" data-target="#detailMaterials">Cấu hình vật tư</button>
+                        <div class="tab-indicator"></div>
+                    </div>
+                </div>
+                <div class="po-tab-content pt-3" id="detailTabContent">
+                    <div class="tab-pane fade show active" id="detailGeneralInfo">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title" id="detailBomName"></h5>
+                                <p class="text-secondary" id="detailBomShortDesc"></p>
+                                <hr style="border-color: var(--primary-border-color);">
+                                <div class="row">
+                                    <div class="col-6 mb-2"><strong class="text-secondary d-block">Phiên bản:</strong> <span class="detail-value" id="detailBomVersion"></span></div>
+                                    <div class="col-6 mb-2"><strong class="text-secondary d-block">Người thiết kế:</strong> <span class="detail-value" id="detailBomDesigner"></span></div>
+                                    <div class="col-6 mb-2"><strong class="text-secondary d-block">Người đặt mẫu:</strong> <span class="detail-value" id="detailBomSampleRequester"></span></div>
+                                    <div class="col-6 mb-2"><strong class="text-secondary d-block">Người HT Phần cứng:</strong> <span class="detail-value" id="detailBomHardwareFinisher"></span></div>
+                                    <div class="col-12 mb-2"><strong class="text-secondary d-block">Người nạp phần mềm:</strong> <span class="detail-value" id="detailBomSoftwareUploader"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="detailMaterials">
+                         <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Danh sách vật tư</h5>
+                                <table class="table table-dark table-striped detail-materials-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên vật tư</th>
+                                            <th class="text-right">Số lượng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detailMaterialsTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add View: 2-Step Form -->
+        <div id="addView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title">Thêm BOM mới</span>
+                    <div style="width: 24px;"></div>
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="stepper-wrapper">
+                    <div id="stepper-1" class="stepper-item active"><div class="step-counter">1</div><div class="step-name">Thông tin chung</div></div>
+                    <div id="stepper-2" class="stepper-item"><div class="step-counter">2</div><div class="step-name">Cấu hình vật tư</div></div>
+                </div>
+                <div id="addStep1">
+                    <form id="formStep1">
+                        <div class="form-group"><label>Tên BOM</label><input type="text" class="form-control" id="bomName" placeholder="VD: BOM - iPhone 16 Pro" required></div>
+                        <div class="form-group"><label>Tên sản phẩm</label><input type="text" class="form-control" id="bomProductName" placeholder="VD: iPhone 16 Pro" required></div>
+                        <div class="form-group"><label>Mô tả ngắn</label><input type="text" class="form-control" id="bomShortDesc" placeholder="VD: BOM cho iPhone 16 Pro 256GB" required></div>
+                        <div class="row">
+                            <div class="col-6 form-group"><label>Phiên bản</label><input type="text" class="form-control" id="bomVersion" placeholder="VD: v1.0.0" required></div>
+                            <div class="col-6 form-group"><label>Người thiết kế</label><input type="text" class="form-control" id="bomDesigner" placeholder="VD: Admin" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 form-group"><label>Người đặt mẫu</label><input type="text" class="form-control" id="bomSampleRequester" placeholder="Tên người đặt"></div>
+                            <div class="col-6 form-group"><label>Người HT Phần cứng</label><input type="text" class="form-control" id="bomHardwareFinisher" placeholder="Tên người hoàn thiện"></div>
+                        </div>
+                         <div class="form-group"><label>Người nạp phần mềm</label><input type="text" class="form-control" id="bomSoftwareUploader" placeholder="Tên người nạp PM"></div>
+                        <button type="submit" class="btn btn-primary btn-block">Tiếp Theo <i class="fas fa-arrow-right ml-2"></i></button>
+                    </form>
+                </div>
+                <div id="addStep2" style="display: none;">
+                    <div class="card mb-3"><div class="card-body"><h5 class="card-title">Thông tin BOM</h5><div id="bomSummary"></div></div></div>
+                    <div class="card">
+                         <div class="card-body">
+                             <h5 class="card-title">Thêm vật tư</h5>
+                            <form id="formAddMaterial" class="mb-3">
+                                <select class="form-control" id="materialName"></select>
+                                <input type="number" class="form-control" id="materialQty" placeholder="SL" required>
+                                <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                            </form>
+                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                         </div>
+                    </div>
+                    <button id="btnSaveBom" class="btn btn-success btn-block mt-3">Lưu BOM</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit View: Edit BOM -->
+        <div id="editView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title">Sửa BOM</span>
+                    <div style="width: 24px;"></div>
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="custom-tabs-wrapper">
+                    <div class="custom-tabs" id="editTabs">
+                        <button class="tab-item active" data-target="#editGeneralInfo">Thông Tin Chung</button>
+                        <button class="tab-item" data-target="#editMaterialsList">Cấu hình vật tư</button>
+                        <div class="tab-indicator"></div>
+                    </div>
+                </div>
+                <div class="po-tab-content pt-3" id="editTabContent">
+                    <div class="tab-pane fade show active" id="editGeneralInfo">
+                        <form id="formEditInfo">
+                             <div class="form-group"><label>Tên BOM</label><input type="text" class="form-control" id="editBomName" required></div>
+                            <div class="form-group"><label>Tên sản phẩm</label><input type="text" class="form-control" id="editBomProductName" required></div>
+                            <div class="form-group"><label>Mô tả ngắn</label><input type="text" class="form-control" id="editBomShortDesc" required></div>
+                             <div class="row">
+                                <div class="col-6 form-group"><label>Phiên bản</label><input type="text" class="form-control" id="editBomVersion" required></div>
+                                <div class="col-6 form-group"><label>Người thiết kế</label><input type="text" class="form-control" id="editBomDesigner" required></div>
+                            </div>
+                             <div class="row">
+                                <div class="col-6 form-group"><label>Người đặt mẫu</label><input type="text" class="form-control" id="editBomSampleRequester"></div>
+                                <div class="col-6 form-group"><label>Người HT Phần cứng</label><input type="text" class="form-control" id="editBomHardwareFinisher"></div>
+                            </div>
+                            <div class="form-group"><label>Người nạp phần mềm</label><input type="text" class="form-control" id="editBomSoftwareUploader"></div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="editMaterialsList">
+                         <div class="card">
+                            <div class="card-body">
+                                 <h5 class="card-title">Thêm vật tư</h5>
+                                <form id="formEditMaterial" class="mb-3">
+                                    <select class="form-control" id="editMaterialName"></select>
+                                    <input type="number" class="form-control" id="editMaterialQty" placeholder="SL" required>
+                                    <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                                </form>
+                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid px-0">
+                    <button id="btnUpdateBom" class="btn btn-success btn-block mt-3">Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
       </div>
 
       <div id="PRODUCTION_ORDER" class="app-screen d-none">

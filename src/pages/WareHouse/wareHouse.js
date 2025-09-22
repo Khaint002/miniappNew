@@ -105,7 +105,7 @@ function connectAppWaveHouse(ID, NAME) {
     } else if(ID == 'MATERIAL') {
         initializeMaterialInventoryApp();
     } else if(ID == 'BOM_DECLARATION') {
-        
+        initBomDeclarationModule();
     } else if(ID == 'PRODUCTION_ORDER') {
         initProductionOrderModule();
     }
@@ -1628,6 +1628,272 @@ function initProductionOrderModule() {
     // --- INITIALIZATION ---
     renderOrderList();
 }
+
+function initBomDeclarationModule() {
+    const $container = $('#BOM_DECLARATION');
+
+    // --- DATA ---
+    let productBOMs = [
+        { id: 'BOM001', name: 'BOM - iPhone 16 Pro', productName: 'iPhone 16 Pro', version: 'v1.0.2', shortDesc: 'BOM cho iPhone 16 Pro 256GB.', designer: 'Admin', sampleRequester: 'Steve', hardwareFinisher: 'Jony', softwareUploader: 'Craig', materials: [{name: 'Vi mạch XYZ', qty: 1}, {name: 'Màn hình OLED 6.1"', qty: 1}] },
+        { id: 'BOM002', name: 'BOM - Galaxy S25 Ultra', productName: 'Galaxy S25 Ultra', version: 'v2.1.0', shortDesc: 'BOM cho Galaxy S25 Ultra 512GB.', designer: 'Admin', sampleRequester: 'Phil', hardwareFinisher: 'Andy', softwareUploader: 'Hiroshi', materials: [{name: 'Vi mạch ABC', qty: 1}] },
+        { id: 'BOM003', name: 'BOM - Macbook Air M4', productName: 'Macbook Air M4', version: 'v1.0.0', shortDesc: 'BOM cho Macbook Air M4 13-inch.', designer: 'Team Apple', sampleRequester: 'Tim', hardwareFinisher: 'John', softwareUploader: 'Kevin', materials: [{name: 'Chip M4', qty: 1}] },
+    ];
+    let materialsMasterList = [ { id: 'M01', text: 'Vi mạch XYZ' }, { id: 'M02', text: 'Màn hình OLED 6.1"' }, { id: 'M03', text: 'Vỏ Titan' }, { id: 'M04', text: 'Vi mạch ABC' }, { id: 'M05', text: 'Màn hình Dynamic AMOLED' }, { id: 'M06', text: 'Chip M4' }, {id: 'M07', text: 'Vỏ nhôm'} ];
+    let tempBomData = {};
+    let editingBomId = null;
+
+    // --- RENDER FUNCTIONS ---
+    function navigateTo(pageId) { $container.find('.page').removeClass('active'); $container.find(pageId).addClass('active'); }
+    function renderBOMList() {
+        const listEl = $container.find('#bomListContainer'); listEl.empty();
+        if (productBOMs.length === 0) { listEl.html('<p class="text-center text-muted p-3">Chưa có BOM nào.</p>'); return; }
+        productBOMs.forEach(bom => {
+            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${bom.version}</span></div><p class="mb-1 small text-secondary">${bom.shortDesc}</p></div></div>`;
+            listEl.append(bomHtml);
+        });
+    }
+    function renderMaterialList(listId, materials) {
+        const listEl = $container.find(listId); listEl.empty();
+        if (materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào.</p>'); return; }
+        materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
+    }
+        function renderBOMDetail(bomId) {
+        const bom = productBOMs.find(b => b.id === bomId); if (!bom) return;
+        $container.find('#detailBomTitle').text(bom.name);
+        $container.find('#detailBomName').text(bom.name);
+        $container.find('#detailBomShortDesc').text(bom.shortDesc);
+        $container.find('#detailBomVersion').text(bom.version);
+        $container.find('#detailBomDesigner').text(bom.designer);
+        $container.find('#detailBomSampleRequester').text(bom.sampleRequester || 'N/A');
+        $container.find('#detailBomHardwareFinisher').text(bom.hardwareFinisher || 'N/A');
+        $container.find('#detailBomSoftwareUploader').text(bom.softwareUploader || 'N/A');
+        
+        const materialsTableBody = $container.find('#detailMaterialsTableBody');
+        materialsTableBody.empty();
+        if (bom.materials.length > 0) { 
+            bom.materials.forEach(mat => { 
+                materialsTableBody.append(`<tr><td>${mat.name}</td><td class="text-right">${mat.qty}</td></tr>`); 
+            }); 
+        } else { 
+            materialsTableBody.append('<tr><td colspan="2" class="text-center text-secondary">Không có vật tư.</td></tr>'); 
+        }
+        setTimeout(() => updateTabIndicator($('#detailTabs')), 50);
+    }
+    function resetStepper() {
+        const stepper1 = $container.find('#stepper-1'), stepper2 = $container.find('#stepper-2');
+        stepper1.addClass('active').removeClass('completed');
+        stepper2.removeClass('active completed');
+        stepper1.find('.step-counter').html('1');
+        stepper2.find('.step-counter').html('2');
+    }
+    function populateEditForm(bom) {
+        $container.find('#editBomName').val(bom.name);
+        $container.find('#editBomProductName').val(bom.productName);
+        $container.find('#editBomShortDesc').val(bom.shortDesc);
+        $container.find('#editBomVersion').val(bom.version);
+        $container.find('#editBomDesigner').val(bom.designer);
+        $container.find('#editBomSampleRequester').val(bom.sampleRequester);
+        $container.find('#editBomHardwareFinisher').val(bom.hardwareFinisher);
+        $container.find('#editBomSoftwareUploader').val(bom.softwareUploader);
+        tempBomData.materials = JSON.parse(JSON.stringify(bom.materials)); // Deep copy
+        renderMaterialList('#editedMaterialsList', tempBomData.materials);
+        $container.find('#editTabs .tab-item:first').addClass('active').siblings().removeClass('active');
+        $container.find('#editTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active');
+        setTimeout(() => updateTabIndicator($container.find('#editTabs')), 50);
+    }
+    function updateTabIndicator(tabsContainer) {
+        const activeTab = tabsContainer.find('.tab-item.active');
+        const indicator = tabsContainer.find('.tab-indicator');
+        if (activeTab.length) {
+            indicator.css({ left: activeTab[0].offsetLeft + 'px', width: activeTab[0].offsetWidth + 'px' });
+        }
+    }
+    
+    // --- INITIALIZE SELECT2 ---
+    $container.find('#materialName, #editMaterialName').select2({ data: materialsMasterList, placeholder: "Chọn vật tư", allowClear: true });
+    
+    // --- EVENT HANDLERS ---
+    $container.off(); // Detach all previous handlers
+
+    $container.on('click', '#btnAddBom', function(e) { e.preventDefault(); $container.find('#formStep1')[0].reset(); resetStepper(); $container.find('#addStep1').show(); $container.find('#addStep2').hide(); tempBomData = { info: {}, materials: [] }; navigateTo('#addView'); });
+    $container.on('click', '.btn-back', function() { navigateTo('#bomListView'); });
+    
+    // Add BOM Logic
+    $container.on('submit', '#formStep1', function(e) {
+        e.preventDefault();
+        tempBomData.info = { 
+            id: `BOM${Date.now()}`, 
+            name: $container.find('#bomName').val(), 
+            productName: $container.find('#bomProductName').val(), 
+            shortDesc: $container.find('#bomShortDesc').val(), 
+            version: $container.find('#bomVersion').val(), 
+            designer: $container.find('#bomDesigner').val(),
+            sampleRequester: $container.find('#bomSampleRequester').val(),
+            hardwareFinisher: $container.find('#bomHardwareFinisher').val(),
+            softwareUploader: $container.find('#bomSoftwareUploader').val()
+        };
+        $container.find('#bomSummary').html(`<p class="mb-1"><strong>Tên BOM:</strong> ${tempBomData.info.name}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${tempBomData.info.productName}</p>`);
+        const stepper1 = $container.find('#stepper-1'), stepper2 = $container.find('#stepper-2');
+        stepper1.find('.step-counter').html('<i class="fas fa-check"></i>');
+        stepper1.removeClass('active').addClass('completed');
+        stepper2.addClass('active');
+        $container.find('#addStep1').hide(); $container.find('#addStep2').show();
+        renderMaterialList('#addedMaterialsList', tempBomData.materials);
+    });
+
+    $container.on('submit', '#formAddMaterial', function(e) {
+        e.preventDefault();
+        const selectedMaterial = $container.find('#materialName').select2('data')[0];
+        const materialQty = $container.find('#materialQty').val();
+        if (selectedMaterial && selectedMaterial.text && materialQty) {
+            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty)});
+            renderMaterialList('#addedMaterialsList', tempBomData.materials);
+            this.reset();
+            $container.find('#materialName').val(null).trigger('change');
+        }
+    });
+
+    $container.on('click', '#addedMaterialsList .btn-delete-material', function() { tempBomData.materials.splice($(this).data('index'), 1); renderMaterialList('#addedMaterialsList', tempBomData.materials); });
+    
+    $container.on('click', '#btnSaveBom', function() {
+        const newBom = { ...tempBomData.info, materials: tempBomData.materials };
+        productBOMs.unshift(newBom);
+        renderBOMList();
+        navigateTo('#bomListView');
+        alert('Đã lưu BOM thành công!');
+    });
+    
+    // Edit BOM Logic
+    $container.on('submit', '#formEditMaterial', function(e) {
+        e.preventDefault();
+        const selectedMaterial = $container.find('#editMaterialName').select2('data')[0];
+        const materialQty = $container.find('#editMaterialQty').val();
+        if (selectedMaterial && selectedMaterial.text && materialQty) {
+            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty)});
+            renderMaterialList('#editedMaterialsList', tempBomData.materials);
+            this.reset();
+            $container.find('#editMaterialName').val(null).trigger('change');
+        }
+    });
+    $container.on('click', '#editedMaterialsList .btn-delete-material', function() { tempBomData.materials.splice($(this).data('index'), 1); renderMaterialList('#editedMaterialsList', tempBomData.materials); });
+
+    $container.on('click', '#btnUpdateBom', function() {
+        const bomIndex = productBOMs.findIndex(b => b.id === editingBomId);
+        if (bomIndex > -1) {
+            productBOMs[bomIndex] = {
+                ...productBOMs[bomIndex],
+                name: $container.find('#editBomName').val(),
+                productName: $container.find('#editBomProductName').val(),
+                shortDesc: $container.find('#editBomShortDesc').val(),
+                version: $container.find('#editBomVersion').val(),
+                designer: $container.find('#editBomDesigner').val(),
+                sampleRequester: $container.find('#editBomSampleRequester').val(),
+                hardwareFinisher: $container.find('#editBomHardwareFinisher').val(),
+                softwareUploader: $container.find('#editBomSoftwareUploader').val(),
+                materials: tempBomData.materials
+            };
+            renderBOMList();
+            navigateTo('#bomListView');
+            alert('Đã cập nhật BOM!');
+        }
+        editingBomId = null;
+    });
+
+    // TABS, SWIPE, CLICK Logic
+    $container.on('click', '.custom-tabs .tab-item', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        if ($this.hasClass('active')) return;
+        const tabsContainer = $this.closest('.custom-tabs');
+        tabsContainer.find('.tab-item').removeClass('active');
+        $this.addClass('active');
+        const targetPaneId = $this.data('target');
+        $(targetPaneId).siblings('.tab-pane').removeClass('show active');
+        $(targetPaneId).addClass('show active');
+        updateTabIndicator(tabsContainer);
+    });
+
+    let startX, swipedItem = null, isSwiping = false, didMove = false;
+    const threshold = 50, maxSwipe = 150;
+    function closeSwipedItem() { if (swipedItem) { swipedItem.removeClass('swiped').css('transform', 'translateX(0)'); swipedItem = null; } }
+
+    $container.on('touchstart', '#bomListContainer .list-item-content', function(e) {
+        if (swipedItem && swipedItem[0] !== $(this)[0]) {
+            closeSwipedItem();
+        }
+        startX = e.originalEvent.touches[0].clientX; 
+        isSwiping = false; 
+        didMove = false; 
+        $(this).css('transition', 'none'); 
+    });
+    $container.on('touchmove', '#bomListContainer .list-item-content', function(e) { 
+        if (e.originalEvent.touches.length === 0) return; 
+        let currentX = e.originalEvent.touches[0].clientX; 
+        let diffX = startX - currentX; 
+        if (!didMove) didMove = true; 
+        if (Math.abs(diffX) > 10) isSwiping = true; 
+        if (isSwiping) { 
+            e.preventDefault(); 
+            let moveX = diffX > 0 ? Math.min(diffX, maxSwipe + 50) : Math.max(diffX, -50); 
+            $(this).css('transform', `translateX(${-moveX}px)`); 
+        } 
+    });
+    $container.on('touchend', '#bomListContainer .list-item-content', function(e) { 
+        if (!isSwiping) return; 
+        $(this).css('transition', 'transform 0.3s ease-out'); 
+        let diffX = startX - e.originalEvent.changedTouches[0].clientX; 
+        if (diffX > threshold) { 
+            $(this).addClass('swiped').css('transform', `translateX(-${maxSwipe}px)`); 
+            swipedItem = $(this); 
+        } else { 
+            $(this).removeClass('swiped').css('transform', 'translateX(0)'); 
+            if (swipedItem && swipedItem[0] === $(this)[0]) swipedItem = null; 
+        } 
+    });
+    
+    $(document).on('click', function(e) {
+        const $target = $(e.target);
+        if (swipedItem && !$target.closest('.list-item-wrapper').length) {
+            closeSwipedItem();
+        }
+    });
+
+    $container.on('click', '.list-item-content', function(e){
+        if (didMove) return;
+        if ($(this).hasClass('swiped')) {
+            closeSwipedItem();
+        } else {
+            const bomId = $(this).data('id');
+            renderBOMDetail(bomId);
+            navigateTo('#detailView');
+        }
+    });
+
+    $container.on('click', '.action-button', function(e) {
+        e.stopPropagation();
+        const bomId = $(this).data('id');
+        const bomToEdit = productBOMs.find(b => b.id === bomId);
+
+        if($(this).hasClass('action-edit')) { 
+            if (bomToEdit) {
+                editingBomId = bomId;
+                populateEditForm(bomToEdit);
+                navigateTo('#editView');
+            }
+        }
+        if($(this).hasClass('action-delete')) {
+            if (confirm(`Bạn có chắc muốn xoá ${bomToEdit.name}?`)) {
+                productBOMs = productBOMs.filter(b => b.id !== bomId);
+                renderBOMList();
+                swipedItem = null;
+            }
+        }
+    });
+
+    // --- INITIALIZATION ---
+    renderBOMList();
+}
+
 
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
 // 
