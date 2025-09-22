@@ -104,6 +104,10 @@ function connectAppWaveHouse(ID, NAME) {
         renderInventory();
     } else if(ID == 'MATERIAL') {
         initializeMaterialInventoryApp();
+    } else if(ID == 'BOM_DECLARATION') {
+        
+    } else if(ID == 'PRODUCTION_ORDER') {
+        initProductionOrderModule();
     }
     // Hiện màn đúng ID
     // $("#name-detail").text(NAME);
@@ -363,7 +367,7 @@ var closeOpenSwipeContainer = (animate = true) => {
 
 // --- Chức năng Màn hình Danh sách ---
 var renderBatches = (batches) => {
-    
+
     const activeBatches = batches.filter(b => b.active === 0);
     dom.batchListContainer.innerHTML = '';
     dom.noResults.classList.toggle('d-none', activeBatches.length > 0);
@@ -826,8 +830,13 @@ var addEventListeners = () => {
 // --- KHỞI TẠO BAN ĐẦU ---
 var initializeApp = async () => {
     var dataPR = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'DM_PRODUCT', "1=1");
-    console.log(dataPR);
-
+    var dataLot = await HOMEOSAPP.getDM("https://central.homeos.vn/service_XD/service.svc", 'WARRANTY_LOT', "1=1");
+    if(dataPR.data){
+        mockProducts = mapProducts(dataPR.data);
+    }
+    
+    
+    
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
     idScanModal = new bootstrap.Modal(dom.idScanModalEl);
     appToast = new bootstrap.Toast(dom.toastEl);
@@ -835,19 +844,11 @@ var initializeApp = async () => {
     renderBatches(mockBatches);
 };
 
+var mockProducts;
 initializeApp();
 
 // 
 var currentUser = 'Nguyễn Văn A'; // Giả lập người dùng đăng nhập
-
-var mockProducts = [
-    { id: 1, name: 'CPU Intel Core i9-13900K', sku: 'CPU-I9-13900K', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=CPU' },
-    { id: 2, name: 'RAM DDR5 Kingston Fury 16GB', sku: 'RAM-DDR5-KF16', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=RAM' },
-    { id: 3, name: 'SSD NVMe Samsung 980 Pro 1TB', sku: 'SSD-S980-1TB', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=SSD' },
-    { id: 4, name: 'VGA Nvidia RTX 4090', sku: 'VGA-RTX-4090', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=VGA' },
-    { id: 5, name: 'Nguồn Corsair RM850x', sku: 'PSU-CR-850X', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=PSU' },
-    { id: 6, name: 'Tản nhiệt Noctua NH-D15', sku: 'COO-NOC-D15', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Cooler' },
-];
 
 var mockBatches_2 = [
     { batchId: 101, productId: 1, batchCode: 'L20250901', quantity: 58, unit: 'Cái', location: 'Kho A, Kệ 12', supplier: 'TechSource Inc.', lastUpdated: '10/09/2025', pricePerItem: 15000000, description: 'Lô nhập đầu tháng 9' },
@@ -919,6 +920,26 @@ var renderInventory = () => {
         </div>`;
     }).join('');
 };
+
+function mapProducts(realProducts) {
+  return realProducts.map(p => {
+    // Ưu tiên PRODUCT_IMG, nếu không có thì lấy ảnh đầu tiên trong PRODUCT_IMG_SLIDE
+    let imageUrl = p.PRODUCT_IMG;
+    if (!imageUrl && p.PRODUCT_IMG_SLIDE) {
+      imageUrl = p.PRODUCT_IMG_SLIDE.split(",")[0]; // lấy ảnh đầu tiên
+    }
+    if (!imageUrl) {
+      imageUrl = "https://placehold.co/400x300/e2e8f0/334155?text=No+Image";
+    }
+
+    return {
+      id: p.PR_KEY,
+      name: p.PRODUCT_NAME,
+      sku: p.PRODUCT_CODE,
+      imageUrl: imageUrl
+    };
+  });
+}
 
 var showDetailView = (productId) => {
     currentProductId = productId;
@@ -1422,6 +1443,190 @@ function initializeMaterialInventoryApp() {
     mt_setTheme(savedTheme);
 
     mt_renderMaterialList();
+}
+
+function initProductionOrderModule() {
+    // --- DATA ---
+    let productionOrders = [
+        { id: 'LSX-24-001', product: 'Tủ quần áo 3 cánh', quantity: 50, startDate: '2024-07-20', status: 'completed', materials: [{name: 'Gỗ MDF', qty: 100}, {name: 'Sơn PU', qty: 20}, {name: 'Bản lề', qty: 150}] },
+        { id: 'LSX-24-002', product: 'Bàn ăn 6 người', quantity: 30, startDate: '2024-07-22', status: 'inprogress', materials: [{name: 'Gỗ Sồi', qty: 60}, {name: 'Dầu lau', qty: 15}] },
+        { id: 'LSX-24-003', product: 'Kệ TV treo tường', quantity: 120, startDate: '2024-07-25', status: 'new', materials: [] },
+    ];
+    let newOrderData = { info: {}, materials: [] }; // Used for both add and edit
+    let products = [ { id: 'P01', text: 'Tủ quần áo 3 cánh' }, { id: 'P02', text: 'Bàn ăn 6 người' }, { id: 'P03', text: 'Kệ TV treo tường' }, { id: 'P04', text: 'Giường ngủ gỗ sồi' }, { id: 'P05', text: 'Bộ sofa phòng khách' }, ];
+    let materials = [ { id: 'M01', text: 'Gỗ MDF' }, { id: 'M02', text: 'Sơn PU' }, { id: 'M03', text: 'Bản lề' }, { id: 'M04', text: 'Gỗ Sồi' }, { id: 'M05', text: 'Dầu lau' }, { id: 'M06', text: 'Vít các loại' }, ];
+    let editingOrderId = null;
+
+    // --- FUNCTIONS ---
+    function navigateTo(pageId) { $('#PRODUCTION_ORDER .page').removeClass('active'); $(pageId).addClass('active'); }
+    function renderOrderList() {
+        const listEl = $('#productionOrderList'); listEl.empty();
+        if (productionOrders.length === 0) { listEl.html('<p class="text-center text-muted">Chưa có lệnh sản xuất nào.</p>'); return; }
+        productionOrders.forEach(order => {
+            const statusInfo = getStatusInfo(order.status);
+            const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${order.startDate}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
+            listEl.append(orderHtml);
+        });
+    }
+    function renderOrderDetail(orderId) {
+        const order = productionOrders.find(o => o.id === orderId); if (!order) return;
+        $('#detailOrderId').text(order.id);
+        const infoContent = `<p><strong>Sản phẩm:</strong> ${order.product}</p><p><strong>Số lượng:</strong> ${order.quantity}</p><p><strong>Ngày bắt đầu:</strong> ${order.startDate}</p><p><strong>Trạng thái:</strong> <span class="status-badge ${getStatusInfo(order.status).class}">${getStatusInfo(order.status).text}</span></p>`;
+        $('#detailInfoContent').html(infoContent);
+        const materialsContent = $('#detailMaterialsContent'); materialsContent.empty();
+        if (order.materials.length > 0) { order.materials.forEach(mat => { materialsContent.append(`<li class="list-group-item d-flex justify-content-between align-items-center">${mat.name} <span class="badge badge-primary badge-pill">${mat.qty}</span></li>`); }); } else { materialsContent.html('<li class="list-group-item text-muted">Không có vật tư cho lệnh này.</li>'); }
+        setTimeout(() => updateTabIndicator($('#detailTabs')), 50);
+    }
+    function renderAddedMaterials() {
+        const listEl = $('#addedMaterialsList'); listEl.empty();
+        if (newOrderData.materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào được thêm.</p>'); return; }
+        newOrderData.materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
+    }
+    function renderEditedMaterials() {
+        const listEl = $('#editedMaterialsList'); listEl.empty();
+        if (newOrderData.materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào được thêm.</p>'); return; }
+        newOrderData.materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
+    }
+    function getStatusInfo(status) {
+        switch (status) { case 'new': return { text: 'Mới', class: 'status-new' }; case 'inprogress': return { text: 'Đang SX', class: 'status-inprogress' }; case 'completed': return { text: 'Hoàn thành', class: 'status-completed' }; default: return { text: 'Không xác định', class: '' }; }
+    }
+    function resetStepper() {
+        $('#stepper-1').addClass('active').removeClass('completed');
+        $('#stepper-2').removeClass('active').removeClass('completed');
+        $('#stepper-1 .step-counter').html('1');
+        $('#stepper-2 .step-counter').html('2');
+    }
+    function populateEditForm(order) {
+        $('#editOrderId').val(order.id);
+        $('#editQuantity').val(order.quantity);
+        $('#editStartDate').val(order.startDate);
+        const product = products.find(p => p.text === order.product);
+        if (product) { $('#editProductName').val(product.id).trigger('change'); }
+        newOrderData.materials = JSON.parse(JSON.stringify(order.materials));
+        renderEditedMaterials();
+        $('#editTabs .tab-item:first').addClass('active').siblings().removeClass('active');
+        $('#editTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active');
+        setTimeout(() => updateTabIndicator($('#editTabs')), 50);
+    }
+    function updateTabIndicator(tabsContainer) {
+        const activeTab = tabsContainer.find('.tab-item.active');
+        const indicator = tabsContainer.find('.tab-indicator');
+        if (activeTab.length) {
+            indicator.css({
+                left: activeTab[0].offsetLeft + 'px',
+                width: activeTab[0].offsetWidth + 'px'
+            });
+        }
+    }
+
+    // --- INITIALIZE SELECT2 ---
+    $('#productName').select2({ data: products, placeholder: "Chọn hoặc tìm sản phẩm", allowClear: true });
+    $('#materialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
+    $('#editProductName').select2({ data: products, placeholder: "Chọn hoặc tìm sản phẩm", allowClear: true });
+    $('#editMaterialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
+    
+    // --- EVENT HANDLERS (GENERAL) ---
+    // Detach previous handlers to avoid multiple bindings if init is called again
+    $(document).off('click', '#PRODUCTION_ORDER .action-button');
+    $('#PRODUCTION_ORDER').off();
+
+    $('#btnAddOrder').on('click', function(e) { e.preventDefault(); $('#formStep1')[0].reset(); $('#productName').val(null).trigger('change'); resetStepper(); $('#addStep1').show(); $('#addStep2').hide(); newOrderData = { info: {}, materials: [] }; navigateTo('#addView'); });
+    $('.btn-back').on('click', function() { navigateTo('#listView'); });
+    
+    // --- ADD ORDER LOGIC ---
+    $('#formStep1').on('submit', function(e) {
+        e.preventDefault(); const selectedProduct = $('#productName').select2('data')[0]; if (!selectedProduct || selectedProduct.text === "") { alert('Vui lòng chọn một sản phẩm.'); return; }
+        newOrderData.info = { id: $('#orderId').val(), product: selectedProduct.text, quantity: $('#quantity').val(), startDate: $('#startDate').val(), status: 'new' };
+        const summaryHtml = `<p class="mb-1"><strong>Mã lệnh:</strong> ${newOrderData.info.id}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${newOrderData.info.product} (SL: ${newOrderData.info.quantity})</p>`;
+        $('#orderSummary').html(summaryHtml);
+        $('#stepper-1 .step-counter').html('<i class="fas fa-check"></i>');
+        $('#stepper-1').removeClass('active').addClass('completed');
+        $('#stepper-2').addClass('active');
+        $('#addStep1').hide();
+        $('#addStep2').show();
+        renderAddedMaterials();
+    });
+    $('#formAddMaterial').on('submit', function(e) {
+        e.preventDefault(); const selectedMaterial = $('#materialName').select2('data')[0]; const materialQty = $('#materialQty').val();
+        if (selectedMaterial && selectedMaterial.text !== "" && materialQty) {
+            newOrderData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty) });
+            renderAddedMaterials(); $('#materialQty').val(''); $('#materialName').val(null).trigger('change'); $('#materialName').select2('open');
+        }
+    });
+    $('#addedMaterialsList').on('click', '.btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderAddedMaterials(); });
+    $('#btnSaveOrder').on('click', function() { productionOrders.unshift({ ...newOrderData.info, materials: newOrderData.materials }); renderOrderList(); navigateTo('#listView'); alert('Đã lưu lệnh sản xuất thành công!'); });
+    
+    // --- EDIT ORDER LOGIC ---
+    $('#formEditMaterial').on('submit', function(e) {
+        e.preventDefault(); const selectedMaterial = $('#editMaterialName').select2('data')[0]; const materialQty = $('#editMaterialQty').val();
+        if (selectedMaterial && selectedMaterial.text !== "" && materialQty) {
+            newOrderData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty) });
+            renderEditedMaterials(); $('#editMaterialQty').val(''); $('#editMaterialName').val(null).trigger('change'); $('#editMaterialName').select2('open');
+        }
+    });
+    $('#editedMaterialsList').on('click', '.btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderEditedMaterials(); });
+    $('#btnUpdateOrder').on('click', function() {
+        const orderIndex = productionOrders.findIndex(o => o.id === editingOrderId);
+        if (orderIndex > -1) {
+            const selectedProduct = $('#editProductName').select2('data')[0];
+            productionOrders[orderIndex].product = selectedProduct ? selectedProduct.text : '';
+            productionOrders[orderIndex].quantity = $('#editQuantity').val();
+            productionOrders[orderIndex].startDate = $('#editStartDate').val();
+            productionOrders[orderIndex].materials = newOrderData.materials;
+            renderOrderList();
+            navigateTo('#listView');
+            alert('Đã cập nhật lệnh sản xuất!');
+        }
+        editingOrderId = null;
+    });
+
+    // --- TABS & SWIPE & CLICK LOGIC ---
+    $('.custom-tabs').on('click', '.tab-item', function(e) {
+        e.preventDefault();
+        const $this = $(this);
+        if ($this.hasClass('active')) return;
+
+        const tabsContainer = $this.closest('.custom-tabs');
+        tabsContainer.find('.tab-item').removeClass('active');
+        $this.addClass('active');
+        
+        const targetPaneId = $this.data('target');
+        $(targetPaneId).siblings('.tab-pane').removeClass('show active');
+        $(targetPaneId).addClass('show active');
+
+        updateTabIndicator(tabsContainer);
+    });
+    let startX, startY, swipedItem = null, isSwiping = false, didMove = false; const threshold = 50; const maxSwipe = 150;
+    function closeSwipedItem() { if (swipedItem) { swipedItem.removeClass('swiped').css('transform', 'translateX(0)'); swipedItem = null; } }
+    $('#productionOrderList').on('touchstart', '.list-item-content', function(e) { startX = e.originalEvent.touches[0].clientX; startY = e.originalEvent.touches[0].clientY; isSwiping = false; didMove = false; $(this).css('transition', 'none'); });
+    $('#productionOrderList').on('touchmove', '.list-item-content', function(e) {
+        if (e.originalEvent.touches.length === 0) return; let currentX = e.originalEvent.touches[0].clientX; let currentY = e.originalEvent.touches[0].clientY; let diffX = startX - currentX; let diffY = Math.abs(startY - currentY); if (!didMove) didMove = true;
+        if (!isSwiping && Math.abs(diffX) > diffY && Math.abs(diffX) > 10) { isSwiping = true; if (swipedItem && swipedItem[0] !== $(this)[0]) { closeSwipedItem(); } }
+        if (isSwiping) { e.preventDefault(); requestAnimationFrame(() => { let moveX = 0; if (diffX > 0) { moveX = diffX > maxSwipe ? maxSwipe + (diffX - maxSwipe) * 0.4 : diffX; $(this).css('transform', `translateX(${-moveX}px)`); } else { $(this).css('transform', `translateX(${-diffX}px)`); } }); }
+    });
+    $('#productionOrderList').on('touchend', '.list-item-content', function(e) {
+        if (!isSwiping) return; $(this).css('transition', 'transform 0.3s ease-out'); let diffX = startX - e.originalEvent.changedTouches[0].clientX;
+        if (diffX > threshold) { $(this).addClass('swiped').css('transform', `translateX(-${maxSwipe}px)`); swipedItem = $(this); } else { $(this).removeClass('swiped').css('transform', 'translateX(0)'); if (swipedItem && swipedItem[0] === $(this)[0]) { swipedItem = null; } }
+    });
+    $(document).on('click', '#PRODUCTION_ORDER', function(e) {
+        const $target = $(e.target); const $clickedContent = $target.closest('.list-item-content'); if (didMove) { return; }
+        if ($clickedContent.length) { if ($clickedContent.hasClass('swiped')) { closeSwipedItem(); } else { closeSwipedItem(); const orderId = $clickedContent.data('id'); renderOrderDetail(orderId); $('#detailTabs .tab-item:first').addClass('active').siblings().removeClass('active'); $('#myTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active'); navigateTo('#detailView'); } } else if (swipedItem && !$target.closest('.action-button')) { closeSwipedItem(); }
+    });
+    $('#productionOrderList').on('click', '.action-button', function(e) {
+        e.stopPropagation(); const orderId = $(this).data('id');
+        if($(this).hasClass('action-edit')) { 
+            editingOrderId = orderId;
+            const orderToEdit = productionOrders.find(o => o.id === editingOrderId);
+            if (orderToEdit) {
+                populateEditForm(orderToEdit);
+                navigateTo('#editView');
+            }
+        }
+        if($(this).hasClass('action-delete')) { if (confirm(`Bạn có chắc muốn xoá lệnh sản xuất ${orderId}?`)) { productionOrders = productionOrders.filter(o => o.id !== orderId); renderOrderList(); swipedItem = null; } }
+    });
+
+    // --- INITIALIZATION ---
+    renderOrderList();
 }
 
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)

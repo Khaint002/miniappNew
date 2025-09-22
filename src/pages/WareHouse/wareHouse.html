@@ -580,7 +580,7 @@
       </div>
 
       <div id="PRODUCTION_ORDER" class="app-screen d-none">
-        <header class="bg-body shadow-sm flex-shrink-0">
+        <!-- <header class="bg-body shadow-sm flex-shrink-0">
             <div class="px-3 py-3 border-b d-flex align-items-center">
                 <div style="width: 40px;"></div>
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
@@ -591,7 +591,142 @@
                     <i class="bi bi-moon-stars-fill"></i>
                 </button>
             </div>
-        </header>
+        </header> -->
+        <div id="listView" class="page active">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-center position-relative">
+                    <span class="title">Lệnh Sản Xuất</span>
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div id="productionOrderList"></div>
+            </div>
+            <a href="#" id="btnAddOrder" class="fab">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+
+        <!-- Detail View: Order Details -->
+        <div id="detailView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title" id="detailOrderId"></span>
+                    <div style="width: 24px;"></div> <!-- Spacer -->
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="custom-tabs-wrapper">
+                    <div class="custom-tabs" id="detailTabs">
+                        <button class="tab-item active" data-target="#generalInfo">Thông Tin Chung</button>
+                        <button class="tab-item" data-target="#materialsList">Vật Tư</button>
+                        <div class="tab-indicator"></div>
+                    </div>
+                </div>
+                <div class="tab-content pt-3" id="myTabContent">
+                    <div class="tab-pane fade show active" id="generalInfo" role="tabpanel">
+                        <div class="card"><div class="card-body" id="detailInfoContent"></div></div>
+                    </div>
+                    <div class="tab-pane fade" id="materialsList" role="tabpanel">
+                         <div class="card">
+                            <div class="card-body">
+                                 <h5 class="card-title">Danh sách vật tư</h5>
+                                <ul class="list-group list-group-flush" id="detailMaterialsContent"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit View: 2-Step Form -->
+        <div id="addView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title">Thêm Lệnh Sản Xuất</span>
+                    <div style="width: 24px;"></div> <!-- Spacer -->
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="stepper-wrapper">
+                    <div id="stepper-1" class="stepper-item active"><div class="step-counter">1</div><div class="step-name">Thông tin</div></div>
+                    <div id="stepper-2" class="stepper-item"><div class="step-counter">2</div><div class="step-name">Vật tư</div></div>
+                </div>
+                <div id="addStep1">
+                    <form id="formStep1">
+                        <div class="form-group"><label for="orderId">Mã Lệnh SX</label><input type="text" class="form-control" id="orderId" placeholder="VD: LSX001" required></div>
+                        <div class="form-group"><label for="productName">Tên Sản Phẩm</label><select class="form-control" id="productName" style="width: 100%;" required></select></div>
+                        <div class="form-group"><label for="quantity">Số Lượng</label><input type="number" class="form-control" id="quantity" placeholder="VD: 100" required></div>
+                        <div class="form-group"><label for="startDate">Ngày Bắt Đầu</label><input type="date" class="form-control" id="startDate" required></div>
+                        <button type="submit" class="btn btn-primary btn-block">Tiếp Theo <i class="fas fa-arrow-right ml-2"></i></button>
+                    </form>
+                </div>
+                <div id="addStep2" style="display: none;">
+                    <div class="card mb-3"><div class="card-body"><h5 class="card-title">Thông tin lệnh</h5><div id="orderSummary"></div></div></div>
+                    <div class="card">
+                         <div class="card-body">
+                             <h5 class="card-title">Thêm vật tư</h5>
+                            <form id="formAddMaterial" class="mb-3">
+                                <select class="form-control" id="materialName"></select>
+                                <input type="number" class="form-control" id="materialQty" placeholder="SL" required>
+                                <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                            </form>
+                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                         </div>
+                    </div>
+                    <button id="btnSaveOrder" class="btn btn-success btn-block mt-3">Lưu Lệnh Sản Xuất</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit View: Edit Order -->
+        <div id="editView" class="page">
+            <div class="app-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
+                    <span class="title">Sửa Lệnh Sản Xuất</span>
+                    <div style="width: 24px;"></div> <!-- Spacer -->
+                </div>
+            </div>
+            <div class="container-fluid pt-3">
+                <div class="custom-tabs-wrapper">
+                    <div class="custom-tabs" id="editTabs">
+                        <button class="tab-item active" data-target="#editGeneralInfo">Thông Tin Chung</button>
+                        <button class="tab-item" data-target="#editMaterialsList">Vật Tư</button>
+                        <div class="tab-indicator"></div>
+                    </div>
+                </div>
+                <div class="tab-content pt-3" id="editTabContent">
+                    <!-- Edit General Info Pane -->
+                    <div class="tab-pane fade show active" id="editGeneralInfo" role="tabpanel">
+                        <form id="formEditInfo">
+                            <div class="form-group"><label>Mã Lệnh SX</label><input type="text" class="form-control" id="editOrderId" readonly></div>
+                            <div class="form-group"><label for="editProductName">Tên Sản Phẩm</label><select class="form-control" id="editProductName" style="width: 100%;" required></select></div>
+                            <div class="form-group"><label for="editQuantity">Số Lượng</label><input type="number" class="form-control" id="editQuantity" placeholder="VD: 100" required></div>
+                            <div class="form-group"><label for="editStartDate">Ngày Bắt Đầu</label><input type="date" class="form-control" id="editStartDate" required></div>
+                        </form>
+                    </div>
+                    <!-- Edit Materials Pane -->
+                    <div class="tab-pane fade" id="editMaterialsList" role="tabpanel">
+                         <div class="card">
+                            <div class="card-body">
+                                 <h5 class="card-title">Thêm vật tư</h5>
+                                <form id="formEditMaterial" class="mb-3">
+                                    <select class="form-control" id="editMaterialName"></select>
+                                    <input type="number" class="form-control" id="editMaterialQty" placeholder="SL" required>
+                                    <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                                </form>
+                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid px-0">
+                    <button id="btnUpdateOrder" class="btn btn-success btn-block mt-3">Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
     <footer id="footer-wareHouse" class="fixed-bottom bg-body-tertiary bottom-nav rounded-top-4">
