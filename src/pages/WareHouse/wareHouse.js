@@ -8,7 +8,7 @@ var apps_waveHouse = [
     { MENU_ID: "WAREHOUSE_PRODUCT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true },
     { MENU_ID: "MATERIAL", MENU_NAME: "Kho Vật Tư", MENU_ICON: "bi-tools", MENU_BGCOLOR_CLASS: "bg-success", DESCRIPTION: "Quản lý vật tư sản xuất", VISIBLE: true },
     { MENU_ID: "CREATELOT", MENU_NAME: "Quản Lý Lô", MENU_ICON: "bi-stack", MENU_BGCOLOR_CLASS: "bg-warning", DESCRIPTION: "Tạo và sửa lô hàng", VISIBLE: true },
-    { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR Sản Phẩm", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true },
+    { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true },
     { MENU_ID: "BOM_DECLARATION", MENU_NAME: "Khai báo BOM", MENU_ICON: "bi-diagram-3", MENU_BGCOLOR_CLASS: "bg-secondary", DESCRIPTION: "Định mức nguyên vật liệu", VISIBLE: true },
     { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true }
 ];
