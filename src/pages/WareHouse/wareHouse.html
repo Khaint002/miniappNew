@@ -686,11 +686,16 @@
                             <h5 class="card-title">Thêm vật tư</h5>
                         </div>
                          <div class="card-body">
-                             
-                            <form id="formAddMaterial" class="mb-3">
-                                <select class="form-control" id="materialName"></select>
-                                <input type="number" class="form-control" id="materialQty" placeholder="SL" required>
-                                <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                            <form id="formEditMaterial" class="mb-3">
+                                <div style="display: flex; margin-bottom: 10px;">
+                                    <select class="form-control" id="editMaterialName"></select>
+                                    <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
+                                </div>
+                                
+                                <div style="display: flex;">
+                                    <input type="number" class="form-control" id="editMaterialQty" placeholder="Số lượng" required>
+                                    <input type="number" class="form-control" id="editMaterialBH" placeholder="% Bù hao" required>
+                                </div>
                             </form>
                             <ul id="addedMaterialsList" class="list-group list-group-flush px-0"></ul>
                          </div>

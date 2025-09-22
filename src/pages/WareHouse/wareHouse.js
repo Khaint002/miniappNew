@@ -1155,6 +1155,7 @@ var savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-c
 setTheme(savedTheme);
 
 function initializeMaterialInventoryApp() {
+    
     const mt_currentUser = 'Nguyễn Văn A'; 
 
     let mt_mockMaterials = [
