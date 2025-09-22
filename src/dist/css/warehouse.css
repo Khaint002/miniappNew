@@ -517,6 +517,7 @@
     font-size: 24px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     z-index: 1030;
+    text-decoration: none;
 }
 
 /* New Stepper Styles */
@@ -563,7 +564,9 @@
 #PRODUCTION_ORDER #formAddMaterial .select2-container, #PRODUCTION_ORDER #formEditMaterial .select2-container { flex-grow: 1; }
 #PRODUCTION_ORDER #formAddMaterial #materialQty, #PRODUCTION_ORDER #formEditMaterial #editMaterialQty { width: 70px; flex-shrink: 0; }
 #PRODUCTION_ORDER #formAddMaterial .btn-info, #PRODUCTION_ORDER #formEditMaterial .btn-info { width: 42px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
-
+#materialQty, #editMaterialQty{
+  height: 45px;
+}
 /* New Added Material List Styles */
 #PRODUCTION_ORDER #addedMaterialsList .list-group-item, #PRODUCTION_ORDER #editedMaterialsList .list-group-item { background-color: var(--surface-color); color: var(--text-primary); border-radius: 0.25rem; margin-bottom: 0.5rem; border: 1px solid var(--primary-border-color); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 #PRODUCTION_ORDER #addedMaterialsList .btn-delete-material, #PRODUCTION_ORDER #editedMaterialsList .btn-delete-material { background-color: var(--delete-color); color: var(--text-white); border: none; width: 35px; height: 35px; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; padding: 0; }
