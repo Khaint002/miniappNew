@@ -1548,7 +1548,9 @@ function initProductionOrderModule() {
         renderAddedMaterials();
     });
     $('#formAddMaterial').on('submit', function(e) {
-        e.preventDefault(); const selectedMaterial = $('#materialName').select2('data')[0]; const materialQty = $('#materialQty').val();
+        e.preventDefault(); 
+        const selectedMaterial = $('#materialName').select2('data')[0]; 
+        const materialQty = $('#materialQty').val();
         if (selectedMaterial && selectedMaterial.text !== "" && materialQty) {
             newOrderData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty) });
             renderAddedMaterials(); $('#materialQty').val(''); $('#materialName').val(null).trigger('change'); $('#materialName').select2('open');
@@ -1746,8 +1748,9 @@ function initBomDeclarationModule() {
         e.preventDefault();
         const selectedMaterial = $container.find('#materialName').select2('data')[0];
         const materialQty = $container.find('#materialQty').val();
+        const materialBH = $container.find('#editMaterialBH').val();
         if (selectedMaterial && selectedMaterial.text && materialQty) {
-            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty)});
+            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty), cmt: parseInt(materialBH)});
             renderMaterialList('#addedMaterialsList', tempBomData.materials);
             this.reset();
             $container.find('#materialName').val(null).trigger('change');
