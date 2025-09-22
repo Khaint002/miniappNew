@@ -156,7 +156,7 @@
         #PRODUCTION_ORDER .tab-item { padding: 0.5rem 1rem; color: var(--text-secondary); font-weight: 600; text-align: center; cursor: pointer; white-space: nowrap; transition: color 0.3s ease; border: none; background: none; flex: 1; z-index: 2; }
         #PRODUCTION_ORDER .tab-item.active { color: var(--text-white); }
         #PRODUCTION_ORDER .tab-indicator { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--surface-color); border-radius: 50rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }
-        #PRODUCTION_ORDER .tab-content .tab-pane { transition: opacity 0.3s ease-in-out; }
+        #PRODUCTION_ORDER .po-tab-content .tab-pane { transition: opacity 0.3s ease-in-out; }
 
         /* New "Add Material" Form Styles */
         #PRODUCTION_ORDER #formAddMaterial, #PRODUCTION_ORDER #formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
@@ -218,7 +218,7 @@
                         <div class="tab-indicator"></div>
                     </div>
                 </div>
-                <div class="tab-content pt-3" id="myTabContent">
+                <div class="tab-content po-tab-content pt-3" id="myTabContent">
                     <div class="tab-pane fade show active" id="generalInfo" role="tabpanel">
                         <div class="card"><div class="card-body" id="detailInfoContent"></div></div>
                     </div>
@@ -292,7 +292,7 @@
                         <div class="tab-indicator"></div>
                     </div>
                 </div>
-                <div class="tab-content pt-3" id="editTabContent">
+                <div class="tab-content po-tab-content pt-3" id="editTabContent">
                     <!-- Edit General Info Pane -->
                     <div class="tab-pane fade show active" id="editGeneralInfo" role="tabpanel">
                         <form id="formEditInfo">
@@ -329,7 +329,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-    $(document).ready(function() {
+    function initProductionOrderModule() {
         // --- DATA ---
         let productionOrders = [
             { id: 'LSX-24-001', product: 'Tủ quần áo 3 cánh', quantity: 50, startDate: '2024-07-20', status: 'completed', materials: [{name: 'Gỗ MDF', qty: 100}, {name: 'Sơn PU', qty: 20}, {name: 'Bản lề', qty: 150}] },
@@ -410,6 +410,10 @@
         $('#editMaterialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
         
         // --- EVENT HANDLERS (GENERAL) ---
+        // Detach previous handlers to avoid multiple bindings if init is called again
+        $(document).off('click', '#PRODUCTION_ORDER .action-button');
+        $('#PRODUCTION_ORDER').off();
+
         $('#btnAddOrder').on('click', function(e) { e.preventDefault(); $('#formStep1')[0].reset(); $('#productName').val(null).trigger('change'); resetStepper(); $('#addStep1').show(); $('#addStep2').hide(); newOrderData = { info: {}, materials: [] }; navigateTo('#addView'); });
         $('.btn-back').on('click', function() { navigateTo('#listView'); });
         
@@ -488,7 +492,7 @@
             if (!isSwiping) return; $(this).css('transition', 'transform 0.3s ease-out'); let diffX = startX - e.originalEvent.changedTouches[0].clientX;
             if (diffX > threshold) { $(this).addClass('swiped').css('transform', `translateX(-${maxSwipe}px)`); swipedItem = $(this); } else { $(this).removeClass('swiped').css('transform', 'translateX(0)'); if (swipedItem && swipedItem[0] === $(this)[0]) { swipedItem = null; } }
         });
-        $(document).on('click', function(e) {
+        $(document).on('click', '#PRODUCTION_ORDER', function(e) {
             const $target = $(e.target); const $clickedContent = $target.closest('.list-item-content'); if (didMove) { return; }
             if ($clickedContent.length) { if ($clickedContent.hasClass('swiped')) { closeSwipedItem(); } else { closeSwipedItem(); const orderId = $clickedContent.data('id'); renderOrderDetail(orderId); $('#detailTabs .tab-item:first').addClass('active').siblings().removeClass('active'); $('#myTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active'); navigateTo('#detailView'); } } else if (swipedItem && !$target.closest('.action-button')) { closeSwipedItem(); }
         });
@@ -507,6 +511,12 @@
 
         // --- INITIALIZATION ---
         renderOrderList();
+    }
+    
+    // When running this file standalone, initialize the module on document ready.
+    // In a larger app, you can call initProductionOrderModule() whenever you load this view.
+    $(document).ready(function() {
+        initProductionOrderModule();
     });
     </script>
 </body>
