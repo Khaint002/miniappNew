@@ -624,8 +624,11 @@
                     </div>
                     <div class="tab-pane fade" id="detailMaterials">
                          <div class="card">
-                            <div class="card-body">
+                            <div style="margin: 10px 0 0 10px;">
                                 <h5 class="card-title">Danh sách vật tư</h5>
+                            </div>
+                            <div class="card-body">
+                                
                                 <table class="table table-dark table-striped detail-materials-table">
                                     <thead>
                                         <tr>
@@ -675,10 +678,13 @@
                     </form>
                 </div>
                 <div id="addStep2" style="display: none;">
-                    <div class="card mb-3"><div class="card-body"><h5 class="card-title">Thông tin BOM</h5><div id="bomSummary"></div></div></div>
+                    <div class="card mb-3"><div style="margin: 10px 0 0 10px;"><h5 class="card-title">Thông tin BOM</h5></div><div class="card-body"><div id="bomSummary"></div></div></div>
                     <div class="card">
+                        <div style="margin: 10px 0 0 10px;">
+                            <h5 class="card-title">Thêm vật tư</h5>
+                        </div>
                          <div class="card-body">
-                             <h5 class="card-title">Thêm vật tư</h5>
+                             
                             <form id="formAddMaterial" class="mb-3">
                                 <select class="form-control" id="materialName"></select>
                                 <input type="number" class="form-control" id="materialQty" placeholder="SL" required>
@@ -728,8 +734,11 @@
                     </div>
                     <div class="tab-pane fade" id="editMaterialsList">
                          <div class="card">
+                            <div style="margin: 10px 0 0 10px;">
+                                <h5 class="card-title">Thêm vật tư</h5>
+                            </div>
                             <div class="card-body">
-                                 <h5 class="card-title">Thêm vật tư</h5>
+                                 
                                 <form id="formEditMaterial" class="mb-3">
                                     <select class="form-control" id="editMaterialName"></select>
                                     <input type="number" class="form-control" id="editMaterialQty" placeholder="SL" required>
