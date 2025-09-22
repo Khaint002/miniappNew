@@ -1635,9 +1635,9 @@ function initBomDeclarationModule() {
 
     // --- DATA ---
     let productBOMs = [
-        { id: 'BOM001', name: 'BOM - iPhone 16 Pro', productName: 'iPhone 16 Pro', version: 'v1.0.2', shortDesc: 'BOM cho iPhone 16 Pro 256GB.', designer: 'Admin', sampleRequester: 'Steve', hardwareFinisher: 'Jony', softwareUploader: 'Craig', materials: [{name: 'Vi mạch XYZ', qty: 1}, {name: 'Màn hình OLED 6.1"', qty: 1}] },
-        { id: 'BOM002', name: 'BOM - Galaxy S25 Ultra', productName: 'Galaxy S25 Ultra', version: 'v2.1.0', shortDesc: 'BOM cho Galaxy S25 Ultra 512GB.', designer: 'Admin', sampleRequester: 'Phil', hardwareFinisher: 'Andy', softwareUploader: 'Hiroshi', materials: [{name: 'Vi mạch ABC', qty: 1}] },
-        { id: 'BOM003', name: 'BOM - Macbook Air M4', productName: 'Macbook Air M4', version: 'v1.0.0', shortDesc: 'BOM cho Macbook Air M4 13-inch.', designer: 'Team Apple', sampleRequester: 'Tim', hardwareFinisher: 'John', softwareUploader: 'Kevin', materials: [{name: 'Chip M4', qty: 1}] },
+        { id: 'BOM001', name: 'BOM - iPhone 16 Pro', productName: 'iPhone 16 Pro', version: 'v1.0.2', shortDesc: 'BOM cho iPhone 16 Pro 256GB.', designer: 'Admin', sampleRequester: 'Steve', hardwareFinisher: 'Jony', softwareUploader: 'Craig', materials: [{name: 'Vi mạch XYZ', qty: 1, cmt: 10}, {name: 'Màn hình OLED 6.1"', qty: 1, cmt: 10}] },
+        { id: 'BOM002', name: 'BOM - Galaxy S25 Ultra', productName: 'Galaxy S25 Ultra', version: 'v2.1.0', shortDesc: 'BOM cho Galaxy S25 Ultra 512GB.', designer: 'Admin', sampleRequester: 'Phil', hardwareFinisher: 'Andy', softwareUploader: 'Hiroshi', materials: [{name: 'Vi mạch ABC', qty: 1, cmt: 10}] },
+        { id: 'BOM003', name: 'BOM - Macbook Air M4', productName: 'Macbook Air M4', version: 'v1.0.0', shortDesc: 'BOM cho Macbook Air M4 13-inch.', designer: 'Team Apple', sampleRequester: 'Tim', hardwareFinisher: 'John', softwareUploader: 'Kevin', materials: [{name: 'Chip M4', qty: 1, cmt: 10}] },
     ];
     let materialsMasterList = [ { id: 'M01', text: 'Vi mạch XYZ' }, { id: 'M02', text: 'Màn hình OLED 6.1"' }, { id: 'M03', text: 'Vỏ Titan' }, { id: 'M04', text: 'Vi mạch ABC' }, { id: 'M05', text: 'Màn hình Dynamic AMOLED' }, { id: 'M06', text: 'Chip M4' }, {id: 'M07', text: 'Vỏ nhôm'} ];
     let tempBomData = {};
@@ -1656,7 +1656,7 @@ function initBomDeclarationModule() {
     function renderMaterialList(listId, materials) {
         const listEl = $container.find(listId); listEl.empty();
         if (materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào.</p>'); return; }
-        materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
+        materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty} - BH: ${mat.cmt}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
     }
         function renderBOMDetail(bomId) {
         const bom = productBOMs.find(b => b.id === bomId); if (!bom) return;
@@ -1673,7 +1673,7 @@ function initBomDeclarationModule() {
         materialsTableBody.empty();
         if (bom.materials.length > 0) { 
             bom.materials.forEach(mat => { 
-                materialsTableBody.append(`<tr><td>${mat.name}</td><td class="text-right">${mat.qty}</td></tr>`); 
+                materialsTableBody.append(`<tr><td>${mat.name}</td><td>${mat.qty}</td><td class="text-right">${mat.cmt}</td></tr>`); 
             }); 
         } else { 
             materialsTableBody.append('<tr><td colspan="2" class="text-center text-secondary">Không có vật tư.</td></tr>'); 
@@ -1769,8 +1769,9 @@ function initBomDeclarationModule() {
         e.preventDefault();
         const selectedMaterial = $container.find('#editMaterialName').select2('data')[0];
         const materialQty = $container.find('#editMaterialQty').val();
+        const materialBH = $container.find('#editMaterialBH').val();
         if (selectedMaterial && selectedMaterial.text && materialQty) {
-            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty)});
+            tempBomData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty), cmt: parseInt(materialBH)});
             renderMaterialList('#editedMaterialsList', tempBomData.materials);
             this.reset();
             $container.find('#editMaterialName').val(null).trigger('change');
