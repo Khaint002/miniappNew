@@ -569,7 +569,7 @@
 #PRODUCTION_ORDER #addedMaterialsList .btn-delete-material, #PRODUCTION_ORDER #editedMaterialsList .btn-delete-material { background-color: var(--delete-color); color: var(--text-white); border: none; width: 35px; height: 35px; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; padding: 0; }
 
 /* Select2 Dark Theme Overrides (Global) */
-.select2-container--default .select2-selection--single { background-color: var(--primary-border-color); border: 1px solid var(--secondary-border-color); height: calc(1.5em + .75rem + 2px); border-radius: .25rem; }
+.select2-container--default .select2-selection--single { background-color: var(--primary-border-color); border: 1px solid var(--secondary-border-color); height: 45px; border-radius: .25rem; }
 .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--text-white); line-height: calc(1.5em + .75rem); padding-left: .75rem; }
 .select2-container--default .select2-selection--single .select2-selection__arrow { height: calc(1.5em + .75rem); }
 .select2-container--default .select2-selection--single .select2-selection__arrow b { border-color: var(--text-secondary) transparent transparent transparent; margin-top: 2px; }
