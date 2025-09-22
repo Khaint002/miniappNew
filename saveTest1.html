@@ -156,7 +156,22 @@
         #PRODUCTION_ORDER .tab-item { padding: 0.5rem 1rem; color: var(--text-secondary); font-weight: 600; text-align: center; cursor: pointer; white-space: nowrap; transition: color 0.3s ease; border: none; background: none; flex: 1; z-index: 2; }
         #PRODUCTION_ORDER .tab-item.active { color: var(--text-white); }
         #PRODUCTION_ORDER .tab-indicator { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--surface-color); border-radius: 50rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }
-        #PRODUCTION_ORDER .po-tab-content .tab-pane { transition: opacity 0.3s ease-in-out; }
+        
+        /* Overridden Tab Pane styles for isolation and transition */
+        #PRODUCTION_ORDER .po-tab-content > .tab-pane {
+            display: block; /* Override Bootstrap's display:none */
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.35s ease-in-out, max-height 0.35s ease-in-out;
+            visibility: hidden;
+        }
+        #PRODUCTION_ORDER .po-tab-content > .tab-pane.active.show {
+            opacity: 1;
+            max-height: 2000px; /* A large enough value for content */
+            overflow: visible;
+            visibility: visible;
+        }
 
         /* New "Add Material" Form Styles */
         #PRODUCTION_ORDER #formAddMaterial, #PRODUCTION_ORDER #formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
