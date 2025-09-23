@@ -333,7 +333,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                         </button>
                         <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1>
-                        <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
+                        <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
                             <i class="bi bi-moon-stars-fill"></i>
                         </button>
                     </div>
@@ -358,7 +358,7 @@
 
             <!-- Detail View -->
             <div id="detail-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 id="detail-product-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết sản phẩm</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="mb-3"><img id="detail-image" src="" alt="Product Image" class="w-100 rounded-3 shadow-sm border"></div>
                     <div class="card card-body mb-3 border-0 shadow-sm">
@@ -388,13 +388,13 @@
 
             <!-- History View -->
             <div id="history-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main id="history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
             </div>
 
             <!-- Import View -->
             <div id="import-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="card card-body border-0 shadow-sm">
                         <div class="mb-3"><label for="import-product-select" class="form-label ">1. Chọn sản phẩm</label><select id="import-product-select" class="form-select"></select></div>
@@ -418,7 +418,7 @@
 
             <!-- Export View -->
             <div id="export-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+                <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="back-btn btn btn-light border-0 rounded-circle" data-target="list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
                 <main class="flex-grow-1 overflow-y-auto p-3">
                     <div class="card card-body border-0 shadow-sm">
                         <div class="mb-3"><label for="export-batch-select" class="form-label ">1. Chọn lô sản phẩm</label><select id="export-batch-select" class="form-select"></select></div>
@@ -454,7 +454,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                     </button>
                     <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho vật tư</h1>
-                    <button class="theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;">
+                    <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
                         <i class="bi bi-moon-stars-fill"></i>
                     </button>
                 </div>
@@ -479,7 +479,7 @@
 
         <!-- Detail View -->
         <div id="mt-detail-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 id="mt-detail-material-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 id="mt-detail-material-name" class="h6 text-body-emphasis text-center flex-grow-1 m-0">Chi tiết vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="mb-3"><img id="mt-detail-image" src="" alt="Material Image" class="w-100 rounded-3 shadow-sm border"></div>
                 <div class="card card-body mb-3 border-0 shadow-sm">
@@ -509,13 +509,13 @@
 
         <!-- History View -->
         <div id="mt-history-view" class="mt-view d-flex flex-column">
-             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-detail"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Lịch sử Tồn kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
              <main id="mt-history-list" class="flex-grow-1 overflow-y-auto p-3 d-flex flex-column gap-3"></main>
         </div>
 
         <!-- Import View -->
         <div id="mt-import-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho & Khai báo lô</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
                     <div class="mb-3"><label for="mt-import-material-select" class="form-label">1. Chọn vật tư</label><select id="mt-import-material-select" class="form-select"></select></div>
@@ -539,7 +539,7 @@
 
         <!-- Export View -->
         <div id="mt-export-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
+            <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
                 <div class="card card-body border-0 shadow-sm">
                     <div class="mb-3"><label for="mt-export-batch-select" class="form-label">1. Chọn lô vật tư</label><select id="mt-export-batch-select" class="form-select"></select></div>

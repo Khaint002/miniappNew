@@ -390,7 +390,7 @@ var renderBatches = (batches) => {
                         <p class=" text-light mb-1">${batch.batchCode}</p>
                         <p class="small text-body mb-0">${batch.productName}</p>
                     </div>
-                    <span class="badge rounded-pill small ${getStatusClass(batch.status)}">${batch.status}</span>
+                    <span class="badge rounded-pill small ${getStatusClass(batch.status)}" style="font-weight: 300;">${batch.status}</span>
                 </div>
                 <div class="mt-3 d-flex justify-content-between align-items-center small text-secondary pe-none">
                     <span>SL: <span class= text-light">${batch.quantity} ${batch.unit}</span></span>
@@ -910,7 +910,7 @@ var renderInventory = () => {
                 <p class=" text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
                 <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span>
+                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill" style="font-weight: 300;">${stock.text}</span>
                     <div>
                         <span class="small text-muted">Tổng tồn:</span> 
                         <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span>
@@ -1225,7 +1225,7 @@ function initializeMaterialInventoryApp() {
         }
         mt_inventoryListEl.innerHTML = filteredInventory.map(item => {
             const stock = mt_getStockInfo(item.totalQuantity);
-            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class=" text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class=" text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill" style="font-weight: 300;">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
         }).join('');
     };
 
@@ -1447,6 +1447,7 @@ function initializeMaterialInventoryApp() {
 }
 
 function initProductionOrderModule() {
+    const $container = $('#PRODUCTION_ORDER');
     // --- DATA ---
     let productionOrders = [
         { id: 'LSX-24-001', product: 'Tủ quần áo 3 cánh', quantity: 50, startDate: '2024-07-20', status: 'completed', materials: [{name: 'Gỗ MDF', qty: 100}, {name: 'Sơn PU', qty: 20}, {name: 'Bản lề', qty: 150}] },
@@ -1459,11 +1460,13 @@ function initProductionOrderModule() {
     let editingOrderId = null;
 
     // --- FUNCTIONS ---
-    function navigateTo(pageId) { $('#PRODUCTION_ORDER .page').removeClass('active'); $(pageId).addClass('active'); }
+    function navigateTo(pageId) { $container.find('.page').removeClass('active'); $container.find(pageId).addClass('active'); }
     function renderOrderList() {
-        const listEl = $('#productionOrderList'); listEl.empty();
+        const listEl = $container.find('#po-productionOrderList'); listEl.empty();
         if (productionOrders.length === 0) { listEl.html('<p class="text-center text-muted">Chưa có lệnh sản xuất nào.</p>'); return; }
-        productionOrders.forEach(order => {
+        // Sắp xếp lại danh sách để đưa item mới lên đầu
+        const sortedOrders = [...productionOrders].sort((a, b) => b.startDate.localeCompare(a.startDate) || b.id.localeCompare(a.id));
+        sortedOrders.forEach(order => {
             const statusInfo = getStatusInfo(order.status);
             const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${order.startDate}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
             listEl.append(orderHtml);
@@ -1471,20 +1474,20 @@ function initProductionOrderModule() {
     }
     function renderOrderDetail(orderId) {
         const order = productionOrders.find(o => o.id === orderId); if (!order) return;
-        $('#detailOrderId').text(order.id);
+        $container.find('#po-detailOrderId').text(order.id);
         const infoContent = `<p><strong>Sản phẩm:</strong> ${order.product}</p><p><strong>Số lượng:</strong> ${order.quantity}</p><p><strong>Ngày bắt đầu:</strong> ${order.startDate}</p><p><strong>Trạng thái:</strong> <span class="status-badge ${getStatusInfo(order.status).class}">${getStatusInfo(order.status).text}</span></p>`;
-        $('#detailInfoContent').html(infoContent);
-        const materialsContent = $('#detailMaterialsContent'); materialsContent.empty();
-        if (order.materials.length > 0) { order.materials.forEach(mat => { materialsContent.append(`<li class="list-group-item d-flex justify-content-between align-items-center">${mat.name} <span class="badge badge-primary badge-pill">${mat.qty}</span></li>`); }); } else { materialsContent.html('<li class="list-group-item text-muted">Không có vật tư cho lệnh này.</li>'); }
-        setTimeout(() => updateTabIndicator($('#detailTabs')), 50);
+        $container.find('#po-detailInfoContent').html(infoContent);
+        const materialsContent = $container.find('#po-detailMaterialsContent'); materialsContent.empty();
+        if (order.materials.length > 0) { order.materials.forEach(mat => { materialsContent.append(`<li class="list-group-item">${mat.name} <span class="badge badge-primary badge-pill" style="font-weight: 300;">${mat.qty}</span></li>`); }); } else { materialsContent.html('<li class="list-group-item text-muted">Không có vật tư cho lệnh này.</li>'); }
+        setTimeout(() => updateTabIndicator($container.find('#po-detailTabs')), 50);
     }
     function renderAddedMaterials() {
-        const listEl = $('#addedMaterialsList'); listEl.empty();
+        const listEl = $container.find('#po-addedMaterialsList'); listEl.empty();
         if (newOrderData.materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào được thêm.</p>'); return; }
         newOrderData.materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
     }
     function renderEditedMaterials() {
-        const listEl = $('#editedMaterialsList'); listEl.empty();
+        const listEl = $container.find('#po-editedMaterialsList'); listEl.empty();
         if (newOrderData.materials.length === 0) { listEl.html('<p class="text-center text-muted small mt-2">Chưa có vật tư nào được thêm.</p>'); return; }
         newOrderData.materials.forEach((mat, index) => { listEl.append(`<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`); });
     }
@@ -1492,22 +1495,24 @@ function initProductionOrderModule() {
         switch (status) { case 'new': return { text: 'Mới', class: 'status-new' }; case 'inprogress': return { text: 'Đang SX', class: 'status-inprogress' }; case 'completed': return { text: 'Hoàn thành', class: 'status-completed' }; default: return { text: 'Không xác định', class: '' }; }
     }
     function resetStepper() {
-        $('#stepper-1').addClass('active').removeClass('completed');
-        $('#stepper-2').removeClass('active').removeClass('completed');
-        $('#stepper-1 .step-counter').html('1');
-        $('#stepper-2 .step-counter').html('2');
+        const stepper1 = $container.find('#po-stepper-1');
+        const stepper2 = $container.find('#po-stepper-2');
+        stepper1.addClass('active').removeClass('completed');
+        stepper2.removeClass('active').removeClass('completed');
+        stepper1.find('.step-counter').html('1');
+        stepper2.find('.step-counter').html('2');
     }
     function populateEditForm(order) {
-        $('#editOrderId').val(order.id);
-        $('#editQuantity').val(order.quantity);
-        $('#editStartDate').val(order.startDate);
+        $container.find('#po-editOrderId').val(order.id);
+        $container.find('#po-editQuantity').val(order.quantity);
+        $container.find('#po-editStartDate').val(order.startDate);
         const product = products.find(p => p.text === order.product);
-        if (product) { $('#editProductName').val(product.id).trigger('change'); }
+        if (product) { $container.find('#po-editProductName').val(product.id).trigger('change'); }
         newOrderData.materials = JSON.parse(JSON.stringify(order.materials));
         renderEditedMaterials();
-        $('#editTabs .tab-item:first').addClass('active').siblings().removeClass('active');
-        $('#editTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active');
-        setTimeout(() => updateTabIndicator($('#editTabs')), 50);
+        $container.find('#po-editTabs .tab-item:first').addClass('active').siblings().removeClass('active');
+        $container.find('#po-editTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active');
+        setTimeout(() => updateTabIndicator($container.find('#po-editTabs')), 50);
     }
     function updateTabIndicator(tabsContainer) {
         const activeTab = tabsContainer.find('.tab-item.active');
@@ -1521,116 +1526,218 @@ function initProductionOrderModule() {
     }
 
     // --- INITIALIZE SELECT2 ---
-    $('#productName').select2({ data: products, placeholder: "Chọn hoặc tìm sản phẩm", allowClear: true });
-    $('#materialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
-    $('#editProductName').select2({ data: products, placeholder: "Chọn hoặc tìm sản phẩm", allowClear: true });
-    $('#editMaterialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
+    $container.find('#po-productName, #po-editProductName').select2({ data: products, placeholder: "Chọn hoặc tìm sản phẩm", allowClear: true });
+    $container.find('#po-materialName, #po-editMaterialName').select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
     
     // --- EVENT HANDLERS (GENERAL) ---
-    // Detach previous handlers to avoid multiple bindings if init is called again
-    $(document).off('click', '#PRODUCTION_ORDER .action-button');
-    $('#PRODUCTION_ORDER').off();
+    $container.off(); // Detach all previous handlers within the container
 
-    $('#btnAddOrder').on('click', function(e) { e.preventDefault(); $('#formStep1')[0].reset(); $('#productName').val(null).trigger('change'); resetStepper(); $('#addStep1').show(); $('#addStep2').hide(); newOrderData = { info: {}, materials: [] }; navigateTo('#addView'); });
-    $('.btn-back').on('click', function() { navigateTo('#listView'); });
+    $container.on('click', '#po-btnAddOrder', function(e) { e.preventDefault(); $container.find('#po-formStep1')[0].reset(); $container.find('#po-productName').val(null).trigger('change'); resetStepper(); $container.find('#po-addStep1').show(); $container.find('#po-addStep2').hide(); newOrderData = { info: {}, materials: [] }; navigateTo('#po-addView'); });
+    $container.on('click', '.btn-back', function() { navigateTo('#po-listView'); });
     
     // --- ADD ORDER LOGIC ---
-    $('#formStep1').on('submit', function(e) {
-        e.preventDefault(); const selectedProduct = $('#productName').select2('data')[0]; if (!selectedProduct || selectedProduct.text === "") { alert('Vui lòng chọn một sản phẩm.'); return; }
-        newOrderData.info = { id: $('#orderId').val(), product: selectedProduct.text, quantity: $('#quantity').val(), startDate: $('#startDate').val(), status: 'new' };
+    $container.on('submit', '#po-formStep1', function(e) {
+        e.preventDefault(); 
+        const selectedProduct = $container.find('#po-productName').select2('data')[0]; 
+        if (!selectedProduct || selectedProduct.text === "") { alert('Vui lòng chọn một sản phẩm.'); return; }
+        newOrderData.info = { id: $container.find('#po-orderId').val(), product: selectedProduct.text, quantity: $container.find('#po-quantity').val(), startDate: $container.find('#po-startDate').val(), status: 'new' };
         const summaryHtml = `<p class="mb-1"><strong>Mã lệnh:</strong> ${newOrderData.info.id}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${newOrderData.info.product} (SL: ${newOrderData.info.quantity})</p>`;
-        $('#orderSummary').html(summaryHtml);
-        $('#stepper-1 .step-counter').html('<i class="fas fa-check"></i>');
-        $('#stepper-1').removeClass('active').addClass('completed');
-        $('#stepper-2').addClass('active');
-        $('#addStep1').hide();
-        $('#addStep2').show();
+        $container.find('#po-orderSummary').html(summaryHtml);
+        const stepper1 = $container.find('#po-stepper-1');
+        const stepper2 = $container.find('#po-stepper-2');
+        stepper1.find('.step-counter').html('<i class="fas fa-check"></i>');
+        stepper1.removeClass('active').addClass('completed');
+        stepper2.addClass('active');
+        $container.find('#po-addStep1').hide();
+        $container.find('#po-addStep2').show();
         renderAddedMaterials();
     });
-    $('#formAddMaterial').on('submit', function(e) {
+
+    $container.on('submit', '#po-formAddMaterial', function(e) {
         e.preventDefault(); 
-        const selectedMaterial = $('#materialName').select2('data')[0]; 
-        const materialQty = $('#materialQty').val();
+        const selectedMaterial = $container.find('#po-materialName').select2('data')[0]; 
+        const materialQty = $container.find('#po-materialQty').val();
         if (selectedMaterial && selectedMaterial.text !== "" && materialQty) {
             newOrderData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty) });
-            renderAddedMaterials(); $('#materialQty').val(''); $('#materialName').val(null).trigger('change'); $('#materialName').select2('open');
+            renderAddedMaterials(); 
+            $container.find('#po-materialQty').val(''); 
+            $container.find('#po-materialName').val(null).trigger('change'); 
+            $container.find('#po-materialName').select2('open');
         }
     });
-    $('#addedMaterialsList').on('click', '.btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderAddedMaterials(); });
-    $('#btnSaveOrder').on('click', function() { productionOrders.unshift({ ...newOrderData.info, materials: newOrderData.materials }); renderOrderList(); navigateTo('#listView'); alert('Đã lưu lệnh sản xuất thành công!'); });
+
+    $container.on('click', '#po-addedMaterialsList .btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderAddedMaterials(); });
+    $container.on('click', '#po-btnSaveOrder', function() { productionOrders.unshift({ ...newOrderData.info, materials: newOrderData.materials }); renderOrderList(); navigateTo('#po-listView'); alert('Đã lưu lệnh sản xuất thành công!'); });
     
     // --- EDIT ORDER LOGIC ---
-    $('#formEditMaterial').on('submit', function(e) {
-        e.preventDefault(); const selectedMaterial = $('#editMaterialName').select2('data')[0]; const materialQty = $('#editMaterialQty').val();
+    $container.on('submit', '#po-formEditMaterial', function(e) {
+        e.preventDefault(); 
+        const selectedMaterial = $container.find('#po-editMaterialName').select2('data')[0]; 
+        const materialQty = $container.find('#po-editMaterialQty').val();
         if (selectedMaterial && selectedMaterial.text !== "" && materialQty) {
             newOrderData.materials.push({ name: selectedMaterial.text, qty: parseInt(materialQty) });
-            renderEditedMaterials(); $('#editMaterialQty').val(''); $('#editMaterialName').val(null).trigger('change'); $('#editMaterialName').select2('open');
+            renderEditedMaterials(); 
+            $container.find('#po-editMaterialQty').val(''); 
+            $container.find('#po-editMaterialName').val(null).trigger('change'); 
+            $container.find('#po-editMaterialName').select2('open');
         }
     });
-    $('#editedMaterialsList').on('click', '.btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderEditedMaterials(); });
-    $('#btnUpdateOrder').on('click', function() {
+
+    $container.on('click', '#po-editedMaterialsList .btn-delete-material', function() { newOrderData.materials.splice($(this).data('index'), 1); renderEditedMaterials(); });
+    $container.on('click', '#po-btnUpdateOrder', function() {
         const orderIndex = productionOrders.findIndex(o => o.id === editingOrderId);
         if (orderIndex > -1) {
-            const selectedProduct = $('#editProductName').select2('data')[0];
+            const selectedProduct = $container.find('#po-editProductName').select2('data')[0];
             productionOrders[orderIndex].product = selectedProduct ? selectedProduct.text : '';
-            productionOrders[orderIndex].quantity = $('#editQuantity').val();
-            productionOrders[orderIndex].startDate = $('#editStartDate').val();
+            productionOrders[orderIndex].quantity = $container.find('#po-editQuantity').val();
+            productionOrders[orderIndex].startDate = $container.find('#po-editStartDate').val();
             productionOrders[orderIndex].materials = newOrderData.materials;
             renderOrderList();
-            navigateTo('#listView');
+            navigateTo('#po-listView');
             alert('Đã cập nhật lệnh sản xuất!');
         }
         editingOrderId = null;
     });
 
     // --- TABS & SWIPE & CLICK LOGIC ---
-    $('.custom-tabs').on('click', '.tab-item', function(e) {
+    $container.on('click', '.custom-tabs .tab-item', function(e) {
         e.preventDefault();
         const $this = $(this);
         if ($this.hasClass('active')) return;
 
         const tabsContainer = $this.closest('.custom-tabs');
+        const tabContentContainer = $this.closest('.page').find('.po-tab-content');
+
         tabsContainer.find('.tab-item').removeClass('active');
         $this.addClass('active');
         
         const targetPaneId = $this.data('target');
-        $(targetPaneId).siblings('.tab-pane').removeClass('show active');
-        $(targetPaneId).addClass('show active');
+        tabContentContainer.find('.tab-pane').removeClass('show active');
+        tabContentContainer.find(targetPaneId).addClass('show active');
 
         updateTabIndicator(tabsContainer);
     });
-    let startX, startY, swipedItem = null, isSwiping = false, didMove = false; const threshold = 50; const maxSwipe = 150;
-    function closeSwipedItem() { if (swipedItem) { swipedItem.removeClass('swiped').css('transform', 'translateX(0)'); swipedItem = null; } }
-    $('#productionOrderList').on('touchstart', '.list-item-content', function(e) { startX = e.originalEvent.touches[0].clientX; startY = e.originalEvent.touches[0].clientY; isSwiping = false; didMove = false; $(this).css('transition', 'none'); });
-    $('#productionOrderList').on('touchmove', '.list-item-content', function(e) {
-        if (e.originalEvent.touches.length === 0) return; let currentX = e.originalEvent.touches[0].clientX; let currentY = e.originalEvent.touches[0].clientY; let diffX = startX - currentX; let diffY = Math.abs(startY - currentY); if (!didMove) didMove = true;
-        if (!isSwiping && Math.abs(diffX) > diffY && Math.abs(diffX) > 10) { isSwiping = true; if (swipedItem && swipedItem[0] !== $(this)[0]) { closeSwipedItem(); } }
-        if (isSwiping) { e.preventDefault(); requestAnimationFrame(() => { let moveX = 0; if (diffX > 0) { moveX = diffX > maxSwipe ? maxSwipe + (diffX - maxSwipe) * 0.4 : diffX; $(this).css('transform', `translateX(${-moveX}px)`); } else { $(this).css('transform', `translateX(${-diffX}px)`); } }); }
+
+    let startX, swipedItem = null, isSwiping = false, didMove = false; 
+    const threshold = 50; 
+    const maxSwipe = 150;
+    
+    function closeSwipedItem() { 
+        if (swipedItem) { 
+            // Thêm transition để item trượt về mượt mà và reset transform
+            swipedItem.css('transition', 'transform 0.3s ease-out');
+            swipedItem.removeClass('swiped').css('transform', 'translateX(0)');
+            swipedItem = null; 
+        } 
+    }
+
+    $container.on('touchstart', '#po-productionOrderList .list-item-content', function(e) { 
+        // === THAY ĐỔI: Nếu có item khác đang mở -> đóng nó lại ===
+        if (swipedItem && swipedItem[0] !== $(this)[0]) {
+            closeSwipedItem();
+        }
+        startX = e.originalEvent.touches[0].clientX; 
+        isSwiping = false; 
+        didMove = false; 
+        // Bỏ transition khi bắt đầu chạm để di chuyển theo ngón tay
+        $(this).css('transition', 'none'); 
     });
-    $('#productionOrderList').on('touchend', '.list-item-content', function(e) {
-        if (!isSwiping) return; $(this).css('transition', 'transform 0.3s ease-out'); let diffX = startX - e.originalEvent.changedTouches[0].clientX;
-        if (diffX > threshold) { $(this).addClass('swiped').css('transform', `translateX(-${maxSwipe}px)`); swipedItem = $(this); } else { $(this).removeClass('swiped').css('transform', 'translateX(0)'); if (swipedItem && swipedItem[0] === $(this)[0]) { swipedItem = null; } }
+
+    $container.on('touchmove', '#po-productionOrderList .list-item-content', function(e) {
+        // === TỐI ƯU: Cache lại đối tượng jQuery $(this) để không phải gọi lại nhiều lần ===
+        const $this = $(this);
+        if (e.originalEvent.touches.length === 0) return; 
+        let currentX = e.originalEvent.touches[0].clientX; 
+        let diffX = startX - currentX; 
+        if (!didMove) didMove = true;
+        if (Math.abs(diffX) > 10) isSwiping = true; 
+        
+        if (isSwiping) { 
+            e.preventDefault(); 
+            requestAnimationFrame(() => { 
+                let moveX = diffX > 0 ? Math.min(diffX, maxSwipe + 50) : Math.max(diffX, -50); 
+                $this.css('transform', `translateX(${-moveX}px)`); 
+            }); 
+        }
     });
-    $(document).on('click', '#PRODUCTION_ORDER', function(e) {
-        const $target = $(e.target); const $clickedContent = $target.closest('.list-item-content'); if (didMove) { return; }
-        if ($clickedContent.length) { if ($clickedContent.hasClass('swiped')) { closeSwipedItem(); } else { closeSwipedItem(); const orderId = $clickedContent.data('id'); renderOrderDetail(orderId); $('#detailTabs .tab-item:first').addClass('active').siblings().removeClass('active'); $('#myTabContent .tab-pane:first').addClass('show active').siblings().removeClass('show active'); navigateTo('#detailView'); } } else if (swipedItem && !$target.closest('.action-button')) { closeSwipedItem(); }
+
+    $container.on('touchend', '#po-productionOrderList .list-item-content', function(e) {
+        if (!didMove) return; // Nếu không di chuyển, không xử lý gì cả
+        
+        const $this = $(this);
+        // Thêm lại transition để có hiệu ứng mượt mà khi kết thúc chạm
+        $this.css('transition', 'transform 0.3s ease-out'); 
+        
+        if(isSwiping) {
+            let diffX = startX - e.originalEvent.changedTouches[0].clientX;
+            if (diffX > threshold) { 
+                $this.addClass('swiped'); 
+                $this.css('transform', `translateX(-${maxSwipe}px)`);
+                swipedItem = $this; 
+            } else { 
+                $this.removeClass('swiped').css('transform', 'translateX(0)'); 
+                if (swipedItem && swipedItem[0] === $this[0]) { 
+                    swipedItem = null; 
+                } 
+            }
+        } else {
+             // Nếu không phải là swipe (chỉ là tap), đóng item đang mở (nếu có)
+             if (swipedItem) closeSwipedItem();
+        }
     });
-    $('#productionOrderList').on('click', '.action-button', function(e) {
-        e.stopPropagation(); const orderId = $(this).data('id');
+    
+    // Đóng item đang trượt khi click ra ngoài
+    $(document).on('click', function(e) {
+        const $target = $(e.target);
+        if (swipedItem && !$target.closest('#PRODUCTION_ORDER .list-item-wrapper').length) {
+            closeSwipedItem();
+        }
+    });
+    
+    // Xử lý sự kiện click trên item
+    $container.on('click', '.list-item-content', function(e) {
+        // Chỉ xử lý click nếu người dùng không có ý định vuốt
+        if (didMove) return;
+
+        if ($(this).hasClass('swiped')) {
+            closeSwipedItem();
+        } else {
+            // Đóng item khác đang mở trước khi mở chi tiết
+            if (swipedItem) {
+                closeSwipedItem();
+                return;
+            }
+            const orderId = $(this).data('id');
+            renderOrderDetail(orderId);
+            navigateTo('#po-detailView');
+        }
+    });
+
+    $container.on('click', '.action-button', function(e) {
+        e.stopPropagation(); 
+        const orderId = $(this).data('id');
+        const orderToEdit = productionOrders.find(o => o.id === orderId);
+
         if($(this).hasClass('action-edit')) { 
-            editingOrderId = orderId;
-            const orderToEdit = productionOrders.find(o => o.id === editingOrderId);
             if (orderToEdit) {
+                editingOrderId = orderId;
                 populateEditForm(orderToEdit);
-                navigateTo('#editView');
+                navigateTo('#po-editView');
             }
         }
-        if($(this).hasClass('action-delete')) { if (confirm(`Bạn có chắc muốn xoá lệnh sản xuất ${orderId}?`)) { productionOrders = productionOrders.filter(o => o.id !== orderId); renderOrderList(); swipedItem = null; } }
+        if($(this).hasClass('action-delete')) { 
+            if (confirm(`Bạn có chắc muốn xoá lệnh sản xuất ${orderId}?`)) { 
+                productionOrders = productionOrders.filter(o => o.id !== orderId); 
+                renderOrderList(); 
+                swipedItem = null; 
+            } 
+        }
     });
 
     // --- INITIALIZATION ---
     renderOrderList();
 }
+ 
 
 function initBomDeclarationModule() {
     const $container = $('#BOM_DECLARATION');
