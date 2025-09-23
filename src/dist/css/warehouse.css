@@ -418,6 +418,7 @@
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             min-height: 100vh;
+            text-align: start;
         }
 
         #PRODUCTION_ORDER .app-header {
@@ -544,7 +545,7 @@
         /* Material List Styles */
         #PRODUCTION_ORDER #po-formAddMaterial, #PRODUCTION_ORDER #po-formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
         #PRODUCTION_ORDER #po-formAddMaterial .select2-container, #PRODUCTION_ORDER #po-formEditMaterial .select2-container { flex-grow: 1; }
-        #PRODUCTION_ORDER #po-formAddMaterial #po-materialQty, #PRODUCTION_ORDER #po-formEditMaterial #po-editMaterialQty { width: 70px; flex-shrink: 0; }
+        #PRODUCTION_ORDER #po-formAddMaterial #po-materialQty, #PRODUCTION_ORDER #po-formEditMaterial #po-editMaterialQty { width: 70px; height: 45px; flex-shrink: 0; }
         #PRODUCTION_ORDER #po-formAddMaterial .btn-info, #PRODUCTION_ORDER #po-formEditMaterial .btn-info { width: 42px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
         
         /* === THAY ĐỔI: Chuyển danh sách vật tư sang theme tối === */
@@ -574,6 +575,9 @@
             align-items: center;
             justify-content: center;
             padding: 0;
+        }
+        #PRODUCTION_ORDER #po-btnAddOrder {
+          text-decoration: none;
         }
         
         #PRODUCTION_ORDER #po-detailMaterialsContent .badge-primary {
