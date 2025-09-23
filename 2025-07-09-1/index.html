@@ -10,6 +10,8 @@
     <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" /> -->
     <link href="https://central.homeos.vn/singlepage/workstation/src/dist/css/bootstrap.min.css" rel="stylesheet" />
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
@@ -27,9 +29,15 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="https://central.homeos.vn/singlepage/workstation/index.css" />
     <link rel="stylesheet" href="https://central.homeos.vn/singlepage/workstation/src/dist/css/animation.css" />
     <link rel="stylesheet" href="https://central.homeos.vn/singlepage/workstation/src/dist/css/UserSelection.css" />
+    <link rel="stylesheet" href="https://central.homeos.vn/singlepage/workstation/src/dist/css/schedule.css" />
+    <link rel="stylesheet" href="https://central.homeos.vn/singlepage/workstation/src/dist/css/warehouse.css" />
 </head>
 
 <body>
@@ -397,95 +405,116 @@
             </div>
         </div>
         <div id="schedule-condition-popup" class="modal modal-animation">
-            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
-                <div class="d-flex" style="line-height: 50px">
-                    <button id="BackSchedule" style="height: 40px; border: none; background-color: #1e2833">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
-                        </svg>
-                    </button>
-                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                        Lập lịch bật tắt
-                    </p>
-                </div>
-                <div id="listTabSchedule" style="margin-bottom: 10px;">
-                    <div class="tab">
-                        <div class="indicator" id="tabIndicator-schedule"></div>
-                        <button id="tab-schedule" class="tablinks tablinkSchedule active">Lập lịch</button>
-                        <button id="tab-list-schedule" class="tablinks tablinkSchedule">Danh sách</button>
+            <div class="container" style="width: 100%; height: 100%; text-align: left; background-color: #000000; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div style="color: white;">
+                    <div class="header-default">
+                        <button id="BackSchedule" style="height: 40px; border: none; background-color: #000000">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                            </svg>
+                        </button>
+                        Đặt lịch
                     </div>
-                </div>
-                <div id="tabSchedule" class="tab-content-schedule active">
-                    <div class="content-form" style="background-color: #1e2833; padding: 0">
-                        <div class="form-group content-detail">
-                            <label class="form-label content-label" for="txtScheduleName">Tên lịch:</label>
-                            <input type="text" id="txtScheduleName" class="form-control content-input" placeholder="Nhập tên lịch..." />
+
+                    <!-- Giao diện sau khi chọn -->
+                    <div class="header-select d-none" id="select-header">
+                        <span id="selected-count">Đã chọn 1 mục</span>
+                        <div>
+                            <i class="bi bi-x-lg me-3" id="cancel-select"></i>
+                            <i class="bi bi-three-dots-vertical"></i>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-12">
-                                <label for="sltDeviceForSchedule">Relay được áp dụng</label>
-                                <div id="sltDeviceForSchedule" class="row">
-                                </div>
+                    </div>
+
+                    <!-- Danh sách -->
+                    <div id="listSchedule" style="margin-top: 20px; overflow-y: auto; height: 350px;">
+                        <div class="col-12" style="text-align: center; margin-top: 100px;">
+                            <i class="bi bi-calendar" style="font-size: 30px; color: #909090;"></i>
+                            <div><p style="color: #909090;">Thiết bị chưa được lập lịch hoặc chưa thể kết nối đến thiết bị</p></div>
+                        </div>
+                    </div>
+                    <div id="new-screen" class="new-screen" style="overflow-y: auto; height: 100%;">
+                        <div class="alarm-header">
+                            <div class="header-icon" id="close-new-screen">✕</div>
+                            <div class="header-content">
+                                <div class="title">Thêm lịch</div>
+                                <div id="subtitleSchedule" class="subtitle">Bật sau 23 giờ 22 phút</div>
                             </div>
+                            <div class="header-icon" id="save-alarm">✔</div>
                         </div>
-                        <div class="row flex-row" style="justify-content: space-between">
-                            <div class="col-12 d-flex flex-row pr-0" style="align-items: center">
-                                <div class="mr-3 d-flex flex-column w-100">
-                                    <label for="">Kịch bản áp dụng</label>
-                                    <div class="card mw-100 mh-100 m-0 p-3">
-                                        <div class="form-group content-detail">
-                                            <label class="form-label content-label" for="startTime">Thời điểm:</label>
-                                            <input type="time" id="startTime" class="form-control content-input w-100" />
+                        <div class="px-3 py-3">
+                            <div class="row">
+                                <div class="col-6" style="padding-right: 5px; padding-left: 6px;">
+                                    <div class="time-group">
+                                        <label class="row" style="display: flex; align-items: center;">
+                                        <span class="col-9" style="text-align: start;">Bật lúc</span>
+                                        <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
+                                            <input id="toggle-on-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
                                         </div>
-                                        <div class="mb-2">
-                                            <div class="form-group content-detail">
-                                                <label class="form-label content-label" for="cboScriptsCabinet">Kịch
-                                                    bản:</label>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 form-group content-detail">
-                                                    <label class="form-label content-label" for="radioOn">Bật:</label>
-                                                    <input type="radio" name="cboScripts" id="radioOn"
-                                                        placeholder="Nhập tên lịch..." checked />
-                                                </div>
-                                                <div class="col-6 form-group content-detail">
-                                                    <label class="form-label content-label" for="radioOff">Tắt:</label>
-                                                    <input type="radio" name="cboScripts" id="radioOff"
-                                                        placeholder="Nhập tên lịch..." />
-                                                </div>
-                                            </div>
+                                        </label>
+                                        <div class="spinner-wrapper" id="on-time-wrapper">
+                                            <div class="spinner-container"><div class="spinner" id="on-hour"></div></div>
+                                            <div class="colon">:</div>
+                                            <div class="spinner-container"><div class="spinner" id="on-minute"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6" style="padding-left: 5px; padding-right: 6px;">
+                                    <div class="time-group">
+                                        <label class="row" style="display: flex; align-items: center;">
+                                        <span class="col-9" style="text-align: start;">Tắt lúc</span>
+                                        <div class="form-check form-switch switch-toggle col-3 d-flex justify-content-end" style="padding-left: 10px;">
+                                            <input id="toggle-off-time" class="form-check-input" style="font-size: 20px;" type="checkbox" checked>
+                                        </div>
+                                        </label>
+                                        <div class="spinner-wrapper" id="off-time-wrapper">
+                                            <div class="spinner-container"><div class="spinner" id="off-hour"></div></div>
+                                            <div class="colon">:</div>
+                                            <div class="spinner-container"><div class="spinner" id="off-minute"></div></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <button id="submitCalendar" class="btn btn-warning" style="
-                    margin-top: 20px;
-                    background-color: #2c697b;
-                    border: solid 1px #2c697b;
-                    width: 100%;
-                    height: 35px;
-                    color: #fff;
-                    padding: 3px 10px;
-                    ">
-                                Áp dụng kịch bản
-                            </button>
+
+                            <div id="options-Kenh" class="repeat-options" style="margin-top: 10px;">
+                                <label class="form-label text-white">Chọn Kênh:</label>
+                                <div class="option-K selected" data-value="all">Tất cả</div>
+                                <!-- Tùy chỉnh có toggle -->
+                                <div class="option-K custom-toggle" id="custom-K-toggle">Tuỳ chọn <span class="arrow">▶</span></div>
+                                
+                                <div class="custom-K" id="customK">
+                                    <div class="K-item" data-day="2"><span>kênh 1</span><div class="checkbox"></div></div>
+                                    <div class="K-item" data-day="3"><span>Kênh 2</span><div class="checkbox"></div></div>
+                                    <div class="K-item" data-day="4"><span>Kênh 3</span><div class="checkbox"></div></div>
+                                </div>
+                            </div> 
+
+                            <div class="repeat-options" style="margin-top: 10px;">
+                                <label class="form-label text-white">Lặp lại:</label>
+                                <div class="option selected" data-value="daily">Hàng ngày</div>
+                                <div class="option" data-value="weekdays">Thứ hai đến Thứ sáu</div>
+                            
+                                <!-- Tùy chỉnh có toggle -->
+                                <div class="option custom-toggle" id="custom-toggle">Tuỳ chỉnh <span class="arrow">▶</span></div>
+                                
+                                <div class="custom-days" id="customDays">
+                                    <div class="day-item" data-day="2"><span>Thứ Hai</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="3"><span>Thứ Ba</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="4"><span>Thứ Tư</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="5"><span>Thứ Năm</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="6"><span>Thứ Sáu</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="7"><span>Thứ Bảy</span><div class="checkbox"></div></div>
+                                    <div class="day-item" data-day="8"><span>Chủ Nhật</span><div class="checkbox"></div></div>
+                                </div>
+                            </div>      
                         </div>
                     </div>
-                </div>
-                
-                <div id="tabListSchedule" class="tab-content-schedule">
-                    <div style="color: #fff; padding: 10px;">
-                        <h5>Danh sách các lịch đã lập</h5>
-                        <ul id="createdScheduleList">
-                        </ul>
+                    <button class="floating-btn">+</button>
+                    <!-- Toolbar dưới -->
+                    <div class="bottom-toolbar" id="toolbar">
+                        <i class="bi bi-trash"></i>
+                        <span>Xóa</span>
                     </div>
                 </div>
-                  
-                
             </div>
         </div>
         <div id="error-condition-popup" class="modal">
@@ -702,36 +731,154 @@
                         Chia sẻ
                     </p>
                 </div>
-                <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
-                <div>
-                    <p id="text-content-warranty" style="color: #fff"></p>
-                </div>
-                <div style="padding: 20px">
-                    <div class="tab">
-                        <div class="indicator" id="tabIndicator-warranty"></div>
-                        <button id="tab-permission-admin" class="tablinks tablinkW">Toàn quyền</button>
-                        <button id="tab-permission-guest" class="tablinks tablinkW">chỉ xem</button>
-                    </div>
-                </div>
-                <div id="tab-admin" class="tab-content">
+                <div id="share-user">
+                    <img src="https://central.homeos.vn/images/Logo_HomeOS_White.png" alt="" width="200" style="padding-bottom: 2rem" />
                     <div>
-                        
+                        <p id="text-content-warranty" style="color: #fff"></p>
                     </div>
-                    <div id="qrcode-admin"></div>
-                    <button id="share-warranty-admin" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
-                        </svg>
-                        Chia sẻ toàn quyền
-                    </button>
+                    <div style="padding: 20px">
+                        <div class="tab">
+                            <div class="indicator" id="tabIndicator-warranty"></div>
+                            <button id="tab-permission-admin" class="tablinks tablinkW">Toàn quyền</button>
+                            <button id="tab-permission-guest" class="tablinks tablinkW">chỉ xem</button>
+                        </div>
+                    </div>
+                    <div id="tab-admin" class="tab-content">
+                        <div>
+                            
+                        </div>
+                        <div id="qrcode-admin"></div>
+                        <button id="share-warranty-admin" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                            </svg>
+                            Chia sẻ toàn quyền
+                        </button>
+                    </div>
+                    <div id="tab-guest" class="tab-content">
+                        <div id="qrcode-guest"></div>
+                        <button id="share-warranty-guest" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                            </svg>
+                            Chia sẻ chỉ xem
+                        </button>
+                    </div>
                 </div>
-                <div id="tab-guest" class="tab-content">
-                    <div id="qrcode-guest"></div>
-                    <button id="share-warranty-guest" class="btn btn-warning" style=" margin-top: 20px; background-color: #1f87a3; border: solid 1px #1f87a3; width: 100%; height: 35px; color: #fff; padding: 3px 10px; ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
+                
+            </div>
+        </div>
+        <div id="downtime-popup" class="modal modal-animation" style="z-index: 1000;">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackDowntime" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
                         </svg>
-                        Chia sẻ chỉ xem
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Downtime
+                    </p>
+                </div>
+                <div>
+                    <div id="filterDowntime">
+                        <div class="content-form row" style="background-color: rgb(0, 0, 0, 0); padding: 0">
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="startDateOEE">Ngày bắt đầu:</label>
+                                <input type="datetime-local" id="startDateOEE" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập số điện thoại..." />
+                            </div>
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="endDateOEE">Ngày kết thúc:</label>
+                                <input type="datetime-local" id="endDateOEE" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập Mã định danh sản phẩm..." />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="listDowntimeOEE" style="overflow-y: auto; height: 300px;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notification-popup" class="modal modal-animation" style="z-index: 1010;">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackNotification" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Thông báo
+                    </p>
+                </div>
+                <div>
+                    <div id="filterDowntime">
+                        <div class="content-form row" style="background-color: rgb(0, 0, 0, 0); padding: 0">
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="startDateNoti">Ngày bắt đầu:</label>
+                                <input type="datetime-local" id="startDateNoti" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập số điện thoại..." />
+                            </div>
+                            <div class="form-group content-detail col-6">
+                                <label class="form-label content-label m-0" for="endDateNoti">Ngày kết thúc:</label>
+                                <input type="datetime-local" id="endDateNoti" class="form-control content-input" style="font-size: 12px; padding: 5px;" placeholder="Nhập Mã định danh sản phẩm..." />
+                            </div>
+                        </div>
+                        <div class="content-form row" style="background-color: rgb(0, 0, 0, 0); padding: 0">
+                            <div class="form-group content-detail col-12">
+                                <label class="form-label content-label m-0" for="endDateNoti">Ngày kết thúc:</label>
+                                <select name="" id="" class="form-control content-input">
+                                    <option value="">Kênh 1</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="listNoti" style="overflow-y: auto; height: 300px;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="declaration-popup" class="modal modal-animation" style="z-index: 1010;">
+            <div class="container" style="width: 100%; height: 100%; background-color: #1e2833; animation-duration: 0.3s; animation-fill-mode: forwards;">
+                <div class="d-flex" style="line-height: 50px">
+                    <button id="BackDeclaration" style="height: 40px; border: none; background-color: #1e2833">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="color: #fff; margin-right: 10px" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </button>
+                    <p style=" width: 250px; font-size: 20px; color: #fff; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                        Khai báo
+                    </p>
+                </div>
+                <div>
+                    <div class="content-form" style="background-color: #1e2833; padding: 0">
+                        <div class="card mw-100 mh-100 m-0 p-3">
+                            <div class="d-flex justify-content-start">
+                                <h5>Khai báo downtime:</h5>
+                            </div>
+                            <div class="d-flex row">
+                                <div class="col-12 form-group content-detail">
+                                    <label class="form-label content-label" for="errorStartTime">Thời gian bắt đầu:</label>
+                                    <input type="datetime-local" id="errorStartTime" class="form-control content-input" placeholder="Nhập lỗi..." />
+                                </div>
+                                <div class="col-12 form-group content-detail">
+                                    <label class="form-label content-label" for="errorEndTime">Thời gian kết thúc:</label>
+                                    <input type="datetime-local" id="errorEndTime" class="form-control content-input" placeholder="Nhập lỗi..." />
+                                </div>
+                                <div class="col-12 form-group content-detail">
+                                    <label class="form-label content-label" for="ap_ssid">Lý do:</label>
+                                    <select name="" id="declarationType" class="form-control content-input">
+                                        <option value="1">Lỗi thiết bị</option>
+                                        <option value="2">Lỗi người dùng</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submitDeclaration" class="btn btn-warning" style=" margin-top: 20px; background-color: #f39c12; border: solid 1px #f39c12; width: 100%; height: 35px; color: #fff; padding: 3px 10px;">
+                        Xác nhận lỗi
                     </button>
                 </div>
             </div>
@@ -781,6 +928,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <!-- <script src="https://central.homeos.vn/singlepage/workstation/src/dist/js/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script> -->
     
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script src="https://central.homeos.vn/singlepage/workstation/index.js"></script>
     <!-- <script src="./index.js"></script> -->
     <script src="https://central.homeos.vn/singlepage/workstation/src/api/ajax.js"></script>

@@ -1,0 +1,2 @@
+Cập nhật ngày 22/09/2025 lần 1:
+- Bổ sung ui cho ứng dụng Kho hàng: kho vật tư, lệnh sản xuất, Bom sản xuất.
