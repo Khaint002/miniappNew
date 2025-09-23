@@ -727,7 +727,7 @@
 /* Material List Styles */
 #BOM_DECLARATION #formAddMaterial, #BOM_DECLARATION #formEditMaterial { align-items: stretch; gap: 0.5rem; }
 #BOM_DECLARATION #formAddMaterial .select2-container, #BOM_DECLARATION #formEditMaterial .select2-container { flex-grow: 1; }
-#BOM_DECLARATION #formAddMaterial #materialQty, #BOM_DECLARATION #formEditMaterial #editMaterialQty { width: 49%; margin-right: 10px; flex-shrink: 0; }
+#BOM_DECLARATION #formAddMaterial #materialQty, #BOM_DECLARATION #formEditMaterial #editMaterialQty { width: 49%; height: 45px; margin-right: 10px; flex-shrink: 0; }
 #BOM_DECLARATION #formAddMaterial .btn-info, #BOM_DECLARATION #formEditMaterial .btn-info { width: 42px; margin-left: 10px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
 #BOM_DECLARATION #addedMaterialsList .list-group-item, #BOM_DECLARATION #editedMaterialsList .list-group-item { background-color: var(--surface-color); color: var(--text-primary); border-radius: 0.25rem; margin-bottom: 0.5rem; border: 1px solid var(--primary-border-color); padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
 #BOM_DECLARATION #addedMaterialsList .btn-delete-material, #BOM_DECLARATION #editedMaterialsList .btn-delete-material { background-color: var(--delete-color); color: var(--text-white); border: none; width: 35px; height: 35px; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; padding: 0; }
