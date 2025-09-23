@@ -390,7 +390,7 @@ var renderBatches = (batches) => {
                         <p class=" text-light mb-1">${batch.batchCode}</p>
                         <p class="small text-body mb-0">${batch.productName}</p>
                     </div>
-                    <span class="badge rounded-pill small ${getStatusClass(batch.status)}">${batch.status}</span>
+                    <span class="badge rounded-pill small ${getStatusClass(batch.status)}" style="font-weight: 300;">${batch.status}</span>
                 </div>
                 <div class="mt-3 d-flex justify-content-between align-items-center small text-secondary pe-none">
                     <span>SL: <span class= text-light">${batch.quantity} ${batch.unit}</span></span>
@@ -910,7 +910,7 @@ var renderInventory = () => {
                 <p class=" text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
                 <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span>
+                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill" style="font-weight: 300;">${stock.text}</span>
                     <div>
                         <span class="small text-muted">Tổng tồn:</span> 
                         <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span>
@@ -1225,7 +1225,7 @@ function initializeMaterialInventoryApp() {
         }
         mt_inventoryListEl.innerHTML = filteredInventory.map(item => {
             const stock = mt_getStockInfo(item.totalQuantity);
-            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class=" text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
+            return `<div data-id="${item.id}" class="mt-material-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3"><img src="${item.imageUrl.replace('400x300', '160x160')}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;"><div class="flex-grow-1"><p class=" text-body-emphasis mb-1">${item.name}</p><p class="text-muted small font-monospace mb-2">${item.sku}</p><div class="d-flex justify-content-between align-items-center"><span class="badge ${stock.bg} ${stock.text_color} rounded-pill" style="font-weight: 300;">${stock.text}</span><div><span class="small text-muted">Tổng tồn:</span> <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span></div></div></div></div>`;
         }).join('');
     };
 
@@ -1478,7 +1478,7 @@ function initProductionOrderModule() {
         const infoContent = `<p><strong>Sản phẩm:</strong> ${order.product}</p><p><strong>Số lượng:</strong> ${order.quantity}</p><p><strong>Ngày bắt đầu:</strong> ${order.startDate}</p><p><strong>Trạng thái:</strong> <span class="status-badge ${getStatusInfo(order.status).class}">${getStatusInfo(order.status).text}</span></p>`;
         $container.find('#po-detailInfoContent').html(infoContent);
         const materialsContent = $container.find('#po-detailMaterialsContent'); materialsContent.empty();
-        if (order.materials.length > 0) { order.materials.forEach(mat => { materialsContent.append(`<li class="list-group-item">${mat.name} <span class="badge badge-primary badge-pill">${mat.qty}</span></li>`); }); } else { materialsContent.html('<li class="list-group-item text-muted">Không có vật tư cho lệnh này.</li>'); }
+        if (order.materials.length > 0) { order.materials.forEach(mat => { materialsContent.append(`<li class="list-group-item">${mat.name} <span class="badge badge-primary badge-pill" style="font-weight: 300;">${mat.qty}</span></li>`); }); } else { materialsContent.html('<li class="list-group-item text-muted">Không có vật tư cho lệnh này.</li>'); }
         setTimeout(() => updateTabIndicator($container.find('#po-detailTabs')), 50);
     }
     function renderAddedMaterials() {
