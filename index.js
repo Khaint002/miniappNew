@@ -22,6 +22,7 @@ var URL_CREDENTIALS_CONFIG = {
     "https://thanthongnhat.homeos.vn/service/service.svc": { user: "admin", passKey: "1" },
     default: { user: "dev", passKey: "1" }
 };
+HOMEOSAPP.linkbase = 'https://central.homeos.vn/service_XD/service.svc';
 var checkReport = '';
 let historyStack = ['pickApp'];
 var UserID = localStorage.getItem("userID");
@@ -420,6 +421,31 @@ HOMEOSAPP.getDataChart = function(typeTime, start, end, type, zone, url) {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: url + "/ApiServicePublic/" + "GetDataFilterLogzone" + "/" + "TYPE_TIME='" + typeTime + "',START_DATE='" + start + "',END_DATE='" + end + "',TYPE_VALUE='" + type + "',ZONE_ADDRESS='" + zone + "'",
+            type: "GET",
+            dataType: "jsonp",
+            contentType: "application/json; charset=utf-8",
+            success: function (msg) {
+                try {
+                    let state = JSON.parse(msg);
+                    resolve(state); // Trả về dữ liệu khi thành công
+                } catch (error) {
+                    reject(error); // Bắt lỗi nếu JSON parse thất bại
+                }
+            },
+            complete: function (data) {
+                // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+            },
+            error: function (e, t, x) {
+                toastr.error("Lấy dữ liệu bị lỗi vui lòng thử lại sau!");
+            },
+        });
+    });
+}
+
+HOMEOSAPP.getApiServicePublic = function(url, ApiName, param) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url + "/ApiServicePublic/" + ApiName + "/" + param,
             type: "GET",
             dataType: "jsonp",
             contentType: "application/json; charset=utf-8",

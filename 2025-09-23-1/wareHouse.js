@@ -18,7 +18,7 @@ function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = "";
-
+    setTheme('dark');
     apps.forEach(app => {
         if (!app.VISIBLE) return;
         
@@ -215,7 +215,7 @@ function showPrintOptions(mode) {
     // mode === "all" thì không hiển thị gì thêm
 }
 
-renderApps(apps_waveHouse, 'wareHouse-list');
+
 // --- DỮ LIỆU MẪU (MOCK DATA) ---
 var generateScannedItems = (count, prefix) => Array.from({ length: count }, (_, i) => `${prefix}-item-${String(i + 1).padStart(4,'0')}`);
 var mockBatches = [
@@ -2006,6 +2006,6 @@ function initBomDeclarationModule() {
     renderBOMList();
 }
 
-
+renderApps(apps_waveHouse, 'wareHouse-list');
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
 // 

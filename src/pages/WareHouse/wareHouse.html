@@ -326,7 +326,7 @@
         
             <!-- List View -->
             <div id="list-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0">
+                <!-- <header class="bg-body shadow-sm flex-shrink-0">
                     <div class="px-3 py-3 border-b d-flex align-items-center">
                         <div style="width: 40px;"></div>
                         <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
@@ -336,6 +336,15 @@
                         <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
                             <i class="bi bi-moon-stars-fill"></i>
                         </button>
+                    </div>
+                </header> -->
+                <header class="bg-dark shadow-sm sticky-top z-1">
+                    <div class="px-3 py-1 d-flex align-items-center">
+                        <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                        </button>
+                        <h1 class="fs-5 text-light text-center w-100 mt-3">Tồn kho sản phẩm</h1>
+                        <div style="width: 40px;"></div>
                     </div>
                 </header>
                 <div class="p-3 bg-body border-b">
@@ -728,7 +737,7 @@
                                     <input type="number" class="form-control" id="materialBH" style="height: 45px;" placeholder="% Bù hao" required>
                                 </div>
                             </form>
-                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="btnSaveBom" class="btn btn-success btn-block mt-3">Lưu BOM</button>
@@ -818,7 +827,7 @@
                                     <input type="number" class="form-control" id="editMaterialBH" style="height: 45px;" placeholder="% Bù hao" required>
                                 </div>
                             </form>
-                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                             </div>
                         </div>
                     </div>
@@ -838,7 +847,7 @@
                 <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                 </button>
-                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">BOM sản xuất</h1>
+                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Lệnh sản xuất</h1>
                 <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
                     <i class="bi bi-moon-stars-fill"></i>
                 </button>
@@ -917,7 +926,7 @@
                                 <input type="number" class="form-control" id="po-materialQty" placeholder="SL" required>
                                 <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                             </form>
-                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="po-btnSaveOrder" class="btn btn-success btn-block mt-3">Lưu Lệnh Sản Xuất</button>
@@ -960,7 +969,7 @@
                                     <input type="number" class="form-control" id="po-editMaterialQty" placeholder="SL" required>
                                     <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                                 </form>
-                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                             </div>
                         </div>
                     </div>
