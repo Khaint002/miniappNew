@@ -2991,7 +2991,7 @@ async function initBomDeclarationModule() {
                 // Nếu sản phẩm chưa tồn tại, tạo mới sản phẩm và thêm vào mảng kết quả
                 const newProduct = {
                     id: item.TRAN_NO,
-                    name: `${item.bom}`,
+                    name: `${item.BOM_PRODUCT}`,
                     productName: item.PRODUCT_ID,
                     version: item.VERSION || 'v1.0.0',
                     shortDesc: item.TRAN_NO || 'Không có mô tả',

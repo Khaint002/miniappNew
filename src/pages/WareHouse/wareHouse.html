@@ -713,13 +713,12 @@
                                     <select class="form-control" id="materialName"></select>
                                     <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                                 </div>
-                                
                                 <div style="display: flex;">
                                     <input type="number" class="form-control" id="materialQty" placeholder="Số lượng" required>
                                     <input type="number" class="form-control" id="materialBH" style="height: 45px;" placeholder="% Bù hao" required>
                                 </div>
                             </form>
-                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; height: 350px;"></ul>
+                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="btnSaveBom" class="btn btn-success btn-block mt-3">Lưu BOM</button>
@@ -905,7 +904,7 @@
                                 <input type="number" class="form-control" id="po-materialQty" placeholder="SL" required>
                                 <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                             </form>
-                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; height: 350px;"></ul>
+                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="po-btnSaveOrder" class="btn btn-success btn-block mt-3">Lưu Lệnh Sản Xuất</button>
