@@ -2979,6 +2979,7 @@ async function initBomDeclarationModule() {
 
             // Tạo thông tin vật tư từ item hiện tại
             const newMaterial = {
+                id: item.ITEM_ID,
                 name: item.ITEM_NAME,
                 qty: item.QUANTITY,
                 cmt: item.QUNATITY_ADDING || 0
@@ -2994,6 +2995,7 @@ async function initBomDeclarationModule() {
                     name: `${item.BOM_PRODUCT}`,
                     productName: item.PRODUCT_ID,
                     version: item.VERSION || 'v1.0.0',
+                    noteVersion: item.NOTE_VERSION || 'v1.0.0',
                     shortDesc: item.TRAN_NO || 'Không có mô tả',
                     designer: item.USER_ID,
                     sampleRequester: item.CUSTOMER_ID || 'Chưa có thông tin',
@@ -3009,7 +3011,7 @@ async function initBomDeclarationModule() {
         return resultArray;
     }
 
-    function populateEmployeeSelects(data) {
+    async function populateEmployeeSelects(data) {
         // 1. Tạo một chuỗi HTML chứa tất cả các thẻ <option>
         // Dùng map() để biến đổi mỗi object nhân viên thành một chuỗi <option>
         const optionsHtml = data.map(employee => {
@@ -3037,11 +3039,11 @@ async function initBomDeclarationModule() {
                 console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
             }
         });
-
-        const optionsHtmlProduct = dataPR.data.map(product => {
+        const optionsHtmlProduct = dataPR.data.map( product => {
             return `<option value="${product.PRODUCT_CODE}">${product.PRODUCT_NAME}</option>`;
         }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
-
+        console.log(optionsHtmlProduct);
+        
         // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
         const selectIdsProduct = [
             'editBomProductName',
@@ -3049,10 +3051,32 @@ async function initBomDeclarationModule() {
         ];
 
         // 3. Lặp qua từng ID và cập nhật nội dung HTML
-        selectIdsProduct.forEach(id => {
+        selectIdsProduct.forEach( id => {
             const selectElement = document.getElementById(id);
             if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
                 selectElement.innerHTML = optionsHtmlProduct;
+
+                selectElement.addEventListener("change", async (e) => {
+                    const selectedValue = e.target.value; // lấy value (PRODUCT_CODE)
+                    const selectedText = e.target.options[e.target.selectedIndex].text; // lấy tên (PRODUCT_NAME)
+
+                    console.log("ID Select:", id);
+                    console.log("Value:", selectedValue);
+                    console.log("Text:", selectedText);
+
+                    const dataProduct = await HOMEOSAPP.getDM(
+                        "https://central.homeos.vn/service_XD/service.svc",
+                        "PRODUCT_PUBLISH",
+                        "PRODUCT_ID='"+selectedValue+"'"
+                    );
+                    if(dataProduct.data.length > 0){
+                        $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
+                    } else {
+                        $container.find("#bomVersion").val(selectedValue+"_v01");
+                    }
+                    console.log(dataProduct);
+                    
+                });
             } else {
                 console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
             }
@@ -3136,6 +3160,7 @@ async function initBomDeclarationModule() {
         $container.find("#editBomProductName").val(bom.productName);
         $container.find("#editBomShortDesc").val(bom.shortDesc);
         $container.find("#editBomVersion").val(bom.version);
+        $container.find("#editBomDescVersion").val(bom.noteVersion);
         $container.find("#editBomDesigner").val(bom.designer);
         $container.find("#editBomSampleRequester").val(bom.sampleRequester);
         $container.find("#editBomHardwareFinisher").val(bom.hardwareFinisher);
@@ -3163,6 +3188,65 @@ async function initBomDeclarationModule() {
                 width: activeTab[0].offsetWidth + "px",
             });
         }
+    }
+
+    async function addOrEditBom(type, dataBom) {
+        dataPR_key = await HOMEOSAPP.getDM(
+            "https://central.homeos.vn/service_XD/service.svc",
+            "SYS_KEY",
+            "TABLE_NAME='PRODUCT_PUBLISH'"
+        );
+        console.log(dataBom);
+        
+        const willInsertData = {
+            TRAN_NO: await HOMEOSAPP.getTranNo(dataBom.productName+"_[DAY][MONTH][YEAR]"), 
+            TRAN_ID: '',
+            TRAN_DATE: new Date(),
+            PRODUCT_ID: dataBom.productName,
+            CREATE_DATE: new Date(),
+            ORDER_TEST: 3,
+            DATE_PRODUCT: new Date(),
+            SOFTWARE_OF: dataBom.softwareUploader,
+            HARDWARE_OF: dataBom.hardwareFinisher,
+            PACKAGE_OF: '',
+            INCLUDE_NO: '',
+            TYPE_VERSION: dataBom.productName + 'v01',
+            IS_MODULE: 1,
+            NOTE: dataBom.shortDesc,
+            USER_ID: dataBom.designer,
+            CUSTOMER_ID: dataBom.sampleRequester,
+            BOM_PRODUCT: dataBom.name,
+            DATASTATE: type,
+        };
+        
+        dataBom.materials.forEach(e => {
+            const dataItem = dataMaterial.data.filter(item => item.ITEM_ID === e.id);
+            const willInsertData_detail = {
+                FR_KEY: dataPR_key.data[0].LAST_NUM,
+                ITEM_ID: e.id,
+                UNIT_ID: dataItem[0].UNIT_ID,
+                IS_MODULE: dataItem[0].IS_MODULE,
+                QUANTITY: e.qty,
+                ITEM_PRICE: 0,
+                ITEM_PRICE_DESIGN: 0,
+                QUNATITY_ADDING: e.cmt,
+                LIST_ORDER: 0,
+                NOTE: '',
+                TRAN_DATE: new Date(),
+                USER_ID: dataBom.designer,
+                DATASTATE: type
+            }
+            console.log(willInsertData_detail);
+        });
+        
+
+        // HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData).then(async data => {
+        //     try {
+        //         toastr.success("Quét QR và lưu thông tin thành công!");
+        //     } catch (e) { }
+        // }).catch(err => {
+        //     console.error('Error:', err);
+        // });
     }
 
     // --- INITIALIZE SELECT2 ---
@@ -3198,7 +3282,8 @@ async function initBomDeclarationModule() {
             name: $container.find("#bomName").val(),
             productName: $container.find("#bomProductName").val(),
             shortDesc: $container.find("#bomShortDesc").val(),
-            version: $container.find("#bomVersion").val(),
+            // version: $container.find("#bomVersion").val(),
+            noteVersion: $container.find("#bomDescVersion").val(),
             designer: $container.find("#bomDesigner").val(),
             sampleRequester: $container.find("#bomSampleRequester").val(),
             hardwareFinisher: $container.find("#bomHardwareFinisher").val(),
@@ -3224,10 +3309,13 @@ async function initBomDeclarationModule() {
         const selectedMaterial = $container
             .find("#materialName")
             .select2("data")[0];
+        console.log(selectedMaterial);
+        
         const materialQty = $container.find("#materialQty").val();
         const materialBH = $container.find("#materialBH").val();
         if (selectedMaterial && selectedMaterial.text && materialQty) {
             tempBomData.materials.push({
+                id: selectedMaterial.id,
                 name: selectedMaterial.text,
                 qty: parseInt(materialQty),
                 cmt: parseInt(materialBH),
@@ -3250,9 +3338,10 @@ async function initBomDeclarationModule() {
     $container.on("click", "#btnSaveBom", function () {
         const newBom = { ...tempBomData.info, materials: tempBomData.materials };
         productBOMs.unshift(newBom);
-        renderBOMList();
-        navigateTo("#bomListView");
-        alert("Đã lưu BOM thành công!");
+        addOrEditBom('ADD', newBom);
+        // renderBOMList();
+        // navigateTo("#bomListView");
+        // alert("Đã lưu BOM thành công!");
     });
 
     // Edit BOM Logic
@@ -3292,6 +3381,7 @@ async function initBomDeclarationModule() {
                 productName: $container.find("#editBomProductName").val(),
                 shortDesc: $container.find("#editBomShortDesc").val(),
                 version: $container.find("#editBomVersion").val(),
+                notVersion: $container.find("#editBomDescVersion").val(),
                 designer: $container.find("#editBomDesigner").val(),
                 sampleRequester: $container.find("#editBomSampleRequester").val(),
                 hardwareFinisher: $container.find("#editBomHardwareFinisher").val(),

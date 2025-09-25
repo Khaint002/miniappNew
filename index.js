@@ -1750,6 +1750,22 @@ HOMEOSAPP.addObj = function(type, code) {
     }
 }
 
+HOMEOSAPP.getTranNo = async function(value){
+    try {
+        let temp = value;
+        temp = temp.replace(/\[YEAR\]/g, (new Date()).getFullYear());
+        temp = temp.replace(/\[MONTH\]/g, ((new Date()).getMonth() + 1).toString().padStart(2, '0'));
+        temp = temp.replace(/\[DAY\]/g, (new Date()).getDate().toString().padStart(2, '0'));
+        temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
+        temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
+        temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+        
+        return temp;
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+}
+
 setTimeout(async () => {
     HOMEOSAPP.hideElement("LoadScreen", "LogoLoadScreen");
     historyItems = JSON.parse(localStorage.getItem('dataHistory'));
