@@ -111,8 +111,8 @@
                               <label for="bom-select" class="form-label">Chọn BOM sản phẩm</label>
                               <select id="bom-select" class="form-select form-element"></select>
                           </div>
-                          <div class="row g-3">
-                              <div class="col-6">
+                          <div class="row g-3 d-none">
+                              <div class="col-6 d-none">
                                   <label for="batch-code" class="form-label">Mã lô sản phẩm</label>
                                   <input type="text" id="batch-code" class="form-control form-element" readonly>
                               </div>
@@ -131,11 +131,11 @@
                                   <input type="text" id="product-name" class="form-control form-element" readonly>
                               </div>
                           </div>
-                          <div>
+                          <div >
                               <label for="bom-display" class="form-label">BOM sản phẩm sản xuất</label>
                               <input type="text" id="bom-display" class="form-control form-element" readonly>
                           </div>
-                          <div>
+                          <div class="d-none">
                               <label for="specifications" class="form-label">Thông số kỹ thuật chung</label>
                               <textarea id="specifications" rows="3" class="form-control" readonly></textarea>
                           </div>
@@ -897,7 +897,7 @@
                 <div id="po-addStep2" style="display: none;">
                     <div class="card mb-3"><div class="card-body py-2" id="po-orderSummary"></div></div>
                     <div class="card">
-                        <div class="card-header py-2"><h5 class="card-title mb-0">Thêm vật tư</h5></div>
+                        <div class="card-header py-2"><h5 class="card-title mb-0">Danh sách vật tư</h5></div>
                          <div class="card-body">
                             <form id="po-formAddMaterial" class="mb-3 d-none">
                                 <select class="form-control" id="po-materialName"></select>

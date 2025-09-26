@@ -15,7 +15,95 @@ var apps_waveHouse = [
 var dataPR;
 var dataMaterial;
 var dataBom;
-var dataLSX
+var dataLSX;
+var mockBatches = [
+    
+    // {
+    //     batchCode: "LSP-250911-002",
+    //     productCode: "SP-RAM-DDR5",
+    //     productName: "RAM DDR5 16GB",
+    //     bomId: "BOM_RAM_DDR5_V2.1",
+    //     lsx: "LSX-0988",
+    //     creationDate: "2025-09-11",
+    //     status: "Mới sản xuất",
+    //     active: 0,
+    //     // Identification Data
+    //     quantity: 482,
+    //     unit: "Thanh",
+    //     batchUnit: "Thùng",
+    //     identifiedQuantity: 22,
+    //     scannedData: {
+    //         pallet_1: {
+    //             carton_1: {
+    //                 layer_1: generateScannedItems(20, "P1-C1-L1"),
+    //                 layer_2: generateScannedItems(2, "P1-C1-L2"),
+    //             },
+    //         },
+    //     },
+    //     palletsPerContainer: null,
+    //     cartonsPerPallet: null,
+    //     layersPerCarton: 5,
+    //     itemsPerLayer: 20,
+    // }
+];
+var productionOrders = [
+    {
+        id: "LSX-0987",
+        productCode: "SP-CPU-I9",
+        productName: "CPU Intel Core i9",
+        bomId: "BOM_CPU_I9_V1.5",
+        specs: "14 nhân, 20 luồng",
+        quantity: 100,
+        unit: "Cái",
+        warranty: "36 tháng",
+    },
+    {
+        id: "LSX-0988",
+        productCode: "SP-RAM-DDR5",
+        productName: "RAM DDR5 16GB",
+        bomId: "BOM_RAM_DDR5_V2.1",
+        specs: "Kingston Fury, Bus 5200MHz",
+        quantity: 500,
+        unit: "Thanh",
+        warranty: "24 tháng",
+    },
+    {
+        id: "LSX-0989",
+        productCode: "SP-SSD-1TB",
+        productName: "SSD NVMe 1TB",
+        bomId: "BOM_SSD_NVME_V4.0",
+        specs: "Samsung 980 Pro",
+        quantity: 250,
+        unit: "Ổ",
+        warranty: "60 tháng",
+    },
+];
+var boms = [
+    {
+        id: "BOM_CPU_I9_V1.5",
+        productCode: "SP-CPU-I9",
+        productName: "CPU Intel Core i9",
+        specs: "14 nhân, 20 luồng",
+        unit: "Cái",
+        warranty: "36 tháng",
+    },
+    {
+        id: "BOM_RAM_DDR5_V2.1",
+        productCode: "SP-RAM-DDR5",
+        productName: "RAM DDR5 16GB",
+        specs: "Kingston Fury, Bus 5200MHz",
+        unit: "Thanh",
+        warranty: "24 tháng",
+    },
+    {
+        id: "BOM_SSD_NVME_V4.0",
+        productCode: "SP-SSD-1TB",
+        productName: "SSD NVMe 1TB",
+        specs: "Samsung 980 Pro",
+        unit: "Ổ",
+        warranty: "60 tháng",
+    },
+];
 // --- FUNCTIONS ---
 async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
@@ -59,15 +147,17 @@ async function renderApps(apps, containerId) {
         "GetDataDynamicWareHouse",
         "TYPE_QUERY='LSX'"
     );
-    dataLSX = groupProductDataWithArrayLSX(dataLSX);
+
+    dataLSX = await groupProductDataWithArrayLSX(dataLSX);
+
     console.log(dataLSX);
     
-    dataBom = groupProductDataWithArray(dataBom);
+    dataBom = await groupProductDataWithArray(dataBom);
 }
 
 function groupProductDataWithArray(sourceData) {
     const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
-
+    const ArrayBom = [];
     sourceData.forEach(item => {
         // Tìm xem sản phẩm đã có trong mảng kết quả chưa
         let existingProduct = resultArray.find(p => p.id === item.TRAN_NO);
@@ -100,28 +190,22 @@ function groupProductDataWithArray(sourceData) {
                 materials: [newMaterial] 
             };
             resultArray.push(newProduct);
+            ArrayBom.push({
+                id: item.TRAN_NO,
+                productCode: item.PRODUCT_ID,
+                productName: item.PRODUCT_ID,
+                specs: item.NOTE_VERSION,
+                unit: "Cái",
+                warranty: "60",
+            })
         }
     });
-    // productBOMs = resultArray;
+    boms = ArrayBom;
     return resultArray;
 }
-// let productionOrders = [
-//         {
-//             id: "LSX-24-001",
-//             product: "Tủ quần áo 3 cánh",
-//             quantity: 50,
-//             startDate: "2024-07-20",
-//             status: "completed",
-//             materials: [
-//                 { id: "GO_MDF", name: "Gỗ MDF", qty: 100 },
-//                 { id: "S_PU", name: "Sơn PU", qty: 20 },
-//                 { id: "BAN_LE", name: "Bản lề", qty: 150 },
-//             ],
-//         }
-//     ];
 function groupProductDataWithArrayLSX(sourceData) {
     const resultArray = [];
-
+    const ArrayLot = []
     sourceData.forEach(item => {
         // Kiểm tra xem LSX (TRAN_NO) đã có trong mảng kết quả chưa
         let existingOrder = resultArray.find(o => o.id === item.TRAN_NO);
@@ -133,6 +217,7 @@ function groupProductDataWithArrayLSX(sourceData) {
             qty: item.QUANTITY,
             cmt: item.WH_QUANTITY
         };
+        
 
         if (existingOrder) {
             // Nếu đã có LSX, thêm vật tư vào
@@ -149,13 +234,24 @@ function groupProductDataWithArrayLSX(sourceData) {
                 description: item.DESCRIPTION || "",
                 materials: [newMaterial]           // khởi tạo mảng materials
             };
+            ArrayLot.push({
+                id: item.TRAN_NO,
+                productCode: item.PRODUCT_ID,
+                productName: item.PRODUCT_NAME,
+                bomId: item.BOM_PRODUCT,
+                specs: "",
+                quantity: item.ORDER_QTY,
+                unit: "Cái",
+                warranty: "36",
+            });
             resultArray.push(newOrder);
         }
     });
-
+    productionOrders = ArrayLot;
+    console.log();
+    
     return resultArray;
 }
-
 
 function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
@@ -173,6 +269,7 @@ function connectAppWaveHouse(ID, NAME) {
             width: "100%",
             dropdownParent: $("#CREATELOT"), // tránh lỗi z-index khi trong modal
         });
+
     } else if (ID == "PRQRCODE") {
         runOptionS();
         showPrintOptions("detail");
@@ -297,153 +394,39 @@ var generateScannedItems = (count, prefix) =>
         { length: count },
         (_, i) => `${prefix}-item-${String(i + 1).padStart(4, "0")}`
     );
-var mockBatches = [
-    {
-        batchCode: "LSP-250911-001",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        bomId: "BOM_CPU_I9_V1.5",
-        lsx: "LSX-0987",
-        creationDate: "2025-09-11",
-        status: "Sẵn sàng nhập kho",
-        active: 0,
-        // Identification Data
-        quantity: 50000,
-        unit: "Cái",
-        batchUnit: "Container",
-        identifiedQuantity: 0,
-        scannedData: {},
-        palletsPerContainer: 10,
-        cartonsPerPallet: 25,
-        layersPerCarton: 10,
-        itemsPerLayer: 20,
-    },
-    {
-        batchCode: "LSP-250911-002",
-        productCode: "SP-RAM-DDR5",
-        productName: "RAM DDR5 16GB",
-        bomId: "BOM_RAM_DDR5_V2.1",
-        lsx: "LSX-0988",
-        creationDate: "2025-09-11",
-        status: "Mới sản xuất",
-        active: 0,
-        // Identification Data
-        quantity: 482,
-        unit: "Thanh",
-        batchUnit: "Thùng",
-        identifiedQuantity: 22,
-        scannedData: {
-            pallet_1: {
-                carton_1: {
-                    layer_1: generateScannedItems(20, "P1-C1-L1"),
-                    layer_2: generateScannedItems(2, "P1-C1-L2"),
+function mapProductionDataToBatches(productionData) {
+    return productionData.map(item => {
+        return {
+            batchCode: item.LOT_PRODUCT_CODE,
+            productCode: item.PRODUCT_CODE,
+            productName: item.PRODUCT_NAME,
+            bomId: item.BOM_PRODUCT,
+            lsx: item.PRODUCTION_ORDER,
+            // Xử lý chuỗi ngày tháng để chỉ lấy phần ngày
+            creationDate: item.DATE_CREATE.split('T')[0],
+            status: item.STATUS_NAME,
+            active: 0, 
+            // Identification Data
+            quantity: item.QUANTITY_PLAN,
+            unit: item.UNIT_NAME,
+            batchUnit: item.UNIT_LOT_ID,
+            identifiedQuantity: 0, // Giá trị mặc định
+            scannedData: {
+                pallet_1: {
+                    carton_1: {
+                        layer_1: generateScannedItems(20, "P1-C1-L1"),
+                        layer_2: generateScannedItems(2, "P1-C1-L2"),
+                    },
                 },
-            },
-        },
-        palletsPerContainer: null,
-        cartonsPerPallet: null,
-        layersPerCarton: 5,
-        itemsPerLayer: 20,
-    },
-    {
-        batchCode: "LSP-250910-001",
-        productCode: "SP-SSD-1TB",
-        productName: "SSD NVMe 1TB",
-        bomId: "BOM_SSD_NVME_V4.0",
-        lsx: "LSX-0989",
-        creationDate: "2025-09-10",
-        status: "Đã qua KCS",
-        active: 0,
-        // Identification Data
-        quantity: 120,
-        unit: "Ổ",
-        batchUnit: "Pallet",
-        identifiedQuantity: 0,
-        scannedData: {},
-        palletsPerContainer: null,
-        cartonsPerPallet: 3,
-        layersPerCarton: 4,
-        itemsPerLayer: 10,
-    },
-    {
-        batchCode: "LSP-250910-002",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        bomId: "BOM_CPU_I9_V1.5",
-        lsx: "LSX-0987",
-        creationDate: "2025-09-10",
-        status: "Đã hủy",
-        active: 0,
-        // Identification Data
-        quantity: 50,
-        unit: "Cái",
-        batchUnit: "Hộp",
-        identifiedQuantity: 0,
-        scannedData: {},
-        palletsPerContainer: null,
-        cartonsPerPallet: null,
-        layersPerCarton: null,
-        itemsPerLayer: null,
-    },
-];
-var productionOrders = [
-    {
-        id: "LSX-0987",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        bomId: "BOM_CPU_I9_V1.5",
-        specs: "14 nhân, 20 luồng",
-        quantity: 100,
-        unit: "Cái",
-        warranty: "36 tháng",
-    },
-    {
-        id: "LSX-0988",
-        productCode: "SP-RAM-DDR5",
-        productName: "RAM DDR5 16GB",
-        bomId: "BOM_RAM_DDR5_V2.1",
-        specs: "Kingston Fury, Bus 5200MHz",
-        quantity: 500,
-        unit: "Thanh",
-        warranty: "24 tháng",
-    },
-    {
-        id: "LSX-0989",
-        productCode: "SP-SSD-1TB",
-        productName: "SSD NVMe 1TB",
-        bomId: "BOM_SSD_NVME_V4.0",
-        specs: "Samsung 980 Pro",
-        quantity: 250,
-        unit: "Ổ",
-        warranty: "60 tháng",
-    },
-];
-var boms = [
-    {
-        id: "BOM_CPU_I9_V1.5",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        specs: "14 nhân, 20 luồng",
-        unit: "Cái",
-        warranty: "36 tháng",
-    },
-    {
-        id: "BOM_RAM_DDR5_V2.1",
-        productCode: "SP-RAM-DDR5",
-        productName: "RAM DDR5 16GB",
-        specs: "Kingston Fury, Bus 5200MHz",
-        unit: "Thanh",
-        warranty: "24 tháng",
-    },
-    {
-        id: "BOM_SSD_NVME_V4.0",
-        productCode: "SP-SSD-1TB",
-        productName: "SSD NVMe 1TB",
-        specs: "Samsung 980 Pro",
-        unit: "Ổ",
-        warranty: "60 tháng",
-    },
-];
+            }, // Giá trị mặc định
+            palletsPerContainer: item.PALLET_IN_CONTAINER,
+            cartonsPerPallet: item.CARTON_IN_PALLET,
+            layersPerCarton: item.CLASS_IN_CARTON, // Giả sử Class là Layer
+            itemsPerLayer: item.PRODUCT_IN_CLASS,
+        };
+    });
+}
+
 
 // --- Lấy các phần tử DOM ---
 var getDomElements = () => ({
@@ -609,7 +592,7 @@ var renderBatches = (batches) => {
                     <span class="small pe-none">Xóa</span>
                 </button>
             </div>
-            <div class="swipe-content bg-body-secondary position-relative z-1 p-3" style="transition: transform 0.2s ease-out; cursor: pointer;" data-code="${batch.batchCode
+            <div style="text-align: start;" class="swipe-content bg-body-secondary position-relative z-1 p-3" style="transition: transform 0.2s ease-out; cursor: pointer;" data-code="${batch.batchCode
             }">
                 <div class="d-flex justify-content-between align-items-start pe-none">
                     <div>
@@ -749,6 +732,8 @@ var setupFormForAdd = () => {
 };
 var setupFormForEdit = (batchCode) => {
     const batch = mockBatches.find((b) => b.batchCode === batchCode);
+    console.log(batch);
+    
     if (!batch) return;
     currentFormMode = "edit";
     editingBatchCode = batchCode;
@@ -1247,7 +1232,7 @@ var showDeclarationLevelsByUnit = (unit) => {
         levels.pallet.classList.remove("d-none");
         levels.carton.classList.remove("d-none");
         levels.layer.classList.remove("d-none");
-    } else if (unit === "Thùng") {
+    } else if (unit === "Thung") {
         levels.carton.classList.remove("d-none");
         levels.layer.classList.remove("d-none");
     }
@@ -1323,11 +1308,21 @@ var initializeApp = async () => {
         "DM_PRODUCT",
         "1=1"
     );
-    var dataLot = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
-        "WARRANTY_LOT",
-        "1=1"
+
+    var dataLot = await HOMEOSAPP.getApiServicePublic(
+        HOMEOSAPP.linkbase,
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='LOT'"
     );
+
+    const mockBatchesMulti = mapProductionDataToBatches(dataLot);
+    // mockBatches = mockBatchesMulti;
+    // console.log(mockBatchesMulti);
+    mockBatches = mockBatchesMulti
+    console.log(mockBatches);
+    console.log(mockBatchesMulti);
+    
+    
     if (dataPR.data) {
         mockProducts = mapProducts(dataPR.data);
     }
@@ -2554,9 +2549,35 @@ function initProductionOrderModule() {
             return;
         }
         newOrderData.materials.forEach((mat, index) => {
-            listEl.append(
-                `<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`
-            );
+            // Cấu trúc HTML mới cho mỗi list item
+            const materialHtml = `
+                <li class="list-group-item dark-theme-item">
+                    <div class="material-content">
+                        <div class="material-name">${mat.name}</div>
+                        <div class="material-details">
+                            <span class="material-qty">Số lượng: ${mat.qty}</span>
+                            <div class="cmt-group">
+                                <label class="cmt-label">Bù hao %:</label>
+                                <input type="number" class="form-control input-cmt" value="${mat.cmt}" data-index="${index}" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-delete-material" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </li>
+            `;
+            listEl.append(materialHtml);
+        });
+        listEl.on('change', '.input-cmt', function() {
+            const index = $(this).data('index');
+            // Dùng parseInt để đảm bảo giá trị là một con số
+            const newValue = parseInt($(this).val(), 10) || 0; 
+
+            // Cập nhật lại giá trị trong mảng dữ liệu gốc
+            newOrderData.materials[index].cmt = newValue;
+
+            console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
     }
     function renderEditedMaterials() {
@@ -2569,14 +2590,34 @@ function initProductionOrderModule() {
             return;
         }
         newOrderData.materials.forEach((mat, index) => {
-            listEl.append(
-                `<li class="list-group-item">
-                    <span>${mat.name} - SL: ${mat.qty}</span>
+            const materialHtml = `
+                <li class="list-group-item dark-theme-item">
+                    <div class="material-content">
+                        <div class="material-name">${mat.name}</div>
+                        <div class="material-details">
+                            <span class="material-qty">Số lượng: ${mat.qty}</span>
+                            <div class="cmt-group">
+                                <label class="cmt-label">Bù hao %:</label>
+                                <input type="number" class="form-control input-cmt" value="${mat.cmt}" data-index="${index}" min="0">
+                            </div>
+                        </div>
+                    </div>
                     <button class="btn-delete-material" data-index="${index}">
                         <i class="fas fa-trash"></i>
                     </button>
-                </li>`
-            );
+                </li>
+            `;
+            listEl.append(materialHtml);
+        });
+        listEl.on('change', '.input-cmt', function() {
+            const index = $(this).data('index');
+            // Dùng parseInt để đảm bảo giá trị là một con số
+            const newValue = parseInt($(this).val(), 10) || 0; 
+
+            // Cập nhật lại giá trị trong mảng dữ liệu gốc
+            newOrderData.materials[index].cmt = newValue;
+
+            console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
     }
     function getStatusInfo(status) {
@@ -2632,6 +2673,108 @@ function initProductionOrderModule() {
         }
     }
 
+    async function addOrEditLSX(type, dataLSX) {
+        try {
+            // --- BƯỚC 1: LẤY PR_KEY MỚI CHO BẢN GHI MASTER ---
+            // (Trong trường hợp EDIT, bạn sẽ không cần bước này mà dùng PR_KEY có sẵn)
+            const keyData = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "SYS_KEY",
+                "TABLE_NAME in ('PO_INFORMATION_MASTER', 'PO_INFORMATION_DETAIL')"
+            );
+            const FRKey = keyData.data.filter((o) => o.TABLE_NAME == 'PO_INFORMATION_MASTER')[0].LAST_NUM;
+            const FRKeyDetail = keyData.data.filter((o) => o.TABLE_NAME == 'PO_INFORMATION_DETAIL')[0].LAST_NUM;
+
+            // Lấy User ID hiện tại (ví dụ, bạn cần có cách lấy thông tin này)
+            const currentUserId = 'khai.nt'; // <-- THAY BẰNG ID USER THỰC TẾ
+
+            // --- BƯỚC 2: CHUẨN BỊ VÀ THÊM DỮ LIỆU VÀO BẢNG MASTER ---
+            const willInsertMaster = {
+                TRAN_NO: dataLSX.info.id,
+                TRAN_DATE: new Date(),
+                PO_NAME: dataLSX.info.id,
+                BOM_PRODUCT: dataLSX.info.id_product,
+                ORDER_DATE: new Date(dataLSX.info.startDate),
+                DELIVERY_DATE_PLN: new Date(dataLSX.info.startDate),
+                STATUS: 'NEW', // Chuyển đổi status text sang số
+                USER_ID: currentUserId,
+                DATASTATE: type,
+
+                // --- Các trường không có trong dataLSX, cung cấp giá trị mặc định ---
+                PR_DETAIL_ID: null,
+                PO_GROUP_ID: 'SX', // Ví dụ: Mặc định nhóm sản xuất
+                PO_TYPE_ID: 'LSX', // Ví dụ: Mặc định loại là Lệnh sản xuất
+                DELIVERY_DATE_ACT: null,
+                PAYMENT_TERM_CODE: '',
+                ORGANIZATION_ID: '0000', // Ví dụ: ID tổ chức mặc định
+                SALE_EMPLOYEE_ID: '',
+                SUPPORT_EMPLOYEE_ID: '',
+                SHIPPING_ADDRESS: '',
+                DESCRIPTION: `Lệnh sản xuất cho ${dataLSX.info.product}`,
+                ACTIVE: 1,
+            };
+            await HOMEOSAPP.add('PO_INFORMATION_MASTER', willInsertMaster);
+
+            // --- BƯỚC 3: CHUẨN BỊ VÀ THÊM DỮ LIỆU VÀO BẢNG DETAIL ---
+            // Bảng này mô tả sản phẩm chính của Lệnh sản xuất
+            const willInsertDetail = {
+                FR_KEY: FRKey,
+                PRODUCT_ID: dataLSX.info.product, // Tạm dùng tên, lý tưởng nên là ID sản phẩm
+                QUANTITY: parseInt(dataLSX.info.quantity, 10),
+                DELIVERY_DATE_PLN: new Date(dataLSX.info.startDate),
+                USER_ID: currentUserId,
+                DATASTATE: type,
+
+                // --- Các trường không có trong dataLSX, cung cấp giá trị mặc định ---
+                PR_PRODUCT_CODE: dataLSX.info.id_product,
+                STATUS: 'NEW',
+                PRICING: 0,
+                QUANTITY_ACT: 0,
+                UNIT_ID: 'CAI', // Ví dụ: Đơn vị mặc định là "Cái"
+                TAX_RATE: 0,
+                DELIVERY_DATE_ACT: null,
+                SHIPPING_ADDRESS: '',
+                NOTE: '',
+                ACTIVE: 1,
+            };
+            await HOMEOSAPP.add('PO_INFORMATION_DETAIL', willInsertDetail);
+
+            // --- BƯỚC 4: LẶP QUA VÀ THÊM DỮ LIỆU VÀO BẢNG BOM (VẬT TƯ) ---
+            // Dùng for...of để có thể sử dụng await bên trong vòng lặp
+            for (const material of dataLSX.materials) {
+                // Giả sử bạn có mảng dataMaterial để lấy UNIT_ID
+                // const dataItem = dataMaterial.data.find(item => item.ITEM_ID === material.id);
+                // const unitId = dataItem ? dataItem.UNIT_ID : 'CAI'; // Đơn vị mặc định nếu không tìm thấy
+
+                const willInsertBom = {
+                    FR_KEY: FRKeyDetail,
+                    ITEM_ID: material.id,
+                    QUANTITY: material.qty,
+                    // Lượng cần thiết = SL trên 1 sản phẩm * tổng SL sản phẩm
+                    QUANTITY_NEEDED: (material.qty + (material.qty * (material.cmt / 100))) * parseInt(dataLSX.info.quantity, 10), 
+                    NOTE: `Bù hao: ${material.cmt}%`, // Dùng trường cmt cho NOTE
+                    USER_ID: currentUserId,
+                    DATASTATE: type,
+                    WH_QUANTITY: material.cmt,
+                    
+                    // --- Các trường không có trong dataLSX, cung cấp giá trị mặc định ---
+                    PO_DETAIL_ID: null,
+                    REG_CODE: '',
+                    UNIT_ID: 'Cai', // Thay bằng unitId ở trên nếu có
+                    ACTIVE: 1,
+                    WH_UPDATE_DATE: null,
+                };
+                await HOMEOSAPP.add('PO_INFORMATION_BOM', willInsertBom);
+            }
+
+            toastr.success("Lưu thông tin Lệnh sản xuất thành công!");
+
+        } catch (err) {
+            console.error('Đã xảy ra lỗi khi lưu Lệnh sản xuất:', err);
+            toastr.error('Có lỗi xảy ra, không thể lưu Lệnh sản xuất.');
+        }
+    }
+
     // --- INITIALIZE SELECT2 ---
     $container
         .find("#po-productName, #po-editProductName")
@@ -2659,8 +2802,6 @@ function initProductionOrderModule() {
         navigateTo("#po-addView");
         const LSX_code = await HOMEOSAPP.getTranNo("", 'GET', 'PO_INFORMATION_MASTER');
         $container.find("#po-orderId").val(LSX_code);
-        console.log(LSX_code);
-        
     });
     $container.on("click", ".btn-back", function () {
         navigateTo("#po-listView");
@@ -2676,14 +2817,31 @@ function initProductionOrderModule() {
             alert("Vui lòng chọn một sản phẩm.");
             return;
         }
+        const dataBomFilter = dataBom.filter((o) => o.id == selectedProduct.id);
         newOrderData.info = {
             id: $container.find("#po-orderId").val(),
-            product: selectedProduct.text,
+            product: dataBomFilter[0].productName,
+            id_product: selectedProduct.id,
+            bom_product: selectedProduct.text,
             quantity: $container.find("#po-quantity").val(),
             startDate: $container.find("#po-startDate").val(),
             status: "new",
         };
-        const summaryHtml = `<p class="mb-1"><strong>Mã lệnh:</strong> ${newOrderData.info.id}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${newOrderData.info.product} (SL: ${newOrderData.info.quantity})</p>`;
+        
+        console.log(selectedProduct.id, dataBomFilter);
+        
+        dataBomFilter[0].materials.forEach(e => {
+            newOrderData.materials.push({
+                id: e.id,
+                name: e.name,
+                qty: e.qty,
+                cmt: e.cmt
+            });
+        });
+        console.log(newOrderData);
+        
+        
+        const summaryHtml = `<p class="mb-1"><strong>Mã lệnh:</strong> ${newOrderData.info.id}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${newOrderData.info.bom_product} (SL: ${newOrderData.info.quantity})</p>`;
         $container.find("#po-orderSummary").html(summaryHtml);
         const stepper1 = $container.find("#po-stepper-1");
         const stepper2 = $container.find("#po-stepper-2");
@@ -2721,14 +2879,17 @@ function initProductionOrderModule() {
             renderAddedMaterials();
         }
     );
+
     $container.on("click", "#po-btnSaveOrder", function () {
         productionOrders.unshift({
             ...newOrderData.info,
             materials: newOrderData.materials,
         });
-        renderOrderList();
-        navigateTo("#po-listView");
-        alert("Đã lưu lệnh sản xuất thành công!");
+        console.log(newOrderData);
+        addOrEditLSX('ADD', newOrderData)
+        // renderOrderList();
+        // navigateTo("#po-listView");
+        // alert("Đã lưu lệnh sản xuất thành công!");
     });
 
     // --- EDIT ORDER LOGIC ---
