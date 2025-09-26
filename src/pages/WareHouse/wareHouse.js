@@ -795,6 +795,8 @@ var fillFormWithData = (data) => {
         clearAutoFilledFields();
         return;
     }
+    console.log(data);
+    
     dom.productCode.value = data.productCode || "";
     dom.productName.value = data.productName || "";
     dom.bomDisplay.value = data.bomId || data.id || "";
