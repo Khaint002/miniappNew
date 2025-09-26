@@ -13,9 +13,11 @@ var apps_waveHouse = [
     { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true, },
 ];
 var dataPR;
-
+var dataMaterial;
+var dataBom;
+var dataLSX
 // --- FUNCTIONS ---
-function renderApps(apps, containerId) {
+async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = "";
@@ -40,53 +42,120 @@ function renderApps(apps, containerId) {
         </div>`;
         container.insertAdjacentHTML("beforeend", html);
     });
-    // // --- Theme Switcher Logic ---
-    // const themeToggle = document.getElementById('theme-checkbox');
-    // const htmlElement = document.documentElement;
-
-    // // Function to set the theme
-    // const setTheme = (theme) => {
-    //     htmlElement.setAttribute('data-bs-theme', theme);
-    //     localStorage.setItem('theme', theme);
-    //     themeToggle.checked = theme === 'dark';
-    // };
-
-    // // Event listener for the toggle
-    // themeToggle.addEventListener('change', () => {
-    //     if (themeToggle.checked) {
-    //         setTheme('dark');
-    //     } else {
-    //         setTheme('light');
-    //     }
-    // });
-
-    // // Check for saved theme in localStorage or system preference
-    // const savedTheme = localStorage.getItem('theme');
-    // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    // if (savedTheme) {
-    //     setTheme(savedTheme);
-    // } else if (prefersDark) {
-    //     setTheme('dark');
-    // } else {
-    //     setTheme('light');
-    // }
-
-    // // --- Greeting Logic ---
-    // const dateElement = document.getElementById('current-date');
-    // const now = new Date();
-    // const hours = now.getHours();
-
-    // let greeting = 'Chào bạn!';
-    // if (hours < 12) {
-    //     greeting = 'Chào buổi sáng!';
-    // } else if (hours < 18) {
-    //     greeting = 'Chào buổi chiều!';
-    // } else {
-    //     greeting = 'Chào buổi tối!';
-    // }
-    // dateElement.textContent = greeting;
+    dataMaterial = await HOMEOSAPP.getDM(
+        HOMEOSAPP.linkbase,
+        "DM_ITEM",
+        "1=1"
+    );
+    HOMEOSAPP.delay(100);
+    dataBom = await HOMEOSAPP.getApiServicePublic(
+        HOMEOSAPP.linkbase,
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='BOM'"
+    );
+    HOMEOSAPP.delay(100);
+    dataLSX = await HOMEOSAPP.getApiServicePublic(
+        HOMEOSAPP.linkbase,
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='LSX'"
+    );
+    dataLSX = groupProductDataWithArrayLSX(dataLSX);
+    console.log(dataLSX);
+    
+    dataBom = groupProductDataWithArray(dataBom);
 }
+
+function groupProductDataWithArray(sourceData) {
+    const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
+
+    sourceData.forEach(item => {
+        // Tìm xem sản phẩm đã có trong mảng kết quả chưa
+        let existingProduct = resultArray.find(p => p.id === item.TRAN_NO);
+
+        // Tạo thông tin vật tư từ item hiện tại
+        const newMaterial = {
+            id: item.ITEM_ID,
+            name: item.ITEM_NAME,
+            qty: item.QUANTITY,
+            cmt: item.QUNATITY_ADDING || 0
+        };
+
+        if (existingProduct) {
+            // Nếu sản phẩm đã tồn tại, chỉ cần thêm vật tư vào
+            existingProduct.materials.push(newMaterial);
+        } else {
+            // Nếu sản phẩm chưa tồn tại, tạo mới sản phẩm và thêm vào mảng kết quả
+            const newProduct = {
+                id: item.TRAN_NO,
+                name: `${item.BOM_PRODUCT}`,
+                productName: item.PRODUCT_ID,
+                version: item.VERSION || 'v1.0.0',
+                noteVersion: item.NOTE_VERSION || 'v1.0.0',
+                shortDesc: item.TRAN_NO || 'Không có mô tả',
+                designer: item.USER_ID,
+                sampleRequester: item.CUSTOMER_ID || 'Chưa có thông tin',
+                hardwareFinisher: item.HARDWARE_OF || 'Chưa có thông tin',
+                softwareUploader: item.SOFTWARE_OF || 'Chưa có thông tin',
+                // Khởi tạo mảng materials với vật tư đầu tiên
+                materials: [newMaterial] 
+            };
+            resultArray.push(newProduct);
+        }
+    });
+    // productBOMs = resultArray;
+    return resultArray;
+}
+// let productionOrders = [
+//         {
+//             id: "LSX-24-001",
+//             product: "Tủ quần áo 3 cánh",
+//             quantity: 50,
+//             startDate: "2024-07-20",
+//             status: "completed",
+//             materials: [
+//                 { id: "GO_MDF", name: "Gỗ MDF", qty: 100 },
+//                 { id: "S_PU", name: "Sơn PU", qty: 20 },
+//                 { id: "BAN_LE", name: "Bản lề", qty: 150 },
+//             ],
+//         }
+//     ];
+function groupProductDataWithArrayLSX(sourceData) {
+    const resultArray = [];
+
+    sourceData.forEach(item => {
+        // Kiểm tra xem LSX (TRAN_NO) đã có trong mảng kết quả chưa
+        let existingOrder = resultArray.find(o => o.id === item.TRAN_NO);
+
+        // Tạo thông tin vật tư từ item hiện tại
+        const newMaterial = {
+            id: item.ITEM_ID,
+            name: item.ITEM_NAME,
+            qty: item.QUANTITY,
+            cmt: item.WH_QUANTITY
+        };
+
+        if (existingOrder) {
+            // Nếu đã có LSX, thêm vật tư vào
+            existingOrder.materials.push(newMaterial);
+        } else {
+            // Nếu chưa có, tạo mới 1 đơn sản xuất
+            const newOrder = {
+                id: item.TRAN_NO,                  // giống "LSX-24-001"
+                product: item.BOM_PRODUCT,         // tên sản phẩm
+                quantity: item.ORDER_QTY || 0,     // số lượng sản xuất (nếu có)
+                startDate: item.TRAN_DATE || "",  // ngày bắt đầu (nếu có)
+                status: item.STATUS || "pending",  // trạng thái
+                designer: item.USER_ID,
+                description: item.DESCRIPTION || "",
+                materials: [newMaterial]           // khởi tạo mảng materials
+            };
+            resultArray.push(newOrder);
+        }
+    });
+
+    return resultArray;
+}
+
 
 function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
@@ -2389,56 +2458,40 @@ async function initializeMaterialInventoryApp() {
 
 function initProductionOrderModule() {
     const $container = $("#PRODUCTION_ORDER");
+    let materials;
+    let products;
     // --- DATA ---
-    let productionOrders = [
-        {
-            id: "LSX-24-001",
-            product: "Tủ quần áo 3 cánh",
-            quantity: 50,
-            startDate: "2024-07-20",
-            status: "completed",
-            materials: [
-                { name: "Gỗ MDF", qty: 100 },
-                { name: "Sơn PU", qty: 20 },
-                { name: "Bản lề", qty: 150 },
-            ],
-        },
-        {
-            id: "LSX-24-002",
-            product: "Bàn ăn 6 người",
-            quantity: 30,
-            startDate: "2024-07-22",
-            status: "inprogress",
-            materials: [
-                { name: "Gỗ Sồi", qty: 60 },
-                { name: "Dầu lau", qty: 15 },
-            ],
-        },
-        {
-            id: "LSX-24-003",
-            product: "Kệ TV treo tường",
-            quantity: 120,
-            startDate: "2024-07-25",
-            status: "new",
-            materials: [],
-        },
-    ];
+    let productionOrders = dataLSX;
+    // let productionOrders = [
+    //     {
+    //         id: "LSX-24-001",
+    //         product: "Tủ quần áo 3 cánh",
+    //         quantity: 50,
+    //         startDate: "2024-07-20",
+    //         status: "completed",
+    //         materials: [
+    //             { id: "GO_MDF", name: "Gỗ MDF", qty: 100 },
+    //             { id: "S_PU", name: "Sơn PU", qty: 20 },
+    //             { id: "BAN_LE", name: "Bản lề", qty: 150 },
+    //         ],
+    //     }
+    // ];
+    
     let newOrderData = { info: {}, materials: [] }; // Used for both add and edit
-    let products = [
-        { id: "P01", text: "Tủ quần áo 3 cánh" },
-        { id: "P02", text: "Bàn ăn 6 người" },
-        { id: "P03", text: "Kệ TV treo tường" },
-        { id: "P04", text: "Giường ngủ gỗ sồi" },
-        { id: "P05", text: "Bộ sofa phòng khách" },
-    ];
-    let materials = [
-        { id: "M01", text: "Gỗ MDF" },
-        { id: "M02", text: "Sơn PU" },
-        { id: "M03", text: "Bản lề" },
-        { id: "M04", text: "Gỗ Sồi" },
-        { id: "M05", text: "Dầu lau" },
-        { id: "M06", text: "Vít các loại" },
-    ];
+    if(dataBom){
+        const resultArray = [];
+        dataBom.forEach(item => {
+            resultArray.push({ id: item.id, text: item.name });
+        });
+        products = resultArray;;
+    }
+    if(dataMaterial.data){
+        const resultArray = [];
+        dataMaterial.data.forEach(item => {
+            resultArray.push({ id: item.ITEM_ID, text: item.ITEM_NAME });
+        });
+        materials = resultArray;;
+    }
     let editingOrderId = null;
 
     // --- FUNCTIONS ---
@@ -2517,17 +2570,22 @@ function initProductionOrderModule() {
         }
         newOrderData.materials.forEach((mat, index) => {
             listEl.append(
-                `<li class="list-group-item"><span>${mat.name} - SL: ${mat.qty}</span><button class="btn-delete-material" data-index="${index}"><i class="fas fa-trash"></i></button></li>`
+                `<li class="list-group-item">
+                    <span>${mat.name} - SL: ${mat.qty}</span>
+                    <button class="btn-delete-material" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </li>`
             );
         });
     }
     function getStatusInfo(status) {
         switch (status) {
-            case "new":
+            case "NEW":
                 return { text: "Mới", class: "status-new" };
-            case "inprogress":
+            case "INPRO":
                 return { text: "Đang SX", class: "status-inprogress" };
-            case "completed":
+            case "COMP":
                 return { text: "Hoàn thành", class: "status-completed" };
             default:
                 return { text: "Không xác định", class: "" };
@@ -2582,6 +2640,7 @@ function initProductionOrderModule() {
             placeholder: "Chọn hoặc tìm sản phẩm",
             allowClear: true,
         });
+        
     $container
         .find("#po-materialName, #po-editMaterialName")
         .select2({ data: materials, placeholder: "Chọn vật tư", allowClear: true });
@@ -2589,7 +2648,7 @@ function initProductionOrderModule() {
     // --- EVENT HANDLERS (GENERAL) ---
     $container.off(); // Detach all previous handlers within the container
 
-    $container.on("click", "#po-btnAddOrder", function (e) {
+    $container.on("click", "#po-btnAddOrder", async function (e) {
         e.preventDefault();
         $container.find("#po-formStep1")[0].reset();
         $container.find("#po-productName").val(null).trigger("change");
@@ -2598,6 +2657,10 @@ function initProductionOrderModule() {
         $container.find("#po-addStep2").hide();
         newOrderData = { info: {}, materials: [] };
         navigateTo("#po-addView");
+        const LSX_code = await HOMEOSAPP.getTranNo("", 'GET', 'PO_INFORMATION_MASTER');
+        $container.find("#po-orderId").val(LSX_code);
+        console.log(LSX_code);
+        
     });
     $container.on("click", ".btn-back", function () {
         navigateTo("#po-listView");
@@ -2879,28 +2942,16 @@ function initProductionOrderModule() {
 }
 
 async function initBomDeclarationModule() {
-    let productBOMs = [];
-    let materialsMasterList = [];
     const $container = $("#BOM_DECLARATION");
-    const dataBom = await HOMEOSAPP.getApiServicePublic(
-        HOMEOSAPP.linkbase,
-        "GetDataDynamicWareHouse",
-        "TYPE_QUERY='BOM'"
-    );
-    HOMEOSAPP.delay(100)
-    const dataMaterial = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
-        "DM_ITEM",
-        "1=1"
-    );
-    HOMEOSAPP.delay(100)
+    let productBOMs = dataBom;
+    let materialsMasterList = [];
+    
     const dataEmployee = await HOMEOSAPP.getDM(
         "https://central.homeos.vn/service_XD/service.svc",
         "HR_EMPLOYEE_INFO",
         "ACTIVE=1"
     );
 
-    console.log(dataMaterial.data);
     if(dataMaterial.data){
         const resultArray = [];
         dataMaterial.data.forEach(item => {
@@ -2911,105 +2962,13 @@ async function initBomDeclarationModule() {
     if(dataEmployee){
         populateEmployeeSelects(dataEmployee.data);
     }
-    if(dataBom){
-        groupProductDataWithArray(dataBom);
-    }
-    console.log(productBOMs);
-    // --- DATA ---
-    //  = [
-    //     {
-    //         id: "BOM001",
-    //         name: "BOM - iPhone 16 Pro",
-    //         productName: "iPhone 16 Pro",
-    //         version: "v1.0.2",
-    //         shortDesc: "BOM cho iPhone 16 Pro 256GB.",
-    //         designer: "Admin",
-    //         sampleRequester: "Steve",
-    //         hardwareFinisher: "Jony",
-    //         softwareUploader: "Craig",
-    //         materials: [
-    //             { name: "Vi mạch XYZ", qty: 1, cmt: 10 },
-    //             { name: 'Màn hình OLED 6.1"', qty: 1, cmt: 10 },
-    //         ],
-    //     },
-    //     {
-    //         id: "BOM002",
-    //         name: "BOM - Galaxy S25 Ultra",
-    //         productName: "Galaxy S25 Ultra",
-    //         version: "v2.1.0",
-    //         shortDesc: "BOM cho Galaxy S25 Ultra 512GB.",
-    //         designer: "Admin",
-    //         sampleRequester: "Phil",
-    //         hardwareFinisher: "Andy",
-    //         softwareUploader: "Hiroshi",
-    //         materials: [{ name: "Vi mạch ABC", qty: 1, cmt: 10 }],
-    //     },
-    //     {
-    //         id: "BOM003",
-    //         name: "BOM - Macbook Air M4",
-    //         productName: "Macbook Air M4",
-    //         version: "v1.0.0",
-    //         shortDesc: "BOM cho Macbook Air M4 13-inch.",
-    //         designer: "Team Apple",
-    //         sampleRequester: "Tim",
-    //         hardwareFinisher: "John",
-    //         softwareUploader: "Kevin",
-    //         materials: [{ name: "Chip M4", qty: 1, cmt: 10 }],
-    //     },
-    // ];
-    // let materialsMasterList = [
-    //     { id: "M01", text: "Vi mạch XYZ" },
-    //     { id: "M02", text: 'Màn hình OLED 6.1"' },
-    //     { id: "M03", text: "Vỏ Titan" },
-    //     { id: "M04", text: "Vi mạch ABC" },
-    //     { id: "M05", text: "Màn hình Dynamic AMOLED" },
-    //     { id: "M06", text: "Chip M4" },
-    //     { id: "M07", text: "Vỏ nhôm" },
-    // ];
+    console.log(dataBom);
+    
     let tempBomData = {};
     let editingBomId = null;
 
     // --- RENDER FUNCTIONS ---
-    function groupProductDataWithArray(sourceData) {
-        const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
-
-        sourceData.forEach(item => {
-            // Tìm xem sản phẩm đã có trong mảng kết quả chưa
-            let existingProduct = resultArray.find(p => p.id === item.TRAN_NO);
-
-            // Tạo thông tin vật tư từ item hiện tại
-            const newMaterial = {
-                id: item.ITEM_ID,
-                name: item.ITEM_NAME,
-                qty: item.QUANTITY,
-                cmt: item.QUNATITY_ADDING || 0
-            };
-
-            if (existingProduct) {
-                // Nếu sản phẩm đã tồn tại, chỉ cần thêm vật tư vào
-                existingProduct.materials.push(newMaterial);
-            } else {
-                // Nếu sản phẩm chưa tồn tại, tạo mới sản phẩm và thêm vào mảng kết quả
-                const newProduct = {
-                    id: item.TRAN_NO,
-                    name: `${item.BOM_PRODUCT}`,
-                    productName: item.PRODUCT_ID,
-                    version: item.VERSION || 'v1.0.0',
-                    noteVersion: item.NOTE_VERSION || 'v1.0.0',
-                    shortDesc: item.TRAN_NO || 'Không có mô tả',
-                    designer: item.USER_ID,
-                    sampleRequester: item.CUSTOMER_ID || 'Chưa có thông tin',
-                    hardwareFinisher: item.HARDWARE_OF || 'Chưa có thông tin',
-                    softwareUploader: item.SOFTWARE_OF || 'Chưa có thông tin',
-                    // Khởi tạo mảng materials với vật tư đầu tiên
-                    materials: [newMaterial] 
-                };
-                resultArray.push(newProduct);
-            }
-        });
-        productBOMs = resultArray;
-        return resultArray;
-    }
+    
 
     async function populateEmployeeSelects(data) {
         // 1. Tạo một chuỗi HTML chứa tất cả các thẻ <option>
@@ -3039,10 +2998,10 @@ async function initBomDeclarationModule() {
                 console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
             }
         });
-        const optionsHtmlProduct = dataPR.data.map( product => {
+        let optionsHtmlProduct = ` <option value="">-- Chọn sản phẩm --</option>
+        ` + dataPR.data.map(product => {
             return `<option value="${product.PRODUCT_CODE}">${product.PRODUCT_NAME}</option>`;
         }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
-        console.log(optionsHtmlProduct);
         
         // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
         const selectIdsProduct = [
@@ -3071,8 +3030,9 @@ async function initBomDeclarationModule() {
                     );
                     if(dataProduct.data.length > 0){
                         $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
+                        $container.find("#editBomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                     } else {
-                        $container.find("#bomVersion").val(selectedValue+"_v01");
+                        $container.find("#editBomVersion").val(selectedValue+"_v01");
                     }
                     console.log(dataProduct);
                     
@@ -3087,6 +3047,7 @@ async function initBomDeclarationModule() {
         $container.find(".page").removeClass("active");
         $container.find(pageId).addClass("active");
     }
+
     function renderBOMList() {
         const listEl = $container.find("#bomListContainer");
         listEl.empty();
@@ -3099,6 +3060,7 @@ async function initBomDeclarationModule() {
             listEl.append(bomHtml);
         });
     }
+
     function renderMaterialList(listId, materials) {
         const listEl = $container.find(listId);
         listEl.empty();
@@ -3114,6 +3076,7 @@ async function initBomDeclarationModule() {
             );
         });
     }
+
     function renderBOMDetail(bomId) {
         const bom = productBOMs.find((b) => b.id === bomId);
         if (!bom) return;
@@ -3147,6 +3110,7 @@ async function initBomDeclarationModule() {
         }
         setTimeout(() => updateTabIndicator($("#detailTabs")), 50);
     }
+
     function resetStepper() {
         const stepper1 = $container.find("#stepper-1"),
             stepper2 = $container.find("#stepper-2");
@@ -3155,6 +3119,7 @@ async function initBomDeclarationModule() {
         stepper1.find(".step-counter").html("1");
         stepper2.find(".step-counter").html("2");
     }
+
     function populateEditForm(bom) {
         $container.find("#editBomName").val(bom.name);
         $container.find("#editBomProductName").val(bom.productName);
@@ -3179,6 +3144,7 @@ async function initBomDeclarationModule() {
             .removeClass("show active");
         setTimeout(() => updateTabIndicator($container.find("#editTabs")), 50);
     }
+
     function updateTabIndicator(tabsContainer) {
         const activeTab = tabsContainer.find(".tab-item.active");
         const indicator = tabsContainer.find(".tab-indicator");
@@ -3196,10 +3162,9 @@ async function initBomDeclarationModule() {
             "SYS_KEY",
             "TABLE_NAME='PRODUCT_PUBLISH'"
         );
-        console.log(dataBom);
         
         const willInsertData = {
-            TRAN_NO: await HOMEOSAPP.getTranNo(dataBom.productName+"_[DAY][MONTH][YEAR]"), 
+            TRAN_NO: await HOMEOSAPP.getTranNo(dataBom.productName+"_[DAY][MONTH][YEAR]", ''), 
             TRAN_ID: '',
             TRAN_DATE: new Date(),
             PRODUCT_ID: dataBom.productName,
@@ -3219,6 +3184,31 @@ async function initBomDeclarationModule() {
             DATASTATE: type,
         };
         
+        const willInsertDataVersion = {
+            FR_KEY: dataPR_key.data[0].LAST_NUM,
+            TRAN_DATE: new Date(),
+            VERSION: dataBom.version,
+            NOTE: dataBom.noteVersion,
+            USER_ID: dataBom.designer,
+            DATASTATE: type,
+        };
+
+        HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData).then(async data => {
+            try {
+                toastr.success("Lưu thông tin BOM thành công!");
+                
+            } catch (e) { }
+        }).catch(err => {
+            console.error('Error:', err);
+        });
+        HOMEOSAPP.add('PRODUCT_PUBLISH_VERSION', willInsertDataVersion).then(async data => {
+            try {
+            } catch (e) { }
+        }).catch(err => {
+            console.error('Error:', err);
+        });
+        
+        
         dataBom.materials.forEach(e => {
             const dataItem = dataMaterial.data.filter(item => item.ITEM_ID === e.id);
             const willInsertData_detail = {
@@ -3236,17 +3226,14 @@ async function initBomDeclarationModule() {
                 USER_ID: dataBom.designer,
                 DATASTATE: type
             }
-            console.log(willInsertData_detail);
+            HOMEOSAPP.add('PRODUCT_PUBLISH_DETAIL', willInsertData_detail).then(async data => {
+                try {
+                } catch (e) { }
+            }).catch(err => {
+                console.error('Error:', err);
+            });
+            HOMEOSAPP.delay(200);
         });
-        
-
-        // HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData).then(async data => {
-        //     try {
-        //         toastr.success("Quét QR và lưu thông tin thành công!");
-        //     } catch (e) { }
-        // }).catch(err => {
-        //     console.error('Error:', err);
-        // });
     }
 
     // --- INITIALIZE SELECT2 ---
@@ -3282,7 +3269,7 @@ async function initBomDeclarationModule() {
             name: $container.find("#bomName").val(),
             productName: $container.find("#bomProductName").val(),
             shortDesc: $container.find("#bomShortDesc").val(),
-            // version: $container.find("#bomVersion").val(),
+            version: $container.find("#bomVersion").val(),
             noteVersion: $container.find("#bomDescVersion").val(),
             designer: $container.find("#bomDesigner").val(),
             sampleRequester: $container.find("#bomSampleRequester").val(),
@@ -3339,9 +3326,8 @@ async function initBomDeclarationModule() {
         const newBom = { ...tempBomData.info, materials: tempBomData.materials };
         productBOMs.unshift(newBom);
         addOrEditBom('ADD', newBom);
-        // renderBOMList();
-        // navigateTo("#bomListView");
-        // alert("Đã lưu BOM thành công!");
+        renderBOMList();
+        navigateTo("#bomListView");
     });
 
     // Edit BOM Logic

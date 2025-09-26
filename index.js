@@ -1750,17 +1750,53 @@ HOMEOSAPP.addObj = function(type, code) {
     }
 }
 
-HOMEOSAPP.getTranNo = async function(value){
+HOMEOSAPP.updateTranNo = function(result, tableName, tranNo, lengthKey) {
+    const willInsertData = {
+        PR_KEY: 17,
+        TABLE_NAME: tableName,
+        TRAN_NO: tranNo,
+        ORGANIZATION_ID: '',
+        AUTO_KEY: result,
+        LENGTH_KEY: lengthKey,
+        DATASTATE: "EDIT",
+    };
+    console.log(willInsertData);
+    
+    HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData);
+}
+
+HOMEOSAPP.getTranNo = async function(value, TYPE, table_name){
     try {
-        let temp = value;
-        temp = temp.replace(/\[YEAR\]/g, (new Date()).getFullYear());
-        temp = temp.replace(/\[MONTH\]/g, ((new Date()).getMonth() + 1).toString().padStart(2, '0'));
-        temp = temp.replace(/\[DAY\]/g, (new Date()).getDate().toString().padStart(2, '0'));
-        temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
-        temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
-        temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+        if(TYPE == 'GET'){
+            const data = await HOMEOSAPP.getDM(HOMEOSAPP.linkbase, 'SYS_TRAN_NO', "TABLE_NAME='"+table_name+"'");
+            const state = data.data
+            console.log(state);
+            let temp = state[0].TRAN_NO || null;
+            temp = temp.replace(/\[YEAR\]/g, (new Date()).getFullYear());
+            temp = temp.replace(/\[MONTH\]/g, ((new Date()).getMonth() + 1).toString().padStart(2, '0'));
+            temp = temp.replace(/\[DAY\]/g, (new Date()).getDate().toString().padStart(2, '0'));
+            temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
+            temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
+            temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+            let auto_key = state[0].AUTO_KEY;
+            auto_key += 1;
+            const code = temp.replace(/\[AUTO_KEY\]/g, (auto_key).toString().padStart(state[0].LENGTH_KEY, '0'));
+            console.log(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
+            
+            // updateTranNo(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
+            return code; 
+        } else {
+            let temp = value;
+            temp = temp.replace(/\[YEAR\]/g, (new Date()).getFullYear());
+            temp = temp.replace(/\[MONTH\]/g, ((new Date()).getMonth() + 1).toString().padStart(2, '0'));
+            temp = temp.replace(/\[DAY\]/g, (new Date()).getDate().toString().padStart(2, '0'));
+            temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
+            temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
+            temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+            
+            return temp;
+        }
         
-        return temp;
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
     }
