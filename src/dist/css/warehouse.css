@@ -280,7 +280,8 @@
     padding: 4px !important;
     background-color: #1e1e1e !important; /* nền tối cho cả group */
     border-radius: 999px !important;
-    display: inline-flex !important;
+    /* display: inline-flex !important; */
+    display: none;
     gap: 2px !important;
 }
 

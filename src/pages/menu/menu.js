@@ -137,6 +137,7 @@ async function pickApp(type) {
     HOMEOSAPP.objApp = app;
     switch (app.MENU_TYPE) {
         case 'LOADMY':
+            $("#loading-popup").show();
             HOMEOSAPP.loadPage(app.MENU_LINK)
             break;
 

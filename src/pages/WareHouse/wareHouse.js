@@ -46,64 +46,9 @@ var mockBatches = [
     //     itemsPerLayer: 20,
     // }
 ];
-var productionOrders = [
-    {
-        id: "LSX-0987",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        bomId: "BOM_CPU_I9_V1.5",
-        specs: "14 nhân, 20 luồng",
-        quantity: 100,
-        unit: "Cái",
-        warranty: "36 tháng",
-    },
-    {
-        id: "LSX-0988",
-        productCode: "SP-RAM-DDR5",
-        productName: "RAM DDR5 16GB",
-        bomId: "BOM_RAM_DDR5_V2.1",
-        specs: "Kingston Fury, Bus 5200MHz",
-        quantity: 500,
-        unit: "Thanh",
-        warranty: "24 tháng",
-    },
-    {
-        id: "LSX-0989",
-        productCode: "SP-SSD-1TB",
-        productName: "SSD NVMe 1TB",
-        bomId: "BOM_SSD_NVME_V4.0",
-        specs: "Samsung 980 Pro",
-        quantity: 250,
-        unit: "Ổ",
-        warranty: "60 tháng",
-    },
-];
-var boms = [
-    {
-        id: "BOM_CPU_I9_V1.5",
-        productCode: "SP-CPU-I9",
-        productName: "CPU Intel Core i9",
-        specs: "14 nhân, 20 luồng",
-        unit: "Cái",
-        warranty: "36 tháng",
-    },
-    {
-        id: "BOM_RAM_DDR5_V2.1",
-        productCode: "SP-RAM-DDR5",
-        productName: "RAM DDR5 16GB",
-        specs: "Kingston Fury, Bus 5200MHz",
-        unit: "Thanh",
-        warranty: "24 tháng",
-    },
-    {
-        id: "BOM_SSD_NVME_V4.0",
-        productCode: "SP-SSD-1TB",
-        productName: "SSD NVMe 1TB",
-        specs: "Samsung 980 Pro",
-        unit: "Ổ",
-        warranty: "60 tháng",
-    },
-];
+var productionOrders = [];
+var boms = [];
+
 // --- FUNCTIONS ---
 async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
@@ -153,6 +98,7 @@ async function renderApps(apps, containerId) {
     console.log(dataLSX);
     
     dataBom = await groupProductDataWithArray(dataBom);
+    $("#loading-popup").hide();
 }
 
 function groupProductDataWithArray(sourceData) {
