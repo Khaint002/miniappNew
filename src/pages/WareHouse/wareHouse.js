@@ -231,7 +231,9 @@ async function onScanSuccess(decodedText, decodedResult) {
 
         if(checkQRcode){
             //dom.inputs.itemsPerLayer
-            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton, dom.inputs.cartonsPerPallet, dom.inputs.palletsPerContainer);
+            console.log(dom.inputs.layersPerCarton.value, dom.inputs.cartonsPerPallet.value);
+            
+            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton.value, dom.inputs.cartonsPerPallet.value, dom.inputs.palletsPerContainer.value);
             
             console.log(data);
             renderScannedData(data);
