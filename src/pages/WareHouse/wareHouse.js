@@ -101,6 +101,15 @@ async function renderApps(apps, containerId) {
     $("#loading-popup").hide();
 }
 
+$("#start-scan-button").off("click").click(function () {
+    if(typeof window.ScanQR == "function"){
+        ScanQRcodeByZalo();
+    } else {
+        startQRcode();
+    }
+});
+
+
 function groupProductDataWithArray(sourceData) {
     const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
     const ArrayBom = [];
@@ -1276,7 +1285,7 @@ var initializeApp = async () => {
     }
 
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
-    idScanModal = new bootstrap.Modal(dom.idScanModalEl);
+    // idScanModal = new bootstrap.Modal(dom.idScanModalEl);
     appToast = new bootstrap.Toast(dom.toastEl);
     addEventListeners();
     renderBatches(mockBatches);
