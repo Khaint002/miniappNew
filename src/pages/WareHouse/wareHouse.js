@@ -12,10 +12,12 @@ var apps_waveHouse = [
     { MENU_ID: "BOM_DECLARATION", MENU_NAME: "Khai báo BOM", MENU_ICON: "bi-diagram-3", MENU_BGCOLOR_CLASS: "bg-secondary", DESCRIPTION: "Định mức nguyên vật liệu", VISIBLE: true, },
     { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true, },
 ];
+var currentCameraIndex = 0;
 var dataPR;
 var dataMaterial;
 var dataBom;
 var dataLSX;
+var dataDetailLot;
 var mockBatches = [
     
     // {
@@ -35,8 +37,8 @@ var mockBatches = [
     //     scannedData: {
     //         pallet_1: {
     //             carton_1: {
-    //                 layer_1: generateScannedItems(20, "P1-C1-L1"),
-    //                 layer_2: generateScannedItems(2, "P1-C1-L2"),
+    //                 layer_1: generateScannedItems(1, "P1-C1-L1"),
+    //                 layer_2: generateScannedItems(1, "P1-C1-L2"),
     //             },
     //         },
     //     },
@@ -101,6 +103,7 @@ async function renderApps(apps, containerId) {
     $("#loading-popup").hide();
 }
 
+// Scan QR code
 $("#start-scan-button").off("click").click(function () {
     if(typeof window.ScanQR == "function"){
         ScanQRcodeByZalo();
@@ -109,7 +112,306 @@ $("#start-scan-button").off("click").click(function () {
     }
 });
 
+function startQRcode() {
+    $("#result-form-total, #result-form-title").addClass("d-none");
+    $("#result-form-loading, #result-form-stationID, #result-form-stationName").removeClass("d-none");
+    $("#qr-popup").show();
 
+    // Lấy danh sách camera và bắt đầu quét
+    Html5Qrcode.getCameras().then(_devices => {
+        devices = _devices; // Lưu lại danh sách camera
+        if (devices && devices.length) {
+            if (devices.length == 1) {
+                startScanW(devices[currentCameraIndex].id, "user");  // Bắt đầu quét với camera đầu tiên
+            } else {
+                startScanW(devices[currentCameraIndex].id, "environment");
+            }
+        } else {
+            console.error("Không tìm thấy thiết bị camera nào.");
+        }
+    }).catch(err => {
+        console.error("Lỗi khi lấy danh sách camera: ", err);
+    });
+}
+
+async function startScanW(cameraId, cam) {
+    currentCamera = cam;
+    html5QrCode = new Html5Qrcode("qr-reader");
+    html5QrCode.start(
+        cameraId,
+        {
+            fps: 30,    // Số khung hình trên giây
+            qrbox: { width: 250, height: 250 },  // Kích thước khung quét QR
+            aspectRatio: 1.7, // Đặt tỉ lệ khung hình
+            videoConstraints: {
+                // width: { ideal: 3840 }, // Độ phân giải video 4k
+                // height: { ideal: 2160 },
+                width: { ideal: 1920 }, // Độ phân giải video 1080p
+                height: { ideal: 1080 },
+                // width: { ideal: 2560 }, // Độ phân giải video 2k 
+                // height: { ideal: 1440 },
+                facingMode: { exact: cam },
+                advanced: [{ zoom: 2 }]
+            }
+        },
+        onScanSuccess,
+        onScanFailure
+    ).then(() => {
+        isScannerRunning = true;  // Đánh dấu scanner đang chạy
+        setTimeout(() => {
+            if (typeQR == 1) {
+                $('#qr-shaded-region').css('border-width', '35vh 10vh');
+                // $('#qr-shaded-region').attr('style', 'border-width: 35vh 10vh !important;');
+            } else {
+                $('#qr-shaded-region').css('border-width', '36vh 13vh');
+                // $('#qr-shaded-region').attr('style', 'border-width: 40vh 15vh !important;');
+            }
+        }, 100);
+    }).catch(err => {
+        console.error("Lỗi khi khởi động camera: ", err);
+    });
+
+}
+
+async function ScanQRcodeByZalo() {
+    const testDataScan = await window.ScanQR();
+    if(testDataScan){
+        onScanSuccess(testDataScan);
+    }
+}
+
+async function onScanSuccess(decodedText, decodedResult) {
+    ['result-form-total', 'result-product', 'result-condition'].forEach(id => document.getElementById(id).classList.add('d-none'));
+    if (isScannerRunning) {
+        html5QrCode.stop().then(ignore => {
+            isScannerRunning = false;  // Đánh dấu scanner đã dừng
+            document.getElementById("result-form").classList.remove("d-none");
+        }).catch(err => {
+            console.error("Lỗi khi dừng camera sau khi quét thành công: ", err);
+        });
+    } else {
+        $("#qr-popup").show();
+        document.getElementById("result-form").classList.remove("d-none");
+    }
+    const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+    let data;
+    let domain;
+    let workstation;
+    let checkQRcode;
+
+    if (urlPattern.test(decodedText)) {
+        const urlObj = new URL(decodedText)
+        const param = new URLSearchParams(urlObj.search);
+        const paramObject = {};
+        param.forEach((value, key) => {
+            paramObject[key] = value;
+        });
+        console.log(paramObject);
+        
+        if(paramObject.CK){
+            const dataQRcode = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "CK_CODE='"+paramObject.CK+"'"
+            );
+            console.log(dataQRcode);
+            decodedText = dataQRcode.data[0].QR_CODE
+            checkQRcode = dataQRcode.data[0].QR_CODE.split(',');
+        } 
+
+        if(checkQRcode){
+            //dom.inputs.itemsPerLayer
+            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton, dom.inputs.cartonsPerPallet, dom.inputs.palletsPerContainer);
+            
+            console.log(data);
+            renderScannedData(data);
+            
+        }
+        // else if(paramObject.CID){
+        //     decodedText = QRcode
+        //     const workstationID = url.searchParams.get("workstationID");
+        //     const QRcode = url.searchParams.get("QRcode");
+        //     decodedText = QRcode
+        //     console.log(decodedText);
+        //     checkQRcode = QRcode.split(',');
+        // }
+        
+    } else {
+        checkQRcode = decodedText.split(',');
+    }
+}
+function onScanFailure(error) {
+    // Xử lý lỗi (nếu cần)
+}
+$("#close-scanner").off("click").click(function () {
+    if (isScannerRunning) {
+        html5QrCode.stop().then(ignore => {
+            isScannerRunning = false;  // Đánh dấu scanner đã dừng
+            $('#qr-popup').hide() // Đóng popup
+        }).catch(err => {
+            console.error("Lỗi khi dừng quét QR: ", err);
+        });
+    } else {
+        $('#qr-popup').hide() // Nếu không có quét đang chạy, chỉ đóng popup
+    }
+});
+
+$("#upload-qr").off("click").click(function () {
+    $("#file-input").click();  // Mở hộp thoại chọn file
+});
+
+$("#file-input").change(function (event) {
+    var file = event.target.files[0];  // Đảm bảo lấy file đúng
+    if (file) {
+        // Dừng quét camera trước khi quét file
+        if (isScannerRunning) {
+            html5QrCode.stop().then(function () {
+                isScannerRunning = false;  // Đánh dấu scanner đã dừng
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = new Image();
+                    img.onload = function () {
+                        // Quét QR từ hình ảnh đã tải lên
+                        html5QrCode.scanFile(file).then(async decodedText => {  // Sửa tại đây
+                            console.log(decodedText);
+                            
+                            document.getElementById("result-form").classList.remove("d-none");
+                            const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+                            let data;
+                            let domain;
+                            let workstation;
+                            let checkQRcode;
+                            
+                            if (urlPattern.test(decodedText)) {
+                                const urlObj = new URL(decodedText)
+                                const param = new URLSearchParams(urlObj.search);
+                                const paramObject = {};
+                                param.forEach((value, key) => {
+                                    paramObject[key] = value;
+                                });
+                                console.log(paramObject);
+                                
+                                if(paramObject.CK){
+                                    const dataQRcode = await HOMEOSAPP.getDM(
+                                        "https://central.homeos.vn/service_XD/service.svc",
+                                        "DM_QRCODE",
+                                        "CK_CODE='"+paramObject.CK+"'"
+                                    );
+                                    console.log(dataQRcode);
+                                    decodedText = dataQRcode.data[0].QR_CODE
+                                    checkQRcode = dataQRcode.data[0].QR_CODE.split(',');
+                                }
+
+                                
+                            } else {
+                                checkQRcode = decodedText.split(',');
+                            }
+                            if(checkQRcode){
+                                //dom.inputs.itemsPerLayer
+                                const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton, dom.inputs.cartonsPerPallet, dom.inputs.palletsPerContainer);
+                                
+                                console.log(data);
+                                renderScannedData(data);
+                                
+                            }
+                            $('#result-form').addClass('d-none');
+                        });
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);  // Đọc hình ảnh từ file
+            }).catch(err => {
+                console.error("Lỗi khi dừng camera: ", err);
+            });
+        } else {
+            // Nếu không có scanner đang chạy, quét trực tiếp từ hình ảnh
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    html5QrCode.scanFile(file).then(decodedText => {
+                        $("#result").text("Kết quả quét: " + decodedText); // Hiển thị kết quả
+                    }).catch(err => {
+                        $("#result").text("Không thể quét QR từ hình ảnh.");
+                        console.error("Lỗi khi quét hình ảnh QR: ", err);
+                    });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);  // Đọc hình ảnh từ file
+        }
+    }
+});
+
+function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton = 3, maxCartonsPerPallet = 1, maxPallets = 1) {
+  // Kiểm tra nếu đã tồn tại
+  for (let palletKey in data) {
+    let pallet = data[palletKey];
+    for (let cartonKey in pallet) {
+      let carton = pallet[cartonKey];
+      for (let layerKey in carton) {
+        if (carton[layerKey].includes(productCode)) {
+          console.log("Sản phẩm đã tồn tại trong", palletKey, cartonKey, layerKey);
+          return data;
+        }
+      }
+    }
+  }
+
+  // Nếu chưa tồn tại → tìm chỗ để thêm
+  let palletCount = Object.keys(data).length;
+  let lastPalletKey = `pallet_${palletCount}`;
+  let lastPallet = data[lastPalletKey];
+
+  if (!lastPallet || Object.keys(lastPallet).length >= maxCartonsPerPallet) {
+    // tạo pallet mới
+    if (palletCount >= maxPallets) {
+      console.log("Đã đạt giới hạn pallet!");
+    }
+    lastPalletKey = `pallet_${palletCount + 1}`;
+    data[lastPalletKey] = {};
+    lastPallet = data[lastPalletKey];
+  }
+
+  let cartonCount = Object.keys(lastPallet).length;
+  let lastCartonKey = `carton_${cartonCount}`;
+  let lastCarton = lastPallet[lastCartonKey];
+
+  if (!lastCarton || Object.keys(lastCarton).length >= maxLayersPerCarton) {
+    // tạo carton mới
+    if (cartonCount >= maxCartonsPerPallet) {
+      console.log("Đã đạt giới hạn carton trong pallet!");
+    }
+    lastCartonKey = `carton_${cartonCount + 1}`;
+    lastPallet[lastCartonKey] = {};
+    lastCarton = lastPallet[lastCartonKey];
+  }
+
+  let layerKeys = Object.keys(lastCarton).sort((a, b) => {
+    return parseInt(a.split("_")[1]) - parseInt(b.split("_")[1]);
+  });
+
+  for (let key of layerKeys) {
+    if (lastCarton[key].length < maxItemsPerLayer) {
+      lastCarton[key].push(productCode);
+      console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey, key);
+      return data;
+    }
+  }
+
+  // 5. Nếu tất cả layer đều đầy → tạo layer mới
+  let layerCount = layerKeys.length;
+  if (layerCount >= maxLayersPerCarton) {
+    toast.error("số lượng cần quét đã đủ");
+  }
+
+  let newLayerKey = `layer_${layerCount + 1}`;
+  lastCarton[newLayerKey] = [productCode];
+  console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey);
+  return data;
+}
+
+// ---------------------------------------------------------------------
 function groupProductDataWithArray(sourceData) {
     const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
     const ArrayBom = [];
@@ -369,8 +671,7 @@ function mapProductionDataToBatches(productionData) {
             scannedData: {
                 pallet_1: {
                     carton_1: {
-                        layer_1: generateScannedItems(20, "P1-C1-L1"),
-                        layer_2: generateScannedItems(2, "P1-C1-L2"),
+                        layer_1: generateScannedItems(1, "P1-C1-L1")
                     },
                 },
             }, // Giá trị mặc định
@@ -926,6 +1227,8 @@ var handleDeclarationChange = () => {
 };
 
 var renderScannedData = (data) => {
+    console.log(data);
+    dataDetailLot = data;
     const totalCount = Object.values(data).reduce(
         (pAcc, cartons) =>
             pAcc +
