@@ -231,9 +231,9 @@ async function onScanSuccess(decodedText, decodedResult) {
 
         if(checkQRcode){
             //dom.inputs.itemsPerLayer
-            console.log(dom.inputs.layersPerCarton.value, dom.inputs.cartonsPerPallet.value);
+            console.log(dom.inputs.layersPerCarton.value);
             
-            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton.value, 1, 1);
+            const data = addProduct(dataDetailLot, decodedText, 2, 1, 1, 1);
             
             console.log(data);
             renderScannedData(data);
@@ -380,10 +380,12 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
     // tạo pallet mới
     if (palletCount >= maxPallets) {
       console.log("Đã đạt giới hạn pallet!");
+
+    } else {
+        lastPalletKey = `pallet_${palletCount + 1}`;
+        data[lastPalletKey] = {};
+        lastPallet = data[lastPalletKey];
     }
-    lastPalletKey = `pallet_${palletCount + 1}`;
-    data[lastPalletKey] = {};
-    lastPallet = data[lastPalletKey];
   }
 
   let cartonCount = Object.keys(lastPallet).length;
@@ -394,10 +396,12 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
     // tạo carton mới
     if (cartonCount >= maxCartonsPerPallet) {
       console.log("Đã đạt giới hạn carton trong pallet!");
+    } else {
+        lastCartonKey = `carton_${cartonCount + 1}`;
+        lastPallet[lastCartonKey] = {};
+        lastCarton = lastPallet[lastCartonKey];
     }
-    lastCartonKey = `carton_${cartonCount + 1}`;
-    lastPallet[lastCartonKey] = {};
-    lastCarton = lastPallet[lastCartonKey];
+    
   }
 
   let layerKeys = Object.keys(lastCarton).sort((a, b) => {
@@ -416,10 +420,12 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   let layerCount = layerKeys.length;
   if (layerCount >= maxLayersPerCarton) {
     toast.error("số lượng cần quét đã đủ");
+  } else {
+    let newLayerKey = `layer_${layerCount + 1}`;
+    lastCarton[newLayerKey] = [productCode];
   }
 
-  let newLayerKey = `layer_${layerCount + 1}`;
-  lastCarton[newLayerKey] = [productCode];
+  
   console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey);
   return data;
 }
