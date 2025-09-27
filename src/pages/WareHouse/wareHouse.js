@@ -709,7 +709,7 @@ function mapProductionDataToBatches(productionData) {
             scannedData: {
                 pallet_1: {
                     carton_1: {
-                        layer_1: generateScannedItems(1, "P1-C1-L1")
+                        layer_1: []
                     },
                 },
             }, // Giá trị mặc định
@@ -1293,7 +1293,10 @@ var renderScannedData = (data) => {
                     `<details open><summary class="${indentClass}">Lớp ${layerKey.split("_")[1]
                     } (${items.length} SP)</summary>${items
                         .map(
-                            (item) => `<p class="item-code font-monospace small">${item.split(",")[item.length - 1]}</p>`
+                            (item) => {
+                                const arrayItem = item.split(",");
+                                `<p class="item-code font-monospace small">${arrayItem[arrayItem.length - 1]}</p>`
+                            }
                         )
                         .join("")}</details>`
             )
