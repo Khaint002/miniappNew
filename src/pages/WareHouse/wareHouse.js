@@ -233,7 +233,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             //dom.inputs.itemsPerLayer
             console.log(dom.inputs.layersPerCarton.value);
             
-            const data = addProduct(dataDetailLot, decodedText, 2, 1, 1, 1);
+            const data = addProduct(dataDetailLot, decodedText, dom.inputs.itemsPerLayer.value, dom.inputs.layersPerCarton.value, 1, 1);
             
             console.log(data);
             renderScannedData(data);
@@ -379,8 +379,6 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   if (!lastPallet || Object.keys(lastPallet).length >= maxCartonsPerPallet) {
     // tạo pallet mới
     if (palletCount >= maxPallets) {
-      console.log("Đã đạt giới hạn pallet!");
-
     } else {
         lastPalletKey = `pallet_${palletCount + 1}`;
         data[lastPalletKey] = {};
@@ -419,7 +417,7 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   // 5. Nếu tất cả layer đều đầy → tạo layer mới
   let layerCount = layerKeys.length;
   if (layerCount >= maxLayersPerCarton) {
-    toast.error("số lượng cần quét đã đủ");
+    toastr.error("số lượng cần quét đã đủ");
   } else {
     let newLayerKey = `layer_${layerCount + 1}`;
     lastCarton[newLayerKey] = [productCode];
