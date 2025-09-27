@@ -1148,6 +1148,7 @@ var handleFormSubmit = (e) => {
         layersPerCarton: null,
         itemsPerLayer: null,
     };
+    
     if (currentFormMode === "add") {
         mockBatches.unshift(formData);
     } else {
