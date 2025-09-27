@@ -1492,8 +1492,10 @@ var handleSaveIdentities = () => {
                 });
             });
         });
-        showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
-        setupProductIdScreen(mainBatch.batchCode); // Refresh the screen
+        // showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
+        console.log(mainBatch.batchCode);
+        
+        // setupProductIdScreen(mainBatch.batchCode); // Refresh the screen
     } else {
         showToast("Lỗi: Không tìm thấy lô hàng để lưu.", "error");
     }
