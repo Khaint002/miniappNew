@@ -1482,12 +1482,23 @@ var handleSaveIdentities = async () => {
                                 LOT_CLASS: layerNumber,
                                 DATASTATE: 'EDIT'
                             }
-                            await HOMEOSAPP.add('PO_INFORMATION_MASTER', willInsertMaster);
+                            await HOMEOSAPP.add('DM_QRCODE', willInsertData);
                         }
                     });
                 })
             )
         );
+        const original = dataLot.data[0];
+        const willInsertLot = {
+            ...original,
+            PRODUCT_IN_CLASS: dom.inputs.itemsPerLayer.value,
+            CLASS_IN_CARTON: dom.inputs.layersPerCarton.value,
+            CARTON_IN_PALLET: 1,
+            PALLET_IN_CONTAINER: 1,
+            DATASTATE: 'EDIT'
+        }
+        await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
+
 
         toastr.success("Lưu thông tin thành công");
         
