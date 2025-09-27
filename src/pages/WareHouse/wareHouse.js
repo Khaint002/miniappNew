@@ -180,10 +180,11 @@ async function startScanW(cameraId, cam) {
     }).catch(err => {
         console.error("Lỗi khi khởi động camera: ", err);
     });
-
+    
 }
 
 async function ScanQRcodeByZalo() {
+    
     const testDataScan = await window.ScanQR();
     if(testDataScan){
         onScanSuccess(testDataScan);
@@ -246,25 +247,16 @@ async function onScanSuccess(decodedText, decodedResult) {
                     $("#qr-popup").hide();
                     break;
                 case "COMPLETE":
+                    dom.infoIdentifiedQuantity.textContent = Number(dom.infoIdentifiedQuantity.textContent) + 1;
+                    dom.infoRemainingQuantity.textContent = Number(dom.infoRemainingQuantity.value) - 1;
                     renderScannedData(dataDetailLot);
                     scanAgain();
+                    updateIdButtonStates(true);
                     break;
                 default:
                     break;
             }
-            console.log(data);
-            
-            
         }
-        // else if(paramObject.CID){
-        //     decodedText = QRcode
-        //     const workstationID = url.searchParams.get("workstationID");
-        //     const QRcode = url.searchParams.get("QRcode");
-        //     decodedText = QRcode
-        //     console.log(decodedText);
-        //     checkQRcode = QRcode.split(',');
-        // }
-        
     } else {
         checkQRcode = decodedText.split(',');
     }
@@ -690,37 +682,69 @@ var generateScannedItems = (count, prefix) =>
         (_, i) => `${prefix}-item-${String(i + 1).padStart(4, "0")}`
     );
 
-function mapProductionDataToBatches(productionData) {
-    return productionData.map(item => {
-        return {
-            batchCode: item.LOT_PRODUCT_CODE,
-            productCode: item.PRODUCT_CODE,
-            productName: item.PRODUCT_NAME,
-            bomId: item.BOM_PRODUCT,
-            lsx: item.PRODUCTION_ORDER,
-            // Xử lý chuỗi ngày tháng để chỉ lấy phần ngày
-            creationDate: item.DATE_CREATE.split('T')[0],
-            status: item.STATUS_NAME,
-            active: 0, 
-            // Identification Data
-            quantity: item.QUANTITY_PLAN,
-            unit: item.UNIT_NAME,
-            batchUnit: item.UNIT_LOT_ID,
-            identifiedQuantity: 0, // Giá trị mặc định
-            scannedData: {
+async function mapProductionDataToBatches(productionData) {
+    const batches = await Promise.all(
+        productionData.map(async (item) => {
+            // Lấy dữ liệu quét
+            let quantityScan = 0;
+            const scannedData = await HOMEOSAPP.getDM(
+                "https://central.homeos.vn/service_XD/service.svc",
+                "DM_QRCODE",
+                "LOT_ID = '" + item.PR_KEY + "'"
+            );
+
+            // Chuẩn bị scannedData dạng pallet/carton/layer
+            let structuredScannedData = {
                 pallet_1: {
-                    carton_1: {
-                        layer_1: []
-                    },
-                },
-            }, // Giá trị mặc định
-            palletsPerContainer: item.PALLET_IN_CONTAINER,
-            cartonsPerPallet: item.CARTON_IN_PALLET,
-            layersPerCarton: item.CLASS_IN_CARTON, // Giả sử Class là Layer
-            itemsPerLayer: item.PRODUCT_IN_CLASS,
-        };
-    });
+                    carton_1: {}
+                }
+            };
+
+            if (scannedData?.data?.length) {
+                scannedData.data.forEach((row) => {
+                    const layerKey = `layer_${row.LOT_CLASS}`;
+                    if (!structuredScannedData.pallet_1.carton_1[layerKey]) {
+                        structuredScannedData.pallet_1.carton_1[layerKey] = [];
+                    }
+
+                    // tạo object sản phẩm {id, name}
+                    // const parts = row.PRODUCT_CODE.split(",");
+                    structuredScannedData.pallet_1.carton_1[layerKey].push(
+                        row.QR_CODE
+                    );
+                    quantityScan += 1
+                });
+            } else {
+                // Nếu chưa có dữ liệu thì mặc định layer_1 rỗng
+                structuredScannedData.pallet_1.carton_1.layer_1 = [];
+            }
+
+            return {
+                batchCode: item.LOT_PRODUCT_CODE,
+                productCode: item.PRODUCT_CODE,
+                productName: item.PRODUCT_NAME,
+                bomId: item.BOM_PRODUCT,
+                lsx: item.PRODUCTION_ORDER,
+                creationDate: item.DATE_CREATE.split("T")[0],
+                status: item.STATUS_NAME,
+                active: 0,
+                quantity: item.QUANTITY_PLAN,
+                unit: item.UNIT_NAME,
+                batchUnit: item.UNIT_LOT_ID,
+                identifiedQuantity: quantityScan,
+                scannedData: structuredScannedData,
+                palletsPerContainer: item.PALLET_IN_CONTAINER,
+                cartonsPerPallet: item.CARTON_IN_PALLET,
+                layersPerCarton: item.CLASS_IN_CARTON,
+                itemsPerLayer: item.PRODUCT_IN_CLASS
+            };
+        })
+    );
+
+    return batches;
 }
+
+
 
 
 // --- Lấy các phần tử DOM ---
@@ -1172,7 +1196,7 @@ var setupProductIdScreen = (batchCode) => {
     );
     renderScannedData(currentIdBatch.scannedData);
     handleDeclarationChange();
-    updateIdButtonStates();
+    updateIdButtonStates(false);
     navigateTo("details");
 };
 
@@ -1262,11 +1286,9 @@ var handleDeclarationChange = () => {
         .getElementById("calc-divider")
         .classList.toggle("d-none", !showDivider);
     updateScanProgressUI();
-    updateIdButtonStates();
 };
 
 var renderScannedData = (data) => {
-    console.log(data);
     dataDetailLot = data;
     const totalCount = Object.values(data).reduce(
         (pAcc, cartons) =>
@@ -1402,117 +1424,91 @@ var updateScanProgressUI = () => {
     }
 };
 
-var handleSimulateScan = () => {
-    if (!currentIdBatch) return;
-    const totalCanScan =
-        currentIdBatch.quantity - currentIdBatch.identifiedQuantity;
-    if (sessionScannedCount >= totalCanScan) {
-        showToast("Đã quét đủ số lượng còn lại cho lô này.", "warning");
-        idScanModal.hide();
-        return;
-    }
-    const dec = getDeclaration();
-    const totalBeforeScan =
-        currentIdBatch.identifiedQuantity + sessionScannedCount;
-    const { pallet, carton, layer } = getIndicesFromTotal(
-        totalBeforeScan,
-        currentIdBatch
-    );
+function setButtonLoading(button, loadingText) {
+  // Lưu text gốc vào dataset
+  button.dataset.originalText = button.textContent.trim();
 
-    const palletKey = `pallet_${pallet}`,
-        cartonKey = `carton_${carton}`,
-        layerKey = `layer_${layer}`;
-    sessionScannedData[palletKey] = sessionScannedData[palletKey] || {};
-    sessionScannedData[palletKey][cartonKey] =
-        sessionScannedData[palletKey][cartonKey] || {};
-    sessionScannedData[palletKey][cartonKey][layerKey] =
-        sessionScannedData[palletKey][cartonKey][layerKey] || [];
+  // Đổi style + text
+  button.classList.remove("btn-primary");
+  button.classList.add("btn-warning");
 
-    const scannedId = `${currentIdBatch.productCode
-        }-P${pallet}C${carton}L${layer}-${Date.now().toString().slice(-5)}`;
-    sessionScannedData[palletKey][cartonKey][layerKey].push(scannedId);
-    sessionScannedCount++;
-    dom.modalScanCount.textContent = sessionScannedCount;
+  button.textContent = loadingText;
+  button.classList.add("saving-dots");
+}
 
-    const totalAfterScan = totalBeforeScan + 1;
-    const itemsPerLayer = dec.items,
-        itemsPerCarton = dec.layers * itemsPerLayer,
-        itemsPerPallet = dec.cartons * itemsPerCarton;
-    if (
-        totalAfterScan > 0 &&
-        itemsPerLayer > 0 &&
-        totalAfterScan % itemsPerLayer === 0
-    ) {
-        showToast(`Đã hoàn thành Lớp ${layer}!`, "info");
-        if (itemsPerCarton > 0 && totalAfterScan % itemsPerCarton === 0) {
-            showToast(`Đã hoàn thành Thùng ${carton}!`, "success");
-            if (
-                currentIdBatch.batchUnit === "Container" &&
-                itemsPerPallet > 0 &&
-                totalAfterScan % itemsPerPallet === 0
-            ) {
-                showToast(`Đã hoàn thành Pallet ${pallet}!`, "success");
-            }
-        }
-    }
-    currentScanIndices = getIndicesFromTotal(totalAfterScan, currentIdBatch);
+function resetButton(button) {
+  const originalText = button.dataset.originalText || "Lưu Thông Tin";
 
-    // Merge existing and session data for rendering
-    const mergedData = JSON.parse(JSON.stringify(currentIdBatch.scannedData));
-    Object.entries(sessionScannedData).forEach(([pKey, pVal]) => {
-        mergedData[pKey] = mergedData[pKey] || {};
-        Object.entries(pVal).forEach(([cKey, cVal]) => {
-            mergedData[pKey][cKey] = mergedData[pKey][cKey] || {};
-            Object.entries(cVal).forEach(([lKey, lVal]) => {
-                mergedData[pKey][cKey][lKey] = (
-                    mergedData[pKey][cKey][lKey] || []
-                ).concat(lVal);
-            });
-        });
-    });
+  button.classList.remove("btn-warning", "saving-dots");
+  button.classList.add("btn-primary");
 
-    renderScannedData(mergedData);
-    updateScanProgressUI();
-    updateIdButtonStates();
-};
+  button.textContent = originalText;
+}
 
-var handleSaveIdentities = () => {
+var handleSaveIdentities = async () => {
+
     if (dom.saveIdentitiesButton.disabled || !currentIdBatch) return;
+    const btn = dom.saveIdentitiesButton;
+
+    setButtonLoading(btn, "Đang lưu thông tin");
     const batchIndex = mockBatches.findIndex(
         (b) => b.batchCode === currentIdBatch.batchCode
     );
     if (batchIndex > -1) {
         const mainBatch = mockBatches[batchIndex];
-        mainBatch.identifiedQuantity += sessionScannedCount;
-        // Merge data
-        Object.entries(sessionScannedData).forEach(([pKey, pVal]) => {
-            mainBatch.scannedData[pKey] = mainBatch.scannedData[pKey] || {};
-            Object.entries(pVal).forEach(([cKey, cVal]) => {
-                mainBatch.scannedData[pKey][cKey] =
-                    mainBatch.scannedData[pKey][cKey] || {};
-                Object.entries(cVal).forEach(([lKey, lVal]) => {
-                    mainBatch.scannedData[pKey][cKey][lKey] = (
-                        mainBatch.scannedData[pKey][cKey][lKey] || []
-                    ).concat(lVal);
-                });
-            });
-        });
-        showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
+        let dataLot = await HOMEOSAPP.getDM(
+            "https://central.homeos.vn/service_XD/service.svc",
+            "PRODUCT_LOT",
+            "LOT_PRODUCT_CODE='"+mainBatch.batchCode+"'"
+        );
+        console.log(dataLot);
+        
+        Object.values(dataDetailLot).forEach(pallet =>
+            Object.values(pallet).forEach(carton =>
+                Object.entries(carton).forEach(([layerKey, items]) => {
+                    const layerNumber = parseInt(layerKey.split("_")[1], 10);
+
+                    items.forEach(async item => {
+                        const dataItemQRcode = await HOMEOSAPP.getDM(
+                            "https://central.homeos.vn/service_XD/service.svc",
+                            "DM_QRCODE",
+                            "QR_CODE='" + item + "'"
+                        );
+                        if(dataItemQRcode.data[0].LOT_ID != dataLot.data[0].PR_KEY){
+                            const original = dataItemQRcode.data[0];
+                            const willInsertData = {
+                                ...original,
+                                LOT_ID: dataLot.data[0].PR_KEY,
+                                LOT_CLASS: layerNumber,
+                                DATASTATE: 'EDIT'
+                            }
+                            await HOMEOSAPP.add('PO_INFORMATION_MASTER', willInsertMaster);
+                        }
+                    });
+                })
+            )
+        );
+
+        toastr.success("Lưu thông tin thành công");
+        
+        // showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
+        resetButton(btn);
+        
         setupProductIdScreen(mainBatch.batchCode); // Refresh the screen
+        $("#back-to-list-from-details-button").click();
     } else {
         showToast("Lỗi: Không tìm thấy lô hàng để lưu.", "error");
     }
 };
 
-var updateIdButtonStates = () => {
-    if (!currentIdBatch) {
-        dom.startScanButton.disabled = true;
-        dom.saveIdentitiesButton.disabled = true;
+var updateIdButtonStates = (check) => {
+    if (!check) {
+        // dom.saveIdentitiesButton.disabled = true;
         return;
+    } else {
+        dom.saveIdentitiesButton.disabled = false;
     }
-    const remaining = currentIdBatch.quantity - currentIdBatch.identifiedQuantity;
-    dom.startScanButton.disabled = remaining <= 0;
-    dom.saveIdentitiesButton.disabled = sessionScannedCount === 0;
+    
 };
 
 var resetIdSession = () => {
@@ -1596,9 +1592,8 @@ var addEventListeners = () => {
         fillFormWithData(boms.find((b) => b.id === e.target.value))
     );
 
-    // Events for product ID screen
-    dom.simulateScanButton.addEventListener("click", handleSimulateScan);
     dom.saveIdentitiesButton.addEventListener("click", handleSaveIdentities);
+
     Object.values(dom.inputs).forEach((input) =>
         input.addEventListener("input", handleDeclarationChange)
     );
@@ -1618,7 +1613,7 @@ var initializeApp = async () => {
         "TYPE_QUERY='LOT'"
     );
 
-    const mockBatchesMulti = mapProductionDataToBatches(dataLot);
+    const mockBatchesMulti = await mapProductionDataToBatches(dataLot);
     // mockBatches = mockBatchesMulti;
     // console.log(mockBatchesMulti);
     mockBatches = mockBatchesMulti
