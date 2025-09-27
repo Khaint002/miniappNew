@@ -233,11 +233,26 @@ async function onScanSuccess(decodedText, decodedResult) {
             //dom.inputs.itemsPerLayer
             console.log(dom.inputs.layersPerCarton.value);
             
-            const data = addProduct(dataDetailLot, decodedText, dom.inputs.itemsPerLayer.value, dom.inputs.layersPerCarton.value, 1, 1);
-            
+            const checkQR = addProduct(dataDetailLot, decodedText, dom.inputs.itemsPerLayer.value, dom.inputs.layersPerCarton.value, 1, 1);
+            switch (checkQR) {
+                case "FULL":
+                    toastr.error("Đã quét đủ số lượng cần!");
+                    $("#qr-popup").hide();
+                    break;
+                case "DULICATE":
+                    // toastr.error("sản phẩm đã được quét!")
+                    $("#qr-popup").hide();
+                    break;
+                case "COMPLETE":
+                    renderScannedData(data);
+                    scanAgain();
+                    break;
+                default:
+                    break;
+            }
             console.log(data);
-            renderScannedData(data);
-            scanAgain();
+            
+            
         }
         // else if(paramObject.CID){
         //     decodedText = QRcode
@@ -364,8 +379,8 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
       let carton = pallet[cartonKey];
       for (let layerKey in carton) {
         if (carton[layerKey].includes(productCode)) {
-          console.log("Sản phẩm đã tồn tại trong", palletKey, cartonKey, layerKey);
-          return data;
+        //   console.log("Sản phẩm đã tồn tại trong", palletKey, cartonKey, layerKey);
+          return "DULICATE";
         }
       }
     }
@@ -393,7 +408,7 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   if (!lastCarton || Object.keys(lastCarton).length >= maxLayersPerCarton) {
     // tạo carton mới
     if (cartonCount >= maxCartonsPerPallet) {
-      console.log("Đã đạt giới hạn carton trong pallet!");
+      
     } else {
         lastCartonKey = `carton_${cartonCount + 1}`;
         lastPallet[lastCartonKey] = {};
@@ -409,23 +424,27 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   for (let key of layerKeys) {
     if (lastCarton[key].length < maxItemsPerLayer) {
       lastCarton[key].push(productCode);
-      console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey, key);
-      return data;
+    //   console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey, key);
+      dataDetailLot = data;
+      return "COMPLETE";
     }
   }
 
   // 5. Nếu tất cả layer đều đầy → tạo layer mới
   let layerCount = layerKeys.length;
   if (layerCount >= maxLayersPerCarton) {
-    toastr.error("số lượng cần quét đã đủ");
+    // toastr.error("số lượng cần quét đã đủ");
+    return 'FULL';
   } else {
     let newLayerKey = `layer_${layerCount + 1}`;
     lastCarton[newLayerKey] = [productCode];
+    dataDetailLot = data
   }
 
   
   console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey);
-  return data;
+
+  return "COMPLETE";
 }
 
 // ---------------------------------------------------------------------
