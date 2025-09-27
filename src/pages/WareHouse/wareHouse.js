@@ -715,7 +715,7 @@ function mapProductionDataToBatches(productionData) {
             scannedData: {
                 pallet_1: {
                     carton_1: {
-                        layer_1: generateScannedItems(1, "P1-C1-L1")
+                        layer_1: []
                     },
                 },
             }, // Giá trị mặc định
