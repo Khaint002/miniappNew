@@ -103,7 +103,16 @@ async function renderApps(apps, containerId) {
     dataBom = await groupProductDataWithArray(dataBom);
     $("#loading-popup").hide();
 }
-
+function scanAgain() {
+    // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
+    document.getElementById("result-form").classList.add("d-none");
+    document.getElementById("file-input").value = '';
+    if(typeof window.ScanQR == "function"){
+        ScanQRcodeByZalo();
+    } else {
+        startQRcode();
+    }
+}
 // Scan QR code
 $("#start-scan-button").off("click").click(function () {
     if(typeof window.ScanQR == "function"){
@@ -226,7 +235,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             
             console.log(data);
             renderScannedData(data);
-            
+            scanAgain();
         }
         // else if(paramObject.CID){
         //     decodedText = QRcode
@@ -346,6 +355,7 @@ $("#file-input").change(function (event) {
 
 function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton = 3, maxCartonsPerPallet = 1, maxPallets = 1) {
   // Kiểm tra nếu đã tồn tại
+
   for (let palletKey in data) {
     let pallet = data[palletKey];
     for (let cartonKey in pallet) {
