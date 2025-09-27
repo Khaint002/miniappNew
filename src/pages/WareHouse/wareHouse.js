@@ -231,16 +231,18 @@ async function onScanSuccess(decodedText, decodedResult) {
 
         if(checkQRcode){
             //dom.inputs.itemsPerLayer
-            console.log(dom.inputs.layersPerCarton.value);
+            // console.log(dom.inputs.layersPerCarton.value);
             
             const checkQR = addProduct(dataDetailLot, decodedText, dom.inputs.itemsPerLayer.value, dom.inputs.layersPerCarton.value, 1, 1);
+            console.log(checkQR);
+            
             switch (checkQR) {
                 case "FULL":
                     toastr.error("Đã quét đủ số lượng cần!");
                     $("#qr-popup").hide();
                     break;
                 case "DULICATE":
-                    // toastr.error("sản phẩm đã được quét!")
+                    toastr.error("sản phẩm đã được quét!");
                     $("#qr-popup").hide();
                     break;
                 case "COMPLETE":
