@@ -233,7 +233,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             //dom.inputs.itemsPerLayer
             console.log(dom.inputs.layersPerCarton.value, dom.inputs.cartonsPerPallet.value);
             
-            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton.value, dom.inputs.cartonsPerPallet.value, dom.inputs.palletsPerContainer.value);
+            const data = addProduct(dataDetailLot, decodedText, 2, dom.inputs.layersPerCarton.value, 1, 1);
             
             console.log(data);
             renderScannedData(data);
