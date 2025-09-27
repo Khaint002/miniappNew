@@ -372,17 +372,29 @@ $("#file-input").change(function (event) {
     }
 });
 
-function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton = 3, maxCartonsPerPallet = 1, maxPallets = 1) {
-  // Kiểm tra nếu đã tồn tại
+function addProduct(
+  data,
+  productCode,
+  maxItemsPerLayer = 20,
+  maxLayersPerCarton = 3,
+  maxCartonsPerPallet = 1,
+  maxPallets = 1
+) {
+  // Tách productCode thành {id, name}
+  const parts = productCode.split(",");
+  const productObj = {
+    id: productCode,
+    name: parts[parts.length - 1]
+  };
 
+  // Kiểm tra nếu đã tồn tại (so sánh theo id)
   for (let palletKey in data) {
     let pallet = data[palletKey];
     for (let cartonKey in pallet) {
       let carton = pallet[cartonKey];
       for (let layerKey in carton) {
-        if (carton[layerKey].includes(productCode)) {
-        //   console.log("Sản phẩm đã tồn tại trong", palletKey, cartonKey, layerKey);
-          return "DULICATE";
+        if (carton[layerKey].some(item => item.id === productObj.id)) {
+          return "DUPLICATE";
         }
       }
     }
@@ -394,12 +406,12 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   let lastPallet = data[lastPalletKey];
 
   if (!lastPallet || Object.keys(lastPallet).length >= maxCartonsPerPallet) {
-    // tạo pallet mới
     if (palletCount >= maxPallets) {
+      return "FULL";
     } else {
-        lastPalletKey = `pallet_${palletCount + 1}`;
-        data[lastPalletKey] = {};
-        lastPallet = data[lastPalletKey];
+      lastPalletKey = `pallet_${palletCount + 1}`;
+      data[lastPalletKey] = {};
+      lastPallet = data[lastPalletKey];
     }
   }
 
@@ -408,15 +420,13 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
   let lastCarton = lastPallet[lastCartonKey];
 
   if (!lastCarton || Object.keys(lastCarton).length >= maxLayersPerCarton) {
-    // tạo carton mới
     if (cartonCount >= maxCartonsPerPallet) {
-      
+      return "FULL";
     } else {
-        lastCartonKey = `carton_${cartonCount + 1}`;
-        lastPallet[lastCartonKey] = {};
-        lastCarton = lastPallet[lastCartonKey];
+      lastCartonKey = `carton_${cartonCount + 1}`;
+      lastPallet[lastCartonKey] = {};
+      lastCarton = lastPallet[lastCartonKey];
     }
-    
   }
 
   let layerKeys = Object.keys(lastCarton).sort((a, b) => {
@@ -425,29 +435,25 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
 
   for (let key of layerKeys) {
     if (lastCarton[key].length < maxItemsPerLayer) {
-      lastCarton[key].push(productCode);
-    //   console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey, key);
+      lastCarton[key].push(productObj);
       dataDetailLot = data;
       return "COMPLETE";
     }
   }
 
-  // 5. Nếu tất cả layer đều đầy → tạo layer mới
+  // Nếu tất cả layer đều đầy → tạo layer mới
   let layerCount = layerKeys.length;
   if (layerCount >= maxLayersPerCarton) {
-    // toastr.error("số lượng cần quét đã đủ");
-    return 'FULL';
+    return "FULL";
   } else {
     let newLayerKey = `layer_${layerCount + 1}`;
-    lastCarton[newLayerKey] = [productCode];
-    dataDetailLot = data
+    lastCarton[newLayerKey] = [productObj];
+    dataDetailLot = data;
   }
-
-  
-  console.log("Đã thêm sản phẩm vào", lastPalletKey, lastCartonKey);
 
   return "COMPLETE";
 }
+
 
 // ---------------------------------------------------------------------
 function groupProductDataWithArray(sourceData) {
@@ -1284,25 +1290,39 @@ var renderScannedData = (data) => {
             '<p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>';
         return;
     }
+
     let html = "";
+
     const renderLayers = (layers, indentClass = "ms-4") =>
         Object.entries(layers)
             .map(
                 ([layerKey, items]) =>
-                    `<details open><summary class="${indentClass}">Lớp ${layerKey.split("_")[1]
-                    } (${items.length} SP)</summary>${items
-                        .map(
-                            (item) => `<p class="item-code font-monospace small">${item}</p>`
-                        )
-                        .join("")}</details>`
+                    `<details open>
+                        <summary class="${indentClass}">
+                          Lớp ${layerKey.split("_")[1]} (${items.length} SP)
+                        </summary>
+                        ${items
+                            .map(
+                                (item) =>
+                                    `<p class="item-code font-monospace small" data-id="${item.id}" title="${item.id}">
+                                        ${item.name}
+                                    </p>`
+                            )
+                            .join("")}
+                    </details>`
             )
             .join("");
+
     const renderCartons = (cartons, indentClass = "ms-2") =>
         Object.entries(cartons)
             .map(
                 ([cartonKey, layers]) =>
-                    `<details open><summary class=" ${indentClass}">Thùng ${cartonKey.split("_")[1]
-                    }</summary>${renderLayers(layers)}</details>`
+                    `<details open>
+                        <summary class="${indentClass}">
+                          Thùng ${cartonKey.split("_")[1]}
+                        </summary>
+                        ${renderLayers(layers)}
+                    </details>`
             )
             .join("");
 
@@ -1310,17 +1330,23 @@ var renderScannedData = (data) => {
         html = Object.entries(data)
             .map(
                 ([palletKey, cartons]) =>
-                    `<details open><summary class="er">Pallet ${palletKey.split("_")[1]
-                    }</summary>${renderCartons(cartons)}</details>`
+                    `<details open>
+                        <summary class="er">
+                          Pallet ${palletKey.split("_")[1]}
+                        </summary>
+                        ${renderCartons(cartons)}
+                    </details>`
             )
             .join("");
     } else if (data.pallet_1) {
         html = renderCartons(data.pallet_1, "ms-0 ");
     }
+
     dom.idListDetails.innerHTML =
         html ||
         '<p class="text-center text-secondary small m-0">Chưa có sản phẩm nào được quét.</p>';
 };
+
 
 var getDeclaration = (batch) => {
     const b = batch || currentIdBatch;
@@ -1493,7 +1519,7 @@ var handleSaveIdentities = () => {
             });
         });
         // showToast(`Đã lưu thành công ${sessionScannedCount} mã định danh!`);
-        console.log(mainBatch.batchCode);
+        console.log(mainBatch);
         
         // setupProductIdScreen(mainBatch.batchCode); // Refresh the screen
     } else {
