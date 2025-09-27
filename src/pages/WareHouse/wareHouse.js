@@ -13,6 +13,7 @@ var apps_waveHouse = [
     { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true, },
 ];
 var currentCameraIndex = 0;
+var isScannerRunning = false;
 var dataPR;
 var dataMaterial;
 var dataBom;
