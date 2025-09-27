@@ -689,6 +689,7 @@ var generateScannedItems = (count, prefix) =>
         { length: count },
         (_, i) => `${prefix}-item-${String(i + 1).padStart(4, "0")}`
     );
+
 function mapProductionDataToBatches(productionData) {
     return productionData.map(item => {
         return {
@@ -1295,7 +1296,7 @@ var renderScannedData = (data) => {
                         .map(
                             (item) => {
                                 const arrayItem = item.split(",");
-                                `<p class="item-code font-monospace small">${arrayItem[arrayItem.length - 1]}</p>`
+                                return `<p class="item-code font-monospace small">${arrayItem[arrayItem.length - 1]}</p>`
                             }
                         )
                         .join("")}</details>`
