@@ -387,7 +387,7 @@ function addProduct(
     name: parts[parts.length - 1]
   };
 
-  // Kiểm tra nếu đã tồn tại (so sánh theo id)
+  // Kiểm tra trùng lặp
   for (let palletKey in data) {
     let pallet = data[palletKey];
     for (let cartonKey in pallet) {
@@ -400,7 +400,7 @@ function addProduct(
     }
   }
 
-  // Nếu chưa tồn tại → tìm chỗ để thêm
+  // Tìm pallet cuối
   let palletCount = Object.keys(data).length;
   let lastPalletKey = `pallet_${palletCount}`;
   let lastPallet = data[lastPalletKey];
@@ -408,13 +408,13 @@ function addProduct(
   if (!lastPallet || Object.keys(lastPallet).length >= maxCartonsPerPallet) {
     if (palletCount >= maxPallets) {
       return "FULL";
-    } else {
-      lastPalletKey = `pallet_${palletCount + 1}`;
-      data[lastPalletKey] = {};
-      lastPallet = data[lastPalletKey];
     }
+    lastPalletKey = `pallet_${palletCount + 1}`;
+    data[lastPalletKey] = {};
+    lastPallet = data[lastPalletKey];
   }
 
+  // Tìm carton cuối
   let cartonCount = Object.keys(lastPallet).length;
   let lastCartonKey = `carton_${cartonCount}`;
   let lastCarton = lastPallet[lastCartonKey];
@@ -422,17 +422,25 @@ function addProduct(
   if (!lastCarton || Object.keys(lastCarton).length >= maxLayersPerCarton) {
     if (cartonCount >= maxCartonsPerPallet) {
       return "FULL";
-    } else {
-      lastCartonKey = `carton_${cartonCount + 1}`;
-      lastPallet[lastCartonKey] = {};
-      lastCarton = lastPallet[lastCartonKey];
     }
+    lastCartonKey = `carton_${cartonCount + 1}`;
+    lastPallet[lastCartonKey] = {};
+    lastCarton = lastPallet[lastCartonKey];
   }
 
-  let layerKeys = Object.keys(lastCarton).sort((a, b) => {
-    return parseInt(a.split("_")[1]) - parseInt(b.split("_")[1]);
-  });
+  // Lấy danh sách layer đã có, sắp xếp theo số
+  let layerKeys = Object.keys(lastCarton).sort(
+    (a, b) => parseInt(a.split("_")[1]) - parseInt(b.split("_")[1])
+  );
 
+  // Nếu chưa có layer nào → tạo layer_1
+  if (layerKeys.length === 0) {
+    lastCarton["layer_1"] = [productObj];
+    dataDetailLot = data;
+    return "COMPLETE";
+  }
+
+  // Ưu tiên nhét vào layer có sẵn trước
   for (let key of layerKeys) {
     if (lastCarton[key].length < maxItemsPerLayer) {
       lastCarton[key].push(productObj);
@@ -441,18 +449,18 @@ function addProduct(
     }
   }
 
-  // Nếu tất cả layer đều đầy → tạo layer mới
+  // Nếu tất cả layer đều đầy → tạo layer mới (nếu còn slot)
   let layerCount = layerKeys.length;
   if (layerCount >= maxLayersPerCarton) {
     return "FULL";
-  } else {
-    let newLayerKey = `layer_${layerCount + 1}`;
-    lastCarton[newLayerKey] = [productObj];
-    dataDetailLot = data;
   }
+  let newLayerKey = `layer_${layerCount + 1}`;
+  lastCarton[newLayerKey] = [productObj];
+  dataDetailLot = data;
 
   return "COMPLETE";
 }
+
 
 
 // ---------------------------------------------------------------------
