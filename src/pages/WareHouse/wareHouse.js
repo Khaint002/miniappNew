@@ -244,7 +244,7 @@ async function onScanSuccess(decodedText, decodedResult) {
                     $("#qr-popup").hide();
                     break;
                 case "COMPLETE":
-                    renderScannedData(data);
+                    renderScannedData(dataDetailLot);
                     scanAgain();
                     break;
                 default:
