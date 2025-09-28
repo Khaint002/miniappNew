@@ -169,7 +169,10 @@
                                <div class="col-6">
                                   <label for="status" class="form-label">Trạng thái lô hàng</label>
                                   <select id="status" class="form-select form-element">
-                                      <option>Mới sản xuất</option><option>Đã qua KCS</option><option>Sẵn sàng nhập kho</option><option>Đã hủy</option>
+                                      <option value="NEW">Mới sản xuất</option>
+                                      <option>Đã qua KCS</option>
+                                      <option>Sẵn sàng nhập kho</option>
+                                      <option>Đã hủy</option>
                                   </select>
                               </div>
                            </div>
@@ -983,6 +986,11 @@
             </div>
         </div>
     </footer>
+    <div id="feature-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex flex-column justify-content-center align-items-center text-white" style="z-index: 1050;">
+        <i id="overlay-icon" class="bi bi-tools fs-1 mb-3"></i>
+        <p class="fs-5">Chức năng đang phát triển</p>
+        <button id="overlay-close" class="btn btn-light mt-3">Đóng</button>
+    </div>
 </div>
 
 <!-- <script src="https://miniapp-new.vercel.app/src/pages/WareHouse/wareHouse.js"></script> -->

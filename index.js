@@ -1750,22 +1750,20 @@ HOMEOSAPP.addObj = function(type, code) {
     }
 }
 
-HOMEOSAPP.updateTranNo = function(result, tableName, tranNo, lengthKey) {
+HOMEOSAPP.updateTranNo = async function(tableName) {
+    const data = await HOMEOSAPP.getDM(HOMEOSAPP.linkbase, 'SYS_TRAN_NO', "TABLE_NAME='"+tableName+"'");
+    const original = data.data[0];
     const willInsertData = {
-        PR_KEY: 17,
-        TABLE_NAME: tableName,
-        TRAN_NO: tranNo,
-        ORGANIZATION_ID: '',
-        AUTO_KEY: result,
-        LENGTH_KEY: lengthKey,
-        DATASTATE: "EDIT",
+        ...original,
+        AUTO_KEY: original.AUTO_KEY + 1,
+        DATASTATE: 'EDIT'
     };
     console.log(willInsertData);
     
-    HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData);
+    await HOMEOSAPP.add('SYS_TRAN_NO', willInsertData);
 }
 
-HOMEOSAPP.getTranNo = async function(value, TYPE, table_name){
+HOMEOSAPP.getTranNo = async function(value, TYPE, table_name, PRODUCT_CODE){
     try {
         if(TYPE == 'GET'){
             const data = await HOMEOSAPP.getDM(HOMEOSAPP.linkbase, 'SYS_TRAN_NO', "TABLE_NAME='"+table_name+"'");
@@ -1778,10 +1776,11 @@ HOMEOSAPP.getTranNo = async function(value, TYPE, table_name){
             temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
             temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
             temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+            temp = temp.replace(/\[PRODUCT_CODE\]/g, PRODUCT_CODE);
             let auto_key = state[0].AUTO_KEY;
             auto_key += 1;
             const code = temp.replace(/\[AUTO_KEY\]/g, (auto_key).toString().padStart(state[0].LENGTH_KEY, '0'));
-            console.log(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
+            console.log(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY, PRODUCT_CODE);
             
             // updateTranNo(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
             return code; 

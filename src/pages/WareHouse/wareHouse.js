@@ -1114,8 +1114,6 @@ var fillFormWithData = (data) => {
         clearAutoFilledFields();
         return;
     }
-    console.log(data);
-    
     dom.productCode.value = data.productCode || "";
     dom.productName.value = data.productName || "";
     dom.bomDisplay.value = data.bomId || data.id || "";
@@ -1125,8 +1123,11 @@ var fillFormWithData = (data) => {
     dom.unit.value = data.unit || "";
     dom.warranty.value = data.warranty || "";
 };
-var handleFormSubmit = (e) => {
+var handleFormSubmit = async (e) => {
     e.preventDefault();
+    const LotCode = await HOMEOSAPP.getTranNo("", 'GET', 'PRODUCT_LOT', dom.productCode.value);
+    console.log(LotCode);
+    
     const formData = {
         batchCode: dom.batchCode.value,
         productName: dom.productName.value,
@@ -1142,13 +1143,39 @@ var handleFormSubmit = (e) => {
         active: 0,
         // Add default identification fields
         identifiedQuantity: 0,
-        scannedData: {},
-        palletsPerContainer: null,
-        cartonsPerPallet: null,
-        layersPerCarton: null,
-        itemsPerLayer: null,
+        scannedData: {
+            pallet_1: {
+                carton_1: {}
+            }
+        },
+        palletsPerContainer: 0,
+        cartonsPerPallet: 0,
+        layersPerCarton: 1,
+        itemsPerLayer: 1,
     };
-    
+    const willInsertLot = {
+        LOT_PRODUCT_CODE: LotCode,
+        PRODUCTION_ORDER: dom.declarationTypeRadios[0].checked ? dom.productionOrderSelect.value : null,
+        BOM_PRODUCT: dom.bomDisplay.value,
+        QUANTITY_PLAN: parseInt(dom.plannedQuantity.value),
+        QUANTITY_ACTUAL: parseInt(dom.actualQuantity.value),
+        UNIT_ID: dom.unit.value,
+        STATUS_ID: dom.status.value,
+        PRICE_LOT_PRODUCT: 0,
+        PRODUCT_IN_CLASS: 0,
+        CLASS_IN_CARTON: 0,
+        CARTON_IN_PALLET: 1,
+        PALLET_IN_CONTAINER: 1,
+        DESCRIPTION: "",
+        PRODUCT_CODE: dom.productCode.value,
+        DATE_CREATE: new Date(),
+        USER_ID: 'khai.nt',
+        UNIT_LOT_ID: dom.batchUnit.value,
+        DATASTATE: 'ADD'
+    }
+    await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
+    await HOMEOSAPP.updateTranNo("PRODUCT_LOT");
+    console.log(formData);
     if (currentFormMode === "add") {
         mockBatches.unshift(formData);
     } else {
@@ -3024,7 +3051,7 @@ function initProductionOrderModule() {
                 ACTIVE: 1,
             };
             await HOMEOSAPP.add('PO_INFORMATION_MASTER', willInsertMaster);
-
+            // HOMEOSAPP.updateTranNo("PO_INFORMATION_MASTER");
             // --- BƯỚC 3: CHUẨN BỊ VÀ THÊM DỮ LIỆU VÀO BẢNG DETAIL ---
             // Bảng này mô tả sản phẩm chính của Lệnh sản xuất
             const willInsertDetail = {
@@ -3970,6 +3997,28 @@ async function initBomDeclarationModule() {
     // --- INITIALIZATION ---
     renderBOMList();
 }
+
+document.querySelectorAll("#footer-wareHouse a").forEach(link => {
+  link.addEventListener("click", e => {
+    e.preventDefault();
+
+    // Nếu click Trang chủ thì không bật overlay
+    if (link.querySelector("span").textContent.trim() === "Trang chủ") return;
+
+    // Lấy icon class của link đó để đưa lên overlay
+    const iconClass = link.querySelector("i").className;
+    const overlayIcon = document.getElementById("overlay-icon");
+    overlayIcon.className = iconClass + " fs-1 mb-3";
+
+    // Hiện overlay
+    document.getElementById("feature-overlay").classList.remove("d-none");
+  });
+});
+
+// Đóng overlay
+document.getElementById("overlay-close").addEventListener("click", () => {
+  document.getElementById("feature-overlay").classList.add("d-none");
+});
 
 renderApps(apps_waveHouse, "wareHouse-list");
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)

@@ -834,3 +834,11 @@
 #BOM_DECLARATION .detail-materials-table th { border-top: none; font-weight: 600; color: var(--text-secondary); }
 #BOM_DECLARATION .detail-materials-table td { vertical-align: middle; }
 #BOM_DECLARATION .card-body .table { margin-bottom: 0; }
+
+#feature-overlay p {
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
