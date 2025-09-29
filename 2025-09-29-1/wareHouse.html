@@ -111,8 +111,8 @@
                               <label for="bom-select" class="form-label">Chọn BOM sản phẩm</label>
                               <select id="bom-select" class="form-select form-element"></select>
                           </div>
-                          <div class="row g-3">
-                              <div class="col-6">
+                          <div class="row g-3 d-none">
+                              <div class="col-6 d-none">
                                   <label for="batch-code" class="form-label">Mã lô sản phẩm</label>
                                   <input type="text" id="batch-code" class="form-control form-element" readonly>
                               </div>
@@ -131,11 +131,11 @@
                                   <input type="text" id="product-name" class="form-control form-element" readonly>
                               </div>
                           </div>
-                          <div>
+                          <div >
                               <label for="bom-display" class="form-label">BOM sản phẩm sản xuất</label>
                               <input type="text" id="bom-display" class="form-control form-element" readonly>
                           </div>
-                          <div>
+                          <div class="d-none">
                               <label for="specifications" class="form-label">Thông số kỹ thuật chung</label>
                               <textarea id="specifications" rows="3" class="form-control" readonly></textarea>
                           </div>
@@ -157,7 +157,9 @@
                                <div class="col-6">
                                   <label for="batch-unit" class="form-label">Đơn vị tính lô</label>
                                    <select id="batch-unit" class="form-select form-element">
-                                      <option>Thùng</option><option>Hộp</option><option>Pallet</option>
+                                      <option value="Thung">Thùng</option>
+                                      <option value="Hop">Hộp</option>
+                                      <option value="Pallet">Pallet</option>
                                   </select>
                               </div>
                               <div class="col-6">
@@ -167,7 +169,10 @@
                                <div class="col-6">
                                   <label for="status" class="form-label">Trạng thái lô hàng</label>
                                   <select id="status" class="form-select form-element">
-                                      <option>Mới sản xuất</option><option>Đã qua KCS</option><option>Sẵn sàng nhập kho</option><option>Đã hủy</option>
+                                      <option value="NEW">Mới sản xuất</option>
+                                      <option>Đã qua KCS</option>
+                                      <option>Sẵn sàng nhập kho</option>
+                                      <option>Đã hủy</option>
                                   </select>
                               </div>
                            </div>
@@ -229,7 +234,7 @@
                     </div>
                     <div class="mb-4">
                         <label class="d-block fw-medium text-body-secondary mb-2 small">Quét mã sản phẩm</label>
-                        <button type="button" id="start-scan-button" class="btn btn-light btn-lg w-100 shadow" data-bs-toggle="modal" data-bs-target="#id-scan-modal">Bắt Đầu Quét</button>
+                        <button type="button" id="start-scan-button" class="btn btn-light btn-lg w-100 shadow" data-bs-toggle="modal">Bắt Đầu Quét</button>
                     </div>
                     <div id="results-container">
                         <h2 class="h6 text-body-secondary">Sản Phẩm Đã Quét (<span id="scan-count">0</span>)</h2>
@@ -326,16 +331,13 @@
         
             <!-- List View -->
             <div id="list-view" class="view d-flex flex-column">
-                <header class="bg-body shadow-sm flex-shrink-0">
-                    <div class="px-3 py-3 border-b d-flex align-items-center">
-                        <div style="width: 40px;"></div>
+                <header class="bg-dark shadow-sm sticky-top z-1">
+                    <div class="px-3 py-1 d-flex align-items-center">
                         <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                         </button>
-                        <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho Sản Phẩm</h1>
-                        <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
-                            <i class="bi bi-moon-stars-fill"></i>
-                        </button>
+                        <h1 class="fs-5 text-light text-center w-100 mt-3">Tồn kho sản phẩm</h1>
+                        <div style="width: 40px;"></div>
                     </div>
                 </header>
                 <div class="p-3 bg-body border-b">
@@ -447,16 +449,13 @@
         
         <!-- List View -->
         <div id="mt-list-view" class="mt-view d-flex flex-column">
-            <header class="bg-body shadow-sm flex-shrink-0">
-                <div class="px-3 py-3 border-b d-flex align-items-center">
-                    <div style="width: 40px;"></div>
+            <header class="bg-dark shadow-sm sticky-top z-1">
+                <div class="px-3 py-1 d-flex align-items-center">
                     <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                     </button>
-                    <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">Tồn Kho vật tư</h1>
-                    <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
-                        <i class="bi bi-moon-stars-fill"></i>
-                    </button>
+                    <h1 class="fs-5 text-light text-center w-100 mt-3">Tồn kho vật tư</h1>
+                    <div style="width: 40px;"></div>
                 </div>
             </header>
             <div class="p-3 bg-body border-b">
@@ -568,16 +567,13 @@
         
         <!-- Main View: BOM List -->
         <div id="bomListView" class="page active">
-            <header class="bg-body shadow-sm flex-shrink-0">
-                <div class="px-3 py-3 border-b d-flex align-items-center">
-                    <div style="width: 40px;"></div>
+            <header class="bg-dark shadow-sm sticky-top z-1">
+                <div class="px-3 py-1 d-flex align-items-center">
                     <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
                     </button>
-                    <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">BOM sản xuất</h1>
-                    <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
-                        <i class="bi bi-moon-stars-fill"></i>
-                    </button>
+                    <h1 class="fs-5 text-light text-center w-100 mt-3">Bom sản phẩm</h1>
+                    <div style="width: 40px;"></div>
                 </div>
             </header>
             <div class="container-fluid pt-3">
@@ -673,7 +669,7 @@
                                 <option value="CCEMS.K01">CCEMS K01</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="bomVersion" placeholder="VD: v1.0.0" required></div>
+                        <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="bomVersion" placeholder="VD: v1.0.0" disabled required></div>
                         <div class="form-group"><label>Mô tả phiên bản</label><input type="text" class="form-control" id="bomDescVersion"></div>
                         <div class="row">
                             <div class="col-6 form-group"><label>Người thiết kế</label>
@@ -722,13 +718,12 @@
                                     <select class="form-control" id="materialName"></select>
                                     <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                                 </div>
-                                
                                 <div style="display: flex;">
                                     <input type="number" class="form-control" id="materialQty" placeholder="Số lượng" required>
                                     <input type="number" class="form-control" id="materialBH" style="height: 45px;" placeholder="% Bù hao" required>
                                 </div>
                             </form>
-                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            <ul id="addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="btnSaveBom" class="btn btn-success btn-block mt-3">Lưu BOM</button>
@@ -764,7 +759,7 @@
                                     <option value="CCEMS.K01">CCEMS K01</option>
                                 </select>
                             </div>
-                            <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="editBomVersion" required></div>
+                            <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="editBomVersion" disabled required></div>
                             <div class="form-group"><label>Mô tả phiên bản</label><input type="text" class="form-control" id="editBomDescVersion"></div>
                             <div class="row">
                                 <div class="col-6 form-group"><label>Người thiết kế</label>
@@ -818,7 +813,7 @@
                                     <input type="number" class="form-control" id="editMaterialBH" style="height: 45px;" placeholder="% Bù hao" required>
                                 </div>
                             </form>
-                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                                <ul id="editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                             </div>
                         </div>
                     </div>
@@ -832,18 +827,15 @@
 
       <div id="PRODUCTION_ORDER" class="app-screen d-none">
         <div id="po-listView" class="page active">
-            <header class="bg-body shadow-sm flex-shrink-0">
-            <div class="px-3 py-3 border-b d-flex align-items-center">
-                <div style="width: 40px;"></div>
-                <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
-                </button>
-                <h1 class="h5 text-body-emphasis text-center m-0 flex-grow-1">BOM sản xuất</h1>
-                <button class="theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;">
-                    <i class="bi bi-moon-stars-fill"></i>
-                </button>
-            </div>
-        </header>
+            <header class="bg-dark shadow-sm sticky-top z-1">
+                <div class="px-3 py-1 d-flex align-items-center">
+                    <button class="backWaveHouse btn btn-link text-secondary" style="padding: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+                    </button>
+                    <h1 class="fs-5 text-light text-center w-100 mt-3">Lệnh sản xuất</h1>
+                    <div style="width: 40px;"></div>
+                </div>
+            </header>
             <div class="container-fluid pt-3">
                 <div id="po-productionOrderList"></div>
             </div>
@@ -900,8 +892,8 @@
                 </div>
                 <div id="po-addStep1">
                     <form id="po-formStep1">
-                        <div class="form-group"><label for="po-orderId">Mã Lệnh SX</label><input type="text" class="form-control" id="po-orderId" placeholder="VD: LSX001" required></div>
-                        <div class="form-group"><label for="po-productName">Tên Sản Phẩm</label><select class="form-control" id="po-productName" style="width: 100%;" required></select></div>
+                        <div class="form-group"><label for="po-orderId">Mã Lệnh SX</label><input type="text" class="form-control" id="po-orderId" placeholder="VD: LSX001" disabled required></div>
+                        <div class="form-group"><label for="po-productName">Bom Sản Phẩm</label><select class="form-control" id="po-productName" style="width: 100%;" required></select></div>
                         <div class="form-group"><label for="po-quantity">Số Lượng</label><input type="number" class="form-control" id="po-quantity" placeholder="VD: 100" required></div>
                         <div class="form-group"><label for="po-startDate">Ngày Bắt Đầu</label><input type="date" class="form-control" id="po-startDate" required></div>
                         <button type="submit" class="btn btn-primary btn-block">Tiếp Theo <i class="fas fa-arrow-right ml-2"></i></button>
@@ -910,14 +902,14 @@
                 <div id="po-addStep2" style="display: none;">
                     <div class="card mb-3"><div class="card-body py-2" id="po-orderSummary"></div></div>
                     <div class="card">
-                        <div class="card-header py-2"><h5 class="card-title mb-0">Thêm vật tư</h5></div>
+                        <div class="card-header py-2"><h5 class="card-title mb-0">Danh sách vật tư</h5></div>
                          <div class="card-body">
-                            <form id="po-formAddMaterial" class="mb-3">
+                            <form id="po-formAddMaterial" class="mb-3 d-none">
                                 <select class="form-control" id="po-materialName"></select>
                                 <input type="number" class="form-control" id="po-materialQty" placeholder="SL" required>
                                 <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                             </form>
-                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                          </div>
                     </div>
                     <button id="po-btnSaveOrder" class="btn btn-success btn-block mt-3">Lưu Lệnh Sản Xuất</button>
@@ -945,7 +937,7 @@
                 <div class="po-tab-content pt-3" id="po-editTabContent">
                     <div class="tab-pane fade show active" id="po-editGeneralInfo" role="tabpanel">
                         <form id="po-formEditInfo">
-                            <div class="form-group"><label>Mã Lệnh SX</label><input type="text" class="form-control" id="po-editOrderId" readonly></div>
+                            <div class="form-group"><label>Mã Lệnh SX</label><input type="text" class="form-control" id="po-editOrderId" disabled readonly></div>
                             <div class="form-group"><label for="po-editProductName">Tên Sản Phẩm</label><select class="form-control" id="po-editProductName" style="width: 100%;" required></select></div>
                             <div class="form-group"><label for="po-editQuantity">Số Lượng</label><input type="number" class="form-control" id="po-editQuantity" placeholder="VD: 100" required></div>
                             <div class="form-group"><label for="po-editStartDate">Ngày Bắt Đầu</label><input type="date" class="form-control" id="po-editStartDate" required></div>
@@ -955,12 +947,12 @@
                          <div class="card">
                             <div class="card-header py-2"><h5 class="card-title mb-0">Danh sách vật tư</h5></div>
                             <div class="card-body">
-                                <form id="po-formEditMaterial" class="mb-3">
+                                <form id="po-formEditMaterial" class="mb-3 d-none">
                                     <select class="form-control" id="po-editMaterialName"></select>
                                     <input type="number" class="form-control" id="po-editMaterialQty" placeholder="SL" required>
                                     <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                                 </form>
-                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0"></ul>
+                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
                             </div>
                         </div>
                     </div>
@@ -994,7 +986,12 @@
             </div>
         </div>
     </footer>
+    <div id="feature-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex flex-column justify-content-center align-items-center text-white" style="z-index: 1050;">
+        <i id="overlay-icon" class="bi bi-tools fs-1 mb-3"></i>
+        <p class="fs-5">Chức năng đang phát triển</p>
+        <button id="overlay-close" class="btn btn-light mt-3">Đóng</button>
+    </div>
 </div>
 
-<script src="https://central.homeos.vn/singlepage/workstation/src/pages/WareHouse/wareHouse.js"></script>
-<!-- <script src="./src/pages/WareHouse/wareHouse.js"></script> -->
+<!-- <script src="https://miniapp-new.vercel.app/src/pages/WareHouse/wareHouse.js"></script> -->
+<script src="./src/pages/WareHouse/wareHouse.js"></script>

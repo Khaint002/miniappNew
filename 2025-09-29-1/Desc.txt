@@ -1,0 +1,4 @@
+Cập nhật ngày 29/09/2025 lần 1:
+- Thêm ui chức năng Kho vật tư, Bom, Lệnh sản xuất cho ứng dụng Kho hàng​
+- Đổ dữ liệu thật vào các chức năng của ứng dụng Kho hàng​
+- Hoàn thiện chức năng tạo BOM, LSX, Lô hàng. Hoàn thiện việc quét sản phẩm theo lô hàng

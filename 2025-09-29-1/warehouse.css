@@ -281,6 +281,7 @@
     background-color: #1e1e1e !important; /* nền tối cho cả group */
     border-radius: 999px !important;
     display: inline-flex !important;
+    /* display: none; */
     gap: 2px !important;
 }
 
@@ -414,176 +415,272 @@
 }
 
 #PRODUCTION_ORDER {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            min-height: 100vh;
-            text-align: start;
-        }
+    background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    text-align: start;
+}
 
-        #PRODUCTION_ORDER .app-header {
-            background-color: var(--surface-color);
-            color: var(--text-white);
-            position: sticky;
-            top: 0;
-            z-index: 1020;
-            padding: 0.75rem 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            border-bottom: 1px solid var(--primary-border-color);
-        }
+#PRODUCTION_ORDER .app-header {
+    background-color: var(--surface-color);
+    color: var(--text-white);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    border-bottom: 1px solid var(--primary-border-color);
+}
 
-        #PRODUCTION_ORDER .app-header .title { font-size: 1.25rem; font-weight: 600; }
-        #PRODUCTION_ORDER .app-header .btn-icon { color: var(--text-white); font-size: 1.5rem; background: none; border: none; }
+#PRODUCTION_ORDER .app-header .title { font-size: 1.25rem; font-weight: 600; }
+#PRODUCTION_ORDER .app-header .btn-icon { color: var(--text-white); font-size: 1.5rem; background: none; border: none; }
 
-        #PRODUCTION_ORDER .page { display: none; padding-bottom: 80px; }
-        #PRODUCTION_ORDER .page.active { display: block; }
-        
-        #PRODUCTION_ORDER .list-item-wrapper {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        #PRODUCTION_ORDER .list-item-actions {
-            position: absolute;
-            top: 0;
-            right: 0;
-            height: 100%;
-            display: flex;
-        }
-        #PRODUCTION_ORDER .action-button {
-            width: 75px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-white);
-            border: none;
-            font-size: 0.9rem;
-        }
-        #PRODUCTION_ORDER .action-button i { font-size: 1.2rem; margin-bottom: 4px; }
-        #PRODUCTION_ORDER .action-edit { background-color: var(--accent-color); }
-        #PRODUCTION_ORDER .action-delete { background-color: var(--delete-color); }
+#PRODUCTION_ORDER .page { display: none; padding-bottom: 80px; }
+#PRODUCTION_ORDER .page.active { display: block; }
 
-        #PRODUCTION_ORDER .list-item-content {
-            background-color: var(--surface-color);
-            border: 1px solid var(--primary-border-color);
-            color: var(--text-primary);
-            position: relative;
-            transition: transform 0.3s ease-out;
-            padding: 0.75rem 1.25rem;
-            /* Tối ưu hóa hiệu năng animation, báo cho trình duyệt biết thuộc tính này sẽ thay đổi */
-            will-change: transform;
-        }
-        #PRODUCTION_ORDER .list-item-content.swiped {
-            transform: translateX(-150px);
-        }
-        #PRODUCTION_ORDER .status-badge {
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 0.4em 0.8em;
-            border-radius: 50rem;
-        }
-        #PRODUCTION_ORDER .status-new { background-color: #1e3a8a; color: #bfdbfe; }
-        #PRODUCTION_ORDER .status-inprogress { background-color: #9a3412; color: #fed7aa; }
-        #PRODUCTION_ORDER .status-completed { background-color: #166534; color: #bbf7d0; }
+#PRODUCTION_ORDER .list-item-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+#PRODUCTION_ORDER .list-item-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+}
+#PRODUCTION_ORDER .action-button {
+    width: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-white);
+    border: none;
+    font-size: 0.9rem;
+}
+#PRODUCTION_ORDER .action-button i { font-size: 1.2rem; margin-bottom: 4px; }
+#PRODUCTION_ORDER .action-edit { background-color: var(--accent-color); }
+#PRODUCTION_ORDER .action-delete { background-color: var(--delete-color); }
 
-        #PRODUCTION_ORDER .card {
-            background-color: var(--surface-color);
-            border: 1px solid var(--primary-border-color);
-            border-radius: 0.5rem;
-        }
-        #PRODUCTION_ORDER .card-title { color: var(--text-white); }
+#PRODUCTION_ORDER .list-item-content {
+    background-color: rgb(52 58 64) !important;
+    border: 1px solid var(--primary-border-color);
+    color: var(--text-primary);
+    position: relative;
+    transition: transform 0.3s ease-out;
+    padding: 0.75rem 1.25rem;
+    /* Tối ưu hóa hiệu năng animation, báo cho trình duyệt biết thuộc tính này sẽ thay đổi */
+    /* will-change: transform; */
+}
+#PRODUCTION_ORDER .list-item-content.swiped {
+    transform: translateX(-150px);
+}
+#PRODUCTION_ORDER .status-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+}
+#PRODUCTION_ORDER .status-new { background-color: #1e3a8a; color: #bfdbfe; }
+#PRODUCTION_ORDER .status-inprogress { background-color: #9a3412; color: #fed7aa; }
+#PRODUCTION_ORDER .status-completed { background-color: #166534; color: #bbf7d0; }
 
-        #PRODUCTION_ORDER .fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: var(--accent-color);
-            color: var(--text-white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 1030;
-        }
+#PRODUCTION_ORDER .card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: 0.5rem;
+}
+#PRODUCTION_ORDER .card-title { color: var(--text-white); }
 
-        /* Stepper Styles */
-        #PRODUCTION_ORDER .stepper-wrapper { display: flex; justify-content: space-between; margin-bottom: 2rem; }
-        #PRODUCTION_ORDER .stepper-item { position: relative; display: flex; flex-direction: column; align-items: center; flex: 1; }
-        #PRODUCTION_ORDER .stepper-item::before { position: absolute; content: ""; border-bottom: 3px solid var(--secondary-border-color); width: 100%; top: 15px; left: -50%; z-index: 2; }
-        #PRODUCTION_ORDER .stepper-item:first-child::before { display: none; }
-        #PRODUCTION_ORDER .stepper-item.completed::before { border-color: var(--success-color); }
-        #PRODUCTION_ORDER .step-counter { height: 30px; width: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--secondary-border-color); color: var(--text-secondary); margin-bottom: 6px; z-index: 5; font-weight: bold; }
-        #PRODUCTION_ORDER .stepper-item.active .step-counter { background-color: var(--accent-color); color: var(--text-white); }
-        #PRODUCTION_ORDER .stepper-item.completed .step-counter { background-color: var(--success-color); color: var(--text-white); font-size: 1rem; }
-        #PRODUCTION_ORDER .step-name { font-size: 0.9rem; color: var(--text-secondary); }
-        #PRODUCTION_ORDER .stepper-item.active .step-name { color: var(--accent-color); }
-        #PRODUCTION_ORDER .stepper-item.completed .step-name { color: var(--text-primary); }
+#PRODUCTION_ORDER .fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    z-index: 1030;
+}
 
-        #PRODUCTION_ORDER .form-control { background-color: var(--primary-border-color); color: var(--text-white); border: 1px solid var(--secondary-border-color); }
-        #PRODUCTION_ORDER .form-control:focus { background-color: var(--primary-border-color); color: var(--text-white); border-color: var(--accent-color); box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
-        #PRODUCTION_ORDER .form-control::placeholder { color: var(--text-secondary); }
-        #PRODUCTION_ORDER input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+/* Stepper Styles */
+#PRODUCTION_ORDER .stepper-wrapper { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+#PRODUCTION_ORDER .stepper-item { position: relative; display: flex; flex-direction: column; align-items: center; flex: 1; }
+#PRODUCTION_ORDER .stepper-item::before { position: absolute; content: ""; border-bottom: 3px solid var(--secondary-border-color); width: 100%; top: 15px; left: -50%; z-index: 2; }
+#PRODUCTION_ORDER .stepper-item:first-child::before { display: none; }
+#PRODUCTION_ORDER .stepper-item.completed::before { border-color: var(--success-color); }
+#PRODUCTION_ORDER .step-counter { height: 30px; width: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--secondary-border-color); color: var(--text-secondary); margin-bottom: 6px; z-index: 5; font-weight: bold; }
+#PRODUCTION_ORDER .stepper-item.active .step-counter { background-color: var(--accent-color); color: var(--text-white); }
+#PRODUCTION_ORDER .stepper-item.completed .step-counter { background-color: var(--success-color); color: var(--text-white); font-size: 1rem; }
+#PRODUCTION_ORDER .step-name { font-size: 0.9rem; color: var(--text-secondary); }
+#PRODUCTION_ORDER .stepper-item.active .step-name { color: var(--accent-color); }
+#PRODUCTION_ORDER .stepper-item.completed .step-name { color: var(--text-primary); }
 
-        /* Sliding Pill Tab Styles */
-        #PRODUCTION_ORDER .custom-tabs-wrapper { background-color: var(--primary-border-color); border-radius: 50rem; padding: 4px; width: 100%; box-sizing: border-box; }
-        #PRODUCTION_ORDER .custom-tabs { display: flex; position: relative; }
-        #PRODUCTION_ORDER .tab-item { padding: 0.5rem 1rem; color: var(--text-secondary); font-weight: 600; text-align: center; cursor: pointer; white-space: nowrap; transition: color 0.3s ease; border: none; background: none; flex: 1; z-index: 2; }
-        #PRODUCTION_ORDER .tab-item.active { color: var(--text-white); }
-        #PRODUCTION_ORDER .tab-indicator { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--surface-color); border-radius: 50rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }
-        
-        /* Isolated Tab Panes */
-        #PRODUCTION_ORDER .po-tab-content > .tab-pane { display: none; }
-        #PRODUCTION_ORDER .po-tab-content > .tab-pane.active.show { display: block; }
+#PRODUCTION_ORDER .form-control { background-color: var(--primary-border-color); color: var(--text-white); border: 1px solid var(--secondary-border-color); }
+#PRODUCTION_ORDER .form-control:focus { background-color: var(--primary-border-color); color: var(--text-white); border-color: var(--accent-color); box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
+#PRODUCTION_ORDER .form-control::placeholder { color: var(--text-secondary); }
+#PRODUCTION_ORDER input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
 
-        /* Material List Styles */
-        #PRODUCTION_ORDER #po-formAddMaterial, #PRODUCTION_ORDER #po-formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
-        #PRODUCTION_ORDER #po-formAddMaterial .select2-container, #PRODUCTION_ORDER #po-formEditMaterial .select2-container { flex-grow: 1; }
-        #PRODUCTION_ORDER #po-formAddMaterial #po-materialQty, #PRODUCTION_ORDER #po-formEditMaterial #po-editMaterialQty { width: 70px; height: 45px; flex-shrink: 0; }
-        #PRODUCTION_ORDER #po-formAddMaterial .btn-info, #PRODUCTION_ORDER #po-formEditMaterial .btn-info { width: 42px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
-        
-        /* === THAY ĐỔI: Chuyển danh sách vật tư sang theme tối === */
-        #PRODUCTION_ORDER #po-addedMaterialsList .list-group-item,
-        #PRODUCTION_ORDER #po-editedMaterialsList .list-group-item,
-        #PRODUCTION_ORDER #po-detailMaterialsContent .list-group-item {
-            background-color: var(--primary-border-color);
-            color: var(--text-primary);
-            border: 1px solid var(--secondary-border-color);
-            border-radius: 0.375rem;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 500;
-        }
+/* Sliding Pill Tab Styles */
+#PRODUCTION_ORDER .custom-tabs-wrapper { background-color: var(--primary-border-color); border-radius: 50rem; padding: 4px; width: 100%; box-sizing: border-box; }
+#PRODUCTION_ORDER .custom-tabs { display: flex; position: relative; }
+#PRODUCTION_ORDER .tab-item { padding: 0.5rem 1rem; color: var(--text-secondary); font-weight: 600; text-align: center; cursor: pointer; white-space: nowrap; transition: color 0.3s ease; border: none; background: none; flex: 1; z-index: 2; }
+#PRODUCTION_ORDER .tab-item.active { color: var(--text-white); }
+#PRODUCTION_ORDER .tab-indicator { position: absolute; top: 0; left: 0; height: 100%; background-color: var(--surface-color); border-radius: 50rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }
 
-        #PRODUCTION_ORDER #po-addedMaterialsList .btn-delete-material, #PRODUCTION_ORDER #po-editedMaterialsList .btn-delete-material {
-            background-color: var(--delete-color);
-            color: var(--text-white);
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 0.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
-        #PRODUCTION_ORDER #po-btnAddOrder {
-          text-decoration: none;
-        }
-        
-        #PRODUCTION_ORDER #po-detailMaterialsContent .badge-primary {
-            background-color: var(--accent-color);
-            color: var(--text-white);
-        }
+/* Isolated Tab Panes */
+#PRODUCTION_ORDER .po-tab-content > .tab-pane { display: none; }
+#PRODUCTION_ORDER .po-tab-content > .tab-pane.active.show { display: block; }
+
+/* Material List Styles */
+#PRODUCTION_ORDER #po-formAddMaterial, #PRODUCTION_ORDER #po-formEditMaterial { display: flex; align-items: stretch; gap: 0.5rem; }
+#PRODUCTION_ORDER #po-formAddMaterial .select2-container, #PRODUCTION_ORDER #po-formEditMaterial .select2-container { flex-grow: 1; }
+#PRODUCTION_ORDER #po-formAddMaterial #po-materialQty, #PRODUCTION_ORDER #po-formEditMaterial #po-editMaterialQty { width: 70px; height: 45px; flex-shrink: 0; }
+#PRODUCTION_ORDER #po-formAddMaterial .btn-info, #PRODUCTION_ORDER #po-formEditMaterial .btn-info { width: 42px; height: auto; flex-shrink: 0; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem; }
+
+/* === THAY ĐỔI: Chuyển danh sách vật tư sang theme tối === */
+#PRODUCTION_ORDER #po-addedMaterialsList .list-group-item,
+#PRODUCTION_ORDER #po-editedMaterialsList .list-group-item,
+#PRODUCTION_ORDER #po-detailMaterialsContent .list-group-item {
+    background-color: var(--primary-border-color);
+    color: var(--text-primary);
+    border: 1px solid var(--secondary-border-color);
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+#PRODUCTION_ORDER #po-addedMaterialsList .btn-delete-material, #PRODUCTION_ORDER #po-editedMaterialsList .btn-delete-material {
+    background-color: var(--delete-color);
+    color: var(--text-white);
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+#PRODUCTION_ORDER #po-btnAddOrder {
+  text-decoration: none;
+}
+
+#PRODUCTION_ORDER #po-detailMaterialsContent .badge-primary {
+    background-color: var(--accent-color);
+    color: var(--text-white);
+}
+
+#PRODUCTION_ORDER .list-group {
+    padding-left: 0;
+    list-style: none;
+}
+
+/* Kiểu dáng cho mỗi mục (li) */
+#PRODUCTION_ORDER .list-group-item.dark-theme-item {
+    background-color: var(--dark-item-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.3rem;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    color: var(--dark-text);
+    
+    /* Căn chỉnh khối nội dung và nút xóa */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Khối nội dung chính bên trái (tên + chi tiết) */
+#PRODUCTION_ORDER .material-content {
+    flex-grow: 1; /* Chiếm hết không gian còn lại */
+}
+
+/* Hàng trên: Tên vật tư */
+#PRODUCTION_ORDER .material-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px; /* Khoảng cách với hàng dưới */
+}
+
+/* Hàng dưới: chứa số lượng và bù hao */
+#PRODUCTION_ORDER .material-details {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Khoảng cách giữa SL và Bù hao */
+}
+
+#PRODUCTION_ORDER .material-qty {
+    font-size: 0.9rem;
+    color: var(--dark-text-muted);
+    white-space: nowrap;
+}
+
+/* Nhóm Bù hao (label + input) */
+#PRODUCTION_ORDER .cmt-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#PRODUCTION_ORDER .cmt-label {
+    font-size: 0.9rem;
+    color: var(--dark-text-muted);
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* Ô input cho Bù hao */
+#PRODUCTION_ORDER .input-cmt {
+    width: 70px;
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    border: 1px solid white;
+    border-radius: 0.25rem;
+    text-align: center;
+    padding: 4px 8px;
+}
+
+#PRODUCTION_ORDER .input-cmt:focus {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-accent);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Nút xóa bên phải */
+#PRODUCTION_ORDER .btn-delete-material {
+    background: none;
+    border: none;
+    color: var(--dark-text-muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+    line-height: 1;
+    transition: color 0.2s ease-in-out;
+    align-self: flex-start; /* Căn nút xóa lên trên cùng */
+}
+
+#PRODUCTION_ORDER .btn-delete-material:hover {
+    color: var(--dark-danger);
+}
+
 /* Select2 Dark Theme Overrides (Global) */
 .select2-container--default .select2-selection--single { background-color: var(--primary-border-color); border: 1px solid var(--secondary-border-color); height: 45px; border-radius: .25rem; }
 .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--text-white); line-height: calc(1.5em + .75rem); padding-left: .75rem; }
@@ -598,7 +695,7 @@
 .select2-selection__clear { color: var(--text-secondary) !important; font-size: 1.2rem !important; }
 
 #BOM_DECLARATION {
-    background-color: var(--bg-color);
+    background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
     color: var(--text-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     min-height: 100vh;
@@ -651,7 +748,7 @@
 #BOM_DECLARATION .action-delete { background-color: var(--delete-color); }
 
 #BOM_DECLARATION .list-item-content {
-    background-color: var(--surface-color);
+    background-color: rgb(52 58 64) !important;
     border: 1px solid var(--primary-border-color);
     color: var(--text-primary);
     position: relative;
@@ -737,3 +834,11 @@
 #BOM_DECLARATION .detail-materials-table th { border-top: none; font-weight: 600; color: var(--text-secondary); }
 #BOM_DECLARATION .detail-materials-table td { vertical-align: middle; }
 #BOM_DECLARATION .card-body .table { margin-bottom: 0; }
+
+#feature-overlay p {
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
