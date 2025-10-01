@@ -2849,25 +2849,67 @@ function initProductionOrderModule() {
             return;
         }
         newOrderData.materials.forEach((mat, index) => {
-            // Cấu trúc HTML mới cho mỗi list item
             const materialHtml = `
-                <li class="list-group-item dark-theme-item">
-                    <div class="material-content">
-                        <div class="material-name">${mat.name}(SL còn: ${mat.atu_qty})</div>
-                        <div class="material-details">
-                            <span class="material-qty">Số lượng: ${mat.qty}</span>
-                            <div class="cmt-group">
-                                <label class="cmt-label">Bù hao %:</label>
-                                <input type="number" class="form-control input-cmt" value="${mat.cmt}" data-index="${index}" min="0">
+                <div class="card material-card mb-2">
+                    <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#material-${index}" 
+                        aria-expanded="false" 
+                        aria-controls="material-${index}" style="font-size: 14px; height: 60px;">
+                        
+                        <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.atu_qty})</span>
+                        
+                        <span class="caret-icon" id="caret-${index}" style="transition: transform 0.2s ease;">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </div>
+
+                    <div id="material-${index}" class="collapse" style="border-top: 1px #535353 solid; ">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <div>
+                                    <strong style="font-weight: 500; color: #a9a8a8;">SL còn (kho):</strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success" style="font-size: 15px;">${mat.atu_qty}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <span>${mat.qty || 0}</span>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">Bù hao (%)</label>
+                                    <input type="number" class="form-control input-cmt-lsx" 
+                                        value="${mat.cmt}" data-index="${index}" min="0">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
+                                    <input type="number" class="form-control input-produce" 
+                                        value="${mat.produce_qty || 0}" data-index="${index}" min="0">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <button class="btn-delete-material" data-index="${index}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </li>
+                </div>
             `;
             listEl.append(materialHtml);
+        });
+        newOrderData.materials.forEach((mat, index) => {
+            const collapseEl = document.getElementById(`material-${index}`);
+            const caretEl = document.getElementById(`caret-${index}`).querySelector("i");
+
+            collapseEl.addEventListener('show.bs.collapse', () => {
+                caretEl.classList.remove("fa-chevron-down");
+                caretEl.classList.add("fa-chevron-up");
+            });
+
+            collapseEl.addEventListener('hide.bs.collapse', () => {
+                caretEl.classList.remove("fa-chevron-up");
+                caretEl.classList.add("fa-chevron-down");
+            });
         });
         listEl.on('change', '.input-cmt', function() {
             const index = $(this).data('index');
@@ -2889,47 +2931,73 @@ function initProductionOrderModule() {
             );
             return;
         }
+        // <button class="btn btn-sm btn-danger btn-delete-material" data-index="${index}">
+        //                     <i class="fas fa-trash"></i>
+        //                 </button>
         newOrderData.materials.forEach((mat, index) => {
-    const materialHtml = `
-        <div class="card material-card mb-2">
-            <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
-                 data-bs-toggle="collapse" 
-                 data-bs-target="#material-${index}" 
-                 aria-expanded="false" 
-                 aria-controls="material-${index}" style="font-size: 14px;">
-                 
-                <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.qty})</span>
-                <button class="btn btn-sm btn-danger btn-delete-material" data-index="${index}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
+            const materialHtml = `
+                <div class="card material-card mb-2">
+                    <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#material-${index}" 
+                        aria-expanded="false" 
+                        aria-controls="material-${index}" style="font-size: 14px; height: 60px;">
+                        
+                        <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.atu_qty})</span>
+                        
+                        <span class="caret-icon" id="caret-${index}" style="transition: transform 0.2s ease;">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </div>
 
-            <div id="material-${index}" class="collapse" style="border-top: 1px #535353 solid; ">
-                <div class="card-body">
-                    <p><strong>SL còn (kho):</strong> 
-                        <span class="badge bg-success">${mat.atu_qty}</span>
-                    </p>
-                    <p><strong>SL cần (định mức):</strong> ${mat.need_qty || 0}</p>
-                    
-                    <div class="row mb-2">
-                        <div class="col">
-                            <label class="form-label">Bù hao (%)</label>
-                            <input type="number" class="form-control input-cmt-lsx" 
-                                   value="${mat.cmt}" data-index="${index}" min="0">
-                        </div>
-                        <div class="col">
-                            <label class="form-label">SL sản xuất</label>
-                            <input type="number" class="form-control input-produce" 
-                                   value="${mat.produce_qty || 0}" data-index="${index}" min="0">
+                    <div id="material-${index}" class="collapse" style="border-top: 1px #535353 solid; ">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <div>
+                                    <strong style="font-weight: 500; color: #a9a8a8;">SL còn (kho):</strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success" style="font-size: 15px;">${mat.atu_qty}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <span>${mat.qty || 0}</span>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">Bù hao (%)</label>
+                                    <input type="number" class="form-control input-cmt-lsx" 
+                                        value="${mat.cmt}" data-index="${index}" min="0">
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
+                                    <input type="number" class="form-control input-produce" 
+                                        value="${mat.produce_qty || 0}" data-index="${index}" min="0">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    `;
-    listEl.append(materialHtml);
-});
+            `;
+            listEl.append(materialHtml);
+        });
 
+        newOrderData.materials.forEach((mat, index) => {
+            const collapseEl = document.getElementById(`material-${index}`);
+            const caretEl = document.getElementById(`caret-${index}`).querySelector("i");
+
+            collapseEl.addEventListener('show.bs.collapse', () => {
+                caretEl.classList.remove("fa-chevron-down");
+                caretEl.classList.add("fa-chevron-up");
+            });
+
+            collapseEl.addEventListener('hide.bs.collapse', () => {
+                caretEl.classList.remove("fa-chevron-up");
+                caretEl.classList.add("fa-chevron-down");
+            });
+        });
         listEl.on('change', '.input-cmt', function() {
             const index = $(this).data('index');
             // Dùng parseInt để đảm bảo giá trị là một con số
