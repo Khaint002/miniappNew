@@ -97,7 +97,6 @@ async function renderApps(apps, containerId) {
                 numberHold += 1;
             }
         }
-        
     });
 
     document.getElementById("productCount").textContent = numberSP.toLocaleString();
@@ -2891,25 +2890,46 @@ function initProductionOrderModule() {
             return;
         }
         newOrderData.materials.forEach((mat, index) => {
-            const materialHtml = `
-                <li class="list-group-item dark-theme-item">
-                    <div class="material-content">
-                        <div class="material-name">${mat.name}(SL còn: ${mat.atu_qty})</div>
-                        <div class="material-details">
-                            <span class="material-qty">Số lượng: ${mat.qty}</span>
-                            <div class="cmt-group">
-                                <label class="cmt-label">Bù hao %:</label>
-                                <input type="number" class="form-control input-cmt" value="${mat.cmt}" data-index="${index}" min="0">
-                            </div>
+    const materialHtml = `
+        <div class="card material-card mb-2">
+            <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
+                 data-bs-toggle="collapse" 
+                 data-bs-target="#material-${index}" 
+                 aria-expanded="false" 
+                 aria-controls="material-${index}">
+                 
+                <span><strong>${mat.name}</strong> (SL: ${mat.qty})</span>
+                <button class="btn btn-sm btn-danger btn-delete-material" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+
+            <div id="material-${index}" class="collapse">
+                <div class="card-body">
+                    <p><strong>SL còn (kho):</strong> 
+                        <span class="badge bg-success">${mat.atu_qty}</span>
+                    </p>
+                    <p><strong>SL cần (định mức):</strong> ${mat.need_qty || 0}</p>
+                    
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label">Bù hao (%)</label>
+                            <input type="number" class="form-control input-cmt" 
+                                   value="${mat.cmt}" data-index="${index}" min="0">
+                        </div>
+                        <div class="col">
+                            <label class="form-label">SL sản xuất</label>
+                            <input type="number" class="form-control input-produce" 
+                                   value="${mat.produce_qty || 0}" data-index="${index}" min="0">
                         </div>
                     </div>
-                    <button class="btn-delete-material" data-index="${index}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </li>
-            `;
-            listEl.append(materialHtml);
-        });
+                </div>
+            </div>
+        </div>
+    `;
+    listEl.append(materialHtml);
+});
+
         listEl.on('change', '.input-cmt', function() {
             const index = $(this).data('index');
             // Dùng parseInt để đảm bảo giá trị là một con số
