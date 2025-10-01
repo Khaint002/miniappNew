@@ -93,10 +93,11 @@ async function renderApps(apps, containerId) {
     dataMaterial.forEach(item => {
         if(item.QUANTITY >= 0){
             numberVT += item.QUANTITY
+            if(item.QUANTITY < item.QUANTITY_HOLD){
+                numberHold += 1;
+            }
         }
-        if(item.QUANTITY < item.QUANTITY_HOLD){
-            numberHold += 1;
-        }
+        
     });
 
     document.getElementById("productCount").textContent = numberSP.toLocaleString();
@@ -1824,7 +1825,7 @@ var renderInventory = () => {
     );
     if (currentFilter === "low_stock")
         filteredInventory = filteredInventory.filter(
-            (item) => item.totalQuantity > 0 && item.totalQuantity <= 20
+            (item) => item.totalQuantity > 0 && item.totalQuantity <= 10
         );
     else if (currentFilter === "out_of_stock")
         filteredInventory = filteredInventory.filter(

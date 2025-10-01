@@ -5,12 +5,12 @@
 //     { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
 // ];
 var apps_waveHouse = [
-    { MENU_ID: "WAREHOUSE_PRODUCT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true, },
     { MENU_ID: "MATERIAL", MENU_NAME: "Kho Vật Tư", MENU_ICON: "bi-tools", MENU_BGCOLOR_CLASS: "bg-success", DESCRIPTION: "Quản lý vật tư sản xuất", VISIBLE: true, },
-    { MENU_ID: "CREATELOT", MENU_NAME: "Quản Lý Lô", MENU_ICON: "bi-stack", MENU_BGCOLOR_CLASS: "bg-warning", DESCRIPTION: "Tạo và sửa lô hàng", VISIBLE: true, },
-    { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true, },
     { MENU_ID: "BOM_DECLARATION", MENU_NAME: "Khai báo BOM", MENU_ICON: "bi-diagram-3", MENU_BGCOLOR_CLASS: "bg-secondary", DESCRIPTION: "Định mức nguyên vật liệu", VISIBLE: true, },
     { MENU_ID: "PRODUCTION_ORDER", MENU_NAME: "Lập Lệnh SX", MENU_ICON: "bi-building-gear", MENU_BGCOLOR_CLASS: "bg-danger", DESCRIPTION: "Tạo lệnh sản xuất mới", VISIBLE: true, },
+    { MENU_ID: "WAREHOUSE_PRODUCT", MENU_NAME: "Kho Sản Phẩm", MENU_ICON: "bi-box-seam", MENU_BGCOLOR_CLASS: "bg-primary", DESCRIPTION: "Xem tồn kho, nhập, xuất", VISIBLE: true, },
+    { MENU_ID: "CREATELOT", MENU_NAME: "Quản Lý Lô", MENU_ICON: "bi-stack", MENU_BGCOLOR_CLASS: "bg-warning", DESCRIPTION: "Tạo và sửa lô hàng", VISIBLE: true, },
+    { MENU_ID: "PRQRCODE", MENU_NAME: "Tạo QR", MENU_ICON: "bi-qr-code", MENU_BGCOLOR_CLASS: "bg-info", DESCRIPTION: "In mã QR cho sản phẩm", VISIBLE: true, },
 ];
 var currentCameraIndex = 0;
 var isScannerRunning = false;
@@ -20,7 +20,6 @@ var dataBom;
 var dataLSX;
 var dataDetailLot;
 var mockBatches = [
-    
     // {
     //     batchCode: "LSP-250911-002",
     //     productCode: "SP-RAM-DDR5",
@@ -78,11 +77,33 @@ async function renderApps(apps, containerId) {
         </div>`;
         container.insertAdjacentHTML("beforeend", html);
     });
-    dataMaterial = await HOMEOSAPP.getDM(
+    // dataMaterial = await HOMEOSAPP.getDM(
+    //     HOMEOSAPP.linkbase,
+    //     "DM_ITEM",
+    //     "1=1"
+    // );
+    dataMaterial = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
-        "DM_ITEM",
-        "1=1"
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='WAREHOUSE'"
     );
+    let numberVT = 0;
+    let numberSP = 0;
+    let numberHold = 0;
+    dataMaterial.forEach(item => {
+        if(item.QUANTITY >= 0){
+            numberVT += item.QUANTITY
+            if(item.QUANTITY < item.QUANTITY_HOLD){
+                numberHold += 1;
+            }
+        }
+        
+    });
+
+    document.getElementById("productCount").textContent = numberSP.toLocaleString();
+    document.getElementById("materialCount").textContent = numberVT.toLocaleString();
+    document.getElementById("lowStockCount").textContent = numberHold.toLocaleString();
+
     HOMEOSAPP.delay(100);
     dataBom = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
@@ -98,9 +119,8 @@ async function renderApps(apps, containerId) {
 
     dataLSX = await groupProductDataWithArrayLSX(dataLSX);
 
-    console.log(dataLSX);
-    
     dataBom = await groupProductDataWithArray(dataBom);
+    console.log(dataBom);
     $("#loading-popup").hide();
 }
 function scanAgain() {
@@ -221,7 +241,7 @@ async function onScanSuccess(decodedText, decodedResult) {
         
         if(paramObject.CK){
             const dataQRcode = await HOMEOSAPP.getDM(
-                "https://central.homeos.vn/service_XD/service.svc",
+                HOMEOSAPP.linkbase,
                 "DM_QRCODE",
                 "CK_CODE='"+paramObject.CK+"'"
             );
@@ -314,7 +334,7 @@ $("#file-input").change(function (event) {
                                 
                                 if(paramObject.CK){
                                     const dataQRcode = await HOMEOSAPP.getDM(
-                                        "https://central.homeos.vn/service_XD/service.svc",
+                                        HOMEOSAPP.linkbase,
                                         "DM_QRCODE",
                                         "CK_CODE='"+paramObject.CK+"'"
                                     );
@@ -440,7 +460,6 @@ function addProduct(data, productCode, maxItemsPerLayer = 20, maxLayersPerCarton
 
   return "COMPLETE";
 }
-
 // ---------------------------------------------------------------------
 function groupProductDataWithArray(sourceData) {
     const resultArray = []; // Khởi tạo mảng kết quả cuối cùng
@@ -454,7 +473,8 @@ function groupProductDataWithArray(sourceData) {
             id: item.ITEM_ID,
             name: item.ITEM_NAME,
             qty: item.QUANTITY,
-            cmt: item.QUNATITY_ADDING || 0
+            cmt: item.QUNATITY_ADDING || 0,
+            atu_qty: item.ITEM_QUANTITY
         };
 
         if (existingProduct) {
@@ -502,9 +522,9 @@ function groupProductDataWithArrayLSX(sourceData) {
             id: item.ITEM_ID,
             name: item.ITEM_NAME,
             qty: item.QUANTITY,
-            cmt: item.WH_QUANTITY
+            cmt: item.WH_QUANTITY,
+            atu_qty: item.ITEM_QUANTITY
         };
-        
 
         if (existingOrder) {
             // Nếu đã có LSX, thêm vật tư vào
@@ -688,7 +708,7 @@ async function mapProductionDataToBatches(productionData) {
             // Lấy dữ liệu quét
             let quantityScan = 0;
             const scannedData = await HOMEOSAPP.getDM(
-                "https://central.homeos.vn/service_XD/service.svc",
+                HOMEOSAPP.linkbase,
                 "DM_QRCODE",
                 "LOT_ID = '" + item.PR_KEY + "'"
             );
@@ -1485,7 +1505,7 @@ var handleSaveIdentities = async () => {
     if (batchIndex > -1) {
         const mainBatch = mockBatches[batchIndex];
         let dataLot = await HOMEOSAPP.getDM(
-            "https://central.homeos.vn/service_XD/service.svc",
+            HOMEOSAPP.linkbase,
             "PRODUCT_LOT",
             "LOT_PRODUCT_CODE='"+mainBatch.batchCode+"'"
         );
@@ -1498,7 +1518,7 @@ var handleSaveIdentities = async () => {
 
                     items.forEach(async item => {
                         const dataItemQRcode = await HOMEOSAPP.getDM(
-                            "https://central.homeos.vn/service_XD/service.svc",
+                            HOMEOSAPP.linkbase,
                             "DM_QRCODE",
                             "QR_CODE='" + item + "'"
                         );
@@ -1641,7 +1661,7 @@ var addEventListeners = () => {
 // --- KHỞI TẠO BAN ĐẦU ---
 var initializeApp = async () => {
     dataPR = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
+        HOMEOSAPP.linkbase,
         "DM_PRODUCT",
         "1=1"
     );
@@ -1674,7 +1694,7 @@ var initializeApp = async () => {
 var mockProducts;
 initializeApp();
 
-//
+// 
 var currentUser = "Nguyễn Văn A"; // Giả lập người dùng đăng nhập
 
 var mockBatches_2 = [
@@ -1805,7 +1825,7 @@ var renderInventory = () => {
     );
     if (currentFilter === "low_stock")
         filteredInventory = filteredInventory.filter(
-            (item) => item.totalQuantity > 0 && item.totalQuantity <= 20
+            (item) => item.totalQuantity > 0 && item.totalQuantity <= 10
         );
     else if (currentFilter === "out_of_stock")
         filteredInventory = filteredInventory.filter(
@@ -1816,31 +1836,23 @@ var renderInventory = () => {
         inventoryListEl.innerHTML = `<div class="text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>`;
         return;
     }
-    inventoryListEl.innerHTML = filteredInventory
-        .map((item) => {
-            const stock = getStockInfo(item.totalQuantity);
-            return `<div data-id="${item.id
-                }" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3">
-            <img src="${item.imageUrl.replace("400x300", "160x160")}" alt="${item.name
-                }" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+    inventoryListEl.innerHTML = filteredInventory.map((item) => {
+        const stock = getStockInfo(item.totalQuantity);
+        return `<div data-id="${item.id}" class="product-card bg-body p-3 rounded-3 shadow-sm border-0 d-flex align-items-start gap-3">
+            <img src="${item.imageUrl.replace("400x300", "160x160")}" alt="${item.name}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
             <div class="flex-grow-1">
-                <p class=" text-body-emphasis mb-1" style="text-align: start;">${item.name
-                }</p>
-                <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku
-                }</p>
+                <p class=" text-body-emphasis mb-1" style="text-align: start;">${item.name}</p>
+                <p class="text-muted small font-monospace mb-2" style="text-align: start;">${item.sku}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge ${stock.bg} ${stock.text_color
-                } rounded-pill" style="font-weight: 300;">${stock.text}</span>
+                    <span class="badge ${stock.bg} ${stock.text_color} rounded-pill" style="font-weight: 300;">${stock.text}</span>
                     <div>
                         <span class="small text-muted">Tổng tồn:</span> 
-                        <span class=" fs-5 text-${stock.color}">${item.totalQuantity
-                }</span>
+                        <span class=" fs-5 text-${stock.color}">${item.totalQuantity}</span>
                     </div>
                 </div>
             </div>
         </div>`;
-        })
-        .join("");
+    }).join("");
 };
 
 function mapProducts(realProducts) {
@@ -2171,14 +2183,14 @@ setTheme(savedTheme);
 async function initializeMaterialInventoryApp() {
     let mt_mockMaterials = [];
     let mt_mockBatches = [];
-    const dataMaterials = await HOMEOSAPP.getApiServicePublic(
-        HOMEOSAPP.linkbase,
-        "GetDataDynamicWareHouse",
-        "TYPE_QUERY='WAREHOUSE'"
-    );
-    console.log(dataMaterials);
-    if (dataMaterials) {
-        processInventoryData(dataMaterials);
+    // const dataMaterials = await HOMEOSAPP.getApiServicePublic(
+    //     HOMEOSAPP.linkbase,
+    //     "GetDataDynamicWareHouse",
+    //     "TYPE_QUERY='WAREHOUSE'"
+    // );
+    console.log(dataMaterial);
+    if (dataMaterial) {
+        processInventoryData(dataMaterial);
     }
     const mt_currentUser = "Nguyễn Văn A";
 
@@ -2769,10 +2781,10 @@ function initProductionOrderModule() {
         });
         products = resultArray;;
     }
-    if(dataMaterial.data){
+    if(dataMaterial){
         const resultArray = [];
-        dataMaterial.data.forEach(item => {
-            resultArray.push({ id: item.ITEM_ID, text: item.ITEM_NAME });
+        dataMaterial.forEach(item => {
+            resultArray.push({ id: item.ITEM_ID, text: item.ITEM_NAME, quantity: item.QUANTITY });
         });
         materials = resultArray;;
     }
@@ -2818,7 +2830,7 @@ function initProductionOrderModule() {
         if (order.materials.length > 0) {
             order.materials.forEach((mat) => {
                 materialsContent.append(
-                    `<li class="list-group-item">${mat.name} <span class="badge badge-primary badge-pill" style="font-weight: 300;">${mat.qty}</span></li>`
+                    `<li class="list-group-item">${mat.name}(SL còn: ${mat.quantity}) <span class="badge badge-primary badge-pill" style="font-weight: 300;">${mat.qty}</span></li>`
                 );
             });
         } else {
@@ -2842,7 +2854,7 @@ function initProductionOrderModule() {
             const materialHtml = `
                 <li class="list-group-item dark-theme-item">
                     <div class="material-content">
-                        <div class="material-name">${mat.name}</div>
+                        <div class="material-name">${mat.name}(SL còn: ${mat.atu_qty})</div>
                         <div class="material-details">
                             <span class="material-qty">Số lượng: ${mat.qty}</span>
                             <div class="cmt-group">
@@ -2882,7 +2894,7 @@ function initProductionOrderModule() {
             const materialHtml = `
                 <li class="list-group-item dark-theme-item">
                     <div class="material-content">
-                        <div class="material-name">${mat.name}</div>
+                        <div class="material-name">${mat.name}(SL còn: ${mat.atu_qty})</div>
                         <div class="material-details">
                             <span class="material-qty">Số lượng: ${mat.qty}</span>
                             <div class="cmt-group">
@@ -2967,7 +2979,7 @@ function initProductionOrderModule() {
             // --- BƯỚC 1: LẤY PR_KEY MỚI CHO BẢN GHI MASTER ---
             // (Trong trường hợp EDIT, bạn sẽ không cần bước này mà dùng PR_KEY có sẵn)
             const keyData = await HOMEOSAPP.getDM(
-                "https://central.homeos.vn/service_XD/service.svc",
+                HOMEOSAPP.linkbase,
                 "SYS_KEY",
                 "TABLE_NAME in ('PO_INFORMATION_MASTER', 'PO_INFORMATION_DETAIL')"
             );
@@ -3107,6 +3119,7 @@ function initProductionOrderModule() {
             return;
         }
         const dataBomFilter = dataBom.filter((o) => o.id == selectedProduct.id);
+
         newOrderData.info = {
             id: $container.find("#po-orderId").val(),
             product: dataBomFilter[0].productName,
@@ -3124,7 +3137,8 @@ function initProductionOrderModule() {
                 id: e.id,
                 name: e.name,
                 qty: e.qty,
-                cmt: e.cmt
+                cmt: e.cmt,
+                atu_qty: e.atu_qty
             });
         });
         console.log(newOrderData);
@@ -3397,14 +3411,14 @@ async function initBomDeclarationModule() {
     let materialsMasterList = [];
     
     const dataEmployee = await HOMEOSAPP.getDM(
-        "https://central.homeos.vn/service_XD/service.svc",
+        HOMEOSAPP.linkbase,
         "HR_EMPLOYEE_INFO",
         "ACTIVE=1"
     );
 
-    if(dataMaterial.data){
+    if(dataMaterial){
         const resultArray = [];
-        dataMaterial.data.forEach(item => {
+        dataMaterial.forEach(item => {
             resultArray.push({ id: item.ITEM_ID, text: item.ITEM_NAME });
         });
         materialsMasterList = resultArray;;
@@ -3474,7 +3488,7 @@ async function initBomDeclarationModule() {
                     console.log("Text:", selectedText);
 
                     const dataProduct = await HOMEOSAPP.getDM(
-                        "https://central.homeos.vn/service_XD/service.svc",
+                        HOMEOSAPP.linkbase,
                         "PRODUCT_PUBLISH",
                         "PRODUCT_ID='"+selectedValue+"'"
                     );
@@ -3608,7 +3622,7 @@ async function initBomDeclarationModule() {
 
     async function addOrEditBom(type, dataBom) {
         dataPR_key = await HOMEOSAPP.getDM(
-            "https://central.homeos.vn/service_XD/service.svc",
+            HOMEOSAPP.linkbase,
             "SYS_KEY",
             "TABLE_NAME='PRODUCT_PUBLISH'"
         );
@@ -3658,9 +3672,8 @@ async function initBomDeclarationModule() {
             console.error('Error:', err);
         });
         
-        
         dataBom.materials.forEach(e => {
-            const dataItem = dataMaterial.data.filter(item => item.ITEM_ID === e.id);
+            const dataItem = dataMaterial.filter(item => item.ITEM_ID === e.id);
             const willInsertData_detail = {
                 FR_KEY: dataPR_key.data[0].LAST_NUM,
                 ITEM_ID: e.id,
