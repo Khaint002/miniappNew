@@ -647,7 +647,7 @@
 }
 
 /* Ô input cho Bù hao */
-#PRODUCTION_ORDER .input-cmt {
+/* #PRODUCTION_ORDER .input-cmt {
     width: 70px;
     background-color: var(--dark-bg);
     color: var(--dark-text);
@@ -655,7 +655,7 @@
     border-radius: 0.25rem;
     text-align: center;
     padding: 4px 8px;
-}
+} */
 
 #PRODUCTION_ORDER .input-cmt:focus {
     background-color: var(--dark-bg);

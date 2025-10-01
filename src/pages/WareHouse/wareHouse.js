@@ -2914,7 +2914,7 @@ function initProductionOrderModule() {
                     <div class="row mb-2">
                         <div class="col">
                             <label class="form-label">Bù hao (%)</label>
-                            <input type="number" class="form-control input-cmt" 
+                            <input type="number" class="form-control input-cmt-lsx" 
                                    value="${mat.cmt}" data-index="${index}" min="0">
                         </div>
                         <div class="col">
