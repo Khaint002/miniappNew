@@ -2896,15 +2896,15 @@ function initProductionOrderModule() {
                  data-bs-toggle="collapse" 
                  data-bs-target="#material-${index}" 
                  aria-expanded="false" 
-                 aria-controls="material-${index}">
+                 aria-controls="material-${index}" style="font-size: 14px;">
                  
-                <span><strong>${mat.name}</strong> (SL: ${mat.qty})</span>
+                <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.qty})</span>
                 <button class="btn btn-sm btn-danger btn-delete-material" data-index="${index}">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
 
-            <div id="material-${index}" class="collapse">
+            <div id="material-${index}" class="collapse" style="border-top: 1px #535353 solid; ">
                 <div class="card-body">
                     <p><strong>SL còn (kho):</strong> 
                         <span class="badge bg-success">${mat.atu_qty}</span>
