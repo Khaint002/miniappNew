@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>WCF File Upload & Download Multiple</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --status-bar-height: 228px;
+            --gap: 12px;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .page-header {
+            flex-shrink: 0;
+            padding: var(--gap);
+            padding-bottom: 0;
+        }
+
+        .page-main {
+            flex-grow: 1;
+            display: flex;
+            gap: var(--gap);
+            padding: var(--gap);
+            padding-bottom: calc(var(--status-bar-height) + var(--gap));
+            overflow: hidden;
+        }
+
+        .app-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+            button:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
+        #fileListContainer {
+            margin-top: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            flex-grow: 1;
+            min-height: 100px;
+            display: flex;
+        }
+
+        #fileList {
+            list-style-type: none;
+            padding: 15px;
+            margin: 0;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+            #fileList li {
+                padding: 8px;
+                border-bottom: 1px solid #ddd;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                word-break: break-all;
+            }
+
+                #fileList li:last-child {
+                    border-bottom: none;
+                }
+
+                #fileList li:hover {
+                    background-color: #dde8f5;
+                }
+
+        #fixed-status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--status-bar-height);
+            background-color: #fff;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 15px 25px;
+            box-sizing: border-box;
+        }
+
+        #status-bar-header {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        #mainStatusArea {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            overflow-y: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status-message {
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+            .status-message strong {
+                margin-right: 8px;
+            }
+
+        .success {
+            color: #155724;
+        }
+
+        .error {
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div id="config-section" class="app-section">
+            <h1>⚙️ Cấu hình</h1>
+            <div class="form-group">
+                <label for="baseApiUrlInput">API Endpoint</label>
+                <input type="text" id="baseApiUrlInput" value="http://localhost:61877/FileService.svc">
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main">
+        <div id="uploadApp" class="app-section">
+            <h1>⬆️ Upload File</h1>
+            <div class="form-group">
+                <label for="uploadFolderNameInput">Thư mục trên Server</label>
+                <input type="text" id="uploadFolderNameInput" placeholder="Ví dụ: BaoCao, HinhAnh">
+            </div>
+            <div class="form-group">
+                <label for="fileInput">Chọn một hoặc nhiều file</label>
+                <input type="file" id="fileInput" multiple>
+            </div>
+            <button id="uploadButton" disabled>Upload Files</button>
+        </div>
+
+        <div id="downloadApp" class="app-section">
+            <h1>⬇️ Download File</h1>
+            <div class="form-group">
+                <label for="downloadFolderNameInput">Thư mục trên Server</label>
+                <input type="text" id="downloadFolderNameInput" placeholder="Nhập tên thư mục, ví dụ: Default">
+            </div>
+            <button id="listFilesButton">1. Liệt Kê Files</button>
+            <div id="fileListContainer">
+                <ul id="fileList">
+                    <li>Kết quả tìm kiếm sẽ hiện ở đây</li>
+                </ul>
+            </div>
+            <button id="downloadButton" disabled>2. Download Selected Files</button>
+        </div>
+    </main>
+
+    <footer id="fixed-status-bar">
+        <div id="status-bar-header">📜 Nhật ký Trạng thái</div>
+        <div id="mainStatusArea">
+            <p>Nhật ký cho các hoạt động Upload và Download sẽ được hiển thị ở đây...</p>
+        </div>
+    </footer>
+
+    <script>
+        const statusArea = $("#mainStatusArea");
+
+        function logStatus(message, type = "success") {
+            const p = $(`<p class="status-message ${type}"></p>`).text(message);
+            statusArea.append(p);
+            statusArea.scrollTop(statusArea[0].scrollHeight);
+        }
+
+        let apiBase = $("#baseApiUrlInput").val();
+
+        // Upload multiple files
+        $("#fileInput").on("change", function() {
+            $("#uploadButton").prop("disabled", this.files.length === 0);
+        });
+
+        $("#uploadButton").click(function() {
+            apiBase = $("#baseApiUrlInput").val();
+
+            const files = $("#fileInput")[0].files;
+            if (!files.length) return;
+
+            const folder = $("#uploadFolderNameInput").val().trim();
+            logStatus(`Bắt đầu upload ${files.length} file...`);
+
+            Array.from(files).forEach(file => {
+                $.ajax({
+                    url: apiBase + "/UploadFile",
+                    type: "POST",
+                    data: file,
+                    processData: false,
+                    contentType: "application/octet-stream",
+                    dataType: "text",
+                    success: function(resp) {
+                        const id = resp.replace(/<.*?>/g, "").trim();
+                        let saveUrl = apiBase + "/SaveFileInfo?id=" + encodeURIComponent(id)
+                            + "&fileName=" + encodeURIComponent(file.name);
+                        if (folder) saveUrl += "&folderName=" + encodeURIComponent(folder);
+
+                        $.ajax({
+                            url: saveUrl,
+                            type: "POST",
+                            dataType: "text",
+                            success: function(res) {
+                                logStatus(`Upload & Save thành công: ${file.name}`);
+                            },
+                            error: function(err) {
+                                logStatus(`Lỗi SaveFileInfo: ${file.name}`, "error");
+                            }
+                        });
+                    },
+                    error: function(err) {
+                        logStatus(`Lỗi upload: ${file.name}`, "error");
+                    }
+                });
+            });
+        });
+
+        // List files in folder
+        $("#listFilesButton").click(function() {
+            apiBase = $("#baseApiUrlInput").val();
+
+            const folder = $("#downloadFolderNameInput").val().trim();
+            let url = apiBase + "/ListFiles";
+            if (folder) url += "?folderName=" + encodeURIComponent(folder);
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                success: function(files) {
+                    if (!files || files.length === 0) {
+                        $("#fileList").html("<li>Không có file nào trong folder này</li>");
+                        $("#downloadButton").prop("disabled", true);
+                        return;
+                    }
+                    let html = "";
+                    files.forEach(f => {
+                        html += `<li><input type="checkbox" class="fileCheckbox" value="${f}"> ${f}</li>`;
+                    });
+                    $("#fileList").html(html);
+                    $("#downloadButton").prop("disabled", false);
+                    logStatus(`Tìm thấy ${files.length} file trong folder "${folder}"`);
+                },
+                error: function(err) {
+                    logStatus("Lỗi liệt kê file: " + err.responseText, "error");
+                }
+            });
+        });
+
+        // Download multiple files
+        $("#downloadButton").click(function() {
+            apiBase = $("#baseApiUrlInput").val();
+
+            const folder = $("#downloadFolderNameInput").val().trim();
+            const selectedFiles = $(".fileCheckbox:checked").map(function(){ return this.value; }).get();
+
+            if (selectedFiles.length === 0) {
+                alert("Chọn ít nhất 1 file để download!");
+                return;
+            }
+
+            logStatus(`Bắt đầu download ${selectedFiles.length} file...`);
+
+            selectedFiles.forEach(fileName => {
+                let url = apiBase + "/DownloadFile?fileName=" + encodeURIComponent(fileName);
+                if (folder) url += "&folderName=" + encodeURIComponent(folder);
+
+                fetch(url)
+                    .then(resp => {
+                        if (!resp.ok) throw new Error("Không tải được file: " + fileName);
+                        return resp.blob();
+                    })
+                    .then(blob => {
+                        const link = document.createElement("a");
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = fileName;
+                        link.click();
+                        logStatus(`Download thành công: ${fileName}`);
+                    })
+                    .catch(err => {
+                        logStatus(`Lỗi download: ${fileName} - ${err.message}`, "error");
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

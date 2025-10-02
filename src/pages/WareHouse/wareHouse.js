@@ -2848,6 +2848,7 @@ function initProductionOrderModule() {
             );
             return;
         }
+        
         newOrderData.materials.forEach((mat, index) => {
             const materialHtml = `
                 <div class="card material-card mb-2">
@@ -2882,13 +2883,13 @@ function initProductionOrderModule() {
                             <div class="row mb-2">
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">Bù hao (%)</label>
-                                    <input type="number" class="form-control input-cmt-lsx" 
+                                    <input type="number" class="form-control input-cmt" 
                                         value="${mat.cmt}" data-index="${index}" min="0">
                                 </div>
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input type="number" class="form-control input-produce" 
-                                        value="${mat.produce_qty || 0}" data-index="${index}" min="0">
+                                        value="${mat.qty * newOrderData.info.quantity || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2912,13 +2913,21 @@ function initProductionOrderModule() {
             });
         });
         listEl.on('change', '.input-cmt', function() {
+            
             const index = $(this).data('index');
             // Dùng parseInt để đảm bảo giá trị là một con số
             const newValue = parseInt($(this).val(), 10) || 0; 
 
+            const quantity = newOrderData.info.quantity
+            const need_qty = (quantity * newOrderData.materials[index].qty) + (quantity * newOrderData.materials[index].qty) * (newValue / 100);
+            
+            $(`.input-produce[data-index="${index}"]`).val(Math.ceil(need_qty));
+            console.log(need_qty);
+
             // Cập nhật lại giá trị trong mảng dữ liệu gốc
             newOrderData.materials[index].cmt = newValue;
-
+            newOrderData.materials[index].produce_qty = Math.ceil(need_qty);
+            
             console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
     }
@@ -2935,6 +2944,8 @@ function initProductionOrderModule() {
         //                     <i class="fas fa-trash"></i>
         //                 </button>
         newOrderData.materials.forEach((mat, index) => {
+            const quantity = newOrderData.info.quantity
+            const need_qty = (quantity * mat.qty) + (quantity * mat.qty) * (mat.cmt / 100);
             const materialHtml = `
                 <div class="card material-card mb-2">
                     <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
@@ -2943,7 +2954,7 @@ function initProductionOrderModule() {
                         aria-expanded="false" 
                         aria-controls="material-${index}" style="font-size: 14px; height: 60px;">
                         
-                        <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.atu_qty})</span>
+                        <span><strong style="font-size: 14px;" >${mat.name}</strong></span>
                         
                         <span class="caret-icon" id="caret-${index}" style="transition: transform 0.2s ease;">
                             <i class="fas fa-chevron-down"></i>
@@ -2961,20 +2972,20 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (theo BOM):</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
                             <div class="row mb-2">
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">Bù hao (%)</label>
-                                    <input type="number" class="form-control input-cmt-lsx" 
+                                    <input type="number" class="form-control input-cmt" 
                                         value="${mat.cmt}" data-index="${index}" min="0">
                                 </div>
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
-                                    <input type="number" class="form-control input-produce" 
-                                        value="${mat.produce_qty || 0}" data-index="${index}" min="0">
+                                    <input  type="number" class="form-control input-produce" 
+                                        value="${need_qty || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2983,7 +2994,8 @@ function initProductionOrderModule() {
             `;
             listEl.append(materialHtml);
         });
-
+        console.log(newOrderData);
+        
         newOrderData.materials.forEach((mat, index) => {
             const collapseEl = document.getElementById(`material-${index}`);
             const caretEl = document.getElementById(`caret-${index}`).querySelector("i");
@@ -3003,8 +3015,16 @@ function initProductionOrderModule() {
             // Dùng parseInt để đảm bảo giá trị là một con số
             const newValue = parseInt($(this).val(), 10) || 0; 
 
+            const quantity = newOrderData.info.quantity
+            const need_qty = (quantity * newOrderData.materials[index].qty) + (quantity * newOrderData.materials[index].qty) * (newValue / 100);
+
+            $(`.input-produce[data-index="${index}"]`).val(Math.ceil(need_qty));
+
+            console.log(newOrderData.materials[index].qty, need_qty);
+
             // Cập nhật lại giá trị trong mảng dữ liệu gốc
             newOrderData.materials[index].cmt = newValue;
+            newOrderData.materials[index].need_qty = Math.ceil(need_qty);
 
             console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
@@ -3037,6 +3057,17 @@ function initProductionOrderModule() {
         if (product) {
             $container.find("#po-editProductName").val(product.id).trigger("change");
         }
+        console.log(order);
+        
+        newOrderData.info = {
+            id: order.id,
+            product: order.product,
+            id_product: order.product,
+            bom_product: order.product,
+            quantity: order.quantity,
+            startDate: order.startDate,
+            status: order.status,
+        };
         newOrderData.materials = JSON.parse(JSON.stringify(order.materials));
         renderEditedMaterials();
         $container
@@ -3140,7 +3171,7 @@ function initProductionOrderModule() {
                     ITEM_ID: material.id,
                     QUANTITY: material.qty,
                     // Lượng cần thiết = SL trên 1 sản phẩm * tổng SL sản phẩm
-                    QUANTITY_NEEDED: (material.qty + (material.qty * (material.cmt / 100))) * parseInt(dataLSX.info.quantity, 10), 
+                    QUANTITY_NEEDED: material.need_qty, 
                     NOTE: `Bù hao: ${material.cmt}%`, // Dùng trường cmt cho NOTE
                     USER_ID: currentUserId,
                     DATASTATE: type,
