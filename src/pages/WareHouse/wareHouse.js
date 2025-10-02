@@ -3842,7 +3842,42 @@ async function initBomDeclarationModule() {
     $container.on("click", ".btn-back", function () {
         navigateTo("#bomListView");
     });
+    document.getElementById('tech-doc-input').addEventListener('change', function(event) {
+        const fileList = event.target.files; 
+        const listEl = document.getElementById('tech-doc-list');
 
+        Array.from(fileList).forEach(file => {
+            // Kiểm tra extension để chọn icon
+            let iconClass = "bi bi-file-earmark";
+            if (file.name.endsWith(".pdf")) {
+                iconClass = "bi bi-file-earmark-pdf";
+            } else if (file.name.endsWith(".zip")) {
+                iconClass = "bi bi-file-earmark-zip";
+            }
+
+            // Tạo li
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center py-1";
+
+            li.innerHTML = `
+                <span class="small text-truncate">
+                    <i class="${iconClass} me-2"></i>
+                    ${file.name}
+                </span>
+                <button type="button" class="btn-close btn-sm"></button>
+            `;
+
+            // Xử lý xóa item khi bấm close
+            li.querySelector(".btn-close").addEventListener("click", () => {
+                li.remove();
+            });
+
+            listEl.appendChild(li);
+        });
+
+        // Reset input để lần sau có thể chọn lại cùng file
+        event.target.value = "";
+    });
     // Add BOM Logic
     $container.on("submit", "#formStep1", function (e) {
         e.preventDefault();
