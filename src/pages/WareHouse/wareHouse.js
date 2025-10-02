@@ -2623,7 +2623,7 @@ async function initializeMaterialInventoryApp() {
             const location = mt_importViewElements.location.value.trim();
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
             const description = mt_importViewElements.description.value.trim();
-            const files1 = getPhotoFiles("photoBox1");
+            const files1 = getPhotoFiles("photoBox2");
             console.log(files1);
             
             if (
