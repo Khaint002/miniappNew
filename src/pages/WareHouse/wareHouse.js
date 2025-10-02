@@ -2623,7 +2623,9 @@ async function initializeMaterialInventoryApp() {
             const location = mt_importViewElements.location.value.trim();
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
             const description = mt_importViewElements.description.value.trim();
-
+            const files1 = getPhotoFiles("photoBox1");
+            console.log(files1);
+            
             if (
                 !materialId ||
                 !batchCode ||
@@ -4184,54 +4186,68 @@ document.getElementById("overlay-close").addEventListener("click", () => {
   document.getElementById("feature-overlay").classList.add("d-none");
 });
 
-var techImage = [];
+var photoStores = {};
 // upload ảnh 
-$("#btnUpload").click(function() {
-    $("#uploadInput").click();
-});
+function initPhotoUploader(containerId) {
+    const container = $("#" + containerId);
+    const cameraInput = container.find(".camera-input");
+    const uploadInput = container.find(".upload-input");
+    const photoList   = container.find(".photo-list");
 
-// Nút chụp ảnh (mở camera)
-$("#btnCamera").click(function() {
-    $("#cameraInput").click();
-});
+    // Tạo storage riêng cho container này
+    photoStores[containerId] = [];
 
-// Xử lý khi chọn file từ uploadInput hoặc cameraInput
-$("#uploadInput, #cameraInput").on("change", function(event) {
-    const files = event.target.files;
-    if (!files.length) return;
+    // Hàm thêm file
+    function addFiles(fileList) {
+        Array.from(fileList).forEach(file => {
+            const imgUrl = URL.createObjectURL(file);
 
-    const listEl = $("#photo-list");
+            const li = $(`
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img src="${imgUrl}" style="max-height:60px; border-radius:8px; margin-right:10px;">
+                        <span class="small text-truncate">${file.name}</span>
+                    </div>
+                    <button type="button" class="btn-close btn-sm"></button>
+                </li>
+            `);
 
-    Array.from(files).forEach(file => {
-        const imgUrl = URL.createObjectURL(file);
+            // Xoá file
+            li.find(".btn-close").click(() => {
+                const idx = photoStores[containerId].indexOf(file);
+                if (idx !== -1) photoStores[containerId].splice(idx, 1);
+                li.remove();
+            });
 
-        // Thêm vào UI
-        const li = $(`
-            <li class="list-group-item d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img src="${imgUrl}" style="max-height:60px; border-radius:8px; margin-right:10px;">
-                    <span class="small text-truncate">${file.name}</span>
-                </div>
-                <button type="button" class="btn-close btn-sm"></button>
-            </li>
-        `);
-
-        // Xoá item
-        li.find(".btn-close").click(function() {
-            const idx = techImage.indexOf(file);
-            if (idx !== -1) techImage.splice(idx, 1);
-            li.remove();
+            photoList.append(li);
+            photoStores[containerId].push(file);
         });
+    }
 
-        listEl.append(li);
+    // Mở camera
+    container.find(".btn-camera").click(() => cameraInput.click());
+    // Mở upload
+    container.find(".btn-upload").click(() => uploadInput.click());
 
-        // Lưu vào mảng
-        techImage.push(file);
+    // Xử lý chọn file
+    cameraInput.on("change", e => {
+        addFiles(e.target.files);
+        e.target.value = "";
     });
 
-    // Reset input để lần sau có thể chọn lại cùng file
-    event.target.value = "";
-});
+    uploadInput.on("change", e => {
+        addFiles(e.target.files);
+        e.target.value = "";
+    });
+}
+
+// Hàm lấy danh sách file của container bất kỳ
+function getPhotoFiles(containerId) {
+    return photoStores[containerId] || [];
+}
+
+initPhotoUploader("photoBox1");
+initPhotoUploader("photoBox2");
 
 renderApps(apps_waveHouse, "wareHouse-list");
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)

@@ -412,27 +412,19 @@
                             <div class="col"><label for="import-price-total" class="form-label ">Tổng giá lô</label><input type="text" id="import-price-total" class="form-control bg-body-secondary" readonly></div>
                         </div>
                         <div class="mb-3"><label for="import-description" class="form-label ">8. Mô tả</label><textarea id="import-description" rows="2" class="form-control"></textarea></div>
-                        <!-- <div>
-                            <label class="form-label ">9. Hình ảnh</label>
-                            <div class="d-grid gap-2 d-sm-flex">
-                                <button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button>
-                                <button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button>
-                            </div>
-                        </div> -->
-                        <div>
+                        <div id="photoBox1" class="photo-uploader">
                             <label class="form-label">9. Hình ảnh</label>
                             <div class="d-grid gap-2 d-sm-flex">
-                                <button type="button" class="btn btn-outline-secondary flex-fill" id="btnCamera">Chụp ảnh</button>
-                                <button type="button" class="btn btn-outline-secondary flex-fill" id="btnUpload">Tải ảnh lên</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
                             </div>
 
-                            <!-- input file ẩn cho upload -->
-                            <input type="file" accept="image/*" multiple id="uploadInput" class="d-none">
-                            <!-- input file ẩn cho camera -->
-                            <input type="file" accept="image/*" capture="environment" id="cameraInput" class="d-none">
+                            <!-- input ẩn -->
+                            <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                            <input type="file" accept="image/*" multiple class="upload-input d-none">
 
                             <!-- danh sách ảnh -->
-                            <ul class="list-group mt-2" id="photo-list"></ul>
+                            <ul class="list-group photo-list mt-2"></ul>
                         </div>
                     </div>
                 </main>
@@ -551,7 +543,20 @@
                         <div class="col"><label for="mt-import-price-total" class="form-label">Tổng giá lô</label><input type="text" id="mt-import-price-total" class="form-control bg-body-secondary" readonly></div>
                     </div>
                     <div class="mb-3"><label for="mt-import-description" class="form-label">8. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
-                    <div><label class="form-label">9. Hình ảnh</label><div class="d-grid gap-2 d-sm-flex"><button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button><button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button></div></div>
+                    <div id="photoBox2" class="photo-uploader">
+                        <label class="form-label">9. Hình ảnh</label>
+                        <div class="d-grid gap-2 d-sm-flex">
+                            <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                        </div>
+
+                        <!-- input ẩn -->
+                        <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                        <input type="file" accept="image/*" multiple class="upload-input d-none">
+
+                        <!-- danh sách ảnh -->
+                        <ul class="list-group photo-list mt-2"></ul>
+                    </div>
                 </div>
             </main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
