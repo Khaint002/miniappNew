@@ -3528,7 +3528,7 @@ async function initBomDeclarationModule() {
     const $container = $("#BOM_DECLARATION");
     let productBOMs = dataBom;
     let materialsMasterList = [];
-    
+    let techDocs = [];
     const dataEmployee = await HOMEOSAPP.getDM(
         HOMEOSAPP.linkbase,
         "HR_EMPLOYEE_INFO",
@@ -3842,11 +3842,13 @@ async function initBomDeclarationModule() {
     $container.on("click", ".btn-back", function () {
         navigateTo("#bomListView");
     });
+
     document.getElementById('tech-doc-input').addEventListener('change', function(event) {
         const fileList = event.target.files; 
         const listEl = document.getElementById('tech-doc-list');
 
         Array.from(fileList).forEach(file => {
+            techDocs.push(file);
             // Kiểm tra extension để chọn icon
             let iconClass = "bi bi-file-earmark";
             if (file.name.endsWith(".pdf")) {
@@ -3858,7 +3860,7 @@ async function initBomDeclarationModule() {
             // Tạo li
             const li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center py-1";
-
+            li.style = "height: 40px";
             li.innerHTML = `
                 <span class="small text-truncate">
                     <i class="${iconClass} me-2"></i>
@@ -3870,6 +3872,7 @@ async function initBomDeclarationModule() {
             // Xử lý xóa item khi bấm close
             li.querySelector(".btn-close").addEventListener("click", () => {
                 li.remove();
+                techDocs = techDocs.filter(f => f !== file);
             });
 
             listEl.appendChild(li);
@@ -3878,6 +3881,7 @@ async function initBomDeclarationModule() {
         // Reset input để lần sau có thể chọn lại cùng file
         event.target.value = "";
     });
+
     // Add BOM Logic
     $container.on("submit", "#formStep1", function (e) {
         e.preventDefault();
@@ -3906,6 +3910,47 @@ async function initBomDeclarationModule() {
         $container.find("#addStep1").hide();
         $container.find("#addStep2").show();
         renderMaterialList("#addedMaterialsList", tempBomData.materials);
+        
+        if (!techDocs.length) {
+            logStatus("Chưa có file nào để upload!", "error");
+            return;
+        }
+
+        const folder = "ZaloMiniApp/Warehouse/";
+        // logStatus(`Bắt đầu upload ${techDocs.length} file...`);
+
+        techDocs.forEach(file => {
+            $.ajax({
+                url: HOMEOSAPP.linkUpload + "/UploadFile",
+                type: "POST",
+                data: file,                        // Gửi trực tiếp file
+                processData: false,
+                contentType: "application/octet-stream",
+                dataType: "text",
+                success: function(resp) {
+                    const id = resp.replace(/<.*?>/g, "").trim();
+                    let saveUrl = HOMEOSAPP.linkUpload + "/SaveFileInfo?id=" + encodeURIComponent(id) + "&fileName=" + encodeURIComponent(file.name);
+
+                    if (folder) saveUrl += "&folderName=" + encodeURIComponent(folder);
+
+                    $.ajax({
+                        url: saveUrl,
+                        type: "POST",
+                        dataType: "text",
+                        success: function(res) {
+                            console.log(res);
+                            // logStatus(`✅ Upload & Save thành công: ${file.name}`);
+                        },
+                        error: function(err) {
+                            // logStatus(`❌ Lỗi SaveFileInfo: ${file.name}`, "error");
+                        }
+                    });
+                },
+                error: function(err) {
+                    // logStatus(`❌ Lỗi upload: ${file.name}`, "error");
+                }
+            });
+        });
     });
 
     $container.on("submit", "#formAddMaterial", function (e) {
@@ -4137,6 +4182,55 @@ document.querySelectorAll("#footer-wareHouse a").forEach(link => {
 // Đóng overlay
 document.getElementById("overlay-close").addEventListener("click", () => {
   document.getElementById("feature-overlay").classList.add("d-none");
+});
+
+var techImage = [];
+// upload ảnh 
+$("#btnUpload").click(function() {
+    $("#uploadInput").click();
+});
+
+// Nút chụp ảnh (mở camera)
+$("#btnCamera").click(function() {
+    $("#cameraInput").click();
+});
+
+// Xử lý khi chọn file từ uploadInput hoặc cameraInput
+$("#uploadInput, #cameraInput").on("change", function(event) {
+    const files = event.target.files;
+    if (!files.length) return;
+
+    const listEl = $("#photo-list");
+
+    Array.from(files).forEach(file => {
+        const imgUrl = URL.createObjectURL(file);
+
+        // Thêm vào UI
+        const li = $(`
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <img src="${imgUrl}" style="max-height:60px; border-radius:8px; margin-right:10px;">
+                    <span class="small text-truncate">${file.name}</span>
+                </div>
+                <button type="button" class="btn-close btn-sm"></button>
+            </li>
+        `);
+
+        // Xoá item
+        li.find(".btn-close").click(function() {
+            const idx = techImage.indexOf(file);
+            if (idx !== -1) techImage.splice(idx, 1);
+            li.remove();
+        });
+
+        listEl.append(li);
+
+        // Lưu vào mảng
+        techImage.push(file);
+    });
+
+    // Reset input để lần sau có thể chọn lại cùng file
+    event.target.value = "";
 });
 
 renderApps(apps_waveHouse, "wareHouse-list");

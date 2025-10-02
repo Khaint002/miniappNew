@@ -23,6 +23,7 @@ var URL_CREDENTIALS_CONFIG = {
     default: { user: "dev", passKey: "1" }
 };
 HOMEOSAPP.linkbase = 'https://central.homeos.vn/service_XD/service.svc';
+HOMEOSAPP.linkUpload = 'https://central.homeos.vn/FileStreaming/FileService.svc';
 var checkReport = '';
 let historyStack = ['pickApp'];
 var UserID = localStorage.getItem("userID");
