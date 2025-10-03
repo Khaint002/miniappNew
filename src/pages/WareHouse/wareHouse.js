@@ -57,6 +57,8 @@ async function renderApps(apps, containerId) {
     if (!container) return;
     container.innerHTML = "";
     setTheme("dark");
+    initPhotoUploader("photoBox1");
+    initPhotoUploader("photoBox2");
     apps.forEach((app) => {
         if (!app.VISIBLE) return;
 
@@ -2623,8 +2625,7 @@ async function initializeMaterialInventoryApp() {
             const location = mt_importViewElements.location.value.trim();
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
             const description = mt_importViewElements.description.value.trim();
-            const files1 = getPhotoFiles("photoBox2");
-            console.log(files1);
+            // const files1 = getPhotoFiles("photoBox2");
             
             if (
                 !materialId ||
@@ -2634,7 +2635,7 @@ async function initializeMaterialInventoryApp() {
                 !location ||
                 !pricePerItem
             ) {
-                mt_showToast("Vui lòng điền đầy đủ thông tin.", "error");
+                toastr.error("Vui lòng điền đầy đủ thông tin.");
                 return;
             }
 
@@ -2650,6 +2651,8 @@ async function initializeMaterialInventoryApp() {
                 supplier: "Nhà cung cấp mới",
                 lastUpdated: new Date().toLocaleDateString("vi-VN"),
             };
+            console.log(newBatch);
+            
             mt_mockBatches.push(newBatch);
 
             if (!mt_mockHistory[newBatch.batchId])
@@ -2660,10 +2663,10 @@ async function initializeMaterialInventoryApp() {
                 reason,
                 date: newBatch.lastUpdated,
             });
-
-            mt_showToast(`Nhập kho thành công lô ${batchCode}!`);
-            mt_navigate("mt-list");
-            mt_renderMaterialList();
+            
+            // mt_showToast(`Nhập kho thành công lô ${batchCode}!`);
+            // mt_navigate("mt-list");
+            // mt_renderMaterialList();
         });
 
     const mt_calculateExportTotal = () => {
@@ -4246,8 +4249,31 @@ function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
 }
 
-initPhotoUploader("photoBox1");
-initPhotoUploader("photoBox2");
+async function addAndEditImportExport(type, typeItem, data) {
+    const willInsertLot = {
+        LOT_PRODUCT_CODE: LotCode,
+        PRODUCTION_ORDER: dom.declarationTypeRadios[0].checked ? dom.productionOrderSelect.value : null,
+        BOM_PRODUCT: dom.bomDisplay.value,
+        QUANTITY_PLAN: parseInt(dom.plannedQuantity.value),
+        QUANTITY_ACTUAL: parseInt(dom.actualQuantity.value),
+        UNIT_ID: dom.unit.value,
+        STATUS_ID: dom.status.value,
+        PRICE_LOT_PRODUCT: 0,
+        PRODUCT_IN_CLASS: 0,
+        CLASS_IN_CARTON: 0,
+        CARTON_IN_PALLET: 1,
+        PALLET_IN_CONTAINER: 1,
+        DESCRIPTION: "",
+        PRODUCT_CODE: dom.productCode.value,
+        DATE_CREATE: new Date(),
+        USER_ID: 'khai.nt',
+        UNIT_LOT_ID: dom.batchUnit.value,
+        DATASTATE: 'ADD'
+    }
+    await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
+}
+
+
 
 renderApps(apps_waveHouse, "wareHouse-list");
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
