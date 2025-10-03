@@ -2336,11 +2336,11 @@ async function initializeMaterialInventoryApp() {
             // Kiểm tra xem vật tư này đã tồn tại trong Map chưa
             if (!materialMap.has(item.ITEM_ID)) {
                 // Nếu chưa có, tạo một vật tư mới
-                materialId = materials.length + 1; // Tạo ID mới tăng dần
+                materialId = item.ITEM_ID; // Tạo ID mới tăng dần
                 materialMap.set(item.ITEM_ID, materialId);
 
                 const newMaterial = {
-                    id: materialId,
+                    id: item.ITEM_ID,
                     name: item.ITEM_NAME,
                     sku: item.ITEM_ID,
                     // Tạo ảnh placeholder động với tên vật tư
@@ -2617,7 +2617,7 @@ async function initializeMaterialInventoryApp() {
     document
         .getElementById("mt-save-import-btn")
         .addEventListener("click", () => {
-            const materialId = parseInt(mt_importViewElements.select.value);
+            const materialId = mt_importViewElements.select.value;
             const batchCode = mt_importViewElements.batchCode.value.trim();
             const quantity = parseInt(mt_importViewElements.quantity.value);
             const unit = mt_importViewElements.unit.value.trim();
@@ -2626,6 +2626,7 @@ async function initializeMaterialInventoryApp() {
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
             const description = mt_importViewElements.description.value.trim();
             // const files1 = getPhotoFiles("photoBox2");
+            console.log(materialId);
             
             if (
                 !materialId ||
@@ -2652,7 +2653,7 @@ async function initializeMaterialInventoryApp() {
                 lastUpdated: new Date().toLocaleDateString("vi-VN"),
             };
             console.log(newBatch);
-            
+            addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
             mt_mockBatches.push(newBatch);
 
             if (!mt_mockHistory[newBatch.batchId])
@@ -4249,28 +4250,106 @@ function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
 }
 
-async function addAndEditImportExport(type, typeItem, data) {
-    const willInsertLot = {
-        LOT_PRODUCT_CODE: LotCode,
-        PRODUCTION_ORDER: dom.declarationTypeRadios[0].checked ? dom.productionOrderSelect.value : null,
-        BOM_PRODUCT: dom.bomDisplay.value,
-        QUANTITY_PLAN: parseInt(dom.plannedQuantity.value),
-        QUANTITY_ACTUAL: parseInt(dom.actualQuantity.value),
-        UNIT_ID: dom.unit.value,
-        STATUS_ID: dom.status.value,
-        PRICE_LOT_PRODUCT: 0,
-        PRODUCT_IN_CLASS: 0,
-        CLASS_IN_CARTON: 0,
-        CARTON_IN_PALLET: 1,
-        PALLET_IN_CONTAINER: 1,
-        DESCRIPTION: "",
-        PRODUCT_CODE: dom.productCode.value,
-        DATE_CREATE: new Date(),
-        USER_ID: 'khai.nt',
-        UNIT_LOT_ID: dom.batchUnit.value,
-        DATASTATE: 'ADD'
+async function mapDealData(rawData, type) {
+    return {
+        TRAN_DATE: new Date(),
+        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'DEPOT_IMPORT_DEAL'),
+        TRAN_ID: "IMPORT",
+        WAREHOUSE_ID: rawData.location || "KHO-DEFAULT",
+        WAREHOUSE_TYPE: "KLK",
+        CONTACT_PERSION: rawData.supplier || "",
+        ACTION_TYPE_ID: type === "IMPORT" ? "NHAP" : "XUAT",
+        COMMENT: rawData.description || "",
+        EXCHANGE_RATE: 0,
+        ORGANIZATION_ID: "0000",
+        EMPLOYEE_ID: "khai.nt",
+        REFERENCE_SEQ: "",
+        TRAN_NO_REF: "",
+        PR_DETAIL_ID: "",
+        CONTRACT_NO: "",
+        IS_LOCKED: 0,
+        USER_ID: "khai.nt",
+        STATUS: '',
+        DATE_MODIFY: new Date(),
+        DATASTATE: "ADD"
+    };
+}
+
+function mapDetailData(rawData, Fr_key) {
+    const QUANTITY_REMAIN = dataMaterial.filter((b) => b.ITEM_ID == rawData.materialId);
+    console.log(QUANTITY_REMAIN);
+    
+    return { 
+        FR_KEY: Fr_key + 1,                           
+        ITEM_ID: rawData.materialId || null,
+        REG_NO: rawData.batchCode || "",
+        UNIT_ID: rawData.unit || "",
+        EXTRA_UNIT_ID: rawData.extraUnitId || "", 
+        SOURCE_ID: rawData.sourceId || null,       
+        QUANTITY_REQUIRE: rawData.quantity || 0,  
+        QUANTITY_INCOME: rawData.quantity || 0,    
+        QUANTITY_REMAIN: QUANTITY_REMAIN.QUANTITY || 0,    
+        PRICE: rawData.pricePerItem || 0,          
+        LIST_ORDER: rawData.listOrder || 0,        
+        NOTE: rawData.description || "",           
+        VAT_TAX_ID: rawData.vatTaxId || null,      
+        IS_QUANLITY: rawData.isQuanlity || 0,      
+        EXPIRY_DATE: rawData.expiryDate ? new Date(rawData.expiryDate) : null,
+        IS_EXT: rawData.isExt || 0,
+        DATASTATE: "ADD"
+    };
+}
+
+async function addAndEditImportExport(type, typeRun, typeItem, data) {
+    try {
+        const tableDeal   = type === "IMPORT" ? "DEPOT_IMPORT_DEAL"  : "DEPOT_EXPORT_DEAL";
+        const tableDetail = type === "IMPORT" ? "DEPOT_IMPORT_DETAIL": "DEPOT_EXPORT_DETAIL";
+        const keyData = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "SYS_KEY",
+            "TABLE_NAME = '"+tableDeal+"'"
+        );
+        // --- DEAL ---
+        const dealObj = await mapDealData(data, type);
+
+        console.log(dealObj);
+        
+        if (typeRun == "EDIT") {
+            await HOMEOSAPP.update(tableDeal, dealObj, { PR_KEY: dealKey });
+        } else {
+            // await HOMEOSAPP.add(tableDeal, dealObj);
+        }
+        console.log(keyData);
+        
+        const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
+        console.log(detailObj);
+        
+        if (typeRun == "EDIT") {
+            await HOMEOSAPP.update(tableDetail, detailObj, { PR_KEY: raw.PR_KEY });
+        } else {
+            // await HOMEOSAPP.add(tableDetail, detailObj);
+        }
+
+        const DataInformation = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "DEPOT_INFORMATION_MASTER",
+            "ITEM_ID = '"+data.materialId+"'"
+        );
+        console.log(DataInformation.data[0]);
+        const original = DataInformation.data[0];
+        if(type == "IMPORT"){
+            const willInsertData = {
+                ...original,
+                QUANTITY_INCOME: original.QUANTITY_INCOME + data.quantity,
+                DATASTATE: 'EDIT'
+            }
+            console.log(willInsertData);
+        }
+        
+    } catch (err) {
+        // console.error("❌ Lỗi khi xử lý import/export:", err);
+        throw err;
     }
-    await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
 }
 
 
