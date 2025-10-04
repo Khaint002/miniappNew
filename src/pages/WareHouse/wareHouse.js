@@ -2625,7 +2625,6 @@ async function initializeMaterialInventoryApp() {
             const location = mt_importViewElements.location.value.trim();
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
             const description = mt_importViewElements.description.value.trim();
-            // const files1 = getPhotoFiles("photoBox2");
             console.log(materialId);
             
             if (
@@ -2652,7 +2651,6 @@ async function initializeMaterialInventoryApp() {
                 supplier: "Nhà cung cấp mới",
                 lastUpdated: new Date().toLocaleDateString("vi-VN"),
             };
-            console.log(newBatch);
             addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
             mt_mockBatches.push(newBatch);
 
@@ -3917,46 +3915,7 @@ async function initBomDeclarationModule() {
         $container.find("#addStep2").show();
         renderMaterialList("#addedMaterialsList", tempBomData.materials);
         
-        if (!techDocs.length) {
-            logStatus("Chưa có file nào để upload!", "error");
-            return;
-        }
-
-        const folder = "ZaloMiniApp/Warehouse/";
-        // logStatus(`Bắt đầu upload ${techDocs.length} file...`);
-
-        techDocs.forEach(file => {
-            $.ajax({
-                url: HOMEOSAPP.linkUpload + "/UploadFile",
-                type: "POST",
-                data: file,                        // Gửi trực tiếp file
-                processData: false,
-                contentType: "application/octet-stream",
-                dataType: "text",
-                success: function(resp) {
-                    const id = resp.replace(/<.*?>/g, "").trim();
-                    let saveUrl = HOMEOSAPP.linkUpload + "/SaveFileInfo?id=" + encodeURIComponent(id) + "&fileName=" + encodeURIComponent(file.name);
-
-                    if (folder) saveUrl += "&folderName=" + encodeURIComponent(folder);
-
-                    $.ajax({
-                        url: saveUrl,
-                        type: "POST",
-                        dataType: "text",
-                        success: function(res) {
-                            console.log(res);
-                            // logStatus(`✅ Upload & Save thành công: ${file.name}`);
-                        },
-                        error: function(err) {
-                            // logStatus(`❌ Lỗi SaveFileInfo: ${file.name}`, "error");
-                        }
-                    });
-                },
-                error: function(err) {
-                    // logStatus(`❌ Lỗi upload: ${file.name}`, "error");
-                }
-            });
-        });
+        
     });
 
     $container.on("submit", "#formAddMaterial", function (e) {
@@ -4245,6 +4204,53 @@ function initPhotoUploader(containerId) {
     });
 }
 
+function uploadFile(source, files) {
+    if (!files || !files.length) {
+        return Promise.resolve([]); // trả về mảng rỗng nếu không có file
+    }
+
+    const folder = source;
+
+    // Trả về Promise cho mỗi file
+    const uploadPromises = files.map(file => {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: HOMEOSAPP.linkUpload + "/UploadFile",
+                type: "POST",
+                data: file,                        
+                processData: false,
+                contentType: "application/octet-stream",
+                dataType: "text",
+                success: function(resp) {
+                    const id = resp.replace(/<.*?>/g, "").trim();
+                    let saveUrl = HOMEOSAPP.linkUpload + "/SaveFileInfo?id=" + encodeURIComponent(id) + "&fileName=" + encodeURIComponent(file.name);
+                    if (folder) saveUrl += "&folderName=" + encodeURIComponent(folder);
+
+                    $.ajax({
+                        url: saveUrl,
+                        type: "POST",
+                        dataType: "text",
+                        success: function(res) {
+                            const resource = "https://central.homeos.vn/resources/"+ folder + "/" + encodeURIComponent(file.name);
+                            resolve({ file: file.name, url: resource, resp: res });
+                        },
+                        error: function(err) {
+                            reject("Lỗi SaveFileInfo: " + file.name);
+                        }
+                    });
+                },
+                error: function(err) {
+                    reject("Lỗi upload: " + file.name);
+                }
+            });
+        });
+    });
+
+    // Gom kết quả tất cả file
+    return Promise.all(uploadPromises);
+}
+
+
 // Hàm lấy danh sách file của container bất kỳ
 function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
@@ -4311,18 +4317,14 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         );
         // --- DEAL ---
         const dealObj = await mapDealData(data, type);
-
-        console.log(dealObj);
         
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDeal, dealObj, { PR_KEY: dealKey });
         } else {
             // await HOMEOSAPP.add(tableDeal, dealObj);
         }
-        console.log(keyData);
-        
+
         const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
-        console.log(detailObj);
         
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDetail, detailObj, { PR_KEY: raw.PR_KEY });
@@ -4335,8 +4337,8 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             "DEPOT_INFORMATION_MASTER",
             "ITEM_ID = '"+data.materialId+"'"
         );
-        console.log(DataInformation.data[0]);
         const original = DataInformation.data[0];
+
         if(type == "IMPORT"){
             const willInsertData = {
                 ...original,
@@ -4344,6 +4346,24 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
                 DATASTATE: 'EDIT'
             }
             console.log(willInsertData);
+            // await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
+        } else if(type == "EXPORT") {
+            const willInsertData = {
+                ...original,
+                QUANTITY_OUTCOME: original.QUANTITY_OUTCOME + data.quantity,
+                DATASTATE: 'EDIT'
+            }
+            console.log(willInsertData);
+            // await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
+        }
+
+        const files1 = getPhotoFiles("photoBox2");
+        console.log( files1.length, files1);
+        
+        if(files1.length != 0){
+            const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files1);
+            console.log(resource);
+            
         }
         
     } catch (err) {
