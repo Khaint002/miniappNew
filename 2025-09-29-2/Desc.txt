@@ -1,3 +1,0 @@
-Cập nhật ngày 29/09/2025 lần 2:
-- update phần tổng quan kho hàng,
-- update chỉ tiết số lượng của item.

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMvXsj+4MT6PbFZjzue/pmbFzVGYll7fFXKp6FU" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .app-bar {
+            background-color: #1976d2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .app-bar h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        #qrCode, #reader {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        /* Bottom Navigation */
+        .bottom-navigation {
+            display: flex;
+            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-navigation button {
+            background-color: transparent;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bottom-navigation button:focus {
+            color: #1976d2;
+        }
+
+        .bottom-navigation button img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        #toast-container {
+            font-size: 14px;
+        }
+        #qrCode {
+            width: 113px;
+            height: 113px;
+            text-align: center;
+        }
+        #qrCode img {
+            display: inline !important;
+        } 
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div id="loginPage" class="hidden d-none">
+            <div style="max-width: 400px; margin: 50px auto; padding: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                <h2>Đăng nhập</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Tên người dùng:</label>
+                        <input type="text" id="username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Mật khẩu:</label>
+                        <input type="password" id="password" class="form-control">
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3" type="submit" >Đăng nhập</button>
+                </form>
+            </div>
+        </div>
+        <div id="homePage">
+            <div class="app-bar">
+                <h2>Phần mềm bảo hành HomeOS</h2>
+            </div>
+    
+            <div class="content">
+                <!-- Tab Content -->
+                <div id="tab-0" class="tab-content active">
+                    <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Create QR Code" style="width: 80px; margin-bottom: 5px;"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" style="margin-bottom: 5px; color: #1565c0;" class="bi bi-qr-code" viewBox="0 0 16 16">
+                        <path d="M2 2h2v2H2z"/>
+                        <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
+                        <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
+                        <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
+                        <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
+                      </svg>
+                    <h3>Tạo QR Code</h3>
+                    <input class="form-control" type="text" id="qrText" placeholder="Nhập nội dung QR Code cần tạo!">
+                    <div id="qrCode"></div>
+                </div>
+    
+                <div id="tab-1" class="tab-content">
+                    <!-- <img src="./assets/img/Screenshot 2024-10-11 103958.png" alt="Create QR Code" style="width: 80px; margin-bottom: 5px;"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" style="margin-bottom: 5px; color: #1565c0;" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"/>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"/>
+                        <path d="M12 9h2V8h-2z"/>
+                      </svg>
+                    <h3>Quét QR Code</h3>
+                    <div id="reader"></div>
+                    <div id="scannedResult"></div>
+                    <button class="w-100" id="scanAgain">Quét lại</button>
+                </div>
+                <div id="tab-2" class="tab-content">
+                    <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Create QR Code" style="width: 80px; margin-bottom: 5px;"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" style="margin-bottom: 5px; color: #1565c0;" class="bi bi-qr-code" viewBox="0 0 16 16">
+                        <path d="M2 2h2v2H2z"/>
+                        <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
+                        <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
+                        <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
+                        <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
+                      </svg>
+                    <h3>Tạo nhiều QR Code</h3>
+                    <input type="number" class="form-control" id="startValue" placeholder="Nhập số lượng mã QR cần in">
+                    <button class="w-100" id="generateQRCodes">Tạo QR Codes</button>
+                </div>
+            </div>
+    
+            <!-- Bottom Navigation -->
+            <div class="bottom-navigation">
+                <button data-tab="0">
+                    <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Tạo QR"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">
+                        <path d="M2 2h2v2H2z"/>
+                        <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
+                        <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
+                        <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
+                        <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
+                    </svg>
+                    Tạo QR
+                </button>
+                <button data-tab="1">
+                    <!-- <img src="https://cdn-icons-png.flaticon.com/512/3409/3409588.png" alt="Quét QR"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"/>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"/>
+                        <path d="M12 9h2V8h-2z"/>
+                      </svg>
+                    Quét QR
+                </button>
+                <button data-tab="2">
+                    <!-- <img src="./assets/img/Screenshot 2024-10-11 103819.png" alt="Tạo nhiều QR"> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code" viewBox="0 0 16 16">
+                        <path d="M2 2h2v2H2z"/>
+                        <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z"/>
+                        <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z"/>
+                        <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z"/>
+                        <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z"/>
+                    </svg>
+                    Tạo nhiều QR
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="./assets/js/cryptojs.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        $(document).ready(function () {
+            var user_id = localStorage.getItem("USERID");
+            var session = localStorage.getItem("UUIDTOKEN_PRINT");
+            if(user_id == null){
+                document.getElementById('loginPage').classList.remove('hidden');
+                // document.getElementById('homePage').classList.add('hidden');
+            } else {
+                document.getElementById('loginPage').classList.add('hidden');
+                // document.getElementById('homePage').classList.remove('hidden');
+            }
+            $('#loginForm').on('submit', function (e) {
+                e.preventDefault();
+                
+                const user = $('#username').val();
+                const password = $('#password').val();
+                // const hashedPassword = CryptoJS.SHA1(password + "@1B2c3D4e5F6g7H8").toString();
+                const hashedPassword = sha1Encode(password + "@1B2c3D4e5F6g7H8").toString();
+
+                checkRoleUser(user, hashedPassword);
+            });
+
+            function checkRoleUser(user_id, password) {
+                const d = {
+                    Uid: user_id,
+                    p: password,
+                    ip: '0.0.0.0',
+                    a: '6fba9a59-46f1-42e6-baea-b2479fa1eb3b'
+                };
+                
+                const Url = 'https://central.homeos.vn/service_XD/service.svc';
+                const baseURL = `${Url}GetSessionId?&&`;
+                const urlWithParams = `${baseURL}${serializeParams(d)}`;
+
+                $.ajax({
+                    url: Url + "GetSessionId?callback=?",
+                    type: "GET",
+                    dataType: "jsonp",
+                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (msg) {
+                        let state = JSON.parse(msg);
+                        
+                        if (state && state.StateId !== "LOGIN_FAIL" && state.StateId !== "TOKEN_NOT_ACTIVED" && state.StateId !== "-1") {
+                            localStorage.setItem("UUIDTOKEN_PRINT", state[0].StateId);
+                            localStorage.setItem("USERID", user_id);
+                            toastr.success('Đăng nhập thành công và chuyển trang trong 3 giây sau...');
+                            setTimeout(function () {
+                                // const currentDomain = window.location.origin;  // Lấy phần domain hiện tại (VD: https://example.com)
+                                // const customPath = "/homePage.html";
+                                // window.location.href = currentDomain + customPath;
+                                document.getElementById('loginPage').classList.add('hidden');
+                                document.getElementById('homePage').classList.remove('hidden');
+                            }, 3000);
+                        } else {
+                            toastr.error(state.StateName);
+                        }
+                    },
+                    complete: function (data) {
+
+                    },
+                    error: function (e, t, x) {
+                    }
+                });
+            }
+
+            function serializeParams(obj) {
+                return Object.keys(obj)
+                    .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]))
+                    .join('&');
+            }
+
+            //HomePage
+            let value = 0; // Track selected menu item
+            let scannedResult = '';
+            let qrText = '';
+            let startValue = 1;
+            let scanner = null;
+            var user_id = localStorage.getItem("USERID");
+            var session = localStorage.getItem("UUIDTOKEN_PRINT");
+
+            // Handle tab switching
+            $('.bottom-navigation button').click(function () {
+                value = $(this).data('tab');
+                $('.tab-content').removeClass('active');
+                $('#tab-' + value).addClass('active');
+                if (value == 1) {
+                    startScanner();
+                } else {
+                    if (scanner) {
+                        scanner.clear();
+                        scanner = null;
+                    }
+                }
+            });
+
+            // Handle QR Text input
+            $('#qrText').on('input', function () {
+                qrText = $(this).val();
+                if (qrText) {
+                    $('#qrCode').empty();
+                    new QRCode(document.getElementById("qrCode"),{
+                        text: qrText,           // Mã code muốn tạo
+                        // width: 113,           // Chiều rộng mã QR
+                        // height: 113           // Chiều cao mã QR
+                        // width: 76,           // Chiều rộng mã QR
+                        // height: 76           // Chiều cao mã QR
+                    } );
+                } else {
+                    $('#qrCode').empty();
+                }
+            });
+
+            // Start QR Code scanner
+            function startScanner() {
+                if (!scanner) {
+                    scanner = new Html5QrcodeScanner(
+                        "reader",
+                        {
+                            fps: 10,
+                            qrbox: { width: 250, height: 250 }
+                        },
+                        false
+                    );
+
+                    scanner.render(onScanSuccess, onScanFailure);
+                }
+            }
+
+            function onScanSuccess(result) {
+                scannedResult = result;
+                $('#scannedResult').html('<p>Scanned Result:</p><p>' + scannedResult + '</p>');
+                callAPI(result);
+                if (scanner) {
+                    scanner.clear();
+                }
+            }
+
+            function onScanFailure(error) {
+                // Handle scan failure
+            }
+
+            $('#scanAgain').click(function () {
+                $('#scannedResult').empty();
+                if (scanner) {
+                    scanner.clear();
+                    scanner.render(onScanSuccess, onScanFailure);
+                } else {
+                    startScanner();
+                }
+            });
+
+            // Handle Generate Multiple QR Codes
+            $('#generateQRCodes').click(function () {
+                startValue = parseInt($('#startValue').val()) || 1;
+                generateCKUrls(startValue)
+            });
+
+            // API functions (you need to define these functions or adjust accordingly)
+            function callAPI(result) {
+                const willInsertData = {
+                    QR_CODE: result,
+                    MA_SAN_PHAM: 1,
+                    DATE_CREATE: new Date(),
+                    USER_ID: user_id,
+                    DATASTATE: "ADD",
+                };
+                getDM('DM_QRCODE', "QR_CODE='" + result + "'").then(data => {
+                    try {
+                        if (data.length == 0) {
+                            add(user_id, session, 'DM_QRCODE', willInsertData).then(data => {
+                                try {
+                                    toastr.success("Quét QR và lưu thông tin thành công!");
+                                } catch (e) { }
+                            }).catch(err => {
+                                console.error('Error:', err);
+                            });
+                        } else {
+                            toastr.success("Quét QR thành công!");
+                        }
+                    } catch (e) { }
+                }).catch(err => { });
+            }
+
+            function updateTranNo(result, tableName, tranNo, lengthKey) {
+                const willInsertData = {
+                    PR_KEY: 17,
+                    TABLE_NAME: tableName,
+                    TRAN_NO: tranNo,
+                    ORGANIZATION_ID: '',
+                    AUTO_KEY: result,
+                    LENGTH_KEY: lengthKey,
+                    DATASTATE: "EDIT",
+                };
+                console.log(willInsertData);
+                
+                add(user_id, session, 'SYS_TRAN_NO', willInsertData)
+            }
+
+            function getDM(table_name, c) {
+                const d = {
+                    Uid: user_id,
+                    Sid: session,
+                    tablename: table_name,
+                    c: c,
+                    other: '',
+                    cmd: ''
+                };
+                
+                const Url = 'https://DEV.HOMEOS.vn/service/service.svc/';
+                
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "https://DEV.HOMEOS.vn/service/service.svc/getDm?callback=?",
+                        type: "GET",
+                        dataType: "jsonp",
+                        data: d,
+                        contentType: "application/json; charset=utf-8",
+                        success: function (msg) {
+                            try {
+                                let state = JSON.parse(msg);
+                                resolve(state);  // Trả về dữ liệu khi thành công
+                            } catch (error) {
+                                reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                            }
+                        },
+                        complete: function (data) {
+                            // Có thể thêm xử lý khi request hoàn thành ở đây nếu cần
+                        },
+                        error: function (e, t, x) {
+                            HomeOS.Service.SetActionControl(true);
+                            HomeOS.Service.ShowLabel('Lỗi dữ liệu');
+                            reject(e);  // Trả về lỗi nếu thất bại
+                        }
+                    });
+                });
+            }
+
+            async function getTranNo() {
+                try {
+                    const data = await getDM('SYS_TRAN_NO', "TABLE_NAME='DM_QRCODE'");
+                    const state = data.data
+                    console.log(state);
+                    let temp = state[0].TRAN_NO || null;
+                    temp = temp.replace(/\[YEAR\]/g, (new Date()).getFullYear());
+                    temp = temp.replace(/\[MONTH\]/g, ((new Date()).getMonth() + 1).toString().padStart(2, '0'));
+                    temp = temp.replace(/\[DAY\]/g, (new Date()).getDate().toString().padStart(2, '0'));
+                    temp = temp.replace(/\[HOUR\]/g, (new Date()).getHours().toString().padStart(2, '0'));
+                    temp = temp.replace(/\[MINUTE\]/g, (new Date()).getMinutes().toString().padStart(2, '0'));
+                    temp = temp.replace(/\[SECOND\]/g, (new Date()).getSeconds().toString().padStart(2, '0'));
+                    const codes = [];
+                    let auto_key = state[0].AUTO_KEY;
+                    for (let i = 1; i <= startValue; i++) {
+                        auto_key += 1;
+                        const code = temp.replace(/\[AUTO_KEY\]/g, (auto_key).toString().padStart(state[0].LENGTH_KEY, '0'));
+                        codes.push(code);
+                    }
+                    generateQRCodes(codes);
+                    console.log(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
+                    
+                    updateTranNo(auto_key, state[0].TABLE_NAME, state[0].TRAN_NO, state[0].LENGTH_KEY);
+                } catch (error) {
+                    console.error("Lỗi khi lấy dữ liệu:", error);
+                }
+            }
+
+            function generateCKUrls(count) {
+                const baseUrl = "https://zalo.me/s/4560528012046048397/?CK=";
+                const hexChars = "0123456789abcdef";
+                const urls = [];
+
+                for (let i = 0; i < count; i++) {
+                    let ckValue = "";
+                    for (let j = 0; j < 64; j++) {
+                        ckValue += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
+                    }
+                    urls.push(`${baseUrl}${ckValue}`);
+                }
+
+                generateQRCodes(urls);
+            }
+
+            function extractCK(url) {
+                const match = url.match(/[?&]CK=([a-fA-F0-9]{64})/);
+                return match ? match[1] : null;
+            }
+
+            async function generateQRCodes(listcode) {
+                const newTab = window.open('', '_blank');
+                if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+                    alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
+                    return;
+                }
+                let htmlContent = `
+                    <html>
+                    <head>
+                        <style>
+                            .qr-grid {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fill, 3cm);
+                                gap: 0.5cm;
+                                justify-content: center;
+                                margin-top: 10px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div style="display: flex; flex-wrap: wrap; gap: 5mm;">
+                `;
+                let PR_KEY = 1
+                for (const code of listcode) {
+                    // Tạo một <div> tạm để render mã QR
+                    const tempDiv = document.createElement('div');
+                    const qrCode = new QRCode(tempDiv, {
+                        text: code,           // Mã code muốn tạo
+                        // width: 57,           // Chiều rộng mã QR
+                        // height: 57           // Chiều cao mã QR
+                        width: 113,           // Chiều rộng mã QR
+                        height: 113           // Chiều cao mã QR
+                    });
+
+                    // Chờ QRCode render xong và lấy hình ảnh từ thẻ canvas
+                    const qrDataUrl = await new Promise((resolve) => {
+                        setTimeout(() => {
+                            const canvas = tempDiv.querySelector('canvas');  // Lấy thẻ canvas chứa mã QR
+                            resolve(canvas.toDataURL());                    // Chuyển canvas thành DataURL
+                        }, 500);  // Đợi một thời gian ngắn để chắc chắn mã QR được tạo xong
+                    });
+                    const prKeyStr = PR_KEY.toString().padStart(4, '0');
+                    // Thêm nội dung HTML vào chuỗi htmlContent
+                    // htmlContent += `
+                    //     <div class="qr-item">
+                    //         <img src="${qrDataUrl}" alt="QR Code for ${code}" />
+                    //         <p>${prKeyStr}</p>
+                    //     </div>
+                    // `;
+
+                    htmlContent += `<div style="width: 40mm; height: 30mm; font-family: Arial, sans-serif; font-size: 2.2mm; border: 1px solid #000; padding: 1mm 1.5mm 1.5mm 1.5mm; box-sizing: border-box; position: relative; overflow: hidden;">
+
+        <!-- Hình nền logo mờ -->
+        <img src="assets/img/3a3b02b9-6601-4d49-86ee-08b39f7474e6.png" alt="logo" style="position: absolute; bottom: 1mm; left: -4mm; width: 40mm; opacity: 1; z-index: 0;" />
+      
+        <!-- Nội dung phía trên hình nền -->
+        <div style="position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%;">
+          
+          <!-- Tiêu đề -->
+          <div>
+            <div style="font-weight: normal;">HomeOS Việt Nam</div>
+            <div style="font-size: 3mm; font-weight: bold;">Model - ASS.F2200</div>
+          </div>
+      
+          <!-- Thân chia 2 cột -->
+          <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 1mm; flex-grow: 1;">
+            
+            <!-- Cột trái: Thông số + chân -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+              <div style="font-size: 6px;">
+                <div style="margin-bottom: 2px;"><strong>Phiên bản:</strong> 25.06</div>
+                <div style="margin-bottom: 2px;"><strong>Điện áp vào/ra:</strong> <span style="color: gray;">220 VAC</span></div>
+                <div style="margin-bottom: 2px;"><strong>P định mức:</strong> <span style="color: gray;">2700W / 3HP</span></div>
+                <div style="margin-bottom: 2px;"><strong>P tối đa:</strong> 5500W</div>
+                <div style="margin-bottom: 2px;"><strong>Chế độ:</strong> thủ công / tự động</div>
+                <div style="margin-bottom: 2px;"><strong>Số tín hiệu:</strong> 2 đóng mở</div>
+                <div style="margin-bottom: 2px;"><strong>DxRxC:</strong> 88x54x59mm</div>
+                <div style="margin-bottom: 2px;"><strong>Ray cài:</strong> 35mm</div>
+              </div>
+      
+              <!-- Chân nằm trong cột trái -->
+              <div style="background: black; color: white; font-size: 1.8mm; padding: 0.5mm; text-align: center; margin-top: 2px;">
+                Sản xuất tại Việt Nam
+              </div>
+            </div>
+      
+            <!-- Cột phải: QR và mã -->
+            <div style="width: 15mm; text-align: center; margin-left: 1mm;">
+              <div style="background: black; color: white; font-size: 2.2mm; padding: 0.5mm; margin-bottom: 1.5mm;">
+                S202507.${prKeyStr}
+              </div>
+              <img src="${qrDataUrl}" style="width: 15mm; height: 15mm;" alt="QR Code" />
+            </div>
+          </div>
+        </div>
+      </div>  
+`
+                    const ckValue = extractCK(code);
+                    
+                    const willInsertData = {
+                        QR_CODE: "T20250927,ROLE-ASS.F2200.1P,S202509."+prKeyStr,
+                        CK_CODE: ckValue,
+                        MA_SAN_PHAM: "ROLE-ASS.F2200.1P",
+                        DATE_CREATE: new Date(),
+                        ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
+                        USER_ID: '6722547918621605824',
+                        DATASTATE: "ADD",
+                    };
+                    add(user_id, session, 'DM_QRCODE', willInsertData);
+
+                    PR_KEY++;
+                }
+                
+
+
+                // Chèn nội dung HTML vào tab mới
+                newTab.document.write(htmlContent);
+                newTab.document.close();
+
+                const script = newTab.document.createElement("script");
+                script.textContent = "window.onload = function() { window.print(); }";
+                newTab.document.body.appendChild(script);
+            }
+
+            function add(user_id, session, table, data) {
+                const d = {Uid: 'admin', Sid:'eb479ce0-9cb7-4bcf-9f5e-15bbb232a3e7', tablename:table, jd:JSON.stringify(data), ex:''};
+                
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "https://central.homeos.vn/service_XD/service.svc/ExecuteData?callback=?",
+                        type: "GET",
+                        dataType: "jsonp",
+                        data: d,
+                        contentType: "application/json; charset=utf-8",
+                        success: function (msg) {
+                            try {
+                                let state = JSON.parse(msg);
+                                resolve(state);  // Trả về dữ liệu khi thành công
+                            } catch (error) {
+                                reject(error);  // Bắt lỗi nếu JSON parse thất bại
+                            }
+                        },
+                        complete: function (data) {
+                        },
+                        error: function (e, t, x) {
+                        }
+                    });
+                });
+            }
+            function sha1Encode(message) {
+                function rotate_left(n, s) {
+                    return (n << s) | (n >>> (32 - s));
+                }
+
+                function cvt_hex(val) {
+                    let str = "";
+                    let i;
+                    let v;
+                    for (i = 7; i >= 0; i--) {
+                        v = (val >>> (i * 4)) & 0x0f;
+                        str += v.toString(16);
+                    }
+                    return str;
+                }
+
+                function utf8_encode(str) {
+                    return unescape(encodeURIComponent(str));
+                }
+
+                let blockstart;
+                let i, j;
+                const W = new Array(80);
+                let H0 = 0x67452301;
+                let H1 = 0xEFCDAB89;
+                let H2 = 0x98BADCFE;
+                let H3 = 0x10325476;
+                let H4 = 0xC3D2E1F0;
+                let A, B, C, D, E;
+                let temp;
+
+                message = utf8_encode(message);
+                const msg_len = message.length;
+
+                const word_array = [];
+                for (i = 0; i < msg_len - 3; i += 4) {
+                    j = (message.charCodeAt(i) << 24) |
+                        (message.charCodeAt(i + 1) << 16) |
+                        (message.charCodeAt(i + 2) << 8) |
+                        message.charCodeAt(i + 3);
+                    word_array.push(j);
+                }
+
+                switch (msg_len % 4) {
+                    case 0:
+                        i = 0x080000000;
+                        break;
+                    case 1:
+                        i = (message.charCodeAt(msg_len - 1) << 24) | 0x0800000;
+                        break;
+                    case 2:
+                        i = (message.charCodeAt(msg_len - 2) << 24) |
+                            (message.charCodeAt(msg_len - 1) << 16) |
+                            0x08000;
+                        break;
+                    case 3:
+                        i = (message.charCodeAt(msg_len - 3) << 24) |
+                            (message.charCodeAt(msg_len - 2) << 16) |
+                            (message.charCodeAt(msg_len - 1) << 8) |
+                            0x80;
+                        break;
+                }
+
+                word_array.push(i);
+
+                while ((word_array.length % 16) !== 14) word_array.push(0);
+
+                word_array.push(msg_len >>> 29);
+                word_array.push((msg_len << 3) & 0x0ffffffff);
+
+                for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+                    for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
+                    for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+                    A = H0;
+                    B = H1;
+                    C = H2;
+                    D = H3;
+                    E = H4;
+
+                    for (i = 0; i <= 19; i++) {
+                        temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+                        E = D;
+                        D = C;
+                        C = rotate_left(B, 30);
+                        B = A;
+                        A = temp;
+                    }
+
+                    for (i = 20; i <= 39; i++) {
+                        temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+                        E = D;
+                        D = C;
+                        C = rotate_left(B, 30);
+                        B = A;
+                        A = temp;
+                    }
+
+                    for (i = 40; i <= 59; i++) {
+                        temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+                        E = D;
+                        D = C;
+                        C = rotate_left(B, 30);
+                        B = A;
+                        A = temp;
+                    }
+
+                    for (i = 60; i <= 79; i++) {
+                        temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+                        E = D;
+                        D = C;
+                        C = rotate_left(B, 30);
+                        B = A;
+                        A = temp;
+                    }
+
+                    H0 = (H0 + A) & 0x0ffffffff;
+                    H1 = (H1 + B) & 0x0ffffffff;
+                    H2 = (H2 + C) & 0x0ffffffff;
+                    H3 = (H3 + D) & 0x0ffffffff;
+                    H4 = (H4 + E) & 0x0ffffffff;
+                }
+
+                const sha1hash = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+                return sha1hash.toLowerCase();
+            }
+
+// Example usage:
+// console.log(sha1Encode("Hello, World!"));  // Outputs: 943a702d06f34599aee1f8da8ef9f7296031d699
+
+        });
+    </script>
+</body>
+</html>

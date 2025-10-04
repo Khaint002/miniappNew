@@ -1510,7 +1510,6 @@ var handleSaveIdentities = async () => {
             "PRODUCT_LOT",
             "LOT_PRODUCT_CODE='"+mainBatch.batchCode+"'"
         );
-        console.log(dataLot);
         
         Object.values(dataDetailLot).forEach(pallet =>
             Object.values(pallet).forEach(carton =>
@@ -1868,7 +1867,7 @@ function mapProducts(realProducts) {
         }
 
         return {
-            id: p.PR_KEY,
+            id: p.PRODUCT_CODE,
             name: p.PRODUCT_NAME,
             sku: p.PRODUCT_CODE,
             imageUrl: imageUrl,
@@ -2050,7 +2049,7 @@ document
 });
 
 document.getElementById("save-import-btn").addEventListener("click", () => {
-    const productId = parseInt(importViewElements.select.value);
+    const productId = importViewElements.select.value;
     const batchCode = importViewElements.batchCode.value.trim();
     const quantity = parseInt(importViewElements.quantity.value);
     const unit = importViewElements.unit.value.trim();
@@ -2085,6 +2084,9 @@ document.getElementById("save-import-btn").addEventListener("click", () => {
     };
     mockBatches_2.push(newBatch);
 
+    console.log(newBatch);
+    addAndEditImportExport("IMPORT", 'ADD', 'SP', newBatch);
+
     if (!mockHistory[newBatch.batchId]) mockHistory[newBatch.batchId] = [];
     mockHistory[newBatch.batchId].push({
         type: "import",
@@ -2093,7 +2095,7 @@ document.getElementById("save-import-btn").addEventListener("click", () => {
         date: newBatch.lastUpdated,
     });
 
-    showToast(`Nhập kho thành công lô ${batchCode}!`);
+    toastr.success(`Nhập kho thành công!`);
     navigate("list");
     renderInventory();
 });
@@ -2663,9 +2665,9 @@ async function initializeMaterialInventoryApp() {
                 date: newBatch.lastUpdated,
             });
             
-            // mt_showToast(`Nhập kho thành công lô ${batchCode}!`);
-            // mt_navigate("mt-list");
-            // mt_renderMaterialList();
+            toastr.success(`Nhập kho thành công!`);
+            mt_navigate("mt-list");
+            mt_renderMaterialList();
         });
 
     const mt_calculateExportTotal = () => {
@@ -2814,7 +2816,7 @@ function initProductionOrderModule() {
         );
         sortedOrders.forEach((order) => {
             const statusInfo = getStatusInfo(order.status);
-            const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${order.startDate}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
+            const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${HOMEOSAPP.formatDateTime(order.startDate)}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
             listEl.append(orderHtml);
         });
     }
@@ -2824,16 +2826,61 @@ function initProductionOrderModule() {
         $container.find("#po-detailOrderId").text(order.id);
         const infoContent = `<p><strong>Sản phẩm:</strong> ${order.product
             }</p><p><strong>Số lượng:</strong> ${order.quantity
-            }</p><p><strong>Ngày bắt đầu:</strong> ${order.startDate
+            }</p><p><strong>Ngày bắt đầu:</strong> ${HOMEOSAPP.formatDateTime(order.startDate) 
             }</p><p><strong>Trạng thái:</strong> <span class="status-badge ${getStatusInfo(order.status).class
             }">${getStatusInfo(order.status).text}</span></p>`;
         $container.find("#po-detailInfoContent").html(infoContent);
         const materialsContent = $container.find("#po-detailMaterialsContent");
         materialsContent.empty();
         if (order.materials.length > 0) {
-            order.materials.forEach((mat) => {
+            order.materials.forEach((mat, index) => {
+                console.log(mat);
+                
                 materialsContent.append(
-                    `<li class="list-group-item">${mat.name}(SL còn: ${mat.quantity}) <span class="badge badge-primary badge-pill" style="font-weight: 300;">${mat.qty}</span></li>`
+                    `<div class="card material-card mb-2">
+                    <div class="card-header d-flex justify-content-between align-items-center material-toggle" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#material-${index}" 
+                        aria-expanded="false" 
+                        aria-controls="material-${index}" style="font-size: 14px; height: 60px;">
+                        
+                        <span><strong style="font-size: 14px;" >${mat.name}</strong></span>
+                        
+                        <span class="caret-icon" id="caret-${index}" style="transition: transform 0.2s ease;">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </div>
+
+                    <div id="material-${index}" class="collapse" style="border-top: 1px #535353 solid; ">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <div>
+                                    <strong style="font-weight: 500; color: #a9a8a8;">SL còn (kho):</strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success" style="font-size: 15px;">${mat.atu_qty}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <span>${mat.qty || 0}</span>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">Bù hao (%)</label>
+                                    <input type="number" class="form-control input-cmt" 
+                                        value="${mat.cmt}" data-index="${index}" min="0" disabled>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
+                                    <input type="number" class="form-control input-produce" 
+                                        value="${mat.qty * order.quantity || 0}" data-index="${index}" min="0" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
                 );
             });
         } else {
@@ -2862,7 +2909,7 @@ function initProductionOrderModule() {
                         aria-expanded="false" 
                         aria-controls="material-${index}" style="font-size: 14px; height: 60px;">
                         
-                        <span><strong style="font-size: 14px;" >${mat.name}</strong> (SL: ${mat.atu_qty})</span>
+                        <span><strong style="font-size: 14px;" >${mat.name}</strong></span>
                         
                         <span class="caret-icon" id="caret-${index}" style="transition: transform 0.2s ease;">
                             <i class="fas fa-chevron-down"></i>
@@ -3313,9 +3360,9 @@ function initProductionOrderModule() {
         });
         console.log(newOrderData);
         addOrEditLSX('ADD', newOrderData)
-        // renderOrderList();
-        // navigateTo("#po-listView");
-        // alert("Đã lưu lệnh sản xuất thành công!");
+        renderOrderList();
+        navigateTo("#po-listView");
+        toastr.success("Đã lưu lệnh sản xuất thành công!");
     });
 
     // --- EDIT ORDER LOGIC ---
@@ -3533,6 +3580,8 @@ async function initBomDeclarationModule() {
     let productBOMs = dataBom;
     let materialsMasterList = [];
     let techDocs = [];
+    
+    
     const dataEmployee = await HOMEOSAPP.getDM(
         HOMEOSAPP.linkbase,
         "HR_EMPLOYEE_INFO",
@@ -3751,7 +3800,7 @@ async function initBomDeclarationModule() {
         );
         
         const willInsertData = {
-            TRAN_NO: await HOMEOSAPP.getTranNo(dataBom.productName+"_[DAY][MONTH][YEAR]", ''), 
+            TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'PRODUCT_PUBLISH'), 
             TRAN_ID: '',
             TRAN_DATE: new Date(),
             PRODUCT_ID: dataBom.productName,
@@ -3762,7 +3811,7 @@ async function initBomDeclarationModule() {
             HARDWARE_OF: dataBom.hardwareFinisher,
             PACKAGE_OF: '',
             INCLUDE_NO: '',
-            TYPE_VERSION: dataBom.productName + 'v01',
+            TYPE_VERSION: dataBom.version,
             IS_MODULE: 1,
             NOTE: dataBom.shortDesc,
             USER_ID: dataBom.designer,
@@ -3771,14 +3820,14 @@ async function initBomDeclarationModule() {
             DATASTATE: type,
         };
         
-        const willInsertDataVersion = {
-            FR_KEY: dataPR_key.data[0].LAST_NUM,
-            TRAN_DATE: new Date(),
-            VERSION: dataBom.version,
-            NOTE: dataBom.noteVersion,
-            USER_ID: dataBom.designer,
-            DATASTATE: type,
-        };
+        // const willInsertDataVersion = {
+        //     FR_KEY: dataPR_key.data[0].LAST_NUM,
+        //     TRAN_DATE: new Date(),
+        //     VERSION: dataBom.version,
+        //     NOTE: dataBom.noteVersion,
+        //     USER_ID: dataBom.designer,
+        //     DATASTATE: type,
+        // };
 
         HOMEOSAPP.add('PRODUCT_PUBLISH', willInsertData).then(async data => {
             try {
@@ -3788,19 +3837,21 @@ async function initBomDeclarationModule() {
         }).catch(err => {
             console.error('Error:', err);
         });
-        HOMEOSAPP.add('PRODUCT_PUBLISH_VERSION', willInsertDataVersion).then(async data => {
-            try {
-            } catch (e) { }
-        }).catch(err => {
-            console.error('Error:', err);
-        });
+        // HOMEOSAPP.add('PRODUCT_PUBLISH_VERSION', willInsertDataVersion).then(async data => {
+        //     try {
+        //     } catch (e) { }
+        // }).catch(err => {
+        //     console.error('Error:', err);
+        // });
+        console.log(dataBom);
         
         dataBom.materials.forEach(e => {
             const dataItem = dataMaterial.filter(item => item.ITEM_ID === e.id);
             const willInsertData_detail = {
                 FR_KEY: dataPR_key.data[0].LAST_NUM,
                 ITEM_ID: e.id,
-                UNIT_ID: dataItem[0].UNIT_ID,
+                // UNIT_ID: dataItem[0].UNIT_ID,
+                UNIT_ID: "DVT007",
                 IS_MODULE: dataItem[0].IS_MODULE,
                 QUANTITY: e.qty,
                 ITEM_PRICE: 0,
@@ -3814,12 +3865,34 @@ async function initBomDeclarationModule() {
             }
             HOMEOSAPP.add('PRODUCT_PUBLISH_DETAIL', willInsertData_detail).then(async data => {
                 try {
-                } catch (e) { }
+                } catch (e) {}
             }).catch(err => {
                 console.error('Error:', err);
             });
             HOMEOSAPP.delay(200);
         });
+        if(techDocs.length != 0){
+            const resource = await uploadFile("ZaloMiniApp/Warehouse/file/", techDocs);
+            resource.forEach((e, index) => {
+                const willInsertData_detail = {
+                    FR_KEY: dataPR_key.data[0].LAST_NUM,
+                    PRODUCT_DOCUMENT_NAME: "",
+                    TYPE_DOCUMENT: "FILE",
+                    USER_ID: dataBom.designer,
+                    VALID_DATE: new Date(),
+                    LINK_DOCUMENT: e.url,
+                    STORE_DOCMENT: "",
+                    DOCUMENT_ID: "",
+                    ORGANIZATION_ID: "",
+                    TRAN_DATE: new Date(),
+                    VALID_DATE_TO: new Date(),
+                    ORDER_DOCUMENT: index,
+                    DATASTATE: 'ADD'
+                }
+                HOMEOSAPP.add('PRODUCT_PUBLISH_DOCUMENT', willInsertData_detail)
+            });
+        }
+        await HOMEOSAPP.updateTranNo("PRODUCT_PUBLISH");
     }
 
     // --- INITIALIZE SELECT2 ---
@@ -3841,6 +3914,8 @@ async function initBomDeclarationModule() {
         $container.find("#addStep1").show();
         $container.find("#addStep2").hide();
         tempBomData = { info: {}, materials: [] };
+        $container.find("#tech-doc-list").html("");
+        techDocs = [];
         navigateTo("#addView");
     });
     $container.on("click", ".btn-back", function () {
@@ -3914,8 +3989,6 @@ async function initBomDeclarationModule() {
         $container.find("#addStep1").hide();
         $container.find("#addStep2").show();
         renderMaterialList("#addedMaterialsList", tempBomData.materials);
-        
-        
     });
 
     $container.on("submit", "#formAddMaterial", function (e) {
@@ -3955,6 +4028,7 @@ async function initBomDeclarationModule() {
         addOrEditBom('ADD', newBom);
         renderBOMList();
         navigateTo("#bomListView");
+        toastr.success("Thêm BOM thành công!");
     });
 
     // Edit BOM Logic
@@ -4256,13 +4330,13 @@ function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
 }
 
-async function mapDealData(rawData, type) {
+async function mapDealData(rawData, type, Wtype) {
     return {
         TRAN_DATE: new Date(),
         TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'DEPOT_IMPORT_DEAL'),
         TRAN_ID: "IMPORT",
         WAREHOUSE_ID: rawData.location || "KHO-DEFAULT",
-        WAREHOUSE_TYPE: "KLK",
+        WAREHOUSE_TYPE: Wtype,
         CONTACT_PERSION: rawData.supplier || "",
         ACTION_TYPE_ID: type === "IMPORT" ? "NHAP" : "XUAT",
         COMMENT: rawData.description || "",
@@ -4285,7 +4359,7 @@ function mapDetailData(rawData, Fr_key) {
     const QUANTITY_REMAIN = dataMaterial.filter((b) => b.ITEM_ID == rawData.materialId);
     return { 
         FR_KEY: Fr_key + 1,                           
-        ITEM_ID: rawData.materialId || null,
+        ITEM_ID: rawData.materialId || rawData.productId,
         REG_NO: rawData.batchCode || "",
         UNIT_ID: rawData.unit || "",
         EXTRA_UNIT_ID: rawData.extraUnitId || "", 
@@ -4314,7 +4388,19 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             "TABLE_NAME = '"+tableDeal+"'"
         );
         // --- DEAL ---
-        const dealObj = await mapDealData(data, type);
+        let Wtype; 
+        let ITEM_ID;
+        let files;
+        if(typeItem == "VT"){
+            Wtype = "KLK";
+            ITEM_ID = data.materialId;
+            files = getPhotoFiles("photoBox2");
+        } else {
+            Wtype = "KTP";
+            ITEM_ID = data.productId;
+            files = getPhotoFiles("photoBox1");
+        }
+        const dealObj = await mapDealData(data, type, Wtype);
         
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDeal, dealObj, { PR_KEY: dealKey });
@@ -4333,7 +4419,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         const DataInformation = await HOMEOSAPP.getDM(
             HOMEOSAPP.linkbase,
             "DEPOT_INFORMATION_MASTER",
-            "ITEM_ID = '"+data.materialId+"'"
+            "ITEM_ID = '"+ITEM_ID+"'"
         );
         const original = DataInformation.data[0];
 
@@ -4353,15 +4439,15 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
         }
 
-        const files1 = getPhotoFiles("photoBox2");
-        console.log( files1.length, files1);
         
-        if(files1.length != 0){
-            const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files1);
+        console.log( files.length, files);
+        
+        if(files.length != 0){
+            const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files);
             const DataItem = await HOMEOSAPP.getDM(
                 HOMEOSAPP.linkbase,
                 "DM_ITEM",
-                "ITEM_ID = '"+data.materialId+"'"
+                "ITEM_ID = '"+ITEM_ID+"'"
             );
             const originalItem = DataItem.data[0];
             if(originalItem.ITEM_IMAGE == null){
@@ -4374,6 +4460,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             }
             
         }
+        await HOMEOSAPP.updateTranNo("DEPOT_IMPORT_DEAL");
         
     } catch (err) {
         // console.error("❌ Lỗi khi xử lý import/export:", err);

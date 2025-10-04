@@ -412,7 +412,20 @@
                             <div class="col"><label for="import-price-total" class="form-label ">Tổng giá lô</label><input type="text" id="import-price-total" class="form-control bg-body-secondary" readonly></div>
                         </div>
                         <div class="mb-3"><label for="import-description" class="form-label ">8. Mô tả</label><textarea id="import-description" rows="2" class="form-control"></textarea></div>
-                        <div><label class="form-label ">9. Hình ảnh</label><div class="d-grid gap-2 d-sm-flex"><button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button><button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button></div></div>
+                        <div id="photoBox1" class="photo-uploader">
+                            <label class="form-label">9. Hình ảnh</label>
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                            </div>
+
+                            <!-- input ẩn -->
+                            <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                            <input type="file" accept="image/*" multiple class="upload-input d-none">
+
+                            <!-- danh sách ảnh -->
+                            <ul class="list-group photo-list mt-2"></ul>
+                        </div>
                     </div>
                 </main>
                 <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
@@ -530,7 +543,20 @@
                         <div class="col"><label for="mt-import-price-total" class="form-label">Tổng giá lô</label><input type="text" id="mt-import-price-total" class="form-control bg-body-secondary" readonly></div>
                     </div>
                     <div class="mb-3"><label for="mt-import-description" class="form-label">8. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
-                    <div><label class="form-label">9. Hình ảnh</label><div class="d-grid gap-2 d-sm-flex"><button class="btn btn-outline-secondary flex-fill">Chụp ảnh</button><button class="btn btn-outline-secondary flex-fill">Tải ảnh lên</button></div></div>
+                    <div id="photoBox2" class="photo-uploader">
+                        <label class="form-label">9. Hình ảnh</label>
+                        <div class="d-grid gap-2 d-sm-flex">
+                            <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                        </div>
+
+                        <!-- input ẩn -->
+                        <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                        <input type="file" accept="image/*" multiple class="upload-input d-none">
+
+                        <!-- danh sách ảnh -->
+                        <ul class="list-group photo-list mt-2"></ul>
+                    </div>
                 </div>
             </main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-import-btn" class="btn btn-success">Lưu Nhập Kho</button></footer>
@@ -662,7 +688,7 @@
                 <div id="addStep1">
                     <form id="formStep1">
                         <div class="form-group"><label>Tên BOM</label><input type="text" class="form-control" id="bomName" placeholder="VD: BOM - iPhone 16 Pro" required></div>
-                        <div class="form-group"><label>Tên sản phẩm</label>
+                        <div class="form-group"><label>Sản phẩm</label>
                             <!-- <input type="text" class="form-control" id="bomProductName" placeholder="VD: iPhone 16 Pro" required> -->
                             <select class="form-control" name="" id="bomProductName" required>
                                 <option value="ROLE-ASS.F2200">ROLE HomeOS</option>
@@ -701,7 +727,19 @@
                                 </select>
                             </div>
                         </div>
-                        
+                        <div class="row">
+                            <div class="col-12">
+                                <label class="form-label">Tài liệu kỹ thuật</label>
+                                <div class="card p-2 border">
+                                    <ul class="list-group list-group-flush" id="tech-doc-list" >
+                                    </ul>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="document.getElementById('tech-doc-input').click()">
+                                        <i class="bi bi-plus-circle"></i> Thêm tệp
+                                    </button>
+                                    <input type="file" id="tech-doc-input" class="d-none" multiple/>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group"><label>Mô tả ngắn</label><input type="text" class="form-control" id="bomShortDesc" placeholder="VD: BOM cho iPhone 16 Pro 256GB"></div>
                         <button type="submit" class="btn btn-primary btn-block">Tiếp Theo <i class="fas fa-arrow-right ml-2"></i></button>
                     </form>
@@ -901,15 +939,15 @@
                 </div>
                 <div id="po-addStep2" style="display: none;">
                     <div class="card mb-3"><div class="card-body py-2" id="po-orderSummary"></div></div>
-                    <div class="card">
+                    <div>
                         <div class="card-header py-2"><h5 class="card-title mb-0">Danh sách vật tư</h5></div>
-                         <div class="card-body">
+                         <div class="card-body p-0">
                             <form id="po-formAddMaterial" class="mb-3 d-none">
                                 <select class="form-control" id="po-materialName"></select>
                                 <input type="number" class="form-control" id="po-materialQty" placeholder="SL" required>
                                 <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                             </form>
-                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
+                            <ul id="po-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
                          </div>
                     </div>
                     <button id="po-btnSaveOrder" class="btn btn-success btn-block mt-3">Lưu Lệnh Sản Xuất</button>
@@ -922,7 +960,7 @@
             <div class="app-header">
                 <div class="d-flex align-items-center justify-content-between">
                     <button class="btn-icon btn-back"><i class="fas fa-arrow-left"></i></button>
-                    <span class="title">Sửa Lệnh Sản Xuất</span>
+                    <span class="title" >Sửa Lệnh Sản Xuất</span>
                     <div style="width: 24px;"></div>
                 </div>
             </div>
@@ -944,15 +982,15 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="po-editMaterialsList" role="tabpanel">
-                         <div class="card">
+                        <div>
                             <div class="card-header py-2"><h5 class="card-title mb-0">Danh sách vật tư</h5></div>
-                            <div class="card-body">
+                            <div class="card-body p-0">
                                 <form id="po-formEditMaterial" class="mb-3 d-none">
                                     <select class="form-control" id="po-editMaterialName"></select>
                                     <input type="number" class="form-control" id="po-editMaterialQty" placeholder="SL" required>
                                     <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i></button>
                                 </form>
-                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 350px;"></ul>
+                                <ul id="po-editedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
                             </div>
                         </div>
                     </div>
