@@ -4231,7 +4231,7 @@ function uploadFile(source, files) {
                         type: "POST",
                         dataType: "text",
                         success: function(res) {
-                            const resource = "https://central.homeos.vn/resources/"+ folder + "/" + encodeURIComponent(file.name);
+                            const resource = "https://central.homeos.vn/resources/"+ folder + "" + encodeURIComponent(file.name);
                             resolve({ file: file.name, url: resource, resp: res });
                         },
                         error: function(err) {
@@ -4283,8 +4283,6 @@ async function mapDealData(rawData, type) {
 
 function mapDetailData(rawData, Fr_key) {
     const QUANTITY_REMAIN = dataMaterial.filter((b) => b.ITEM_ID == rawData.materialId);
-    console.log(QUANTITY_REMAIN);
-    
     return { 
         FR_KEY: Fr_key + 1,                           
         ITEM_ID: rawData.materialId || null,
@@ -4321,7 +4319,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDeal, dealObj, { PR_KEY: dealKey });
         } else {
-            // await HOMEOSAPP.add(tableDeal, dealObj);
+            await HOMEOSAPP.add(tableDeal, dealObj);
         }
 
         const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
@@ -4329,7 +4327,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDetail, detailObj, { PR_KEY: raw.PR_KEY });
         } else {
-            // await HOMEOSAPP.add(tableDetail, detailObj);
+            await HOMEOSAPP.add(tableDetail, detailObj);
         }
 
         const DataInformation = await HOMEOSAPP.getDM(
@@ -4345,16 +4343,14 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
                 QUANTITY_INCOME: original.QUANTITY_INCOME + data.quantity,
                 DATASTATE: 'EDIT'
             }
-            console.log(willInsertData);
-            // await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
+            await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
         } else if(type == "EXPORT") {
             const willInsertData = {
                 ...original,
                 QUANTITY_OUTCOME: original.QUANTITY_OUTCOME + data.quantity,
                 DATASTATE: 'EDIT'
             }
-            console.log(willInsertData);
-            // await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
+            await HOMEOSAPP.add("DEPOT_INFORMATION_MASTER", willInsertData);
         }
 
         const files1 = getPhotoFiles("photoBox2");
@@ -4362,7 +4358,20 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         
         if(files1.length != 0){
             const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files1);
-            console.log(resource);
+            const DataItem = await HOMEOSAPP.getDM(
+                HOMEOSAPP.linkbase,
+                "DM_ITEM",
+                "ITEM_ID = '"+data.materialId+"'"
+            );
+            const originalItem = DataItem.data[0];
+            if(originalItem.ITEM_IMAGE == null){
+                const willInsertData = {
+                    ...originalItem,
+                    ITEM_IMAGE: resource[0].url,
+                    DATASTATE: 'EDIT'
+                }
+                await HOMEOSAPP.add("DM_ITEM", willInsertData);
+            }
             
         }
         
