@@ -835,24 +835,63 @@
 #BOM_DECLARATION .detail-materials-table td { vertical-align: middle; }
 #BOM_DECLARATION .card-body .table { margin-bottom: 0; }
 
-.form-control:focus {
-  background-color: #3a3a3a;
+#wareHouse-login .bg-gradient-dark {
+  background: radial-gradient(circle at top, #1f1f1f, #0c0c0c);
+}
+
+#wareHouse-login .bg-glass {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+}
+
+#wareHouse-login .bg-input {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#wareHouse-login .text-light-50 {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+#wareHouse-login .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #0d6efd;
   color: #fff;
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-.toggle-password:hover {
+#wareHouse-login .toggle-password:hover {
   color: #0d6efd;
+  opacity: 1;
 }
 
-.btn-outline-light:hover {
+#wareHouse-login .btn-primary {
+  background: linear-gradient(90deg, #007bff, #0dcaf0);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+#wareHouse-login .btn-primary:hover {
+  background: linear-gradient(90deg, #0dcaf0, #007bff);
+  transform: scale(1.02);
+}
+
+#wareHouse-login .btn-outline-light:hover {
   background-color: #0d6efd;
   color: #fff;
-  border-color: #0d6efd;
 }
 
-.card.login-card {
-  border-radius: 1rem;
+#wareHouse-login hr {
+  margin: 1rem 0;
+}
+
+#wareHouse-login .card.login-card {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 #feature-overlay p {
