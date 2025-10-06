@@ -55,6 +55,12 @@ var boms = [];
 async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+    if(login != []){
+        document.getElementById("wareHouse-login").classList.add("d-none");
+        document.getElementById("wareHouse-menu").classList.remove("d-none");
+        document.getElementById("footer-wareHouse").classList.remove("d-none");
+    }
     container.innerHTML = "";
     setTheme("dark");
     initPhotoUploader("photoBox1");
@@ -79,11 +85,7 @@ async function renderApps(apps, containerId) {
         </div>`;
         container.insertAdjacentHTML("beforeend", html);
     });
-    // dataMaterial = await HOMEOSAPP.getDM(
-    //     HOMEOSAPP.linkbase,
-    //     "DM_ITEM",
-    //     "1=1"
-    // );
+    
     dataMaterial = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
         "GetDataDynamicWareHouse",
@@ -4467,7 +4469,74 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
     }
 }
 
+$("#submitLogin").click(async function(e) {
+    e.preventDefault(); // chặn submit mặc định nếu có
 
+    let username = $("#userName").val().trim();
+    let password = $("#password").val().trim();
+
+    if(username === "" || password === ""){
+        toastr.error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+        return;
+    }
+
+    // Xử lý tiếp, ví dụ gọi API
+    console.log("Tên đăng nhập:", username);
+    console.log("Mật khẩu:", password);
+
+
+    var dataUser = await checkRoleUserWarehouse(username, HOMEOSAPP.sha1Encode(password + "@1B2c3D4e5F6g7H8").toString(), HOMEOSAPP.linkbase + '/');
+    if(dataUser){
+        toastr.success("đăng nhập thành công!");
+        const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+        console.log(login);
+        if(login != []){
+            document.getElementById("wareHouse-login").classList.add("d-none");
+            document.getElementById("wareHouse-menu").classList.remove("d-none");
+            document.getElementById("wareHouse-detail").classList.add("d-none");
+            document.getElementById("footer-wareHouse").classList.remove("d-none");
+        }
+        
+    }
+});
+
+function checkRoleUserWarehouse(user_id, password, url, check) {
+
+    // Nếu chưa có session, gọi API
+    const d = {
+        Uid: user_id,
+        p: password,
+        ip: '0.0.0.0',
+        a: '6fba9a59-46f1-42e6-baea-b2479fa1eb3b'
+    };
+    return new Promise((resolve, reject) => {
+        $.ajax({
+        url: url + "GetSessionId?callback=?",
+        type: "GET",
+        dataType: "jsonp",
+        data: d,
+        contentType: "application/json; charset=utf-8",
+        success: function (msg) {
+            try {
+                const state = JSON.parse(msg);
+                const newSession = {
+                    url: url,
+                    sid: state[0]?.StateId || '', // lưu sid nếu có
+                    name: state[0]?.StateName || user_id
+                };
+                console.log(state);
+                localStorage.setItem('dataLogin', JSON.stringify(newSession));
+                resolve(state);
+            } catch (error) {
+                reject(error);
+            }
+        },
+        error: function (e, t, x) {
+            reject(e);
+        }
+        });
+    });
+}
 
 renderApps(apps_waveHouse, "wareHouse-list");
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)

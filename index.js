@@ -71,7 +71,7 @@ async function getDynamicCredentials(url) {
     const config = URL_CREDENTIALS_CONFIG[url.toLowerCase()] || URL_CREDENTIALS_CONFIG.default;
     const password = HOMEOSAPP.sha1Encode(config.passKey + "@1B2c3D4e5F6g7H8").toString();
     
-    const dataUser = await checkRoleUser(config.user, password, url + '/');
+    const dataUser = await HOMEOSAPP.checkRoleUser(config.user, password, url + '/');
 
     if (!dataUser || dataUser.length === 0) {
         throw new Error(`Authentication failed for user '${config.user}' at ${url}`);
@@ -533,7 +533,7 @@ HOMEOSAPP.getDataReport = function(active, url) {
     });
 }
 
-function checkRoleUser(user_id, password, url, check) {
+HOMEOSAPP.checkRoleUser = function(user_id, password, url, check) {
     let sessionItems = JSON.parse(localStorage.getItem('dataSession')) || [];
 
     if (check === "Export") {
@@ -1098,7 +1098,7 @@ HOMEOSAPP.exportRepost = async function( checkReport, type, startDate, endDate, 
         // c = [{"ID":"12929172","NAME":"Tủ chị Hà tầng 1","IDFIELD":"WORKSTATION_ID","NAMETABLE":"DM_WORKSTATION","REPORT_ID":"RPT_BAO_CAO"}]
         nameReport = reportType;
     }
-    const dataUser = await checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
+    const dataUser = await HOMEOSAPP.checkRoleUser("dev", HOMEOSAPP.sha1Encode("1" + "@1B2c3D4e5F6g7H8").toString(), linkbase, "Export");
     
     var val = [];
     
