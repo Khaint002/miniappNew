@@ -56,7 +56,9 @@ async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
-    if(login != []){
+    console.log(login);
+    
+    if(login.length != 0){
         document.getElementById("wareHouse-login").classList.add("d-none");
         document.getElementById("wareHouse-menu").classList.remove("d-none");
         document.getElementById("footer-wareHouse").classList.remove("d-none");
@@ -631,7 +633,7 @@ $(".backWaveHouse").click(() => {
     $("#footer-wareHouse").removeClass("d-none");
 });
 
-$("#backMenuAll").click(() => {
+$(".backMenuAll").click(() => {
     HOMEOSAPP.goBack();
 });
 
@@ -4496,10 +4498,16 @@ $("#submitLogin").click(async function(e) {
             document.getElementById("wareHouse-detail").classList.add("d-none");
             document.getElementById("footer-wareHouse").classList.remove("d-none");
         }
-        
     }
 });
 
+$("#logout").click(() => {
+    localStorage.setItem('dataLogin', JSON.stringify([]));
+    document.getElementById("wareHouse-login").classList.remove("d-none");
+    document.getElementById("wareHouse-menu").classList.add("d-none");
+    document.getElementById("wareHouse-detail").classList.add("d-none");
+    document.getElementById("footer-wareHouse").classList.add("d-none");
+})
 function checkRoleUserWarehouse(user_id, password, url, check) {
 
     // Nếu chưa có session, gọi API
