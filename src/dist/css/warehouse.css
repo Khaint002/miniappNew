@@ -835,6 +835,26 @@
 #BOM_DECLARATION .detail-materials-table td { vertical-align: middle; }
 #BOM_DECLARATION .card-body .table { margin-bottom: 0; }
 
+.form-control:focus {
+  background-color: #3a3a3a;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.toggle-password:hover {
+  color: #0d6efd;
+}
+
+.btn-outline-light:hover {
+  background-color: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+.card.login-card {
+  border-radius: 1rem;
+}
+
 #feature-overlay p {
   animation: blink 1.5s infinite;
 }
