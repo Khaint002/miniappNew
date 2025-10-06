@@ -124,6 +124,7 @@ async function renderApps(apps, containerId) {
     console.log(dataBom);
     $("#loading-popup").hide();
 }
+
 function scanAgain() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
@@ -282,9 +283,11 @@ async function onScanSuccess(decodedText, decodedResult) {
         checkQRcode = decodedText.split(',');
     }
 }
+
 function onScanFailure(error) {
     // Xử lý lỗi (nếu cần)
 }
+
 $("#close-scanner").off("click").click(function () {
     if (isScannerRunning) {
         html5QrCode.stop().then(ignore => {
@@ -524,7 +527,8 @@ function groupProductDataWithArrayLSX(sourceData) {
             name: item.ITEM_NAME,
             qty: item.QUANTITY,
             cmt: item.WH_QUANTITY,
-            atu_qty: item.ITEM_QUANTITY
+            atu_qty: item.ITEM_QUANTITY,
+            need_qty: item.QUANTITY_NEEDED
         };
 
         if (existingOrder) {
@@ -764,9 +768,6 @@ async function mapProductionDataToBatches(productionData) {
 
     return batches;
 }
-
-
-
 
 // --- Lấy các phần tử DOM ---
 var getDomElements = () => ({
@@ -2875,7 +2876,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input type="number" class="form-control input-produce" 
-                                        value="${mat.qty * order.quantity || 0}" data-index="${index}" min="0" disabled>
+                                        value="${ Math.ceil(mat.qty * order.quantity) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2940,7 +2941,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input type="number" class="form-control input-produce" 
-                                        value="${mat.qty * newOrderData.info.quantity || 0}" data-index="${index}" min="0" disabled>
+                                        value="${Math.ceil(mat.qty * newOrderData.info.quantity) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2977,7 +2978,7 @@ function initProductionOrderModule() {
 
             // Cập nhật lại giá trị trong mảng dữ liệu gốc
             newOrderData.materials[index].cmt = newValue;
-            newOrderData.materials[index].produce_qty = Math.ceil(need_qty);
+            newOrderData.materials[index].need_qty = Math.ceil(need_qty);
             
             console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
@@ -3036,7 +3037,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input  type="number" class="form-control input-produce" 
-                                        value="${need_qty || 0}" data-index="${index}" min="0" disabled>
+                                        value="${ Math.ceil(need_qty) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -3655,22 +3656,20 @@ async function initBomDeclarationModule() {
                     const selectedValue = e.target.value; // lấy value (PRODUCT_CODE)
                     const selectedText = e.target.options[e.target.selectedIndex].text; // lấy tên (PRODUCT_NAME)
 
-                    console.log("ID Select:", id);
-                    console.log("Value:", selectedValue);
-                    console.log("Text:", selectedText);
-
                     const dataProduct = await HOMEOSAPP.getDM(
                         HOMEOSAPP.linkbase,
                         "PRODUCT_PUBLISH",
                         "PRODUCT_ID='"+selectedValue+"'"
                     );
+                    
                     if(dataProduct.data.length > 0){
                         $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                         $container.find("#editBomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                     } else {
+                        $container.find("#bomVersion").val(selectedValue+"_v01");
                         $container.find("#editBomVersion").val(selectedValue+"_v01");
                     }
-                    console.log(dataProduct);
+                    
                     
                 });
             } else {

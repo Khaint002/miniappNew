@@ -1,5 +1,74 @@
 <div class="container" style="overflow-y: auto; height: 100%; background-color: #282d31; padding: 0;">
-    <div id="wareHouse-menu">
+    <div id="login" class="container d-flex justify-content-center align-items-center min-vh-100 bg-dark text-light">
+        <div class="card login-card bg-dark border-0 shadow-lg" style="max-width: 400px; width: 100%;">
+            <div class="brand-area p-4 text-center border-bottom border-secondary">
+                <div class="d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-shield-lock fs-3 text-primary"></i>
+                    <h1 class="h4 m-0 text-light">Trang đăng nhập</h1>
+                </div>
+                <p class="text-secondary mb-0 mt-2">Chào mừng quay lại 👋</p>
+            </div>
+
+            <div class="card-body p-4">
+                <form class="needs-validation" novalidate>
+                    
+                    <div class="mb-3">
+                        <div class="form-floating">
+                            <input type="text" class="form-control bg-secondary text-light border-0" id="userName" placeholder="user name" required>
+                            <label for="userName" class="text-light">Tên đăng nhập</label>
+                            <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <div class="form-floating">
+                            <input type="password" class="form-control bg-secondary text-light border-0" id="password" placeholder="••••••••" required minlength="6">
+                            <label for="password" class="text-light">Mật khẩu</label>
+                            <div class="invalid-feedback">Mật khẩu tối thiểu 6 ký tự.</div>
+                        </div>
+                    <button class="toggle-password position-absolute top-50 end-0 translate-middle-y me-3 btn btn-sm btn-outline-light border-0" type="button" aria-label="Hiện/ẩn mật khẩu">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" value="" id="rememberMe">
+                            <label class="form-check-label text-light" for="rememberMe">Ghi nhớ tôi</label>
+                        </div>
+                    <a href="#" class="text-primary text-decoration-none">Quên mật khẩu?</a>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button id="submitLogin" class="btn btn-primary btn-lg" type="submit">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập
+                        </button>
+                    </div>
+
+                    <div class="divider text-center text-secondary mb-3 position-relative">
+                        <span class="bg-dark px-3">Hoặc</span>
+                        <hr class="position-absolute top-50 start-0 end-0 m-0 border-secondary" style="z-index: -1;">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-light" type="button">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" width="20" height="20" class="me-2">
+                            Tiếp tục với Zalo
+                        </button>
+                    </div>
+
+                    <div id="backLogin" class="d-grid gap-2 mt-3">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-arrow-left"></i>
+                            Quay lại
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="wareHouse-menu" class="d-none">
       <div class="history-header">
         <div class="history-avt">
           <div class="d-flex">
