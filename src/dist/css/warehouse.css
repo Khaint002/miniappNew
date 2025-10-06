@@ -889,6 +889,53 @@
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* ----- INPUT DARK STYLE ----- */
+#wareHouse-login .form-floating > .form-control {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+
+#wareHouse-login .form-floating > .form-control::placeholder {
+  color: transparent;
+}
+
+#wareHouse-login .form-floating > label {
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.25s ease;
+  background-color: transparent;
+}
+
+/* Khi focus hoặc đã nhập */
+#wareHouse-login .form-floating > .form-control:focus,
+#wareHouse-login .form-floating > .form-control:not(:placeholder-shown) {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  color: #fff;
+}
+
+/* Label khi focus */
+#wareHouse-login .form-floating > .form-control:focus ~ label,
+#wareHouse-login .form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: #0d6efd;
+  transform: scale(0.9) translateY(-0.75rem);
+  background-color: transparent;
+}
+
+/* Khi hover */
+#wareHouse-login .form-floating > .form-control:hover {
+  border-color: rgba(13, 110, 253, 0.5);
+}
+
+/* Giúp chữ trong input rõ hơn */
+#wareHouse-login .form-control:focus {
+  outline: none;
+  color: #ffffff;
+}
+
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
