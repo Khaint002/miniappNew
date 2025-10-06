@@ -62,7 +62,15 @@ async function renderApps(apps, containerId) {
         document.getElementById("wareHouse-login").classList.add("d-none");
         document.getElementById("wareHouse-menu").classList.remove("d-none");
         document.getElementById("footer-wareHouse").classList.remove("d-none");
+        if (window.GetUser) {
+            DataUser = JSON.parse(localStorage.getItem("userInfo"));
+            $(".userName").text(DataUser.name);
+            $(".userAvt").attr("src", DataUser.avatar);
+        } else {
+            $(".userName").text(login.username);
+        }
     }
+    
     container.innerHTML = "";
     setTheme("dark");
     initPhotoUploader("photoBox1");
@@ -1665,12 +1673,12 @@ var addEventListeners = () => {
 
 // --- KHỞI TẠO BAN ĐẦU ---
 var initializeApp = async () => {
-    dataPR = await HOMEOSAPP.getDM(
+    dataPR = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
-        "DM_PRODUCT",
-        "1=1"
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='PRODUCT'"
     );
-
+    HOMEOSAPP.delay(100);
     var dataLot = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
         "GetDataDynamicWareHouse",
@@ -1681,12 +1689,11 @@ var initializeApp = async () => {
     // mockBatches = mockBatchesMulti;
     // console.log(mockBatchesMulti);
     mockBatches = mockBatchesMulti
-    console.log(mockBatches);
-    console.log(mockBatchesMulti);
+    console.log(dataPR);
     
     
-    if (dataPR.data) {
-        mockProducts = mapProducts(dataPR.data);
+    if (dataPR) {
+        mapProducts(dataPR);
     }
 
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
@@ -1696,46 +1703,33 @@ var initializeApp = async () => {
     renderBatches(mockBatches);
 };
 
-var mockProducts;
+var mockProducts = [];
 initializeApp();
 
 // 
 var currentUser = "Nguyễn Văn A"; // Giả lập người dùng đăng nhập
 
-var mockBatches_2 = [
-    // {
-    //     batchId: 101,
-    //     productId: 1,
-    //     batchCode: "L20250901",
-    //     quantity: 58,
-    //     unit: "Cái",
-    //     location: "Kho A, Kệ 12",
-    //     supplier: "TechSource Inc.",
-    //     lastUpdated: "10/09/2025",
-    //     pricePerItem: 15000000,
-    //     description: "Lô nhập đầu tháng 9",
-    // }
-];
+var mockBatches_2 = [];
 
 var mockHistory = {
-    101: [
-        {
-            type: "import",
-            quantity: 60,
-            reason: "Nhập hàng đầu kỳ",
-            date: "01/09/2025",
-        },
-        { type: "export", quantity: 2, reason: "Bán lẻ", date: "05/09/2025" },
-    ],
-    102: [
-        {
-            type: "import",
-            quantity: 20,
-            reason: "Nhập hàng đầu kỳ",
-            date: "01/09/2025",
-        },
-        { type: "export", quantity: 5, reason: "Bán sỉ", date: "06/09/2025" },
-    ],
+    // 101: [
+    //     {
+    //         type: "import",
+    //         quantity: 60,
+    //         reason: "Nhập hàng đầu kỳ",
+    //         date: "01/09/2025",
+    //     },
+    //     { type: "export", quantity: 2, reason: "Bán lẻ", date: "05/09/2025" },
+    // ],
+    // 102: [
+    //     {
+    //         type: "import",
+    //         quantity: 20,
+    //         reason: "Nhập hàng đầu kỳ",
+    //         date: "01/09/2025",
+    //     },
+    //     { type: "export", quantity: 5, reason: "Bán sỉ", date: "06/09/2025" },
+    // ],
 };
 
 var appContainer = document.getElementById("app-container");
@@ -1861,7 +1855,7 @@ var renderInventory = () => {
 };
 
 function mapProducts(realProducts) {
-    return realProducts.map((p) => {
+    realProducts.map((p) => {
         // Ưu tiên PRODUCT_IMG, nếu không có thì lấy ảnh đầu tiên trong PRODUCT_IMG_SLIDE
         let imageUrl = p.PRODUCT_IMG;
         if (!imageUrl && p.PRODUCT_IMG_SLIDE) {
@@ -1871,12 +1865,24 @@ function mapProducts(realProducts) {
             imageUrl = "https://placehold.co/400x300/e2e8f0/334155?text=No+Image";
         }
 
-        return {
+        mockProducts.push({
             id: p.PRODUCT_CODE,
             name: p.PRODUCT_NAME,
             sku: p.PRODUCT_CODE,
             imageUrl: imageUrl,
-        };
+        });
+        mockBatches_2.push({
+            batchId: p.BATCH_ID,
+            productId: p.PRODUCT_CODE,
+            batchCode: "",
+            quantity: p.QUANTITY,
+            unit: p.UNIT_NAME,
+            location: p.WAREHOUSE_NAME,
+            supplier: "HomeOS",
+            lastUpdated: HOMEOSAPP.formatDateTime(p.UPDATED_DATE),
+            pricePerItem: 0,
+            description: ""
+        })
     });
 }
 
@@ -4530,9 +4536,11 @@ function checkRoleUserWarehouse(user_id, password, url, check) {
                 const newSession = {
                     url: url,
                     sid: state[0]?.StateId || '', // lưu sid nếu có
-                    name: state[0]?.StateName || user_id
+                    name: state[0]?.StateName || user_id,
+                    username: state[1]?.UserName || state[0]?.StateName
                 };
                 console.log(state);
+                $(".userName").text(state[1]?.UserName);
                 localStorage.setItem('dataLogin', JSON.stringify(newSession));
                 resolve(state);
             } catch (error) {
