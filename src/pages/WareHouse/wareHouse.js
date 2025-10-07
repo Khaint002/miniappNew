@@ -19,6 +19,7 @@ var dataMaterial;
 var dataBom;
 var dataLSX;
 var dataDetailLot;
+var dataEmployee;
 var mockBatches = [
     // {
     //     batchCode: "LSP-250911-002",
@@ -129,7 +130,14 @@ async function renderApps(apps, containerId) {
         "GetDataDynamicWareHouse",
         "TYPE_QUERY='LSX'"
     );
-
+    HOMEOSAPP.delay(100);
+    const dataEmployeeAll = await HOMEOSAPP.getDM(
+        HOMEOSAPP.linkbase,
+        "HR_EMPLOYEE_INFO",
+        "ACTIVE=1"
+    );
+    dataEmployee = dataEmployeeAll.data;
+    renderSelectAll(dataEmployee);
     dataLSX = await groupProductDataWithArrayLSX(dataLSX);
 
     dataBom = await groupProductDataWithArray(dataBom);
@@ -155,6 +163,27 @@ $("#start-scan-button").off("click").click(function () {
         startQRcode();
     }
 });
+function renderSelectAll(data) {
+    const optionsHtml = data.map(employee => {
+        return `<option value="${employee.EMPLOYEE_ID}">${employee.EMPLOYEE_NAME}</option>`;
+    }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
+
+    // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
+    const selectIds = [
+        'mt-export-receiver'
+    ];
+
+    // 3. Lặp qua từng ID và cập nhật nội dung HTML
+    selectIds.forEach(id => {
+        const selectElement = document.getElementById(id);
+        if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
+            selectElement.innerHTML = optionsHtml;
+        } else {
+            console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
+        }
+    });
+}
+
 
 function startQRcode() {
     $("#result-form-total, #result-form-title").addClass("d-none");
@@ -3617,13 +3646,6 @@ async function initBomDeclarationModule() {
     let productBOMs = dataBom;
     let materialsMasterList = [];
     let techDocs = [];
-    
-    
-    const dataEmployee = await HOMEOSAPP.getDM(
-        HOMEOSAPP.linkbase,
-        "HR_EMPLOYEE_INFO",
-        "ACTIVE=1"
-    );
 
     if(dataMaterial){
         const resultArray = [];
@@ -3633,7 +3655,7 @@ async function initBomDeclarationModule() {
         materialsMasterList = resultArray;;
     }
     if(dataEmployee){
-        populateEmployeeSelects(dataEmployee.data);
+        populateEmployeeSelects(dataEmployee);
     }
     console.log(dataBom);
     
