@@ -2629,10 +2629,8 @@ async function initializeMaterialInventoryApp() {
         (el) => {
             el.addEventListener("input", () => {
                 const quantity = parseInt(mt_importViewElements.quantity.value) || 0;
-                // const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
                 const price = parseFloat(mt_importViewElements.priceTotal.value) || 0;
-                mt_importViewElements.priceItem.value =
-                    (price / quantity).toLocaleString("vi-VN") + " VNĐ";
+                mt_importViewElements.priceItem.value = (price / quantity).toLocaleString("vi-VN") + " VNĐ";
             });
         }
     );
@@ -2646,7 +2644,7 @@ async function initializeMaterialInventoryApp() {
             const unit = mt_importViewElements.unit.value.trim();
             const reason = mt_importViewElements.reason.value;
             const location = mt_importViewElements.location.value.trim();
-            const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
+            const pricePerItem = parseFloat(mt_importViewElements.priceItem.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
             const description = mt_importViewElements.description.value.trim();
             console.log(materialId);
             
