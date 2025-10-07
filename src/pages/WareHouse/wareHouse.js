@@ -2632,7 +2632,7 @@ async function initializeMaterialInventoryApp() {
                 // const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
                 const price = parseFloat(mt_importViewElements.priceTotal.value) || 0;
                 mt_importViewElements.priceItem.value =
-                    (quantity / price).toLocaleString("vi-VN") + " VNĐ";
+                    (price / quantity).toLocaleString("vi-VN") + " VNĐ";
             });
         }
     );
