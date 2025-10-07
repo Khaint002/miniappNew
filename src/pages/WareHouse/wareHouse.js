@@ -2088,12 +2088,12 @@ document
     .getElementById("show-export-view-btn")
     .addEventListener("click", showExportView);
 
-[importViewElements.quantity, importViewElements.priceItem].forEach((el) => {
+[importViewElements.quantity, importViewElements.priceTotal].forEach((el) => {
     el.addEventListener("input", () => {
         const quantity = parseInt(importViewElements.quantity.value) || 0;
-        const price = parseFloat(importViewElements.priceItem.value) || 0;
-        importViewElements.priceTotal.value =
-            (quantity * price).toLocaleString("vi-VN") + " VNĐ";
+        const price = parseFloat(importViewElements.priceTotal.value) || 0;
+        importViewElements.priceItem.value =
+            (price / quantity).toLocaleString("vi-VN") + " VNĐ";
     });
 });
 
@@ -2104,7 +2104,7 @@ document.getElementById("save-import-btn").addEventListener("click", () => {
     const unit = importViewElements.unit.value.trim();
     const reason = importViewElements.reason.value;
     const location = importViewElements.location.value.trim();
-    const pricePerItem = parseFloat(importViewElements.priceItem.value);
+    const pricePerItem = parseFloat(importViewElements.priceItem.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
     const description = importViewElements.description.value.trim();
 
     if (
@@ -2244,7 +2244,8 @@ async function initializeMaterialInventoryApp() {
     if (dataMaterial) {
         processInventoryData(dataMaterial);
     }
-    const mt_currentUser = "Nguyễn Văn A";
+    const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+    const mt_currentUser = login.username;
 
     // = [
     //     { id: 1, name: 'Thép tấm SPHC 2.0mm', sku: 'VT-STEEL-SPHC-20', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Thép' },
