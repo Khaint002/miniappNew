@@ -510,7 +510,8 @@ function groupProductDataWithArray(sourceData) {
                 hardwareFinisher: item.HARDWARE_OF || 'Chưa có thông tin',
                 softwareUploader: item.SOFTWARE_OF || 'Chưa có thông tin',
                 // Khởi tạo mảng materials với vật tư đầu tiên
-                materials: [newMaterial] 
+                materials: [newMaterial] ,
+                date: item.CREATE_DATE
             };
             resultArray.push(newProduct);
             ArrayBom.push({
@@ -2628,9 +2629,10 @@ async function initializeMaterialInventoryApp() {
         (el) => {
             el.addEventListener("input", () => {
                 const quantity = parseInt(mt_importViewElements.quantity.value) || 0;
-                const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
-                mt_importViewElements.priceTotal.value =
-                    (quantity * price).toLocaleString("vi-VN") + " VNĐ";
+                // const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
+                const price = parseFloat(mt_importViewElements.priceTotal.value) || 0;
+                mt_importViewElements.priceItem.value =
+                    (quantity / price).toLocaleString("vi-VN") + " VNĐ";
             });
         }
     );
@@ -2821,18 +2823,34 @@ function initProductionOrderModule() {
     }
     function renderOrderList() {
         const listEl = $container.find("#po-productionOrderList");
+        const searchValue = $("#po-search-input").val()?.trim().toLowerCase() || "";
+
+        // Lọc danh sách theo từ khóa nhập
+        const filteredOrders = productionOrders.filter((order) => {
+            const id = order.id?.toLowerCase() || "";
+            const product = order.product?.toLowerCase() || "";
+            const status = order.status?.toLowerCase() || "";
+            return (
+                id.includes(searchValue) ||
+                product.includes(searchValue) ||
+                status.includes(searchValue)
+            );
+        });
+        console.log(filteredOrders);
+        
         listEl.empty();
-        if (productionOrders.length === 0) {
+        if (filteredOrders.length === 0) {
             listEl.html(
                 '<p class="text-center text-muted">Chưa có lệnh sản xuất nào.</p>'
             );
             return;
         }
         // Sắp xếp lại danh sách để đưa item mới lên đầu
-        const sortedOrders = [...productionOrders].sort(
+        const sortedOrders = [...filteredOrders].sort(
             (a, b) =>
                 b.startDate.localeCompare(a.startDate) || b.id.localeCompare(a.id)
         );
+        
         sortedOrders.forEach((order) => {
             const statusInfo = getStatusInfo(order.status);
             const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${HOMEOSAPP.formatDateTime(order.startDate)}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
@@ -3280,7 +3298,9 @@ function initProductionOrderModule() {
 
     // --- EVENT HANDLERS (GENERAL) ---
     $container.off(); // Detach all previous handlers within the container
-
+    $container.on("input", "#po-search-input", async function (e) {
+        renderOrderList();
+    })
     $container.on("click", "#po-btnAddOrder", async function (e) {
         e.preventDefault();
         $container.find("#po-formStep1")[0].reset();
@@ -3703,13 +3723,28 @@ async function initBomDeclarationModule() {
 
     function renderBOMList() {
         const listEl = $container.find("#bomListContainer");
+        const searchValue = $("#bom-search-input").val()?.trim().toLowerCase() || "";
+        
+        // Lọc danh sách theo từ khóa nhập
+        const filteredOrders = productBOMs.filter((bom) => {
+            const id = bom.id?.toLowerCase() || "";
+            const product = bom.name?.toLowerCase() || "";
+            const status = bom.version?.toLowerCase() || "";
+            return (
+                id.includes(searchValue) ||
+                product.includes(searchValue) ||
+                status.includes(searchValue)
+            );
+        });
+        console.log(filteredOrders);
+        
         listEl.empty();
-        if (productBOMs.length === 0) {
+        if (filteredOrders.length === 0) {
             listEl.html('<p class="text-center text-muted p-3">Chưa có BOM nào.</p>');
             return;
         }
-        productBOMs.forEach((bom) => {
-            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${bom.version}</span></div><p class="mb-1 small text-secondary">${bom.shortDesc}</p></div></div>`;
+        filteredOrders.forEach((bom) => {
+            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.version}</p></div></div>`;
             listEl.append(bomHtml);
         });
     }
@@ -3923,7 +3958,9 @@ async function initBomDeclarationModule() {
 
     // --- EVENT HANDLERS ---
     $container.off(); // Detach all previous handlers
-
+    $container.on("input", "#bom-search-input", async function (e) {
+        renderBOMList();
+    })
     $container.on("click", "#btnAddBom", function (e) {
         e.preventDefault();
         $container.find("#formStep1")[0].reset();
