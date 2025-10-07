@@ -787,7 +787,7 @@ var getDomElements = () => ({
     formScreen: document.getElementById("form-screen"),
     productIdScreen: document.getElementById("product-id-screen"),
     batchListContainer: document.getElementById("batch-list-container"),
-    searchInput: document.getElementById("search-input"),
+    searchInput: document.getElementById("lot-search-input"),
     noResults: document.getElementById("no-results"),
     addNewButton: document.getElementById("add-new-button"),
     backToListButton: document.getElementById("back-to-list-button"),
@@ -930,6 +930,8 @@ var renderBatches = (batches) => {
     const activeBatches = batches.filter((b) => b.active === 0);
     dom.batchListContainer.innerHTML = "";
     dom.noResults.classList.toggle("d-none", activeBatches.length > 0);
+    console.log(activeBatches);
+    
     activeBatches.forEach((batch) => {
         const batchCardHTML = `
         <div class="swipe-container position-relative bg-body-tertiary rounded-3 shadow-sm border border-secondary overflow-hidden">
@@ -1043,6 +1045,7 @@ function initializeSwipeActions() {
 
 var handleSearch = () => {
     const searchTerm = dom.searchInput.value.toLowerCase();
+    console.log(searchTerm);
     
     const filteredBatches = mockBatches.filter(
         (batch) =>
@@ -1050,6 +1053,8 @@ var handleSearch = () => {
             batch.productName.toLowerCase().includes(searchTerm) ||
             (batch.lsx && batch.lsx.toLowerCase().includes(searchTerm))
     );
+    console.log(filteredBatches);
+    
     renderBatches(filteredBatches);
 };
 
@@ -2011,7 +2016,7 @@ var setTheme = (theme) => {
 };
 
 // Event Listeners
-searchInputEl.addEventListener("change", renderInventory);
+searchInputEl.addEventListener("input", renderInventory);
 filterButtonsEl.addEventListener("click", (e) => {
     const button = e.target.closest(".filter-btn");
     if (!button) return;
