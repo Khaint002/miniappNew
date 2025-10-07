@@ -1,0 +1,3 @@
+Cập nhật ngày 06/10/2025 lần 1:
+- update phần đăng nhập 
+- sửa lỗi vặt, form thêm bom

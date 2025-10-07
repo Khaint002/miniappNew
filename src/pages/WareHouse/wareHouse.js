@@ -2873,7 +2873,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM:</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -2938,7 +2938,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM::</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -3034,7 +3034,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (theo BOM):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM:</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -3646,7 +3646,7 @@ async function initBomDeclarationModule() {
             }
         });
         let optionsHtmlProduct = ` <option value="">-- Chọn sản phẩm --</option>
-        ` + dataPR.data.map(product => {
+        ` + dataPR.map(product => {
             return `<option value="${product.PRODUCT_CODE}">${product.PRODUCT_NAME}</option>`;
         }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
         

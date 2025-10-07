@@ -55,6 +55,22 @@ var boms = [];
 async function renderApps(apps, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+    console.log(login);
+    
+    if(login.length != 0){
+        document.getElementById("wareHouse-login").classList.add("d-none");
+        document.getElementById("wareHouse-menu").classList.remove("d-none");
+        document.getElementById("footer-wareHouse").classList.remove("d-none");
+        if (window.GetUser) {
+            DataUser = JSON.parse(localStorage.getItem("userInfo"));
+            $(".userName").text(DataUser.name);
+            $(".userAvt").attr("src", DataUser.avatar);
+        } else {
+            $(".userName").text(login.username);
+        }
+    }
+    
     container.innerHTML = "";
     setTheme("dark");
     initPhotoUploader("photoBox1");
@@ -79,11 +95,7 @@ async function renderApps(apps, containerId) {
         </div>`;
         container.insertAdjacentHTML("beforeend", html);
     });
-    // dataMaterial = await HOMEOSAPP.getDM(
-    //     HOMEOSAPP.linkbase,
-    //     "DM_ITEM",
-    //     "1=1"
-    // );
+    
     dataMaterial = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
         "GetDataDynamicWareHouse",
@@ -124,6 +136,7 @@ async function renderApps(apps, containerId) {
     console.log(dataBom);
     $("#loading-popup").hide();
 }
+
 function scanAgain() {
     // document.getElementById("footer-instruct-scanQR").classList.add("d-none");
     document.getElementById("result-form").classList.add("d-none");
@@ -282,9 +295,11 @@ async function onScanSuccess(decodedText, decodedResult) {
         checkQRcode = decodedText.split(',');
     }
 }
+
 function onScanFailure(error) {
     // Xử lý lỗi (nếu cần)
 }
+
 $("#close-scanner").off("click").click(function () {
     if (isScannerRunning) {
         html5QrCode.stop().then(ignore => {
@@ -524,7 +539,8 @@ function groupProductDataWithArrayLSX(sourceData) {
             name: item.ITEM_NAME,
             qty: item.QUANTITY,
             cmt: item.WH_QUANTITY,
-            atu_qty: item.ITEM_QUANTITY
+            atu_qty: item.ITEM_QUANTITY,
+            need_qty: item.QUANTITY_NEEDED
         };
 
         if (existingOrder) {
@@ -625,7 +641,7 @@ $(".backWaveHouse").click(() => {
     $("#footer-wareHouse").removeClass("d-none");
 });
 
-$("#backMenuAll").click(() => {
+$(".backMenuAll").click(() => {
     HOMEOSAPP.goBack();
 });
 
@@ -764,9 +780,6 @@ async function mapProductionDataToBatches(productionData) {
 
     return batches;
 }
-
-
-
 
 // --- Lấy các phần tử DOM ---
 var getDomElements = () => ({
@@ -1660,12 +1673,12 @@ var addEventListeners = () => {
 
 // --- KHỞI TẠO BAN ĐẦU ---
 var initializeApp = async () => {
-    dataPR = await HOMEOSAPP.getDM(
+    dataPR = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
-        "DM_PRODUCT",
-        "1=1"
+        "GetDataDynamicWareHouse",
+        "TYPE_QUERY='PRODUCT'"
     );
-
+    HOMEOSAPP.delay(100);
     var dataLot = await HOMEOSAPP.getApiServicePublic(
         HOMEOSAPP.linkbase,
         "GetDataDynamicWareHouse",
@@ -1676,12 +1689,11 @@ var initializeApp = async () => {
     // mockBatches = mockBatchesMulti;
     // console.log(mockBatchesMulti);
     mockBatches = mockBatchesMulti
-    console.log(mockBatches);
-    console.log(mockBatchesMulti);
+    console.log(dataPR);
     
     
-    if (dataPR.data) {
-        mockProducts = mapProducts(dataPR.data);
+    if (dataPR) {
+        mapProducts(dataPR);
     }
 
     deleteModal = new bootstrap.Modal(dom.deleteModalEl);
@@ -1691,46 +1703,33 @@ var initializeApp = async () => {
     renderBatches(mockBatches);
 };
 
-var mockProducts;
+var mockProducts = [];
 initializeApp();
 
 // 
 var currentUser = "Nguyễn Văn A"; // Giả lập người dùng đăng nhập
 
-var mockBatches_2 = [
-    // {
-    //     batchId: 101,
-    //     productId: 1,
-    //     batchCode: "L20250901",
-    //     quantity: 58,
-    //     unit: "Cái",
-    //     location: "Kho A, Kệ 12",
-    //     supplier: "TechSource Inc.",
-    //     lastUpdated: "10/09/2025",
-    //     pricePerItem: 15000000,
-    //     description: "Lô nhập đầu tháng 9",
-    // }
-];
+var mockBatches_2 = [];
 
 var mockHistory = {
-    101: [
-        {
-            type: "import",
-            quantity: 60,
-            reason: "Nhập hàng đầu kỳ",
-            date: "01/09/2025",
-        },
-        { type: "export", quantity: 2, reason: "Bán lẻ", date: "05/09/2025" },
-    ],
-    102: [
-        {
-            type: "import",
-            quantity: 20,
-            reason: "Nhập hàng đầu kỳ",
-            date: "01/09/2025",
-        },
-        { type: "export", quantity: 5, reason: "Bán sỉ", date: "06/09/2025" },
-    ],
+    // 101: [
+    //     {
+    //         type: "import",
+    //         quantity: 60,
+    //         reason: "Nhập hàng đầu kỳ",
+    //         date: "01/09/2025",
+    //     },
+    //     { type: "export", quantity: 2, reason: "Bán lẻ", date: "05/09/2025" },
+    // ],
+    // 102: [
+    //     {
+    //         type: "import",
+    //         quantity: 20,
+    //         reason: "Nhập hàng đầu kỳ",
+    //         date: "01/09/2025",
+    //     },
+    //     { type: "export", quantity: 5, reason: "Bán sỉ", date: "06/09/2025" },
+    // ],
 };
 
 var appContainer = document.getElementById("app-container");
@@ -1856,7 +1855,7 @@ var renderInventory = () => {
 };
 
 function mapProducts(realProducts) {
-    return realProducts.map((p) => {
+    realProducts.map((p) => {
         // Ưu tiên PRODUCT_IMG, nếu không có thì lấy ảnh đầu tiên trong PRODUCT_IMG_SLIDE
         let imageUrl = p.PRODUCT_IMG;
         if (!imageUrl && p.PRODUCT_IMG_SLIDE) {
@@ -1866,12 +1865,24 @@ function mapProducts(realProducts) {
             imageUrl = "https://placehold.co/400x300/e2e8f0/334155?text=No+Image";
         }
 
-        return {
+        mockProducts.push({
             id: p.PRODUCT_CODE,
             name: p.PRODUCT_NAME,
             sku: p.PRODUCT_CODE,
             imageUrl: imageUrl,
-        };
+        });
+        mockBatches_2.push({
+            batchId: p.BATCH_ID,
+            productId: p.PRODUCT_CODE,
+            batchCode: "",
+            quantity: p.QUANTITY,
+            unit: p.UNIT_NAME,
+            location: p.WAREHOUSE_NAME,
+            supplier: "HomeOS",
+            lastUpdated: HOMEOSAPP.formatDateTime(p.UPDATED_DATE),
+            pricePerItem: 0,
+            description: ""
+        })
     });
 }
 
@@ -2875,7 +2886,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input type="number" class="form-control input-produce" 
-                                        value="${mat.qty * order.quantity || 0}" data-index="${index}" min="0" disabled>
+                                        value="${ Math.ceil(mat.qty * order.quantity) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2940,7 +2951,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input type="number" class="form-control input-produce" 
-                                        value="${mat.qty * newOrderData.info.quantity || 0}" data-index="${index}" min="0" disabled>
+                                        value="${Math.ceil(mat.qty * newOrderData.info.quantity) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -2977,7 +2988,7 @@ function initProductionOrderModule() {
 
             // Cập nhật lại giá trị trong mảng dữ liệu gốc
             newOrderData.materials[index].cmt = newValue;
-            newOrderData.materials[index].produce_qty = Math.ceil(need_qty);
+            newOrderData.materials[index].need_qty = Math.ceil(need_qty);
             
             console.log('Đã cập nhật mảng materials:', newOrderData.materials);
         });
@@ -3036,7 +3047,7 @@ function initProductionOrderModule() {
                                 <div class="col">
                                     <label class="form-label" style="color: #a9a8a8;">SL sản xuất</label>
                                     <input  type="number" class="form-control input-produce" 
-                                        value="${need_qty || 0}" data-index="${index}" min="0" disabled>
+                                        value="${ Math.ceil(need_qty) || 0}" data-index="${index}" min="0" disabled>
                                 </div>
                             </div>
                         </div>
@@ -3655,22 +3666,20 @@ async function initBomDeclarationModule() {
                     const selectedValue = e.target.value; // lấy value (PRODUCT_CODE)
                     const selectedText = e.target.options[e.target.selectedIndex].text; // lấy tên (PRODUCT_NAME)
 
-                    console.log("ID Select:", id);
-                    console.log("Value:", selectedValue);
-                    console.log("Text:", selectedText);
-
                     const dataProduct = await HOMEOSAPP.getDM(
                         HOMEOSAPP.linkbase,
                         "PRODUCT_PUBLISH",
                         "PRODUCT_ID='"+selectedValue+"'"
                     );
+                    
                     if(dataProduct.data.length > 0){
                         $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                         $container.find("#editBomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                     } else {
+                        $container.find("#bomVersion").val(selectedValue+"_v01");
                         $container.find("#editBomVersion").val(selectedValue+"_v01");
                     }
-                    console.log(dataProduct);
+                    
                     
                 });
             } else {
@@ -4468,7 +4477,82 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
     }
 }
 
+$("#submitLogin").click(async function(e) {
+    e.preventDefault(); // chặn submit mặc định nếu có
 
+    let username = $("#userName").val().trim();
+    let password = $("#password").val().trim();
+
+    if(username === "" || password === ""){
+        toastr.error("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+        return;
+    }
+
+    // Xử lý tiếp, ví dụ gọi API
+    console.log("Tên đăng nhập:", username);
+    console.log("Mật khẩu:", password);
+
+
+    var dataUser = await checkRoleUserWarehouse(username, HOMEOSAPP.sha1Encode(password + "@1B2c3D4e5F6g7H8").toString(), HOMEOSAPP.linkbase + '/');
+    if(dataUser){
+        toastr.success("đăng nhập thành công!");
+        const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+        console.log(login);
+        if(login != []){
+            document.getElementById("wareHouse-login").classList.add("d-none");
+            document.getElementById("wareHouse-menu").classList.remove("d-none");
+            document.getElementById("wareHouse-detail").classList.add("d-none");
+            document.getElementById("footer-wareHouse").classList.remove("d-none");
+        }
+    }
+});
+
+$("#logout").click(() => {
+    localStorage.setItem('dataLogin', JSON.stringify([]));
+    document.getElementById("wareHouse-login").classList.remove("d-none");
+    document.getElementById("wareHouse-menu").classList.add("d-none");
+    document.getElementById("wareHouse-detail").classList.add("d-none");
+    document.getElementById("footer-wareHouse").classList.add("d-none");
+})
+function checkRoleUserWarehouse(user_id, password, url, check) {
+
+    // Nếu chưa có session, gọi API
+    const d = {
+        Uid: user_id,
+        p: password,
+        ip: '0.0.0.0',
+        a: '6fba9a59-46f1-42e6-baea-b2479fa1eb3b'
+    };
+    return new Promise((resolve, reject) => {
+        $.ajax({
+        url: url + "GetSessionId?callback=?",
+        type: "GET",
+        dataType: "jsonp",
+        data: d,
+        contentType: "application/json; charset=utf-8",
+        success: function (msg) {
+            try {
+                const state = JSON.parse(msg);
+                const newSession = {
+                    url: url,
+                    sid: state[0]?.StateId || '', // lưu sid nếu có
+                    name: state[0]?.StateName || user_id,
+                    username: state[1]?.UserName || state[0]?.StateName
+                };
+                console.log(state);
+                $(".userName").text(state[1]?.UserName);
+                localStorage.setItem('dataLogin', JSON.stringify(newSession));
+                resolve(state);
+            } catch (error) {
+                reject(error);
+            }
+        },
+        error: function (e, t, x) {
+            reject(e);
+        }
+        });
+    });
+}
 
 renderApps(apps_waveHouse, "wareHouse-list");
 // Chạy hàm khởi tạo để test (bạn sẽ xóa dòng này khi ghép file)
