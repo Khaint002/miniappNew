@@ -2625,7 +2625,7 @@ async function initializeMaterialInventoryApp() {
         .getElementById("mt-show-export-view-btn")
         .addEventListener("click", mt_showMaterialExportView);
 
-    [mt_importViewElements.quantity, mt_importViewElements.priceItem].forEach(
+    [mt_importViewElements.quantity, mt_importViewElements.priceTotal].forEach(
         (el) => {
             el.addEventListener("input", () => {
                 const quantity = parseInt(mt_importViewElements.quantity.value) || 0;
