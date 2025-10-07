@@ -20,6 +20,7 @@ var dataBom;
 var dataLSX;
 var dataDetailLot;
 var dataEmployee;
+var currentUser = "Nguyễn Văn A";
 var mockBatches = [
     // {
     //     batchCode: "LSP-250911-002",
@@ -67,8 +68,10 @@ async function renderApps(apps, containerId) {
             DataUser = JSON.parse(localStorage.getItem("userInfo"));
             $(".userName").text(DataUser.name);
             $(".userAvt").attr("src", DataUser.avatar);
+            currentUser = DataUser.name;
         } else {
             $(".userName").text(login.username);
+            currentUser = login.username
         }
     }
     
@@ -170,7 +173,8 @@ function renderSelectAll(data) {
 
     // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
     const selectIds = [
-        'mt-export-receiver'
+        'mt-export-receiver',
+        'export-receiver'
     ];
 
     // 3. Lặp qua từng ID và cập nhật nội dung HTML
@@ -1743,7 +1747,7 @@ var mockProducts = [];
 initializeApp();
 
 // 
-var currentUser = "Nguyễn Văn A"; // Giả lập người dùng đăng nhập
+ // Giả lập người dùng đăng nhập
 
 var mockBatches_2 = [];
 
