@@ -1043,6 +1043,7 @@ function initializeSwipeActions() {
 
 var handleSearch = () => {
     const searchTerm = dom.searchInput.value.toLowerCase();
+    
     const filteredBatches = mockBatches.filter(
         (batch) =>
             batch.batchCode.toLowerCase().includes(searchTerm) ||
@@ -1808,7 +1809,9 @@ var getStockInfo = (quantity) => {
 };
 
 var renderInventory = () => {
+    
     const searchTerm = searchInputEl.value.toLowerCase();
+    console.log(searchTerm);
 
     let productQuantities = mockProducts.map((product) => {
         const totalQuantity = mockBatches_2
