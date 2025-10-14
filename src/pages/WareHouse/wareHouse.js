@@ -1199,11 +1199,13 @@ var fillFormWithData = (data) => {
 };
 var handleFormSubmit = async (e) => {
     e.preventDefault();
+    console.log(dom.productCode.value);
+    
     const LotCode = await HOMEOSAPP.getTranNo("", 'GET', 'PRODUCT_LOT', dom.productCode.value);
     console.log(LotCode);
     
     const formData = {
-        batchCode: dom.batchCode.value,
+        batchCode: LotCode,
         productName: dom.productName.value,
         bomId: dom.bomDisplay.value,
         lsx: dom.declarationTypeRadios[0].checked
@@ -1247,8 +1249,7 @@ var handleFormSubmit = async (e) => {
         UNIT_LOT_ID: dom.batchUnit.value,
         DATASTATE: 'ADD'
     }
-    await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
-    await HOMEOSAPP.updateTranNo("PRODUCT_LOT");
+
     console.log(formData);
     if (currentFormMode === "add") {
         mockBatches.unshift(formData);
@@ -2768,13 +2769,15 @@ async function initializeMaterialInventoryApp() {
                 !receiver ||
                 !reason
             ) {
-                mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
+                // mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
+                console.log("Lỗi");
+                
                 return;
             }
 
             const batch = mt_mockBatches.find((b) => b.batchId === batchId);
             if (quantity > batch.quantity) {
-                mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
+                // mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
                 return;
             }
 
@@ -2793,11 +2796,12 @@ async function initializeMaterialInventoryApp() {
                 description,
             });
 
-            mt_showToast(
-                `Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`
-            );
-            mt_navigate("mt-list");
-            mt_renderMaterialList();
+            // addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
+            console.log(batch);
+            
+            // mt_showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
+            // mt_navigate("mt-list");
+            // mt_renderMaterialList();
         });
 
     const savedTheme =
@@ -4481,13 +4485,13 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
         }
         const dealObj = await mapDealData(data, type, Wtype);
         
+        const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
+
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDeal, dealObj, { PR_KEY: dealKey });
         } else {
             await HOMEOSAPP.add(tableDeal, dealObj);
         }
-
-        const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
         
         if (typeRun == "EDIT") {
             await HOMEOSAPP.update(tableDetail, detailObj, { PR_KEY: raw.PR_KEY });

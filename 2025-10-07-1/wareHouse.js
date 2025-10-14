@@ -19,6 +19,8 @@ var dataMaterial;
 var dataBom;
 var dataLSX;
 var dataDetailLot;
+var dataEmployee;
+var currentUser = "Nguyễn Văn A";
 var mockBatches = [
     // {
     //     batchCode: "LSP-250911-002",
@@ -66,8 +68,10 @@ async function renderApps(apps, containerId) {
             DataUser = JSON.parse(localStorage.getItem("userInfo"));
             $(".userName").text(DataUser.name);
             $(".userAvt").attr("src", DataUser.avatar);
+            currentUser = DataUser.name;
         } else {
             $(".userName").text(login.username);
+            currentUser = login.username
         }
     }
     
@@ -129,7 +133,14 @@ async function renderApps(apps, containerId) {
         "GetDataDynamicWareHouse",
         "TYPE_QUERY='LSX'"
     );
-
+    HOMEOSAPP.delay(100);
+    const dataEmployeeAll = await HOMEOSAPP.getDM(
+        HOMEOSAPP.linkbase,
+        "HR_EMPLOYEE_INFO",
+        "ACTIVE=1"
+    );
+    dataEmployee = dataEmployeeAll.data;
+    renderSelectAll(dataEmployee);
     dataLSX = await groupProductDataWithArrayLSX(dataLSX);
 
     dataBom = await groupProductDataWithArray(dataBom);
@@ -155,6 +166,28 @@ $("#start-scan-button").off("click").click(function () {
         startQRcode();
     }
 });
+function renderSelectAll(data) {
+    const optionsHtml = data.map(employee => {
+        return `<option value="${employee.EMPLOYEE_ID}">${employee.EMPLOYEE_NAME}</option>`;
+    }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
+
+    // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
+    const selectIds = [
+        'mt-export-receiver',
+        'export-receiver'
+    ];
+
+    // 3. Lặp qua từng ID và cập nhật nội dung HTML
+    selectIds.forEach(id => {
+        const selectElement = document.getElementById(id);
+        if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
+            selectElement.innerHTML = optionsHtml;
+        } else {
+            console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
+        }
+    });
+}
+
 
 function startQRcode() {
     $("#result-form-total, #result-form-title").addClass("d-none");
@@ -510,7 +543,8 @@ function groupProductDataWithArray(sourceData) {
                 hardwareFinisher: item.HARDWARE_OF || 'Chưa có thông tin',
                 softwareUploader: item.SOFTWARE_OF || 'Chưa có thông tin',
                 // Khởi tạo mảng materials với vật tư đầu tiên
-                materials: [newMaterial] 
+                materials: [newMaterial] ,
+                date: item.CREATE_DATE
             };
             resultArray.push(newProduct);
             ArrayBom.push({
@@ -787,7 +821,7 @@ var getDomElements = () => ({
     formScreen: document.getElementById("form-screen"),
     productIdScreen: document.getElementById("product-id-screen"),
     batchListContainer: document.getElementById("batch-list-container"),
-    searchInput: document.getElementById("search-input"),
+    searchInput: document.getElementById("lot-search-input"),
     noResults: document.getElementById("no-results"),
     addNewButton: document.getElementById("add-new-button"),
     backToListButton: document.getElementById("back-to-list-button"),
@@ -930,6 +964,8 @@ var renderBatches = (batches) => {
     const activeBatches = batches.filter((b) => b.active === 0);
     dom.batchListContainer.innerHTML = "";
     dom.noResults.classList.toggle("d-none", activeBatches.length > 0);
+    console.log(activeBatches);
+    
     activeBatches.forEach((batch) => {
         const batchCardHTML = `
         <div class="swipe-container position-relative bg-body-tertiary rounded-3 shadow-sm border border-secondary overflow-hidden">
@@ -1043,12 +1079,16 @@ function initializeSwipeActions() {
 
 var handleSearch = () => {
     const searchTerm = dom.searchInput.value.toLowerCase();
+    console.log(searchTerm);
+    
     const filteredBatches = mockBatches.filter(
         (batch) =>
             batch.batchCode.toLowerCase().includes(searchTerm) ||
             batch.productName.toLowerCase().includes(searchTerm) ||
             (batch.lsx && batch.lsx.toLowerCase().includes(searchTerm))
     );
+    console.log(filteredBatches);
+    
     renderBatches(filteredBatches);
 };
 
@@ -1707,7 +1747,7 @@ var mockProducts = [];
 initializeApp();
 
 // 
-var currentUser = "Nguyễn Văn A"; // Giả lập người dùng đăng nhập
+ // Giả lập người dùng đăng nhập
 
 var mockBatches_2 = [];
 
@@ -1808,7 +1848,9 @@ var getStockInfo = (quantity) => {
 };
 
 var renderInventory = () => {
+    
     const searchTerm = searchInputEl.value.toLowerCase();
+    console.log(searchTerm);
 
     let productQuantities = mockProducts.map((product) => {
         const totalQuantity = mockBatches_2
@@ -2008,7 +2050,7 @@ var setTheme = (theme) => {
 };
 
 // Event Listeners
-searchInputEl.addEventListener("change", renderInventory);
+searchInputEl.addEventListener("input", renderInventory);
 filterButtonsEl.addEventListener("click", (e) => {
     const button = e.target.closest(".filter-btn");
     if (!button) return;
@@ -2050,12 +2092,12 @@ document
     .getElementById("show-export-view-btn")
     .addEventListener("click", showExportView);
 
-[importViewElements.quantity, importViewElements.priceItem].forEach((el) => {
+[importViewElements.quantity, importViewElements.priceTotal].forEach((el) => {
     el.addEventListener("input", () => {
         const quantity = parseInt(importViewElements.quantity.value) || 0;
-        const price = parseFloat(importViewElements.priceItem.value) || 0;
-        importViewElements.priceTotal.value =
-            (quantity * price).toLocaleString("vi-VN") + " VNĐ";
+        const price = parseFloat(importViewElements.priceTotal.value) || 0;
+        importViewElements.priceItem.value =
+            (price / quantity).toLocaleString("vi-VN") + " VNĐ";
     });
 });
 
@@ -2066,7 +2108,7 @@ document.getElementById("save-import-btn").addEventListener("click", () => {
     const unit = importViewElements.unit.value.trim();
     const reason = importViewElements.reason.value;
     const location = importViewElements.location.value.trim();
-    const pricePerItem = parseFloat(importViewElements.priceItem.value);
+    const pricePerItem = parseFloat(importViewElements.priceItem.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
     const description = importViewElements.description.value.trim();
 
     if (
@@ -2206,7 +2248,8 @@ async function initializeMaterialInventoryApp() {
     if (dataMaterial) {
         processInventoryData(dataMaterial);
     }
-    const mt_currentUser = "Nguyễn Văn A";
+    const login = JSON.parse(localStorage.getItem("dataLogin")) || [];
+    const mt_currentUser = login.username;
 
     // = [
     //     { id: 1, name: 'Thép tấm SPHC 2.0mm', sku: 'VT-STEEL-SPHC-20', imageUrl: 'https://placehold.co/400x300/e2e8f0/334155?text=Thép' },
@@ -2616,13 +2659,12 @@ async function initializeMaterialInventoryApp() {
         .getElementById("mt-show-export-view-btn")
         .addEventListener("click", mt_showMaterialExportView);
 
-    [mt_importViewElements.quantity, mt_importViewElements.priceItem].forEach(
+    [mt_importViewElements.quantity, mt_importViewElements.priceTotal].forEach(
         (el) => {
             el.addEventListener("input", () => {
                 const quantity = parseInt(mt_importViewElements.quantity.value) || 0;
-                const price = parseFloat(mt_importViewElements.priceItem.value) || 0;
-                mt_importViewElements.priceTotal.value =
-                    (quantity * price).toLocaleString("vi-VN") + " VNĐ";
+                const price = parseFloat(mt_importViewElements.priceTotal.value) || 0;
+                mt_importViewElements.priceItem.value = (price / quantity).toLocaleString("vi-VN") + " VNĐ";
             });
         }
     );
@@ -2636,7 +2678,7 @@ async function initializeMaterialInventoryApp() {
             const unit = mt_importViewElements.unit.value.trim();
             const reason = mt_importViewElements.reason.value;
             const location = mt_importViewElements.location.value.trim();
-            const pricePerItem = parseFloat(mt_importViewElements.priceItem.value);
+            const pricePerItem = parseFloat(mt_importViewElements.priceItem.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
             const description = mt_importViewElements.description.value.trim();
             console.log(materialId);
             
@@ -2813,18 +2855,34 @@ function initProductionOrderModule() {
     }
     function renderOrderList() {
         const listEl = $container.find("#po-productionOrderList");
+        const searchValue = $("#po-search-input").val()?.trim().toLowerCase() || "";
+
+        // Lọc danh sách theo từ khóa nhập
+        const filteredOrders = productionOrders.filter((order) => {
+            const id = order.id?.toLowerCase() || "";
+            const product = order.product?.toLowerCase() || "";
+            const status = order.status?.toLowerCase() || "";
+            return (
+                id.includes(searchValue) ||
+                product.includes(searchValue) ||
+                status.includes(searchValue)
+            );
+        });
+        console.log(filteredOrders);
+        
         listEl.empty();
-        if (productionOrders.length === 0) {
+        if (filteredOrders.length === 0) {
             listEl.html(
                 '<p class="text-center text-muted">Chưa có lệnh sản xuất nào.</p>'
             );
             return;
         }
         // Sắp xếp lại danh sách để đưa item mới lên đầu
-        const sortedOrders = [...productionOrders].sort(
+        const sortedOrders = [...filteredOrders].sort(
             (a, b) =>
                 b.startDate.localeCompare(a.startDate) || b.id.localeCompare(a.id)
         );
+        
         sortedOrders.forEach((order) => {
             const statusInfo = getStatusInfo(order.status);
             const orderHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${order.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${order.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${order.id}"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${order.id}</h5><small class="text-muted">${HOMEOSAPP.formatDateTime(order.startDate)}</small></div><p class="mb-1">${order.product} - SL: ${order.quantity}</p><small><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></small></div></div>`;
@@ -2873,7 +2931,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM:</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -2938,7 +2996,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (định mức):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM::</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -3034,7 +3092,7 @@ function initProductionOrderModule() {
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between" style="padding-bottom: 15px;">
-                                <strong style="font-weight: 500; color: #a9a8a8;">SL cần (theo BOM):</strong> 
+                                <strong style="font-weight: 500; color: #a9a8a8;">SL theo BOM:</strong> 
                                 <span>${mat.qty || 0}</span>
                             </div>
                             
@@ -3272,7 +3330,9 @@ function initProductionOrderModule() {
 
     // --- EVENT HANDLERS (GENERAL) ---
     $container.off(); // Detach all previous handlers within the container
-
+    $container.on("input", "#po-search-input", async function (e) {
+        renderOrderList();
+    })
     $container.on("click", "#po-btnAddOrder", async function (e) {
         e.preventDefault();
         $container.find("#po-formStep1")[0].reset();
@@ -3591,13 +3651,6 @@ async function initBomDeclarationModule() {
     let productBOMs = dataBom;
     let materialsMasterList = [];
     let techDocs = [];
-    
-    
-    const dataEmployee = await HOMEOSAPP.getDM(
-        HOMEOSAPP.linkbase,
-        "HR_EMPLOYEE_INFO",
-        "ACTIVE=1"
-    );
 
     if(dataMaterial){
         const resultArray = [];
@@ -3607,7 +3660,7 @@ async function initBomDeclarationModule() {
         materialsMasterList = resultArray;;
     }
     if(dataEmployee){
-        populateEmployeeSelects(dataEmployee.data);
+        populateEmployeeSelects(dataEmployee);
     }
     console.log(dataBom);
     
@@ -3646,7 +3699,7 @@ async function initBomDeclarationModule() {
             }
         });
         let optionsHtmlProduct = ` <option value="">-- Chọn sản phẩm --</option>
-        ` + dataPR.data.map(product => {
+        ` + dataPR.map(product => {
             return `<option value="${product.PRODUCT_CODE}">${product.PRODUCT_NAME}</option>`;
         }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
         
@@ -3695,13 +3748,28 @@ async function initBomDeclarationModule() {
 
     function renderBOMList() {
         const listEl = $container.find("#bomListContainer");
+        const searchValue = $("#bom-search-input").val()?.trim().toLowerCase() || "";
+        
+        // Lọc danh sách theo từ khóa nhập
+        const filteredOrders = productBOMs.filter((bom) => {
+            const id = bom.id?.toLowerCase() || "";
+            const product = bom.name?.toLowerCase() || "";
+            const status = bom.version?.toLowerCase() || "";
+            return (
+                id.includes(searchValue) ||
+                product.includes(searchValue) ||
+                status.includes(searchValue)
+            );
+        });
+        console.log(filteredOrders);
+        
         listEl.empty();
-        if (productBOMs.length === 0) {
+        if (filteredOrders.length === 0) {
             listEl.html('<p class="text-center text-muted p-3">Chưa có BOM nào.</p>');
             return;
         }
-        productBOMs.forEach((bom) => {
-            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${bom.version}</span></div><p class="mb-1 small text-secondary">${bom.shortDesc}</p></div></div>`;
+        filteredOrders.forEach((bom) => {
+            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.version}</p></div></div>`;
             listEl.append(bomHtml);
         });
     }
@@ -3915,7 +3983,9 @@ async function initBomDeclarationModule() {
 
     // --- EVENT HANDLERS ---
     $container.off(); // Detach all previous handlers
-
+    $container.on("input", "#bom-search-input", async function (e) {
+        renderBOMList();
+    })
     $container.on("click", "#btnAddBom", function (e) {
         e.preventDefault();
         $container.find("#formStep1")[0].reset();
