@@ -171,21 +171,30 @@ function renderSelectAll(data) {
         return `<option value="${employee.EMPLOYEE_ID}">${employee.EMPLOYEE_NAME}</option>`;
     }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
 
+    const optionsLotHtml = mockBatches.map(lot => {
+        return `<option value="${lot.batchCode}">${lot.batchCode}</option>`;
+    }).join('');
+
     // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
     const selectIds = [
         'mt-export-receiver',
         'export-receiver'
     ];
 
+    const selectLotIds = [
+        'LotSelect'
+    ];
+
     // 3. Lặp qua từng ID và cập nhật nội dung HTML
-    selectIds.forEach(id => {
+    selectLotIds.forEach(id => {
         const selectElement = document.getElementById(id);
         if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
-            selectElement.innerHTML = optionsHtml;
+            selectElement.innerHTML = optionsLotHtml;
         } else {
             console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
         }
     });
+
 }
 
 
@@ -648,25 +657,7 @@ function connectAppWaveHouse(ID, NAME) {
 }
 
 function createLot() {
-    const lotName = document.getElementById("lotName").value.trim();
-    const quantity = parseInt(document.getElementById("lotQuantity").value, 10);
-    const product = document.getElementById("productSelect").value;
-
-    if (!lotName || !quantity || !product) {
-        alert("Vui lòng nhập đầy đủ thông tin!");
-        return;
-    }
-
-    let resultHTML = `
-      <div class="alert alert-success mt-3">
-        <b>Lô đã tạo thành công!</b><br>
-        Tên lô: ${lotName}<br>
-        Số lượng: ${quantity}<br>
-        Sản phẩm: ${product}
-      </div>
-    `;
-
-    document.getElementById("lotResult").innerHTML = resultHTML;
+    
 }
 
 $(".backWaveHouse").click(() => {
