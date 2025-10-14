@@ -172,7 +172,7 @@ function renderSelectAll(data) {
     }).join(''); // Dùng join('') để nối tất cả các chuỗi lại với nhau
 
     const optionsLotHtml = mockBatches.map(lot => {
-        return `<option value="${lot.batchCode}">${lot.batchCode}</option>`;
+        return `<option value="${lot.productCode}">${lot.batchCode}</option>`;
     }).join('');
 
     // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật

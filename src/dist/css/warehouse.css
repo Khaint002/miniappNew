@@ -67,7 +67,6 @@
   .wareHouse-detail-app .btn-primary {
     background-color: #00bcd4;
     border: none;
-    font-weight: 600;
     border-radius: 8px;
   }
 
@@ -189,17 +188,6 @@
     background: #1c1c1c !important;
     color: #fff !important;
     border: 1px solid #555 !important;
-  }
-
-  .wareHouse-detail-app .btn-primary {
-    background-color: #00bcd4;
-    border: none;
-    font-weight: 600;
-    border-radius: 8px;
-  }
-
-  .wareHouse-detail-app .btn-primary:hover {
-    background-color: #0097a7;
   }
 
   .wareHouse-detail-app .bg-body-secondary {
