@@ -768,6 +768,8 @@ async function generateQRCodes(listcode, data) {
         PR_KEY++;
     }
 
+    $("#progressBar").removeClass("bg-success").addClass("bg-info").text("Hoàn tất!");
+
     const newTab = window.open('', '_blank');
     if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
         alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
@@ -781,6 +783,9 @@ async function generateQRCodes(listcode, data) {
     const script = newTab.document.createElement("script");
     script.textContent = "window.onload = function() { window.print(); }";
     newTab.document.body.appendChild(script);
+    setTimeout(() => {
+        $("#progressContainer").fadeOut(500);
+    }, 1000);
 }
 
 async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRCode_List.xlsx") {
