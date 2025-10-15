@@ -186,6 +186,15 @@ function renderSelectAll(data) {
     ];
 
     // 3. Lặp qua từng ID và cập nhật nội dung HTML
+    selectIds.forEach(id => {
+        const selectElement = document.getElementById(id);
+        if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
+            selectElement.innerHTML = optionsHtml;
+        } else {
+            console.warn(`Không tìm thấy thẻ select với ID: ${id}`);
+        }
+    });
+
     selectLotIds.forEach(id => {
         const selectElement = document.getElementById(id);
         if (selectElement) { // Kiểm tra xem thẻ có tồn tại không
@@ -656,8 +665,166 @@ function connectAppWaveHouse(ID, NAME) {
     if (screen) screen.classList.remove("d-none");
 }
 
-function createLot() {
+async function createLot(type) {
+    const product = $("#LotSelect").val();
+    const scannedData = await HOMEOSAPP.getDM(
+        HOMEOSAPP.linkbase,
+        "DM_QRCODE_MODAL",
+        "PRODUCT_ID = '" + product + "'"
+    );
+
+    console.log(scannedData.data);
+    generateCKUrls(5, scannedData.data, type);
+}
+
+
+
+function generateCKUrls(count, data, type) {
+    const baseUrl = "https://zalo.me/s/4560528012046048397/?CK=";
+    const hexChars = "0123456789abcdef";
+    const urls = [];
+
+    for (let i = 0; i < count; i++) {
+        let ckValue = "";
+        for (let j = 0; j < 64; j++) {
+            ckValue += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
+        }
+        urls.push(`${baseUrl}${ckValue}`);
+    }
+    if(type == "EXCEL"){
+        generateQRCodeExcel(urls);
+    } else if(type == "FILE"){
+        generateQRCodes(urls, data);
+    }
     
+}
+
+async function generateQRCodes(listcode, data) {
+    console.log(listcode);
+    
+    const newTab = window.open('', '_blank');
+    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+        alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
+        return;
+    }
+    let htmlContent = `
+        <html>
+        <head>
+            <style>
+                .qr-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, 3cm);
+                    gap: 0.5cm;
+                    justify-content: center;
+                    margin-top: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            <div style="display: flex; flex-wrap: wrap; gap: 5mm;">
+    `;
+    let PR_KEY = 1
+    for (const code of listcode) {
+        // Tạo một <div> tạm để render mã QR
+        const tempDiv = document.createElement('div');
+        const qrCode = new QRCode(tempDiv, {
+            text: code,           // Mã code muốn tạo
+            // width: 57,           // Chiều rộng mã QR
+            // height: 57           // Chiều cao mã QR
+            width: 113,           // Chiều rộng mã QR
+            height: 113           // Chiều cao mã QR
+        });
+
+        // Chờ QRCode render xong và lấy hình ảnh từ thẻ canvas
+        const qrDataUrl = await new Promise((resolve) => {
+            setTimeout(() => {
+                const canvas = tempDiv.querySelector('canvas');  // Lấy thẻ canvas chứa mã QR
+                resolve(canvas.toDataURL());                    // Chuyển canvas thành DataURL
+            }, 500);  // Đợi một thời gian ngắn để chắc chắn mã QR được tạo xong
+        });
+        const prKeyStr = PR_KEY.toString().padStart(4, '0');
+
+        const templateFn = new Function('prKeyStr', 'qrDataUrl', `return \`${data[0].MODAL_HTML}\`;`);
+        const renderedHTML = templateFn(prKeyStr, qrDataUrl);
+        console.log(data.MODAL_HTML);
+        
+        // Thêm template đã render vào nội dung
+        htmlContent += `<div class="qr-item">${renderedHTML}</div>`;
+
+        const ckValue = extractCK(code);
+        
+        const willInsertData = {
+            QR_CODE: "T20250927,ROLE-ASS.F2200.1P,S202509."+prKeyStr,
+            CK_CODE: ckValue,
+            MA_SAN_PHAM: "ROLE-ASS.F2200.1P",
+            DATE_CREATE: new Date(),
+            ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
+            USER_ID: '6722547918621605824',
+            DATASTATE: "ADD",
+        };
+        console.log(willInsertData);
+        
+        // add(user_id, session, 'DM_QRCODE', willInsertData);
+
+        PR_KEY++;
+    }
+    
+    // Chèn nội dung HTML vào tab mới
+    newTab.document.write(htmlContent);
+    newTab.document.close();
+
+    const script = newTab.document.createElement("script");
+    script.textContent = "window.onload = function() { window.print(); }";
+    newTab.document.body.appendChild(script);
+}
+
+async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRCode_List.xlsx") {
+    if (typeof urls === "string") urls = [urls];
+    urls = urls.filter(u => u && u.trim() !== "");
+
+    if (urls.length === 0) {
+        alert("Không có URL hợp lệ để tạo QR Code!");
+        return;
+    }
+
+    // Chuẩn bị dữ liệu Excel
+    const excelData = [["STT", "URL", "QR Base64"]];
+    for (let i = 0; i < urls.length; i++) {
+        const url = urls[i].trim();
+        const qrBase64 = await QRCode.toDataURL(url, { width: 150 });
+        excelData.push([i + 1, url, qrBase64]);
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+
+    const blobUrl = URL.createObjectURL(blob);
+
+    // 🔍 Kiểm tra có hàm downloadFileToDevice hay không
+    if (typeof window.downloadFileToDevice === "function") {
+        // Nếu có -> gọi hàm người dùng
+        window.downloadFileToDevice(blobUrl);
+    } else {
+        // Nếu không có -> tự động tải xuống
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+    }
+}
+
+function extractCK(url) {
+    const match = url.match(/[?&]CK=([a-fA-F0-9]{64})/);
+    return match ? match[1] : null;
 }
 
 $(".backWaveHouse").click(() => {
