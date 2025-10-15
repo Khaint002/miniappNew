@@ -701,12 +701,10 @@ function generateCKUrls(count, data, type) {
 
 async function generateQRCodes(listcode, data) {
     console.log(listcode);
-    
-    const newTab = window.open('', '_blank');
-    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
-        alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
-        return;
-    }
+
+    $("#progressContainer").show(); // Hiện thanh tiến trình
+    $("#progressBar").css("width", "0%").text("0%").removeClass("bg-info").addClass("bg-success");
+
     let htmlContent = `
         <html>
         <head>
@@ -765,8 +763,15 @@ async function generateQRCodes(listcode, data) {
         console.log(willInsertData);
         
         // add(user_id, session, 'DM_QRCODE', willInsertData);
-
+        const percent = Math.round((PR_KEY / listcode.length) * 100);
+        $("#progressBar").css("width", percent + "%").text(percent + "%");
         PR_KEY++;
+    }
+
+    const newTab = window.open('', '_blank');
+    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+        alert('Tab mới không thể mở. Vui lòng kiểm tra cài đặt popup của trình duyệt.');
+        return;
     }
     
     // Chèn nội dung HTML vào tab mới
