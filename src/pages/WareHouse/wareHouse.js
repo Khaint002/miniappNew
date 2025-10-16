@@ -52,6 +52,7 @@ var mockBatches = [
 ];
 var productionOrders = [];
 var boms = [];
+var dataPropose = [];
 
 // --- FUNCTIONS ---
 async function renderApps(apps, containerId) {
@@ -205,7 +206,6 @@ function renderSelectAll(data) {
     });
 
 }
-
 
 function startQRcode() {
     $("#result-form-total, #result-form-title").addClass("d-none");
@@ -628,8 +628,38 @@ function groupProductDataWithArrayLSX(sourceData) {
     
     return resultArray;
 }
+function groupPropose(data) {
+    const result = {};
 
-function connectAppWaveHouse(ID, NAME) {
+    data.forEach(item => {
+        const tranNo = item.TRAN_NO;
+
+        // Nếu chưa có TRAN_NO trong result -> khởi tạo
+        if (!result[tranNo]) {
+            result[tranNo] = {
+                TRAN_NO: tranNo,
+                STATUS_ID: item.STATUS_ID,
+                PRODUCT_ID: item.PRODUCT_ID,
+                QUANTITY: item.QUANTITY,
+                ITEMS: [] // mảng con chứa các vật tư
+            };
+        }
+
+        // Thêm item vào mảng con
+        result[tranNo].ITEMS.push({
+            ITEM_ID: item.ITEM_ID,
+            ITEM_NAME: item.ITEM_NAME,
+            UNIT_ID: item.UNIT_ID,
+            UNIT_NAME: item.UNIT_NAME,
+            QUANTITY_REQUIRE: item.QUANTITY_REQUIRE
+        });
+    });
+
+    // Chuyển object -> mảng
+    return Object.values(result);
+}
+
+async function connectAppWaveHouse(ID, NAME) {
     // Ẩn màn chọn menu
     document.getElementById("wareHouse-menu").classList.add("d-none");
     document.getElementById("wareHouse-detail").classList.remove("d-none");
@@ -652,6 +682,14 @@ function connectAppWaveHouse(ID, NAME) {
     } else if (ID == "WAREHOUSE_PRODUCT") {
         renderInventory();
     } else if (ID == "MATERIAL") {
+        const dataPropose = await HOMEOSAPP.getApiServicePublic(
+            HOMEOSAPP.linkbase,
+            "GetDataDynamicWareHouse",
+            "TYPE_QUERY='PROPOSE'"
+        );
+        const groupedData = groupPropose(dataPropose);
+        console.log(groupedData);
+        
         initializeMaterialInventoryApp();
     } else if (ID == "BOM_DECLARATION") {
         initBomDeclarationModule();
@@ -2737,7 +2775,7 @@ async function initializeMaterialInventoryApp() {
 
     const mt_showMaterialExportView = () => {
         mt_exportViewElements.batchSelect.innerHTML =
-            '<option value="">-- Chọn lô vật tư --</option>';
+            '<option value="">-- Chọn phiếu yêu cầu --</option>';
         const groupedBatches = mt_mockMaterials
             .map((material) => ({
                 materialName: material.name,
