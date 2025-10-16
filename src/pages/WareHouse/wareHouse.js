@@ -2566,10 +2566,10 @@ async function initializeMaterialInventoryApp() {
 
     // Hàm để chuyển đổi tab
     function switchTab(event) {
-        if (event.target.id === 'type_propose') {
+        if (event.target.id === 'type_detail') {
             proposeTab.classList.add('d-none');
             detailTab.classList.remove('d-none');
-        } else if (event.target.id === 'type_detail') {
+        } else if (event.target.id === 'type_propose') {
             detailTab.classList.add('d-none');
             proposeTab.classList.remove('d-none');
         }
