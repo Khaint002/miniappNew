@@ -2473,6 +2473,19 @@ async function initializeMaterialInventoryApp() {
     //     { batchId: 105, materialId: 5, batchCode: 'L20250825', quantity: 2, unit: 'Xô', location: 'Kho A, Kệ 22', supplier: 'Caltex Việt Nam', lastUpdated: '08/09/2025', pricePerItem: 1800000, description: 'Xô 18L' },
     // ];
 
+    document.addEventListener("shown.bs.tab", (event) => {
+        const importBtn = document.getElementById("mt-save-import-btn");
+        const exportBtn = document.getElementById("mt-save-export-btn");
+
+        if (event.target.id === "tab-import") {
+            importBtn.classList.remove("d-none");
+            exportBtn.classList.add("d-none");
+        } else {
+            importBtn.classList.add("d-none");
+            exportBtn.classList.remove("d-none");
+        }
+    });
+
     let mt_mockHistory = {
         101: [
             {
@@ -2548,10 +2561,29 @@ async function initializeMaterialInventoryApp() {
         description: document.getElementById("mt-export-description"),
     };
 
+    const mt_tabImport = document.querySelectorAll(
+        'input[name="material_type"]'
+    )
+    const mt_tab_propose = document.getElementById("propose-selector-container");
+    const mt_tab_detail = document.getElementById("detail-selector-container");
+
     const mt_toastEl = document.getElementById("mt-liveToast");
     const mt_toastBody = document.getElementById("mt-toast-body");
     const mt_toast = new bootstrap.Toast(mt_toastEl);
 
+    mt_tabImport.forEach((radio) =>
+        radio.addEventListener("change", (e) => {
+            clearAutoFilledFields();
+            mt_tab_propose.classList.toggle(
+                "d-none",
+                e.target.value !== "propose"
+            );
+            mt_tab_detail.classList.toggle(
+                "d-none",
+                e.target.value !== "detail"
+            );
+        })
+    );
     const mt_navigate = (view) => {
         mt_appContainer.dataset.view = view;
     };
