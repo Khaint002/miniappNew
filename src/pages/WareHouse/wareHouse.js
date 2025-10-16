@@ -2567,11 +2567,11 @@ async function initializeMaterialInventoryApp() {
     // Hàm để chuyển đổi tab
     function switchTab(event) {
         if (event.target.id === 'type_propose') {
-            proposeTab.classList.add('show', 'active');
-            detailTab.classList.remove('show', 'active');
+            proposeTab.classList.add('d-none');
+            detailTab.classList.remove('d-none');
         } else if (event.target.id === 'type_detail') {
-            detailTab.classList.add('show', 'active');
-            proposeTab.classList.remove('show', 'active');
+            detailTab.classList.add('d-none');
+            proposeTab.classList.remove('d-none');
         }
     }
 
@@ -2803,7 +2803,7 @@ async function initializeMaterialInventoryApp() {
 
     const mt_showMaterialExportView = () => {
         mt_exportViewElements.batchSelect.innerHTML =
-            '<option value="">-- Chọn phiếu yêu cầu --</option>';
+            '<option value="">-- Chọn vật tư --</option>';
         const groupedBatches = mt_mockMaterials
             .map((material) => ({
                 materialName: material.name,
@@ -3030,7 +3030,7 @@ async function initializeMaterialInventoryApp() {
                 description,
             });
 
-            // addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
+            addAndEditImportExport("EXPORT", 'ADD', 'VT', batch);
             console.log(batch);
             
             // mt_showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
