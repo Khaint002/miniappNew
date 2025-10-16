@@ -941,3 +941,14 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+#mt-import-view .segmented-control-group .btn {
+    background-color: #e9ecef;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+#mt-import-view .segmented-control-group .btn-check:checked + .btn {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}

@@ -2473,19 +2473,6 @@ async function initializeMaterialInventoryApp() {
     //     { batchId: 105, materialId: 5, batchCode: 'L20250825', quantity: 2, unit: 'Xô', location: 'Kho A, Kệ 22', supplier: 'Caltex Việt Nam', lastUpdated: '08/09/2025', pricePerItem: 1800000, description: 'Xô 18L' },
     // ];
 
-    document.addEventListener("shown.bs.tab", (event) => {
-        const importBtn = document.getElementById("mt-save-import-btn");
-        const exportBtn = document.getElementById("mt-save-export-btn");
-
-        if (event.target.id === "tab-import") {
-            importBtn.classList.remove("d-none");
-            exportBtn.classList.add("d-none");
-        } else {
-            importBtn.classList.add("d-none");
-            exportBtn.classList.remove("d-none");
-        }
-    });
-
     let mt_mockHistory = {
         101: [
             {
@@ -2561,29 +2548,38 @@ async function initializeMaterialInventoryApp() {
         description: document.getElementById("mt-export-description"),
     };
 
-    const mt_tabImport = document.querySelectorAll(
-        'input[name="material_type"]'
-    )
-    const mt_tab_propose = document.getElementById("propose-selector-container");
-    const mt_tab_detail = document.getElementById("detail-selector-container");
+    // const mt_tabImport = document.querySelectorAll(
+    //     'input[name="material_type"]'
+    // )
+    // const mt_tab_propose = document.getElementById("propose-selector-container");
+    // const mt_tab_detail = document.getElementById("detail-selector-container");
 
     const mt_toastEl = document.getElementById("mt-liveToast");
     const mt_toastBody = document.getElementById("mt-toast-body");
     const mt_toast = new bootstrap.Toast(mt_toastEl);
 
-    mt_tabImport.forEach((radio) =>
-        radio.addEventListener("change", (e) => {
-            clearAutoFilledFields();
-            mt_tab_propose.classList.toggle(
-                "d-none",
-                e.target.value !== "propose"
-            );
-            mt_tab_detail.classList.toggle(
-                "d-none",
-                e.target.value !== "detail"
-            );
-        })
-    );
+    const radioButtons = document.querySelectorAll('input[name="Material_type"]');
+            
+    // Lấy các tab panes
+    const proposeTab = document.getElementById('propose-selector-container');
+    const detailTab = document.getElementById('detail-selector-container');
+
+    // Hàm để chuyển đổi tab
+    function switchTab(event) {
+        if (event.target.id === 'type_propose') {
+            proposeTab.classList.add('show', 'active');
+            detailTab.classList.remove('show', 'active');
+        } else if (event.target.id === 'type_detail') {
+            detailTab.classList.add('show', 'active');
+            proposeTab.classList.remove('show', 'active');
+        }
+    }
+
+    // Gắn sự kiện 'change' cho mỗi radio button
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', switchTab);
+    });
+
     const mt_navigate = (view) => {
         mt_appContainer.dataset.view = view;
     };
