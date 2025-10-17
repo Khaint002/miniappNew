@@ -2822,13 +2822,13 @@ async function initializeMaterialInventoryApp() {
             id: m.id,
             text: `${m.name} (${m.sku})`
         }));
-
         $(selectEl).select2({
             placeholder: "-- Chọn vật tư --",
             data: materials,
             width: "100%",
             allowClear: true,
         });
+        $(selectEl).val(null).trigger('change');
     };
     const mt_populateProposeForSelect = (selectEl) => {
         // selectEl.innerHTML = '<option value="">-- Chọn phiếu --</option>';
@@ -2845,6 +2845,7 @@ async function initializeMaterialInventoryApp() {
             width: "100%",
             allowClear: true,
         });
+        $(selectEl).val(null).trigger('change');
         $(selectEl).on('change', function () {
             const selectedValue = $(this).val();
             const selectedText = $(this).find('option:selected').text();
@@ -2914,7 +2915,7 @@ async function initializeMaterialInventoryApp() {
     const mt_renderMaterialProposeList = (value, id) => {
         const selectedValue = value;
         const datafilter = dataPropose.filter((group) => group.TRAN_NO == selectedValue);
-        console.log(datafilter);
+        
         let textID = '';
         if( id == 'mt-exportP-batch-select'){
             textID = 'mt-addedMaterialsListEx';
@@ -2924,6 +2925,8 @@ async function initializeMaterialInventoryApp() {
 
         const materialsContent = $('#'+ textID);
         materialsContent.empty();
+        if(datafilter.length == 0) return;
+        
         if (datafilter[0].ITEMS.length > 0) {
             datafilter[0].ITEMS.forEach((mat, index) => {
                 console.log(mat);
