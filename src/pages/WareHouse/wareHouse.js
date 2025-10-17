@@ -2554,12 +2554,6 @@ async function initializeMaterialInventoryApp() {
         description: document.getElementById("mt-export-description"),
     };
 
-    // const mt_tabImport = document.querySelectorAll(
-    //     'input[name="material_type"]'
-    // )
-    // const mt_tab_propose = document.getElementById("propose-selector-container");
-    // const mt_tab_detail = document.getElementById("detail-selector-container");
-
     const mt_toastEl = document.getElementById("mt-liveToast");
     const mt_toastBody = document.getElementById("mt-toast-body");
     const mt_toast = new bootstrap.Toast(mt_toastEl);
@@ -2581,9 +2575,30 @@ async function initializeMaterialInventoryApp() {
         }
     }
 
+    const radioExButtons = document.querySelectorAll('input[name="Material_ex_type"]');
+            
+    // Lấy các tab panes
+    const proposeTabEx = document.getElementById('propose-ex-selector-container');
+    const detailTabEx = document.getElementById('detail-ex-selector-container');
+
+    // Hàm để chuyển đổi tab
+    function switchTabex(event) {
+        if (event.target.id === 'type_ex_detail') {
+            proposeTabEx.classList.add('d-none');
+            detailTabEx.classList.remove('d-none');
+        } else if (event.target.id === 'type_ex_propose') {
+            detailTabEx.classList.add('d-none');
+            proposeTabEx.classList.remove('d-none');
+        }
+    }
+
     // Gắn sự kiện 'change' cho mỗi radio button
     radioButtons.forEach(radio => {
         radio.addEventListener('change', switchTab);
+    });
+
+    radioExButtons.forEach(radio => {
+        radio.addEventListener('change', switchTabex);
     });
 
     const mt_navigate = (view) => {
@@ -2796,11 +2811,26 @@ async function initializeMaterialInventoryApp() {
         mt_mockMaterials.forEach((material) => {
             selectEl.innerHTML += `<option value="${material.id}">${material.name} (${material.sku})</option>`;
         });
+        $(selectEl).select2({
+            placeholder: "-- Chọn vật tư --",
+            allowClear: true,
+            width: "100%" // cho full width
+        });
     };
     const mt_populateProposeForSelect = (selectEl) => {
         selectEl.innerHTML = '<option value="">-- Chọn phiếu --</option>';
         dataPropose.forEach((propose) => {
             selectEl.innerHTML += `<option value="${propose.TRAN_NO}">${propose.TRAN_NO}</option>`;
+        });
+        $(selectEl).select2({
+            placeholder: "-- Chọn phiếu --",
+            allowClear: true,
+            width: "100%" // cho full width
+        });
+        $(selectEl).on('change', function () {
+            const selectedValue = $(this).val();
+            const selectedText = $(this).find('option:selected').text();
+            mt_renderMaterialProposeList(selectedValue);
         });
     };
 
@@ -2859,8 +2889,8 @@ async function initializeMaterialInventoryApp() {
         });
     };
     
-    const mt_renderMaterialProposeList = (event) => {
-        const selectedValue = event.target.value;
+    const mt_renderMaterialProposeList = (value) => {
+        const selectedValue = value;
         const datafilter = dataPropose.filter((group) => group.TRAN_NO == selectedValue);
         console.log(datafilter);
 
@@ -2925,7 +2955,7 @@ async function initializeMaterialInventoryApp() {
     }
 
     // Event Listeners
-    mt_importViewElements.selectPropose.addEventListener("change", mt_renderMaterialProposeList);
+    
 
     mt_searchInputEl.addEventListener("input", mt_renderMaterialList);
     mt_filterButtonsEl.addEventListener("click", (e) => {
