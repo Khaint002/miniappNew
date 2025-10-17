@@ -2552,6 +2552,8 @@ async function initializeMaterialInventoryApp() {
         formSelect: document.getElementById("mt-export-form-select"),
         reason: document.getElementById("mt-export-reason"),
         description: document.getElementById("mt-export-description"),
+        // export theo phiếu
+        batchSelectP: document.getElementById("mt-exportP-batch-select")
     };
 
     const mt_toastEl = document.getElementById("mt-liveToast");
@@ -2603,12 +2605,6 @@ async function initializeMaterialInventoryApp() {
 
     const mt_navigate = (view) => {
         mt_appContainer.dataset.view = view;
-    };
-    const mt_showToast = (message, type = "success") => {
-        mt_toastEl.className = `toast text-white ${type === "success" ? "bg-success" : "bg-danger"
-            }`;
-        mt_toastBody.textContent = message;
-        mt_toast.show();
     };
 
     const mt_getStockInfo = (quantity) => {
@@ -2867,6 +2863,8 @@ async function initializeMaterialInventoryApp() {
             });
             mt_exportViewElements.batchSelect.appendChild(optgroup);
         });
+
+        mt_populateProposeForSelect(mt_exportViewElements.batchSelectP);
 
         Object.values(mt_exportViewElements).forEach((el) => {
             if (el.tagName !== "SELECT") el.value = "";
