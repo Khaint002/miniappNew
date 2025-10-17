@@ -179,6 +179,7 @@ function renderSelectAll(data) {
     // 2. Lấy danh sách ID của tất cả các thẻ select cần cập nhật
     const selectIds = [
         'mt-export-receiver',
+        'mt-exportP-receiver',
         'export-receiver'
     ];
 
@@ -2553,7 +2554,9 @@ async function initializeMaterialInventoryApp() {
         reason: document.getElementById("mt-export-reason"),
         description: document.getElementById("mt-export-description"),
         // export theo phiếu
-        batchSelectP: document.getElementById("mt-exportP-batch-select")
+        batchSelectP: document.getElementById("mt-exportP-batch-select"),
+        exporterP: document.getElementById("mt-exportP-exporter"),
+        receiverP: document.getElementById("mt-exportP-receiver"),
     };
 
     const mt_toastEl = document.getElementById("mt-liveToast");
@@ -2826,7 +2829,8 @@ async function initializeMaterialInventoryApp() {
         $(selectEl).on('change', function () {
             const selectedValue = $(this).val();
             const selectedText = $(this).find('option:selected').text();
-            mt_renderMaterialProposeList(selectedValue);
+            const selectId = this.id;
+            mt_renderMaterialProposeList(selectedValue, selectId);
         });
     };
 
@@ -2870,6 +2874,7 @@ async function initializeMaterialInventoryApp() {
             if (el.tagName !== "SELECT") el.value = "";
         });
         mt_exportViewElements.exporter.value = mt_currentUser;
+        mt_exportViewElements.exporterP.value = mt_currentUser;
         mt_exportViewElements.batchInfo.classList.add("d-none");
         mt_exportViewElements.totalPrice.value = "0 VNĐ";
 
@@ -2887,12 +2892,18 @@ async function initializeMaterialInventoryApp() {
         });
     };
     
-    const mt_renderMaterialProposeList = (value) => {
+    const mt_renderMaterialProposeList = (value, id) => {
         const selectedValue = value;
         const datafilter = dataPropose.filter((group) => group.TRAN_NO == selectedValue);
         console.log(datafilter);
+        let textID = '';
+        if( id == 'mt-exportP-batch-select'){
+            textID = 'mt-addedMaterialsListEx';
+        } else {
+            textID = 'mt-addedMaterialsList';
+        }
 
-        const materialsContent = $('#mt-addedMaterialsList');
+        const materialsContent = $('#'+ textID);
         materialsContent.empty();
         if (datafilter[0].ITEMS.length > 0) {
             datafilter[0].ITEMS.forEach((mat, index) => {
@@ -3102,44 +3113,49 @@ async function initializeMaterialInventoryApp() {
             const form = mt_exportViewElements.formSelect.value;
             const reason = mt_exportViewElements.reason.value.trim();
             const description = mt_exportViewElements.description.value.trim();
+            if(radioExButtons[0].checked == true){
+                const batchId = mt_exportViewElements.batchSelectP.value;
 
-            if (
-                !batchId ||
-                !quantity ||
-                quantity <= 0 ||
-                !price ||
-                !receiver ||
-                !reason
-            ) {
-                // mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
-                console.log("Lỗi");
+                const batch = dataPropose.find((b) => b.TRAN_NO === batchId);
+
+                console.log(batchId, batch);
                 
-                return;
+                addImportExportP("EXPORT", 'VT', batch);
+            } else {
+                if (
+                    !batchId ||
+                    quantity <= 0 ||
+                    !price ||
+                    !receiver ||
+                    !reason
+                ) {
+                    // mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
+                    console.log("Lỗi");
+                    
+                    return;
+                }
+
+                const batch = mt_mockBatches.find((b) => b.batchId === batchId);
+                if (quantity > batch.quantity) {
+                    // mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
+                    return;
+                }
+
+                batch.quantity -= quantity;
+                batch.lastUpdated = new Date().toLocaleDateString("vi-VN");
+                if (!mt_mockHistory[batch.batchId]) mt_mockHistory[batch.batchId] = [];
+                mt_mockHistory[batch.batchId].push({
+                    type: "export",
+                    quantity,
+                    reason,
+                    date: batch.lastUpdated,
+                    price,
+                    exporter,
+                    receiver,
+                    form,
+                    description,
+                });
             }
-
-            const batch = mt_mockBatches.find((b) => b.batchId === batchId);
-            if (quantity > batch.quantity) {
-                // mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
-                return;
-            }
-
-            batch.quantity -= quantity;
-            batch.lastUpdated = new Date().toLocaleDateString("vi-VN");
-            if (!mt_mockHistory[batch.batchId]) mt_mockHistory[batch.batchId] = [];
-            mt_mockHistory[batch.batchId].push({
-                type: "export",
-                quantity,
-                reason,
-                date: batch.lastUpdated,
-                price,
-                exporter,
-                receiver,
-                form,
-                description,
-            });
-
-            addAndEditImportExport("EXPORT", 'ADD', 'VT', batch);
-            console.log(batch);
             
             // mt_showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
             // mt_navigate("mt-list");
@@ -4749,7 +4765,6 @@ function uploadFile(source, files) {
     return Promise.all(uploadPromises);
 }
 
-
 // Hàm lấy danh sách file của container bất kỳ
 function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
@@ -4759,7 +4774,7 @@ async function mapDealData(rawData, type, Wtype) {
     return {
         TRAN_DATE: new Date(),
         TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'DEPOT_IMPORT_DEAL'),
-        TRAN_ID: "IMPORT",
+        TRAN_ID: type,
         WAREHOUSE_ID: rawData.location || "KHO-DEFAULT",
         WAREHOUSE_TYPE: Wtype,
         CONTACT_PERSION: rawData.supplier || "",
@@ -4767,13 +4782,13 @@ async function mapDealData(rawData, type, Wtype) {
         COMMENT: rawData.description || "",
         EXCHANGE_RATE: 0,
         ORGANIZATION_ID: "0000",
-        EMPLOYEE_ID: "khai.nt",
+        EMPLOYEE_ID: currentUser,
         REFERENCE_SEQ: "",
         TRAN_NO_REF: "",
         PR_DETAIL_ID: "",
         CONTRACT_NO: "",
         IS_LOCKED: 0,
-        USER_ID: "khai.nt",
+        USER_ID: currentUser,
         STATUS: '',
         DATE_MODIFY: new Date(),
         DATASTATE: "ADD"
@@ -4883,9 +4898,90 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
                 }
                 await HOMEOSAPP.add("DM_ITEM", willInsertData);
             }
-            
         }
         await HOMEOSAPP.updateTranNo("DEPOT_IMPORT_DEAL");
+        
+    } catch (err) {
+        // console.error("❌ Lỗi khi xử lý import/export:", err);
+        throw err;
+    }
+}
+
+async function mapDealDataP(rawData, type, Wtype, tableDeal) {
+    return {
+        TRAN_DATE: new Date(),
+        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', tableDeal),
+        TRAN_ID: type,
+        WAREHOUSE_ID: Wtype,
+        WAREHOUSE_TYPE: 'ITEM',
+        CONTACT_PERSION: rawData.supplier || "",
+        ACTION_TYPE_ID: "HT04",
+        CURRENCY_ID: "VND",
+        COMMENT: rawData.description || "",
+        EXCHANGE_RATE: 0,
+        EXPORT_ORGANIZATION_ID: "0000",
+        ORGANIZATION_ID: "0000",
+        EMPLOYEE_ID: currentUser,
+        REFERENCE_SEQ: rawData.TRAN_NO,
+        TRAN_NO_REF: "",
+        PR_DETAIL_ID: currentUser,
+        CONTRACT_NO: "BG",
+        IS_LOCKED: 0,
+        USER_ID: currentUser,
+        STATUS: '',
+        DATE_MODIFY: new Date(),
+        PRODUCT_ID: rawData.PRODUCT_ID,
+        QUANTITY: rawData.QUANTITY,
+        DATASTATE: "ADD"
+    };
+}
+
+async function addImportExportP(type, typeItem, data) {
+    try {
+        console.log(data);
+        
+        const tableDeal   = type === "IMPORT" ? "DEPOT_IMPORT_DEAL"  : "DEPOT_EXPORT_DEAL";
+        const keyData = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "SYS_KEY",
+            "TABLE_NAME = '"+tableDeal+"'"
+        );
+        // --- DEAL ---
+        let Wtype;
+        let ITEM_ID;
+        let files;
+        if(typeItem == "VT"){
+            Wtype = "KLK";
+            ITEM_ID = data.materialId;
+            files = getPhotoFiles("photoBox2");
+        } else {
+            Wtype = "KTP";
+            ITEM_ID = data.productId;
+            files = getPhotoFiles("photoBox1");
+        }
+        const dealObj = await mapDealDataP(data, type, Wtype, tableDeal);
+        console.log(dealObj);
+        
+        await HOMEOSAPP.add(tableDeal, dealObj);
+        
+        // if(files.length != 0){
+        //     const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files);
+        //     const DataItem = await HOMEOSAPP.getDM(
+        //         HOMEOSAPP.linkbase,
+        //         "DM_ITEM",
+        //         "ITEM_ID = '"+ITEM_ID+"'"
+        //     );
+        //     const originalItem = DataItem.data[0];
+        //     if(originalItem.ITEM_IMAGE == null){
+        //         const willInsertData = {
+        //             ...originalItem,
+        //             ITEM_IMAGE: resource[0].url,
+        //             DATASTATE: 'EDIT'
+        //         }
+        //         await HOMEOSAPP.add("DM_ITEM", willInsertData);
+        //     }
+        // }
+        await HOMEOSAPP.updateTranNo(tableDeal);
         
     } catch (err) {
         // console.error("❌ Lỗi khi xử lý import/export:", err);
