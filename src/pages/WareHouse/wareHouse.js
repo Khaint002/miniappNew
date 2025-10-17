@@ -554,6 +554,7 @@ function groupProductDataWithArray(sourceData) {
                 id: item.TRAN_NO,
                 name: `${item.BOM_PRODUCT}`,
                 productName: item.PRODUCT_ID,
+                productNameText: item.PRODUCT_NAME,
                 version: item.VERSION || 'v1.0.0',
                 noteVersion: item.NOTE_VERSION || 'v1.0.0',
                 shortDesc: item.TRAN_NO || 'Không có mô tả',
@@ -4151,7 +4152,7 @@ async function initBomDeclarationModule() {
             return;
         }
         filteredOrders.forEach((bom) => {
-            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.version}</p></div></div>`;
+            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.shortDesc}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.productNameText}</p></div></div>`;
             listEl.append(bomHtml);
         });
     }
@@ -4275,7 +4276,7 @@ async function initBomDeclarationModule() {
             NOTE: dataBom.shortDesc,
             USER_ID: dataBom.designer,
             CUSTOMER_ID: dataBom.sampleRequester,
-            BOM_PRODUCT: dataBom.name,
+            BOM_PRODUCT: dataBom.productName+"_"+dataBom.version,
             DATASTATE: type,
         };
         
