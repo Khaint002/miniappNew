@@ -350,8 +350,8 @@
         </header>
         <div class="card p-4">
           <div class="mb-3">
-            <label for="productSelect" class="form-label">Chọn Lô</label>
-            <select id="productSelect" class="form-select" data-placeholder="-- Chọn sản phẩm --">
+            <label for="LotSelect" class="form-label">Chọn Lô</label>
+            <select id="LotSelect" class="form-select" data-placeholder="-- Chọn sản phẩm --">
               <option></option>
               <option value="SP001">Sản phẩm 1</option>
               <option value="SP002">Sản phẩm 2</option>
@@ -369,10 +369,20 @@
           </div>  
           
           <div id="modeDetails" class="mb-3"></div>
-      
-          <button class="btn btn-primary w-100" onclick="createLot()">
-            <i class="bi bi-plus-circle"></i> Tạo lô
-          </button>
+          <div id="progressContainer" class="mt-3" style="display: none;">
+            <div class="progress" style="height: 30px; margin-bottom: 20px;">
+              <div id="progressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;">0%</div>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-primary w-100" onclick="createLot('EXCEL')" style="background-color: #0fab27; margin-bottom: 20px;">
+                <i class="bi bi-plus-circle"></i> Xuất file excel
+            </button>
+            <button class="btn btn-primary w-100" onclick="createLot('FILE')">
+                <i class="bi bi-plus-circle"></i> Tạo QRcode
+            </button>
+          </div>
+          
       
           <div id="lotResult" class="mt-4"></div>
         </div>
@@ -581,33 +591,73 @@
         <div id="mt-import-view" class="mt-view d-flex flex-column">
             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Nhập kho vật tư</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
-                <div class="card card-body border-0 shadow-sm">
-                    <div class="mb-3"><label for="mt-import-material-select" class="form-label">1. Chọn vật tư</label><select id="mt-import-material-select" class="form-select"></select></div>
-                    <div class="mb-3"><label for="mt-import-batch-code" class="form-label">2. Mã lô vật tư</label><input type="text" id="mt-import-batch-code" placeholder="VD: L20250910" class="form-control"></div>
-                    <div class="row g-3 mb-3">
-                        <div class="col"><label for="mt-import-quantity" class="form-label">3. Số lượng</label><input type="number" id="mt-import-quantity" placeholder="VD: 100" class="form-control"></div>
-                        <div class="col"><label for="mt-import-unit" class="form-label">4. Đơn vị</label><input type="text" id="mt-import-unit" placeholder="VD: Tấm, Kg" class="form-control"></div>
-                    </div>
-                    <div class="mb-3"><label for="mt-import-reason-select" class="form-label">5. Lý do nhập</label><select id="mt-import-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
-                    <div class="mb-3"><label for="mt-import-location" class="form-label">6. Vị trí đặt</label><input type="text" id="mt-import-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
-                    <div class="row g-3 mb-3">
-                        <div class="col"><label for="mt-import-price-total" class="form-label">7. Tổng giá</label><input type="number" id="mt-import-price-total" class="form-control"></div>
-                        <div class="col"><label for="mt-import-price-item" class="form-label">Đơn giá / Vật tư</label><input type="text" id="mt-import-price-item" class="form-control bg-body-secondary" readonly></div>
-                    </div>
-                    <div class="mb-3"><label for="mt-import-description" class="form-label">8. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
-                    <div id="photoBox2" class="photo-uploader">
-                        <label class="form-label">9. Hình ảnh</label>
-                        <div class="d-grid gap-2 d-sm-flex">
-                            <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
-                            <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                <div class="btn-group w-100 segmented-control-group" role="group" aria-label="Loại khai báo">
+                    <input type="radio" class="btn-check" name="Material_type" id="type_propose" value="propose" autocomplete="off" checked="">
+                    <label class="btn" for="type_propose">Theo phiếu</label>
+                    <input type="radio" class="btn-check" name="Material_type" id="type_detail" value="detail" autocomplete="off">
+                    <label class="btn" for="type_detail">Nhập lẻ</label>
+                </div>
+                <div id="propose-selector-container" class="">
+                    <div class="card card-body border-0 shadow-sm">
+                        <div class="mb-3"><label for="mt-import-material-select" class="form-label">1. Chọn phiếu</label><select id="mt-importPropose-material-select" class="form-select"></select></div>
+                        <div class="mb-3"><label for="mt-import-batch-code" class="form-label">2. Mã lô vật tư</label><input type="text" id="mt-importPropose-batch-code" placeholder="VD: L20250910" class="form-control"></div>
+                        <div class="mb-3"><label for="mt-import-reason-select" class="form-label">3. Lý do nhập</label><select id="mt-importPropose-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
+                        <div class="mb-3"><label for="mt-import-location" class="form-label">4. Vị trí đặt</label><input type="text" id="mt-importPropose-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-import-price-total" class="form-label">5. Tổng giá</label><input type="number" id="mt-importPropose-price-total" class="form-control"></div>
+                            <div class="col"><label for="mt-import-price-item" class="form-label">Đơn giá / Vật tư</label><input type="text" id="mt-importPropose-price-item" class="form-control bg-body-secondary" readonly></div>
                         </div>
+                        <div class="mb-3"><label for="mt-import-description" class="form-label">6. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
+                        
+                        <div id="photoBox3" class="photo-uploader">
+                            <label class="form-label">7. Hình ảnh</label>
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                            </div>
 
-                        <!-- input ẩn -->
-                        <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
-                        <input type="file" accept="image/*" multiple class="upload-input d-none">
+                            <!-- input ẩn -->
+                            <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                            <input type="file" accept="image/*" multiple class="upload-input d-none">
 
-                        <!-- danh sách ảnh -->
-                        <ul class="list-group photo-list mt-2"></ul>
+                            <!-- danh sách ảnh -->
+                            <ul class="list-group photo-list mt-2"></ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mt-import-description" class="form-label">8. danh sách cần nhập</label>
+                            <ul id="mt-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="detail-selector-container" class="d-none">
+                    <div class="card card-body border-0 shadow-sm">
+                        <div class="mb-3"><label for="mt-import-material-select" class="form-label">1. Chọn vật tư</label><select id="mt-import-material-select" class="form-select"></select></div>
+                        <div class="mb-3"><label for="mt-import-batch-code" class="form-label">2. Mã lô vật tư</label><input type="text" id="mt-import-batch-code" placeholder="VD: L20250910" class="form-control"></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-import-quantity" class="form-label">3. Số lượng</label><input type="number" id="mt-import-quantity" placeholder="VD: 100" class="form-control"></div>
+                            <div class="col"><label for="mt-import-unit" class="form-label">4. Đơn vị</label><input type="text" id="mt-import-unit" placeholder="VD: Tấm, Kg" class="form-control"></div>
+                        </div>
+                        <div class="mb-3"><label for="mt-import-reason-select" class="form-label">5. Lý do nhập</label><select id="mt-import-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
+                        <div class="mb-3"><label for="mt-import-location" class="form-label">6. Vị trí đặt</label><input type="text" id="mt-import-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-import-price-total" class="form-label">7. Tổng giá</label><input type="number" id="mt-import-price-total" class="form-control"></div>
+                            <div class="col"><label for="mt-import-price-item" class="form-label">Đơn giá / Vật tư</label><input type="text" id="mt-import-price-item" class="form-control bg-body-secondary" readonly></div>
+                        </div>
+                        <div class="mb-3"><label for="mt-import-description" class="form-label">8. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
+                        <div id="photoBox2" class="photo-uploader">
+                            <label class="form-label">9. Hình ảnh</label>
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-camera">Chụp ảnh</button>
+                                <button type="button" class="btn btn-outline-secondary flex-fill btn-upload">Tải ảnh lên</button>
+                            </div>
+
+                            <!-- input ẩn -->
+                            <input type="file" accept="image/*" capture="environment" class="camera-input d-none">
+                            <input type="file" accept="image/*" multiple class="upload-input d-none">
+
+                            <!-- danh sách ảnh -->
+                            <ul class="list-group photo-list mt-2"></ul>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -618,21 +668,45 @@
         <div id="mt-export-view" class="mt-view d-flex flex-column">
             <header class="bg-body shadow-sm flex-shrink-0"><div class="p-2 d-flex align-items-center border-b"><button class="mt-back-btn btn btn-light border-0 rounded-circle" data-target="mt-list"><i class="bi bi-chevron-left"></i></button><h1 class="h6 text-body-emphasis text-center flex-grow-1 m-0">Xuất kho</h1><button class="mt-theme-switcher-btn btn btn-light border-0 rounded-circle d-none" style="width: 40px; height: 40px;"><i class="bi bi-moon-stars-fill"></i></button></div></header>
             <main class="flex-grow-1 overflow-y-auto p-3">
-                <div class="card card-body border-0 shadow-sm">
-                    <div class="mb-3"><label for="mt-export-batch-select" class="form-label">1. Chọn lô vật tư</label><select id="mt-export-batch-select" class="form-select"></select></div>
-                    <div id="mt-export-batch-info" class="d-none alert alert-info small"><p class="mb-1"><strong>Tồn kho:</strong> <span id="mt-export-stock-info" class="fw-medium"></span></p><p class="mb-0"><strong>Kho xuất:</strong> <span id="mt-export-location" class="fw-medium"></span></p></div>
-                    <div class="row g-3 mb-3">
-                        <div class="col"><label for="mt-export-quantity" class="form-label">2. Số lượng xuất</label><input type="number" id="mt-export-quantity" placeholder="0" class="form-control"></div>
-                        <div class="col"><label for="mt-export-price" class="form-label">3. Giá xuất / ĐV</label><input type="number" id="mt-export-price" placeholder="VNĐ" class="form-control"></div>
+                <div class="btn-group w-100 segmented-control-group" role="group" aria-label="Loại khai báo">
+                    <input type="radio" class="btn-check" name="Material_ex_type" id="type_ex_propose" value="propose" autocomplete="off" checked="">
+                    <label class="btn" for="type_ex_propose">Theo phiếu</label>
+                    <input type="radio" class="btn-check" name="Material_ex_type" id="type_ex_detail" value="detail" autocomplete="off">
+                    <label class="btn" for="type_ex_detail">Nhập lẻ</label>
+                </div>
+                <div id="propose-ex-selector-container" class="">
+                    <div class="card card-body border-0 shadow-sm">
+                        <div class="mb-3"><label for="mt-export-batch-select" class="form-label">1. Chọn Phiếu</label><select id="mt-exportP-batch-select" class="form-select"></select></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-export-exporter" class="form-label">2. Người xuất</label><input type="text" id="mt-exportP-exporter" class="form-control bg-body-secondary" readonly></div>
+                            <div class="col"><label for="mt-export-receiver" class="form-label">3. Người nhận</label><select id="mt-exportP-receiver" class="form-select"></select></div>
+                        </div>
+                        <div class="mb-3"><label for="mt-export-form-select" class="form-label">4. Hình thức xuất</label><select id="mt-exportP-form-select" class="form-select"><option>Xuất cho sản xuất</option><option>Chuyển kho</option><option>Xuất trả NCC</option><option>Khác</option></select></div>
+                        <div class="mb-3"><label for="mt-export-reason" class="form-label">5. Lý do xuất</label><input type="text" id="mt-exportP-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
+                        <div><label for="mt-export-description" class="form-label">6. Ghi chú (tùy chọn)</label><textarea id="mt-exportP-description" rows="2" class="form-control"></textarea></div>
+                        <div class="mb-3">
+                            <label for="mt-addedMaterialsListEx" class="form-label">7. danh sách cần xuất</label>
+                            <ul id="mt-addedMaterialsListEx" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
+                        </div>
                     </div>
-                    <div class="mb-3"><label for="mt-export-total-price" class="form-label">Tổng tiền</label><input type="text" id="mt-export-total-price" class="form-control bg-body-secondary" readonly></div>
-                    <div class="row g-3 mb-3">
-                        <div class="col"><label for="mt-export-exporter" class="form-label">4. Người xuất</label><input type="text" id="mt-export-exporter" class="form-control bg-body-secondary" readonly></div>
-                        <div class="col"><label for="mt-export-receiver" class="form-label">5. Người nhận</label><select id="mt-export-receiver" class="form-select"></select></div>
+                </div>
+                <div id="detail-ex-selector-container" class="d-none">
+                    <div class="card card-body border-0 shadow-sm">
+                        <div class="mb-3"><label for="mt-export-batch-select" class="form-label">1. Chọn lô vật tư</label><select id="mt-export-batch-select" class="form-select"></select></div>
+                        <div id="mt-export-batch-info" class="d-none alert alert-info small"><p class="mb-1"><strong>Tồn kho:</strong> <span id="mt-export-stock-info" class="fw-medium"></span></p><p class="mb-0"><strong>Kho xuất:</strong> <span id="mt-export-location" class="fw-medium"></span></p></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-export-quantity" class="form-label">2. Số lượng xuất</label><input type="number" id="mt-export-quantity" placeholder="0" class="form-control"></div>
+                            <div class="col"><label for="mt-export-price" class="form-label">3. Giá xuất / ĐV</label><input type="number" id="mt-export-price" placeholder="VNĐ" class="form-control"></div>
+                        </div>
+                        <div class="mb-3"><label for="mt-export-total-price" class="form-label">Tổng tiền</label><input type="text" id="mt-export-total-price" class="form-control bg-body-secondary" readonly></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col"><label for="mt-export-exporter" class="form-label">4. Người xuất</label><input type="text" id="mt-export-exporter" class="form-control bg-body-secondary" readonly></div>
+                            <div class="col"><label for="mt-export-receiver" class="form-label">5. Người nhận</label><select id="mt-export-receiver" class="form-select"></select></div>
+                        </div>
+                        <div class="mb-3"><label for="mt-export-form-select" class="form-label">6. Hình thức xuất</label><select id="mt-export-form-select" class="form-select"><option>Xuất cho sản xuất</option><option>Chuyển kho</option><option>Xuất trả NCC</option><option>Khác</option></select></div>
+                        <div class="mb-3"><label for="mt-export-reason" class="form-label">7. Lý do xuất</label><input type="text" id="mt-export-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
+                        <div><label for="mt-export-description" class="form-label">8. Ghi chú (tùy chọn)</label><textarea id="mt-export-description" rows="2" class="form-control"></textarea></div>
                     </div>
-                    <div class="mb-3"><label for="mt-export-form-select" class="form-label">6. Hình thức xuất</label><select id="mt-export-form-select" class="form-select"><option>Xuất cho sản xuất</option><option>Chuyển kho</option><option>Xuất trả NCC</option><option>Khác</option></select></div>
-                    <div class="mb-3"><label for="mt-export-reason" class="form-label">7. Lý do xuất</label><input type="text" id="mt-export-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
-                    <div><label for="mt-export-description" class="form-label">8. Ghi chú (tùy chọn)</label><textarea id="mt-export-description" rows="2" class="form-control"></textarea></div>
                 </div>
             </main>
             <footer class="p-3 bg-body border-top flex-shrink-0 d-grid"><button id="mt-save-export-btn" class="btn btn-danger">Xác nhận Xuất vật tư</button></footer>

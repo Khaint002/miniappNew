@@ -2655,6 +2655,7 @@ async function initializeMaterialInventoryApp() {
                     name: item.ITEM_NAME,
                     sku: item.ITEM_ID,
                     // Tạo ảnh placeholder động với tên vật tư
+                    // imageUrl: ""
                     imageUrl: `https://placehold.co/400x300/e2e8f0/334155?text=${encodeURIComponent(
                         item.ITEM_NAME
                     )}`,
@@ -2806,25 +2807,42 @@ async function initializeMaterialInventoryApp() {
     };
 
     const mt_populateMaterialsForSelect = (selectEl) => {
-        selectEl.innerHTML = '<option value="">-- Chọn vật tư --</option>';
-        mt_mockMaterials.forEach((material) => {
-            selectEl.innerHTML += `<option value="${material.id}">${material.name} (${material.sku})</option>`;
-        });
+        // selectEl.innerHTML = '<option value="">-- Chọn vật tư --</option>';
+        // mt_mockMaterials.forEach((material) => {
+        //     selectEl.innerHTML += `<option value="${material.id}">${material.name} (${material.sku})</option>`;
+        // });
+        // $(selectEl).select2({
+        //     placeholder: "-- Chọn vật tư --",
+        //     allowClear: true,
+        //     width: "100%" // cho full width
+        // });
+
+        const materials = mt_mockMaterials.map(m => ({
+            id: m.id,
+            text: `${m.name} (${m.sku})`
+        }));
+
         $(selectEl).select2({
             placeholder: "-- Chọn vật tư --",
+            data: materials,
+            width: "100%",
             allowClear: true,
-            width: "100%" // cho full width
         });
     };
     const mt_populateProposeForSelect = (selectEl) => {
-        selectEl.innerHTML = '<option value="">-- Chọn phiếu --</option>';
-        dataPropose.forEach((propose) => {
-            selectEl.innerHTML += `<option value="${propose.TRAN_NO}">${propose.TRAN_NO}</option>`;
-        });
+        // selectEl.innerHTML = '<option value="">-- Chọn phiếu --</option>';
+        // dataPropose.forEach((propose) => {
+        //     selectEl.innerHTML += `<option value="${propose.TRAN_NO}">${propose.TRAN_NO}</option>`;
+        // });
+        const materials = dataPropose.map(m => ({
+            id: m.TRAN_NO,
+            text: `${m.TRAN_NO}`
+        }));
         $(selectEl).select2({
             placeholder: "-- Chọn phiếu --",
+            data: materials,
+            width: "100%",
             allowClear: true,
-            width: "100%" // cho full width
         });
         $(selectEl).on('change', function () {
             const selectedValue = $(this).val();
@@ -3002,7 +3020,9 @@ async function initializeMaterialInventoryApp() {
             mt_setTheme(currentTheme === "dark" ? "light" : "dark");
         });
     });
-
+    // mt_showMaterialHistoryView()
+    // mt_showMaterialImportView();
+    // mt_showMaterialExportView();
     document
         .getElementById("mt-view-history-btn")
         .addEventListener("click", mt_showMaterialHistoryView);
@@ -3113,6 +3133,7 @@ async function initializeMaterialInventoryApp() {
             const form = mt_exportViewElements.formSelect.value;
             const reason = mt_exportViewElements.reason.value.trim();
             const description = mt_exportViewElements.description.value.trim();
+
             if(radioExButtons[0].checked == true){
                 const batchId = mt_exportViewElements.batchSelectP.value;
 
@@ -3121,6 +3142,7 @@ async function initializeMaterialInventoryApp() {
                 console.log(batchId, batch);
                 
                 addImportExportP("EXPORT", 'VT', batch);
+                toastr.success(`Xuất kho thành công cho phiếu ${batchId}!`);
             } else {
                 if (
                     !batchId ||
@@ -3157,9 +3179,9 @@ async function initializeMaterialInventoryApp() {
                 });
             }
             
-            // mt_showToast(`Xuất kho thành công ${quantity} vật tư từ lô ${batch.batchCode}!`);
-            // mt_navigate("mt-list");
-            // mt_renderMaterialList();
+            
+            mt_navigate("mt-list");
+            mt_renderMaterialList();
         });
 
     const savedTheme =
@@ -4088,10 +4110,8 @@ async function initBomDeclarationModule() {
                     );
                     
                     if(dataProduct.data.length > 0){
-                        $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                         $container.find("#editBomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                     } else {
-                        $container.find("#bomVersion").val(selectedValue+"_v01");
                         $container.find("#editBomVersion").val(selectedValue+"_v01");
                     }
                     
@@ -4960,10 +4980,32 @@ async function addImportExportP(type, typeItem, data) {
             files = getPhotoFiles("photoBox1");
         }
         const dealObj = await mapDealDataP(data, type, Wtype, tableDeal);
-        console.log(dealObj);
+        // console.log(dealObj);
         
         await HOMEOSAPP.add(tableDeal, dealObj);
         
+        const DataDetail = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "DEPOT_EXPORT_DETAIL",
+            "FR_KEY = '"+keyData.data[0].LAST_NUM+"'"
+        );
+        console.log(DataDetail.data);
+        
+        
+        DataDetail.data.forEach( async (item) => {
+            const original = item;
+            const itemFilter = data.ITEMS.filter((b) => b.ITEM_ID == item.ITEM_ID);
+            console.log(itemFilter);
+            
+            const willInsertData = {
+                ...original,
+                QUANTITY_REQUIRE: itemFilter[0].QUANTITY_REQUIRE,
+                QUANTITY_OUTCOME: itemFilter[0].QUANTITY_REQUIRE,
+                DATASTATE: 'EDIT'
+            }
+            await HOMEOSAPP.add("DEPOT_EXPORT_DETAIL", willInsertData);
+        });
+
         // if(files.length != 0){
         //     const resource = await uploadFile("ZaloMiniApp/Warehouse/img/", files);
         //     const DataItem = await HOMEOSAPP.getDM(
