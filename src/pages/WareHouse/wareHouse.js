@@ -551,6 +551,7 @@ function groupProductDataWithArray(sourceData) {
         } else {
             // Nếu sản phẩm chưa tồn tại, tạo mới sản phẩm và thêm vào mảng kết quả
             const newProduct = {
+                prKey: item.PR_KEY,
                 id: item.TRAN_NO,
                 name: `${item.BOM_PRODUCT}`,
                 productName: item.PRODUCT_ID,
@@ -2868,34 +2869,35 @@ async function initializeMaterialInventoryApp() {
     };
 
     const mt_showMaterialExportView = () => {
-        mt_exportViewElements.batchSelect.innerHTML =
-            '<option value="">-- Chọn vật tư --</option>';
-        const groupedBatches = mt_mockMaterials
-            .map((material) => ({
-                materialName: material.name,
-                batches: mt_mockBatches.filter(
-                    (b) => b.materialId === material.id && b.quantity > 0
-                ),
-            }))
-            .filter((group) => group.batches.length > 0);
+        // mt_exportViewElements.batchSelect.innerHTML =
+        //     '<option value="">-- Chọn vật tư --</option>';
+        // const groupedBatches = mt_mockMaterials
+        //     .map((material) => ({
+        //         materialName: material.name,
+        //         batches: mt_mockBatches.filter(
+        //             (b) => b.materialId === material.id && b.quantity > 0
+        //         ),
+        //     }))
+        //     .filter((group) => group.batches.length > 0);
 
-        groupedBatches.forEach((group) => {
-            const optgroup = document.createElement("optgroup");
-            optgroup.label = group.materialName;
-            group.batches.forEach((b) => {
-                const option = document.createElement("option");
-                option.value = b.batchId;
-                option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
-                optgroup.appendChild(option);
-            });
-            mt_exportViewElements.batchSelect.appendChild(optgroup);
-        });
-
+        // groupedBatches.forEach((group) => {
+        //     const optgroup = document.createElement("optgroup");
+        //     optgroup.label = group.materialName;
+        //     group.batches.forEach((b) => {
+        //         const option = document.createElement("option");
+        //         option.value = b.batchId;
+        //         option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
+        //         optgroup.appendChild(option);
+        //     });
+        //     mt_exportViewElements.batchSelect.appendChild(optgroup);
+        // });
+        mt_populateMaterialsForSelect(mt_exportViewElements.batchSelect);
         mt_populateProposeForSelect(mt_exportViewElements.batchSelectP);
 
         Object.values(mt_exportViewElements).forEach((el) => {
             if (el.tagName !== "SELECT") el.value = "";
         });
+
         mt_exportViewElements.exporter.value = mt_currentUser;
         mt_exportViewElements.exporterP.value = mt_currentUser;
         mt_exportViewElements.batchInfo.classList.add("d-none");
@@ -3064,15 +3066,18 @@ async function initializeMaterialInventoryApp() {
             console.log(materialId);
             if(radioButtons[0].checked == true){
                 const batchId = mt_importViewElements.selectPropose.value;
+                const tranNoRef = mt_importViewElements.batchCodeP.value;
+                const desc = mt_importViewElements.descriptionP.value;
 
                 const batch = dataPropose.find((b) => b.TRAN_NO === batchId);
-                let addData = [
+                let addData = {
                     ...batch,
-
-                ]
-                console.log(batchId, batch);
+                    TRAN_NO_REF: tranNoRef,
+                    COMMENT: desc
+                }
+                console.log(batchId, addData);
                 
-                // addImportExportP("IMPORT", 'VT', batch);
+                addImportExportP("IMPORT", 'VT', addData);
                 toastr.success(`Nhập kho thành công cho phiếu ${batchId}!`);
             } else {
                 if (
@@ -3110,11 +3115,12 @@ async function initializeMaterialInventoryApp() {
                     reason,
                     date: newBatch.lastUpdated,
                 });
+                toastr.success(`Nhập kho thành công!`);
             }
             
-            toastr.success(`Nhập kho thành công!`);
-            // mt_navigate("mt-list");
-            // mt_renderMaterialList();
+            
+            mt_navigate("mt-list");
+            mt_renderMaterialList();
         });
 
     const mt_calculateExportTotal = () => {
@@ -3145,7 +3151,6 @@ async function initializeMaterialInventoryApp() {
     document
         .getElementById("mt-save-export-btn")
         .addEventListener("click", () => {
-            const batchId = parseInt(mt_exportViewElements.batchSelect.value);
             const quantity = parseInt(mt_exportViewElements.quantity.value);
             const price = parseFloat(mt_exportViewElements.price.value);
             const exporter = mt_exportViewElements.exporter.value.trim();
@@ -3164,12 +3169,11 @@ async function initializeMaterialInventoryApp() {
                 addImportExportP("EXPORT", 'VT', batch);
                 toastr.success(`Xuất kho thành công cho phiếu ${batchId}!`);
             } else {
+                const batchId = mt_exportViewElements.batchSelect.value;
                 if (
                     !batchId ||
                     quantity <= 0 ||
-                    !price ||
-                    !receiver ||
-                    !reason
+                    !receiver
                 ) {
                     // mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
                     console.log("Lỗi");
@@ -3177,11 +3181,20 @@ async function initializeMaterialInventoryApp() {
                     return;
                 }
 
-                const batch = mt_mockBatches.find((b) => b.batchId === batchId);
-                if (quantity > batch.quantity) {
-                    // mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
-                    return;
-                }
+                
+                
+                const batch = mt_mockBatches.find((b) => b.materialId === batchId);
+
+                console.log(batch);
+                const pricePerItem = price;
+                const newBatch = {
+                    ...batch,
+                    quantity,
+                    pricePerItem,
+                    exporter,
+                    receiver,
+                    description
+                };
 
                 batch.quantity -= quantity;
                 batch.lastUpdated = new Date().toLocaleDateString("vi-VN");
@@ -3197,6 +3210,12 @@ async function initializeMaterialInventoryApp() {
                     form,
                     description,
                 });
+                console.log(newBatch);
+                
+
+                addAndEditImportExport("EXPORT", 'ADD', 'VT', newBatch);
+
+                toastr.success(`Xuất kho thành công!`);
             }
             
             
@@ -4191,10 +4210,53 @@ async function initBomDeclarationModule() {
             );
         });
     }
+    function renderTechDocDetails(docs) {
+        const listEl = document.getElementById('tech-doc-detail-list');
+        listEl.innerHTML = ""; // Xóa nội dung cũ trước khi render
 
-    function renderBOMDetail(bomId) {
+        docs.forEach(doc => {
+            // Lấy tên file từ link
+            const fileName = doc.LINK_DOCUMENT.split('/').pop();
+
+            // Xác định icon
+            let iconClass = "bi bi-file-earmark";
+            const lowerName = fileName.toLowerCase();
+            if (lowerName.endsWith(".pdf")) {
+                iconClass = "bi bi-file-earmark-pdf";
+            } else if (lowerName.endsWith(".zip")) {
+                iconClass = "bi bi-file-earmark-zip";
+            } else if (lowerName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                iconClass = "bi bi-file-earmark-image";
+            }
+
+            // Tạo thẻ li
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center py-1";
+            li.style.height = "40px";
+            li.innerHTML = `
+                <span class="small text-truncate" title="${fileName}">
+                    <i class="${iconClass} me-2"></i>
+                    <a href="${doc.LINK_DOCUMENT}" target="_blank" class="text-decoration-none">${fileName}</a>
+                </span>
+                <small class="text-muted">${new Date(doc.VALID_DATE).toLocaleDateString()}</small>
+            `;
+
+            listEl.appendChild(li);
+        });
+    }
+
+    async function renderBOMDetail(bomId) {
+        
         const bom = productBOMs.find((b) => b.id === bomId);
         if (!bom) return;
+        console.log(bom);
+        const dataDoc = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "PRODUCT_PUBLISH_DOCUMENT",
+            "FR_KEY='"+bom.prKey+"'"
+        );
+        console.log(dataDoc.data);
+        renderTechDocDetails(dataDoc.data);
         $container.find("#detailBomTitle").text(bom.name);
         $container.find("#detailBomName").text(bom.name);
         $container.find("#detailBomShortDesc").text(bom.shortDesc);
@@ -4810,26 +4872,30 @@ function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
 }
 
-async function mapDealData(rawData, type, Wtype) {
+async function mapDealData(rawData, type, Wtype, tableDeal) {
     return {
         TRAN_DATE: new Date(),
-        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'DEPOT_IMPORT_DEAL'),
+        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', tableDeal),
         TRAN_ID: type,
-        WAREHOUSE_ID: rawData.location || "KHO-DEFAULT",
+        WAREHOUSE_ID: Wtype,
         WAREHOUSE_TYPE: Wtype,
         CONTACT_PERSION: rawData.supplier || "",
-        ACTION_TYPE_ID: type === "IMPORT" ? "NHAP" : "XUAT",
+        ACTION_TYPE_ID: type === "IMPORT" ? "HT05" : "HT04",
         COMMENT: rawData.description || "",
         EXCHANGE_RATE: 0,
-        ORGANIZATION_ID: "0000",
-        EMPLOYEE_ID: currentUser,
+        ORGANIZATION_ID: "27446577457755184",
+        EMPLOYEE_ID: rawData.receiver || currentUser,
         REFERENCE_SEQ: "",
         TRAN_NO_REF: "",
-        PR_DETAIL_ID: "",
-        CONTRACT_NO: "",
+        PR_DETAIL_ID: rawData.receiver || currentUser,
+        CONTRACT_NO: "BG",
         IS_LOCKED: 0,
         USER_ID: currentUser,
         STATUS: '',
+        CURRENCY_ID: 'VND',
+        QUANTITY: rawData.quantity || 0,
+        EXPORT_ORGANIZATION_ID: "0000",
+        PRODUCT_ID: '',
         DATE_MODIFY: new Date(),
         DATASTATE: "ADD"
     };
@@ -4880,7 +4946,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             ITEM_ID = data.productId;
             files = getPhotoFiles("photoBox1");
         }
-        const dealObj = await mapDealData(data, type, Wtype);
+        const dealObj = await mapDealData(data, type, Wtype, tableDeal);
         
         const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
 
