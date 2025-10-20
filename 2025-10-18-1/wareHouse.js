@@ -1,8 +1,8 @@
 // var apps_waveHouse = [
-//     { MENU_ID: "CREATELOT", MENU_NAME: "Tạo lô", MENU_VERSION: "v1.1.5", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-cloud-sun", MENU_SHARE_OWNER: "WID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Quản lý lô hàng", VISIBLE: true },
+//     { MENU_ID: "CREATELOT", MENU_NAME: "Tạo lô", MENU_VERSION: "v1.1.5", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-cloud-sun", MENU_SHARE_OWNER: "WID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quản lý lô hàng", VISIBLE: true },
 //     { MENU_ID: "PRQRCODE", MENU_NAME: "In mã QR", MENU_VERSION: "v4.56 Pro", MENU_BGCOLOR: "#da4a58", MENU_ICON: "bi-pc-display-horizontal", MENU_SHARE_OWNER: null, MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOCATION", MENU_LINK: "http://devices.homeos.vn/", DESCRIPTION: "In mã QR", VISIBLE: true },
-//     { MENU_ID: "IMPORT", MENU_NAME: "Kho sản phẩm", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Tồn kho", VISIBLE: true },
-//     { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://central.homeos.vn/singlepage/workstation/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
+//     { MENU_ID: "IMPORT", MENU_NAME: "Kho sản phẩm", MENU_VERSION: "v1.0.5", MENU_BGCOLOR: "#e29038", MENU_ICON: "bi-tools", MENU_SHARE_OWNER: "Q=OWNER&CK=", MENU_SHARE_ADMIN: "Q=ADMIN&CK=", MENU_SHARE_GUEST: "Q=GUEST&CK=", MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Tồn kho", VISIBLE: true },
+//     { MENU_ID: "EXPORT", MENU_NAME: "Xuất kho", MENU_VERSION: "v1.0.4", MENU_BGCOLOR: "#17a2b8", MENU_ICON: "bi-toggles", MENU_SHARE_OWNER: "CID=", MENU_SHARE_ADMIN: null, MENU_SHARE_GUEST: null, MENU_TYPE: "LOAD", MENU_LINK: "https://miniapp-new.vercel.app/src/pages/History/history.html", DESCRIPTION: "Quét xuất kho", VISIBLE: true },
 // ];
 var apps_waveHouse = [
     { MENU_ID: "MATERIAL", MENU_NAME: "Kho Vật Tư", MENU_ICON: "bi-tools", MENU_BGCOLOR_CLASS: "bg-success", DESCRIPTION: "Quản lý vật tư sản xuất", VISIBLE: true, },
@@ -551,9 +551,11 @@ function groupProductDataWithArray(sourceData) {
         } else {
             // Nếu sản phẩm chưa tồn tại, tạo mới sản phẩm và thêm vào mảng kết quả
             const newProduct = {
+                prKey: item.PR_KEY,
                 id: item.TRAN_NO,
                 name: `${item.BOM_PRODUCT}`,
                 productName: item.PRODUCT_ID,
+                productNameText: item.PRODUCT_NAME,
                 version: item.VERSION || 'v1.0.0',
                 noteVersion: item.NOTE_VERSION || 'v1.0.0',
                 shortDesc: item.TRAN_NO || 'Không có mô tả',
@@ -2539,6 +2541,9 @@ async function initializeMaterialInventoryApp() {
         priceTotal: document.getElementById("mt-import-price-total"),
         description: document.getElementById("mt-import-description"),
         listMaterial: document.getElementById("mt-addedMaterialsList"),
+        // import theo phiếu
+        batchCodeP: document.getElementById("mt-importPropose-batch-code"),
+        descriptionP: document.getElementById("mt-importPropose-description"),
     };
     const mt_exportViewElements = {
         batchSelect: document.getElementById("mt-export-batch-select"),
@@ -2821,13 +2826,13 @@ async function initializeMaterialInventoryApp() {
             id: m.id,
             text: `${m.name} (${m.sku})`
         }));
-
         $(selectEl).select2({
             placeholder: "-- Chọn vật tư --",
             data: materials,
             width: "100%",
             allowClear: true,
         });
+        $(selectEl).val(null).trigger('change');
     };
     const mt_populateProposeForSelect = (selectEl) => {
         // selectEl.innerHTML = '<option value="">-- Chọn phiếu --</option>';
@@ -2844,6 +2849,7 @@ async function initializeMaterialInventoryApp() {
             width: "100%",
             allowClear: true,
         });
+        $(selectEl).val(null).trigger('change');
         $(selectEl).on('change', function () {
             const selectedValue = $(this).val();
             const selectedText = $(this).find('option:selected').text();
@@ -2863,34 +2869,35 @@ async function initializeMaterialInventoryApp() {
     };
 
     const mt_showMaterialExportView = () => {
-        mt_exportViewElements.batchSelect.innerHTML =
-            '<option value="">-- Chọn vật tư --</option>';
-        const groupedBatches = mt_mockMaterials
-            .map((material) => ({
-                materialName: material.name,
-                batches: mt_mockBatches.filter(
-                    (b) => b.materialId === material.id && b.quantity > 0
-                ),
-            }))
-            .filter((group) => group.batches.length > 0);
+        // mt_exportViewElements.batchSelect.innerHTML =
+        //     '<option value="">-- Chọn vật tư --</option>';
+        // const groupedBatches = mt_mockMaterials
+        //     .map((material) => ({
+        //         materialName: material.name,
+        //         batches: mt_mockBatches.filter(
+        //             (b) => b.materialId === material.id && b.quantity > 0
+        //         ),
+        //     }))
+        //     .filter((group) => group.batches.length > 0);
 
-        groupedBatches.forEach((group) => {
-            const optgroup = document.createElement("optgroup");
-            optgroup.label = group.materialName;
-            group.batches.forEach((b) => {
-                const option = document.createElement("option");
-                option.value = b.batchId;
-                option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
-                optgroup.appendChild(option);
-            });
-            mt_exportViewElements.batchSelect.appendChild(optgroup);
-        });
-
+        // groupedBatches.forEach((group) => {
+        //     const optgroup = document.createElement("optgroup");
+        //     optgroup.label = group.materialName;
+        //     group.batches.forEach((b) => {
+        //         const option = document.createElement("option");
+        //         option.value = b.batchId;
+        //         option.textContent = `Mã lô: ${b.batchCode} (Tồn: ${b.quantity} ${b.unit})`;
+        //         optgroup.appendChild(option);
+        //     });
+        //     mt_exportViewElements.batchSelect.appendChild(optgroup);
+        // });
+        mt_populateMaterialsForSelect(mt_exportViewElements.batchSelect);
         mt_populateProposeForSelect(mt_exportViewElements.batchSelectP);
 
         Object.values(mt_exportViewElements).forEach((el) => {
             if (el.tagName !== "SELECT") el.value = "";
         });
+
         mt_exportViewElements.exporter.value = mt_currentUser;
         mt_exportViewElements.exporterP.value = mt_currentUser;
         mt_exportViewElements.batchInfo.classList.add("d-none");
@@ -2913,7 +2920,7 @@ async function initializeMaterialInventoryApp() {
     const mt_renderMaterialProposeList = (value, id) => {
         const selectedValue = value;
         const datafilter = dataPropose.filter((group) => group.TRAN_NO == selectedValue);
-        console.log(datafilter);
+        
         let textID = '';
         if( id == 'mt-exportP-batch-select'){
             textID = 'mt-addedMaterialsListEx';
@@ -2923,6 +2930,8 @@ async function initializeMaterialInventoryApp() {
 
         const materialsContent = $('#'+ textID);
         materialsContent.empty();
+        if(datafilter.length == 0) return;
+
         if (datafilter[0].ITEMS.length > 0) {
             datafilter[0].ITEMS.forEach((mat, index) => {
                 console.log(mat);
@@ -3055,44 +3064,61 @@ async function initializeMaterialInventoryApp() {
             const pricePerItem = parseFloat(mt_importViewElements.priceItem.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
             const description = mt_importViewElements.description.value.trim();
             console.log(materialId);
-            
-            if (
-                !materialId ||
-                !batchCode ||
-                !quantity ||
-                !unit ||
-                !location ||
-                !pricePerItem
-            ) {
-                toastr.error("Vui lòng điền đầy đủ thông tin.");
-                return;
+            if(radioButtons[0].checked == true){
+                const batchId = mt_importViewElements.selectPropose.value;
+                const tranNoRef = mt_importViewElements.batchCodeP.value;
+                const desc = mt_importViewElements.descriptionP.value;
+
+                const batch = dataPropose.find((b) => b.TRAN_NO === batchId);
+                let addData = {
+                    ...batch,
+                    TRAN_NO_REF: tranNoRef,
+                    COMMENT: desc
+                }
+                console.log(batchId, addData);
+                
+                addImportExportP("IMPORT", 'VT', addData);
+                toastr.success(`Nhập kho thành công cho phiếu ${batchId}!`);
+            } else {
+                if (
+                    !materialId ||
+                    !batchCode ||
+                    !quantity ||
+                    !unit ||
+                    !location ||
+                    !pricePerItem
+                ) {
+                    toastr.error("Vui lòng điền đầy đủ thông tin.");
+                    return;
+                }
+
+                const newBatch = {
+                    batchId: Date.now(),
+                    materialId,
+                    batchCode,
+                    quantity,
+                    unit,
+                    location,
+                    pricePerItem,
+                    description,
+                    supplier: "Nhà cung cấp mới",
+                    lastUpdated: new Date().toLocaleDateString("vi-VN"),
+                };
+                addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
+                mt_mockBatches.push(newBatch);
+
+                if (!mt_mockHistory[newBatch.batchId])
+                    mt_mockHistory[newBatch.batchId] = [];
+                mt_mockHistory[newBatch.batchId].push({
+                    type: "import",
+                    quantity,
+                    reason,
+                    date: newBatch.lastUpdated,
+                });
+                toastr.success(`Nhập kho thành công!`);
             }
-
-            const newBatch = {
-                batchId: Date.now(),
-                materialId,
-                batchCode,
-                quantity,
-                unit,
-                location,
-                pricePerItem,
-                description,
-                supplier: "Nhà cung cấp mới",
-                lastUpdated: new Date().toLocaleDateString("vi-VN"),
-            };
-            addAndEditImportExport("IMPORT", 'ADD', 'VT', newBatch);
-            mt_mockBatches.push(newBatch);
-
-            if (!mt_mockHistory[newBatch.batchId])
-                mt_mockHistory[newBatch.batchId] = [];
-            mt_mockHistory[newBatch.batchId].push({
-                type: "import",
-                quantity,
-                reason,
-                date: newBatch.lastUpdated,
-            });
             
-            toastr.success(`Nhập kho thành công!`);
+            
             mt_navigate("mt-list");
             mt_renderMaterialList();
         });
@@ -3125,7 +3151,6 @@ async function initializeMaterialInventoryApp() {
     document
         .getElementById("mt-save-export-btn")
         .addEventListener("click", () => {
-            const batchId = parseInt(mt_exportViewElements.batchSelect.value);
             const quantity = parseInt(mt_exportViewElements.quantity.value);
             const price = parseFloat(mt_exportViewElements.price.value);
             const exporter = mt_exportViewElements.exporter.value.trim();
@@ -3144,12 +3169,11 @@ async function initializeMaterialInventoryApp() {
                 addImportExportP("EXPORT", 'VT', batch);
                 toastr.success(`Xuất kho thành công cho phiếu ${batchId}!`);
             } else {
+                const batchId = mt_exportViewElements.batchSelect.value;
                 if (
                     !batchId ||
                     quantity <= 0 ||
-                    !price ||
-                    !receiver ||
-                    !reason
+                    !receiver
                 ) {
                     // mt_showToast("Vui lòng điền đầy đủ các trường bắt buộc.", "error");
                     console.log("Lỗi");
@@ -3157,11 +3181,20 @@ async function initializeMaterialInventoryApp() {
                     return;
                 }
 
-                const batch = mt_mockBatches.find((b) => b.batchId === batchId);
-                if (quantity > batch.quantity) {
-                    // mt_showToast("Số lượng xuất vượt quá tồn kho của lô.", "error");
-                    return;
-                }
+                
+                
+                const batch = mt_mockBatches.find((b) => b.materialId === batchId);
+
+                console.log(batch);
+                const pricePerItem = price;
+                const newBatch = {
+                    ...batch,
+                    quantity,
+                    pricePerItem,
+                    exporter,
+                    receiver,
+                    description
+                };
 
                 batch.quantity -= quantity;
                 batch.lastUpdated = new Date().toLocaleDateString("vi-VN");
@@ -3177,6 +3210,12 @@ async function initializeMaterialInventoryApp() {
                     form,
                     description,
                 });
+                console.log(newBatch);
+                
+
+                addAndEditImportExport("EXPORT", 'ADD', 'VT', newBatch);
+
+                toastr.success(`Xuất kho thành công!`);
             }
             
             
@@ -4110,10 +4149,8 @@ async function initBomDeclarationModule() {
                     );
                     
                     if(dataProduct.data.length > 0){
-                        $container.find("#bomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                         $container.find("#editBomVersion").val(selectedValue+"_v"+ String(dataProduct.data.length+1).padStart(2, '0'));
                     } else {
-                        $container.find("#bomVersion").val(selectedValue+"_v01");
                         $container.find("#editBomVersion").val(selectedValue+"_v01");
                     }
                     
@@ -4153,7 +4190,7 @@ async function initBomDeclarationModule() {
             return;
         }
         filteredOrders.forEach((bom) => {
-            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.name}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.version}</p></div></div>`;
+            const bomHtml = `<div class="list-item-wrapper"><div class="list-item-actions"><button class="action-button action-edit" data-id="${bom.id}"><i class="fas fa-pen"></i>Sửa</button><button class="action-button action-delete" data-id="${bom.id}"><i class="fas fa-trash"></i>Xoá</button></div><div class="list-item-content" data-id="${bom.id}"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1 font-weight-bold" style="color: var(--accent-color-light);">${bom.shortDesc}</h6><span class="bom-version-badge">${HOMEOSAPP.formatDateTime(bom.date, "YYYY-MM-DD")}</span></div><p class="mb-1 small text-secondary">${bom.productNameText}</p></div></div>`;
             listEl.append(bomHtml);
         });
     }
@@ -4173,10 +4210,53 @@ async function initBomDeclarationModule() {
             );
         });
     }
+    function renderTechDocDetails(docs) {
+        const listEl = document.getElementById('tech-doc-detail-list');
+        listEl.innerHTML = ""; // Xóa nội dung cũ trước khi render
 
-    function renderBOMDetail(bomId) {
+        docs.forEach(doc => {
+            // Lấy tên file từ link
+            const fileName = doc.LINK_DOCUMENT.split('/').pop();
+
+            // Xác định icon
+            let iconClass = "bi bi-file-earmark";
+            const lowerName = fileName.toLowerCase();
+            if (lowerName.endsWith(".pdf")) {
+                iconClass = "bi bi-file-earmark-pdf";
+            } else if (lowerName.endsWith(".zip")) {
+                iconClass = "bi bi-file-earmark-zip";
+            } else if (lowerName.match(/\.(jpg|jpeg|png|gif)$/)) {
+                iconClass = "bi bi-file-earmark-image";
+            }
+
+            // Tạo thẻ li
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center py-1";
+            li.style.height = "40px";
+            li.innerHTML = `
+                <span class="small text-truncate" title="${fileName}">
+                    <i class="${iconClass} me-2"></i>
+                    <a href="${doc.LINK_DOCUMENT}" target="_blank" class="text-decoration-none">${fileName}</a>
+                </span>
+                <small class="text-muted">${new Date(doc.VALID_DATE).toLocaleDateString()}</small>
+            `;
+
+            listEl.appendChild(li);
+        });
+    }
+
+    async function renderBOMDetail(bomId) {
+        
         const bom = productBOMs.find((b) => b.id === bomId);
         if (!bom) return;
+        console.log(bom);
+        const dataDoc = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "PRODUCT_PUBLISH_DOCUMENT",
+            "FR_KEY='"+bom.prKey+"'"
+        );
+        console.log(dataDoc.data);
+        renderTechDocDetails(dataDoc.data);
         $container.find("#detailBomTitle").text(bom.name);
         $container.find("#detailBomName").text(bom.name);
         $container.find("#detailBomShortDesc").text(bom.shortDesc);
@@ -4277,7 +4357,7 @@ async function initBomDeclarationModule() {
             NOTE: dataBom.shortDesc,
             USER_ID: dataBom.designer,
             CUSTOMER_ID: dataBom.sampleRequester,
-            BOM_PRODUCT: dataBom.name,
+            BOM_PRODUCT: dataBom.productName+"_"+dataBom.version,
             DATASTATE: type,
         };
         
@@ -4792,26 +4872,30 @@ function getPhotoFiles(containerId) {
     return photoStores[containerId] || [];
 }
 
-async function mapDealData(rawData, type, Wtype) {
+async function mapDealData(rawData, type, Wtype, tableDeal) {
     return {
         TRAN_DATE: new Date(),
-        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', 'DEPOT_IMPORT_DEAL'),
+        TRAN_NO: await HOMEOSAPP.getTranNo("", 'GET', tableDeal),
         TRAN_ID: type,
-        WAREHOUSE_ID: rawData.location || "KHO-DEFAULT",
+        WAREHOUSE_ID: Wtype,
         WAREHOUSE_TYPE: Wtype,
         CONTACT_PERSION: rawData.supplier || "",
-        ACTION_TYPE_ID: type === "IMPORT" ? "NHAP" : "XUAT",
+        ACTION_TYPE_ID: type === "IMPORT" ? "HT05" : "HT04",
         COMMENT: rawData.description || "",
         EXCHANGE_RATE: 0,
-        ORGANIZATION_ID: "0000",
-        EMPLOYEE_ID: currentUser,
+        ORGANIZATION_ID: "27446577457755184",
+        EMPLOYEE_ID: rawData.receiver || currentUser,
         REFERENCE_SEQ: "",
         TRAN_NO_REF: "",
-        PR_DETAIL_ID: "",
-        CONTRACT_NO: "",
+        PR_DETAIL_ID: rawData.receiver || currentUser,
+        CONTRACT_NO: "BG",
         IS_LOCKED: 0,
         USER_ID: currentUser,
         STATUS: '',
+        CURRENCY_ID: 'VND',
+        QUANTITY: rawData.quantity || 0,
+        EXPORT_ORGANIZATION_ID: "0000",
+        PRODUCT_ID: '',
         DATE_MODIFY: new Date(),
         DATASTATE: "ADD"
     };
@@ -4862,7 +4946,7 @@ async function addAndEditImportExport(type, typeRun, typeItem, data) {
             ITEM_ID = data.productId;
             files = getPhotoFiles("photoBox1");
         }
-        const dealObj = await mapDealData(data, type, Wtype);
+        const dealObj = await mapDealData(data, type, Wtype, tableDeal);
         
         const detailObj = await mapDetailData(data, keyData.data[0].LAST_NUM);
 
@@ -4937,7 +5021,7 @@ async function mapDealDataP(rawData, type, Wtype, tableDeal) {
         WAREHOUSE_ID: Wtype,
         WAREHOUSE_TYPE: 'ITEM',
         CONTACT_PERSION: rawData.supplier || "",
-        ACTION_TYPE_ID: "HT04",
+        ACTION_TYPE_ID: type === "IMPORT" ? "HT05" : "HT04",
         CURRENCY_ID: "VND",
         COMMENT: rawData.description || "",
         EXCHANGE_RATE: 0,
@@ -4963,6 +5047,7 @@ async function addImportExportP(type, typeItem, data) {
         console.log(data);
         
         const tableDeal   = type === "IMPORT" ? "DEPOT_IMPORT_DEAL"  : "DEPOT_EXPORT_DEAL";
+        const tableDetail = type === "IMPORT" ? "DEPOT_IMPORT_DETAIL"  : "DEPOT_EXPORT_DETAIL";
         const keyData = await HOMEOSAPP.getDM(
             HOMEOSAPP.linkbase,
             "SYS_KEY",
@@ -4988,7 +5073,7 @@ async function addImportExportP(type, typeItem, data) {
         
         const DataDetail = await HOMEOSAPP.getDM(
             HOMEOSAPP.linkbase,
-            "DEPOT_EXPORT_DETAIL",
+            tableDetail,
             "FR_KEY = '"+keyData.data[0].LAST_NUM+"'"
         );
         console.log(DataDetail.data);
@@ -5005,7 +5090,7 @@ async function addImportExportP(type, typeItem, data) {
                 QUANTITY_OUTCOME: itemFilter[0].QUANTITY_REQUIRE,
                 DATASTATE: 'EDIT'
             }
-            await HOMEOSAPP.add("DEPOT_EXPORT_DETAIL", willInsertData);
+            await HOMEOSAPP.add(tableDetail, willInsertData);
         });
 
         // if(files.length != 0){

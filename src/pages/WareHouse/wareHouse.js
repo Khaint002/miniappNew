@@ -4442,6 +4442,7 @@ async function initBomDeclarationModule() {
         .select2({
             data: materialsMasterList,
             placeholder: "Chọn vật tư",
+            width: "70%",
             allowClear: true,
         });
 

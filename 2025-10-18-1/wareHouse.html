@@ -601,13 +601,13 @@
                     <div class="card card-body border-0 shadow-sm">
                         <div class="mb-3"><label for="mt-import-material-select" class="form-label">1. Chọn phiếu</label><select id="mt-importPropose-material-select" class="form-select"></select></div>
                         <div class="mb-3"><label for="mt-import-batch-code" class="form-label">2. Mã lô vật tư</label><input type="text" id="mt-importPropose-batch-code" placeholder="VD: L20250910" class="form-control"></div>
-                        <div class="mb-3"><label for="mt-import-reason-select" class="form-label">3. Lý do nhập</label><select id="mt-importPropose-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
+                        <div class="mb-3"><label for="mt-import-reason-select" class="form-label">3. Nguồn nhập</label><select id="mt-importPropose-reason-select" class="form-select"><option>Nhập hàng từ NCC</option><option>Khách trả hàng</option><option>Nhập nội bộ</option><option>Khác</option></select></div>
                         <div class="mb-3"><label for="mt-import-location" class="form-label">4. Vị trí đặt</label><input type="text" id="mt-importPropose-location" placeholder="VD: Kho A, Kệ 15" class="form-control"></div>
-                        <div class="row g-3 mb-3">
+                        <!-- <div class="row g-3 mb-3">
                             <div class="col"><label for="mt-import-price-total" class="form-label">5. Tổng giá</label><input type="number" id="mt-importPropose-price-total" class="form-control"></div>
                             <div class="col"><label for="mt-import-price-item" class="form-label">Đơn giá / Vật tư</label><input type="text" id="mt-importPropose-price-item" class="form-control bg-body-secondary" readonly></div>
-                        </div>
-                        <div class="mb-3"><label for="mt-import-description" class="form-label">6. Mô tả</label><textarea id="mt-import-description" rows="2" class="form-control"></textarea></div>
+                        </div> -->
+                        <div class="mb-3"><label for="mt-import-description" class="form-label">5. Mô tả</label><textarea id="mt-importPropose-description" rows="2" class="form-control"></textarea></div>
                         
                         <div id="photoBox3" class="photo-uploader">
                             <label class="form-label">7. Hình ảnh</label>
@@ -624,7 +624,7 @@
                             <ul class="list-group photo-list mt-2"></ul>
                         </div>
                         <div class="mb-3">
-                            <label for="mt-import-description" class="form-label">8. danh sách cần nhập</label>
+                            <label for="mt-import-description" class="form-label">8. Danh sách cần nhập</label>
                             <ul id="mt-addedMaterialsList" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
                         </div>
                     </div>
@@ -685,7 +685,7 @@
                         <div class="mb-3"><label for="mt-export-reason" class="form-label">5. Lý do xuất</label><input type="text" id="mt-exportP-reason" class="form-control" placeholder="VD: Xuất cho lệnh sản xuất #123"></div>
                         <div><label for="mt-export-description" class="form-label">6. Ghi chú (tùy chọn)</label><textarea id="mt-exportP-description" rows="2" class="form-control"></textarea></div>
                         <div class="mb-3">
-                            <label for="mt-addedMaterialsListEx" class="form-label">7. danh sách cần xuất</label>
+                            <label for="mt-addedMaterialsListEx" class="form-label">7. Danh sách cần xuất</label>
                             <ul id="mt-addedMaterialsListEx" class="list-group list-group-flush px-0" style="overflow-y: auto; max-height: 450px;"></ul>
                         </div>
                     </div>
@@ -774,7 +774,15 @@
                                     <div class="col-6 mb-2"><strong class="text-secondary d-block">Người đặt mẫu:</strong> <span class="detail-value" id="detailBomSampleRequester"></span></div>
                                     <div class="col-6 mb-2"><strong class="text-secondary d-block">Người HT Phần cứng:</strong> <span class="detail-value" id="detailBomHardwareFinisher"></span></div>
                                     <div class="col-12 mb-2"><strong class="text-secondary d-block">Người nạp phần mềm:</strong> <span class="detail-value" id="detailBomSoftwareUploader"></span></div>
+                                    <div class="col-12">
+                                        <strong class="text-secondary d-block">Tài liệu kỹ thuật</strong>
+                                        <div class="card p-2 border">
+                                            <ul class="list-group list-group-flush" id="tech-doc-detail-list" >
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -819,7 +827,7 @@
                 </div>
                 <div id="addStep1">
                     <form id="formStep1">
-                        <div class="form-group"><label>Tên BOM</label><input type="text" class="form-control" id="bomName" placeholder="VD: BOM - iPhone 16 Pro" required></div>
+                        <div class="form-group d-none"><label>Tên BOM</label><input type="text" class="form-control d-none" id="bomName" placeholder="VD: BOM - iPhone 16 Pro"></div>
                         <div class="form-group"><label>Sản phẩm</label>
                             <!-- <input type="text" class="form-control" id="bomProductName" placeholder="VD: iPhone 16 Pro" required> -->
                             <select class="form-control" name="" id="bomProductName" required>
@@ -827,7 +835,7 @@
                                 <option value="CCEMS.K01">CCEMS K01</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="bomVersion" placeholder="VD: v1.0.0" disabled required></div>
+                        <div class="form-group"><label>Phiên bản</label><input type="text" class="form-control" id="bomVersion" placeholder="VD: v1.0.0" required></div>
                         <div class="form-group"><label>Mô tả phiên bản</label><input type="text" class="form-control" id="bomDescVersion"></div>
                         <div class="row">
                             <div class="col-6 form-group"><label>Người thiết kế</label>
