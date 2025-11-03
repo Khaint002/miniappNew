@@ -1815,7 +1815,8 @@ var handleSaveIdentities = async () => {
                         //     "QR_CODE='" + item + "'"
                         // );
                         const dataItemQRcode = dataItemQRcodes.data.filter((batch) => batch.QR_CODE === item)
-                        console.log();
+                        console.log(dataItemQRcode);
+                        console.log(dataLot.data[0].PR_KEY);
                         
                         if(dataItemQRcode.data[0].LOT_ID != dataLot.data[0].PR_KEY){
                             const original = dataItemQRcode.data[0];
