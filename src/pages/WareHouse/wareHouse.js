@@ -1821,7 +1821,6 @@ var handleSaveIdentities = async () => {
                         console.log(dataItemQRcode[0].LOT_ID, dataLot.data[0].PR_KEY);
                         
                         if(dataItemQRcode[0].LOT_ID != dataLot.data[0].PR_KEY){
-                            console.log(dataItemQRcode.data[0]);
                             const original = dataItemQRcode.data[0];
                             const willInsertData = {
                                 ...original,
