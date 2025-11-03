@@ -1797,7 +1797,7 @@ var handleSaveIdentities = async () => {
             "LOT_PRODUCT_CODE='"+mainBatch.batchCode+"'"
         );
 
-        let dataItemQRcode = await HOMEOSAPP.getDM(
+        let dataItemQRcodes = await HOMEOSAPP.getDM(
             HOMEOSAPP.linkbase,
             "DM_QRCODE",
             "1=1"
@@ -1814,8 +1814,9 @@ var handleSaveIdentities = async () => {
                         //     "DM_QRCODE",
                         //     "QR_CODE='" + item + "'"
                         // );
-                        const dataItemQRcode = dataItemQRcode.data.filter((batch) => batch.QR_CODE === item)
-                        HOMEOSAPP.delay(100);
+                        const dataItemQRcode = dataItemQRcodes.data.filter((batch) => batch.QR_CODE === item)
+                        console.log();
+                        
                         if(dataItemQRcode.data[0].LOT_ID != dataLot.data[0].PR_KEY){
                             const original = dataItemQRcode.data[0];
                             const willInsertData = {
