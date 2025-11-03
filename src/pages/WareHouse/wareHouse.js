@@ -1819,7 +1819,7 @@ var handleSaveIdentities = async () => {
                         console.log(dataLot.data[0].PR_KEY);
                         
                         if(dataItemQRcode.data[0].LOT_ID != dataLot.data[0].PR_KEY){
-                            
+                            console.log(dataItemQRcode.data[0]);
                             const original = dataItemQRcode.data[0];
                             const willInsertData = {
                                 ...original,
