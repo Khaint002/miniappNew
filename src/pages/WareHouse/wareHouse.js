@@ -111,9 +111,11 @@ async function renderApps(apps, containerId) {
     let numberHold = 0;
     dataMaterial.forEach(item => {
         if(item.QUANTITY >= 0){
-            numberVT += item.QUANTITY
+            
             if(item.QUANTITY < item.QUANTITY_HOLD){
                 numberHold += 1;
+            } else {
+                numberVT += 1
             }
         }
     });
@@ -145,6 +147,7 @@ async function renderApps(apps, containerId) {
     dataLSX = await groupProductDataWithArrayLSX(dataLSX);
 
     dataBom = await groupProductDataWithArray(dataBom);
+
     console.log(dataBom);
     $("#loading-popup").hide();
 }
@@ -581,6 +584,7 @@ function groupProductDataWithArray(sourceData) {
     boms = ArrayBom;
     return resultArray;
 }
+
 function groupProductDataWithArrayLSX(sourceData) {
     const resultArray = [];
     const ArrayLot = []
@@ -631,6 +635,7 @@ function groupProductDataWithArrayLSX(sourceData) {
     
     return resultArray;
 }
+
 function groupPropose(data) {
     const result = {};
 
@@ -681,7 +686,6 @@ async function connectAppWaveHouse(ID, NAME) {
             width: "100%",
             dropdownParent: $("#CREATELOT"), // tránh lỗi z-index khi trong modal
         });
-
     } else if (ID == "PRQRCODE") {
         runOptionS();
         showPrintOptions("detail");
@@ -718,10 +722,8 @@ async function createLot(type) {
     );
 
     console.log(scannedData.data);
-    generateCKUrls(5, scannedData.data, type);
+    generateCKUrls(341, scannedData.data, type);
 }
-
-
 
 function generateCKUrls(count, data, type) {
     const baseUrl = "https://zalo.me/s/4560528012046048397/?CK=";
@@ -765,7 +767,7 @@ async function generateQRCodes(listcode, data) {
         <body>
             <div style="display: flex; flex-wrap: wrap; gap: 5mm;">
     `;
-    let PR_KEY = 1
+    let PR_KEY = 10;
     for (const code of listcode) {
         // Tạo một <div> tạm để render mã QR
         const tempDiv = document.createElement('div');
@@ -796,9 +798,9 @@ async function generateQRCodes(listcode, data) {
         const ckValue = extractCK(code);
         
         const willInsertData = {
-            QR_CODE: "T20250927,ROLE-ASS.F2200.1P,S202509."+prKeyStr,
+            QR_CODE: "T20251029,ASS.RF24.K01,A202510."+prKeyStr,
             CK_CODE: ckValue,
-            MA_SAN_PHAM: "ROLE-ASS.F2200.1P",
+            MA_SAN_PHAM: "ASS.RF24.K01",
             DATE_CREATE: new Date(),
             ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
             USER_ID: '6722547918621605824',
@@ -843,10 +845,26 @@ async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRC
 
     // Chuẩn bị dữ liệu Excel
     const excelData = [["STT", "URL", "QR Base64"]];
+    let PR_KEY = 10;
     for (let i = 0; i < urls.length; i++) {
+        const prKeyStr = PR_KEY.toString().padStart(4, '0');
         const url = urls[i].trim();
-        const qrBase64 = await QRCode.toDataURL(url, { width: 150 });
-        excelData.push([i + 1, url, qrBase64]);
+        const ckValue = extractCK(url);
+        
+        const willInsertData = {
+            QR_CODE: "T20251029,ASS.RF24.K01,A202510."+prKeyStr,
+            CK_CODE: ckValue,
+            MA_SAN_PHAM: "ASS.RF24.K01",
+            DATE_CREATE: new Date(),
+            ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
+            USER_ID: '6722547918621605824',
+            DATASTATE: "ADD",
+        };
+        console.log(willInsertData);
+        await HOMEOSAPP.add('DM_QRCODE', willInsertData);
+        // const qrBase64 = await QRCode.toDataURL(url, { width: 150 });
+        excelData.push([i + 1, "A202510."+prKeyStr, url]);
+        PR_KEY++;
     }
 
     const ws = XLSX.utils.aoa_to_sheet(excelData);
@@ -1462,6 +1480,8 @@ var handleFormSubmit = async (e) => {
         DATASTATE: 'ADD'
     }
 
+    await HOMEOSAPP.add('PRODUCT_LOT', willInsertLot);
+
     console.log(formData);
     if (currentFormMode === "add") {
         mockBatches.unshift(formData);
@@ -1776,6 +1796,12 @@ var handleSaveIdentities = async () => {
             "PRODUCT_LOT",
             "LOT_PRODUCT_CODE='"+mainBatch.batchCode+"'"
         );
+
+        let dataItemQRcode = await HOMEOSAPP.getDM(
+            HOMEOSAPP.linkbase,
+            "DM_QRCODE",
+            "1=1"
+        );
         
         Object.values(dataDetailLot).forEach(pallet =>
             Object.values(pallet).forEach(carton =>
@@ -1783,11 +1809,13 @@ var handleSaveIdentities = async () => {
                     const layerNumber = parseInt(layerKey.split("_")[1], 10);
 
                     items.forEach(async item => {
-                        const dataItemQRcode = await HOMEOSAPP.getDM(
-                            HOMEOSAPP.linkbase,
-                            "DM_QRCODE",
-                            "QR_CODE='" + item + "'"
-                        );
+                        // const dataItemQRcode = await HOMEOSAPP.getDM(
+                        //     HOMEOSAPP.linkbase,
+                        //     "DM_QRCODE",
+                        //     "QR_CODE='" + item + "'"
+                        // );
+                        const dataItemQRcode = dataItemQRcode.data.filter((batch) => batch.QR_CODE === item)
+                        HOMEOSAPP.delay(100);
                         if(dataItemQRcode.data[0].LOT_ID != dataLot.data[0].PR_KEY){
                             const original = dataItemQRcode.data[0];
                             const willInsertData = {
@@ -2045,7 +2073,7 @@ var getStockInfo = (quantity) => {
             bg: "bg-danger-subtle",
             text_color: "text-danger-emphasis",
         };
-    if (quantity <= 20)
+    if (quantity <= 10)
         return {
             text: "Sắp hết hàng",
             color: "warning",
@@ -3889,7 +3917,7 @@ function initProductionOrderModule() {
     $container.on("click", "#po-btnUpdateOrder", function () {
         const orderIndex = productionOrders.findIndex(
             (o) => o.id === editingOrderId
-        );
+        )
         if (orderIndex > -1) {
             const selectedProduct = $container
                 .find("#po-editProductName")
@@ -4437,14 +4465,13 @@ async function initBomDeclarationModule() {
     }
 
     // --- INITIALIZE SELECT2 ---
-    $container
-        .find("#materialName, #editMaterialName")
-        .select2({
-            data: materialsMasterList,
-            placeholder: "Chọn vật tư",
-            width: "70%",
-            allowClear: true,
-        });
+    $container.find("#materialName, #editMaterialName")
+    .select2({
+        data: materialsMasterList,
+        placeholder: "Chọn vật tư",
+        width: "70%",
+        allowClear: true,
+    });
 
     // --- EVENT HANDLERS ---
     $container.off(); // Detach all previous handlers
@@ -4506,7 +4533,7 @@ async function initBomDeclarationModule() {
     });
 
     // Add BOM Logic
-    $container.on("submit", "#formStep1", function (e) {
+    $container.on("submit", "#formStep1", async function (e) {
         e.preventDefault();
         tempBomData.info = {
             id: `BOM${Date.now()}`,
@@ -4520,10 +4547,11 @@ async function initBomDeclarationModule() {
             hardwareFinisher: $container.find("#bomHardwareFinisher").val(),
             softwareUploader: $container.find("#bomSoftwareUploader").val(),
         };
+        const bomId = await HOMEOSAPP.getTranNo("", 'GET', 'PRODUCT_PUBLISH');
         $container
             .find("#bomSummary")
             .html(
-                `<p class="mb-1"><strong>Tên BOM:</strong> ${tempBomData.info.name}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${tempBomData.info.productName}</p>`
+                `<p class="mb-1"><strong>BOM:</strong> ${bomId}</p><p class="mb-0"><strong>Sản phẩm:</strong> ${tempBomData.info.productName}</p>`
             );
         const stepper1 = $container.find("#stepper-1"),
             stepper2 = $container.find("#stepper-2");
@@ -4540,8 +4568,6 @@ async function initBomDeclarationModule() {
         const selectedMaterial = $container
             .find("#materialName")
             .select2("data")[0];
-        console.log(selectedMaterial);
-        
         const materialQty = $container.find("#materialQty").val();
         const materialBH = $container.find("#materialBH").val();
         if (selectedMaterial && selectedMaterial.text && materialQty) {
@@ -4792,7 +4818,6 @@ function initPhotoUploader(containerId) {
                     <button type="button" class="btn-close btn-sm"></button>
                 </li>
             `);
-
             // Xoá file
             li.find(".btn-close").click(() => {
                 const idx = photoStores[containerId].indexOf(file);
