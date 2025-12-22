@@ -722,7 +722,7 @@ async function createLot(type) {
     );
 
     console.log(scannedData.data);
-    generateCKUrls(341, scannedData.data, type);
+    generateCKUrls(80, scannedData.data, type);
 }
 
 function generateCKUrls(count, data, type) {
@@ -852,9 +852,9 @@ async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRC
         const ckValue = extractCK(url);
         
         const willInsertData = {
-            QR_CODE: "T20251029,ASS.RF24.K01,A202510."+prKeyStr,
+            QR_CODE: "T20251222,DMCO-CWM.01,D202512."+prKeyStr,
             CK_CODE: ckValue,
-            MA_SAN_PHAM: "ASS.RF24.K01",
+            MA_SAN_PHAM: "DMCO-CWM.01",
             DATE_CREATE: new Date(),
             ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
             USER_ID: '6722547918621605824',
@@ -863,7 +863,7 @@ async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRC
         console.log(willInsertData);
         await HOMEOSAPP.add('DM_QRCODE', willInsertData);
         // const qrBase64 = await QRCode.toDataURL(url, { width: 150 });
-        excelData.push([i + 1, "A202510."+prKeyStr, url]);
+        excelData.push([i + 1, "D202512."+prKeyStr, url]);
         PR_KEY++;
     }
 
@@ -1809,12 +1809,6 @@ var handleSaveIdentities = async () => {
                     const layerNumber = parseInt(layerKey.split("_")[1], 10);
 
                     items.forEach(async item => {
-                        // const dataItemQRcode = await HOMEOSAPP.getDM(
-                        //     HOMEOSAPP.linkbase,
-                        //     "DM_QRCODE",
-                        //     "QR_CODE='" + item + "'"
-                        // );
-                        
                         const dataItemQRcode = dataItemQRcodes.data.filter((batch) => batch.QR_CODE === item)
                         
                         console.log(dataLot.data[0].PR_KEY);

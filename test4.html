@@ -1,361 +1,863 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="light">
 <head>
     <meta charset="UTF-8">
-    <title>WCF File Upload & Download Multiple</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Hợp đồng & Báo giá</title>
+    
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Favicon (sử dụng logo) -->
+    <link rel="icon" href="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" type="image/webp">
+    
+    <!-- Cấu hình Tailwind (Giống hệt test1.html) -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            '50': '#eff6ff', '100': '#dbeafe', '200': '#bfdbfe', '300': '#93c5fd', '400': '#60a5fa', '500': '#3b82f6', '600': '#2563eb', '700': '#1d4ed8', '800': '#1e40af', '900': '#1e3a8a', '950': '#172554',
+                        },
+                        light: {
+                            bg: '#f9fafb', card: '#ffffff', text: '#111827', border: '#e5e7eb',
+                        },
+                        dark: {
+                            bg: '#111827', card: '#1f2937', text: '#f9fafb', border: '#374151',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Icons (Heroicons) -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <!-- CSS Tùy chỉnh (Giống hệt test1.html) -->
     <style>
-        :root {
-            --status-bar-height: 228px;
-            --gap: 12px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        
+        body, .sidebar, .topbar, .kanban-card, .kanban-column, .workflow-step, .data-table {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .page-header {
-            flex-shrink: 0;
-            padding: var(--gap);
-            padding-bottom: 0;
-        }
-
-        .page-main {
-            flex-grow: 1;
-            display: flex;
-            gap: var(--gap);
-            padding: var(--gap);
-            padding-bottom: calc(var(--status-bar-height) + var(--gap));
-            overflow: hidden;
-        }
-
-        .app-section {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 8px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: #0056b3;
-            margin-top: 0;
-            font-size: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        /* [THÊM MỚI] Kiểu cho tab active và inactive */
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            flex-shrink: 0;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px; /* Dính vào border-b của container */
+        }
+        .tab-button.active {
+            color: #3b82f6; /* primary-500 */
+            border-bottom-color: #3b82f6; /* primary-500 */
+        }
+        .dark .tab-button.active {
+            color: #60a5fa; /* primary-400 */
+            border-bottom-color: #60a5fa; /* primary-400 */
+        }
+        .tab-button:not(.active) {
+            color: #6b7280; /* gray-500 */
+        }
+        .dark .tab-button:not(.active) {
+            color: #9ca3af; /* gray-400 */
+        }
+        .tab-button:not(.active):hover {
+            color: #111827; /* gray-900 */
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .dark .tab-button:not(.active):hover {
+            color: #ffffff; /* white */
+            background-color: #374151; /* gray-700 */
         }
 
-            button:hover {
-                background-color: #0056b3;
-            }
-
-            button:disabled {
-                background-color: #cccccc;
-                cursor: not-allowed;
-            }
-
-        #fileListContainer {
-            margin-top: 20px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            flex-grow: 1;
-            min-height: 100px;
-            display: flex;
-        }
-
-        #fileList {
-            list-style-type: none;
-            padding: 15px;
-            margin: 0;
-            width: 100%;
-            overflow-y: auto;
-        }
-
-            #fileList li {
-                padding: 8px;
-                border-bottom: 1px solid #ddd;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                word-break: break-all;
-            }
-
-                #fileList li:last-child {
-                    border-bottom: none;
-                }
-
-                #fileList li:hover {
-                    background-color: #dde8f5;
-                }
-
-        #fixed-status-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: var(--status-bar-height);
-            background-color: #fff;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 15px 25px;
-            box-sizing: border-box;
-        }
-
-        #status-bar-header {
-            margin-bottom: 10px;
-            font-size: 18px;
-            color: #333;
-            font-weight: 600;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        #mainStatusArea {
-            flex-grow: 1;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #e9ecef;
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .status-message {
-            margin-bottom: 5px;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-            .status-message strong {
-                margin-right: 8px;
-            }
-
-        .success {
-            color: #155724;
-        }
-
-        .error {
-            color: #721c24;
-        }
     </style>
 </head>
-<body>
-    <header class="page-header">
-        <div id="config-section" class="app-section">
-            <h1>⚙️ Cấu hình</h1>
-            <div class="form-group">
-                <label for="baseApiUrlInput">API Endpoint</label>
-                <input type="text" id="baseApiUrlInput" value="http://localhost:61877/FileService.svc">
-            </div>
-        </div>
-    </header>
 
-    <main class="page-main">
-        <div id="uploadApp" class="app-section">
-            <h1>⬆️ Upload File</h1>
-            <div class="form-group">
-                <label for="uploadFolderNameInput">Thư mục trên Server</label>
-                <input type="text" id="uploadFolderNameInput" placeholder="Ví dụ: BaoCao, HinhAnh">
-            </div>
-            <div class="form-group">
-                <label for="fileInput">Chọn một hoặc nhiều file</label>
-                <input type="file" id="fileInput" multiple>
-            </div>
-            <button id="uploadButton" disabled>Upload Files</button>
-        </div>
+<body class="font-sans antialiased bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text">
 
-        <div id="downloadApp" class="app-section">
-            <h1>⬇️ Download File</h1>
-            <div class="form-group">
-                <label for="downloadFolderNameInput">Thư mục trên Server</label>
-                <input type="text" id="downloadFolderNameInput" placeholder="Nhập tên thư mục, ví dụ: Default">
+    <!-- Màn hình Đăng nhập (Giữ nguyên từ test1.html) -->
+    <div id="login-screen" class="flex min-h-screen items-center justify-center p-4">
+        <div class="w-full max-w-sm p-8 bg-light-card dark:bg-dark-card rounded-2xl shadow-2xl space-y-6 transition-all">
+            <div class="flex justify-center">
+                <img src="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" alt="HomeOS Logo" class="h-16">
             </div>
-            <button id="listFilesButton">1. Liệt Kê Files</button>
-            <div id="fileListContainer">
-                <ul id="fileList">
-                    <li>Kết quả tìm kiếm sẽ hiện ở đây</li>
+            <h2 class="text-2xl font-bold text-center text-light-text dark:text-dark-text">Đăng nhập hệ thống</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" value="admin" class="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 focus:ring-primary-500 outline-none transition" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mật khẩu</label>
+                    <input type="password" id="password" name="password" value="password" class="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 focus:ring-primary-500 outline-none transition" required>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900 dark:text-gray-200">Ghi nhớ tôi</label>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">Quên mật khẩu?</a>
+                </div>
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
+                        Đăng nhập
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Giao diện Dashboard chính (Ban đầu ẩn đi) -->
+    <div id="dashboard-app" class="flex h-screen overflow-hidden hidden">
+        
+        <!-- Sidebar (Menu Bar) -->
+        <nav class="sidebar w-64 flex-shrink-0 bg-light-card dark:bg-dark-card shadow-lg flex flex-col border-r border-light-border dark:border-dark-border">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-20 border-b border-light-border dark:border-dark-border">
+                <img src="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" alt="HomeOS Logo" class="h-12">
+            </div>
+            
+            <!-- Menu Chính -->
+            <div class="flex-1 overflow-y-auto py-6">
+                <ul class="space-y-2 px-4">
+                    <!-- Dashboard (Kanban) -->
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="grid-outline" class="text-xl"></ion-icon>
+                            <span>Dashboard (Đơn hàng)</span>
+                        </a>
+                    </li>
+                    
+                    <!-- [THAY ĐỔI] Hợp đồng & Báo giá -->
+                    <li>
+                        <a href="#" id="nav-hop-dong" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-500 text-white font-medium shadow-md" data-view="contract">
+                            <ion-icon name="document-attach-outline" class="text-xl"></ion-icon>
+                            <span>Hợp đồng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="nav-bao-gia" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-view="quote">
+                            <ion-icon name="pricetag-outline" class="text-xl"></ion-icon>
+                            <span>Báo giá</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="people-outline" class="text-xl"></ion-icon>
+                            <span>Khách hàng</span>
+                        </a>
+                    </li>
+                     <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="business-outline" class="text-xl"></ion-icon>
+                            <span>Nhà cung cấp</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="wallet-outline" class="text-xl"></ion-icon>
+                            <span>Thanh toán</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Phân cách -->
+                    <li class="pt-4 pb-2 px-4">
+                        <span class="text-xs font-semibold text-gray-400 uppercase">Báo cáo & Cài đặt</span>
+                    </li>
+                    
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="bar-chart-outline" class="text-xl"></ion-icon>
+                            <span>Thống kê</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+                            <span>Cài đặt</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
-            <button id="downloadButton" disabled>2. Download Selected Files</button>
-        </div>
-    </main>
+            
+            <!-- Theme Toggle & User -->
+            <div class="p-4 border-t border-light-border dark:border-dark-border">
+                <button id="theme-toggle" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="moon-outline" id="theme-icon-dark" class="text-xl"></ion-icon>
+                    <ion-icon name="sunny-outline" id="theme-icon-light" class="text-xl hidden"></ion-icon>
+                    <span id="theme-text">Chế độ tối</span>
+                </button>
+                
+                <button id="logout-button" class="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-2 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors">
+                    <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
+                    <span>Đăng xuất</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Vùng nội dung chính -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Top Bar -->
+            <header class="topbar bg-light-card dark:bg-dark-card shadow-sm border-b border-light-border dark:border-dark-border flex-shrink-0">
+                <div class="flex items-center justify-between h-20 px-6">
+                    <!-- [THAY ĐỔI] Tiêu đề trang -->
+                    <h1 id="page-title" class="text-2xl font-semibold text-light-text dark:text-dark-text">Quản lý Hợp đồng</h1>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- [THAY ĐỔI] Nút Tạo mới -->
+                        <button id="topbar-create-button" data-modal-target="modal-contract-form" class="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg shadow-md hover:bg-primary-700 transition-colors font-medium">
+                            <ion-icon name="add-circle-outline" class="text-xl"></ion-icon>
+                            <span id="create-button-text">Tạo Hợp đồng</span>
+                        </button>
+                        
+                        <!-- Tìm kiếm -->
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <ion-icon name="search-outline" class="text-gray-400"></ion-icon>
+                            </span>
+                            <input type="text" placeholder="Tìm kiếm hợp đồng, báo giá..." class="w-72 pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-gray-800 focus:ring-0 outline-none transition">
+                        </div>
+                        
+                        <!-- Nút thông báo -->
+                        <button class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 relative">
+                            <ion-icon name="notifications-outline" class="text-2xl"></ion-icon>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        
+                        <!-- User Profile -->
+                        <div class="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/60a5fa/ffffff?text=AV" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <div class="font-medium">Nguyễn Thúy Vân</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Business Analyst</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- [THÊM MỚI] Nội dung chính (với Tabs) -->
+            <div class="flex-1 p-6 overflow-y-auto">
+                
+                <!-- Thanh Tabs điều hướng -->
+                <div class="mb-5 border-b-2 border-light-border dark:border-dark-border">
+                    <nav class="flex -mb-px">
+                        <button id="tab-contract" class="tab-button active" data-view="contract">
+                            <ion-icon name="document-attach-outline" class="text-xl mr-2"></ion-icon>
+                            Danh sách Hợp đồng
+                        </button>
+                        <button id="tab-quote" class="tab-button" data-view="quote">
+                            <ion-icon name="pricetag-outline" class="text-xl mr-2"></ion-icon>
+                            Danh sách Báo giá
+                        </button>
+                    </nav>
+                </div>
 
-    <footer id="fixed-status-bar">
-        <div id="status-bar-header">📜 Nhật ký Trạng thái</div>
-        <div id="mainStatusArea">
-            <p>Nhật ký cho các hoạt động Upload và Download sẽ được hiển thị ở đây...</p>
-        </div>
-    </footer>
+                <!-- View Hợp đồng (Mặc định hiển thị) -->
+                <div id="contract-view" class="view-content">
+                    <div class="w-full bg-light-card dark:bg-dark-card rounded-lg shadow-md border border-light-border dark:border-dark-border overflow-hidden data-table">
+                        <!-- Filters -->
+                        <div class="p-4 flex items-center space-x-3 bg-gray-50 dark:bg-gray-700/50">
+                            <select class="rounded-lg bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border text-sm">
+                                <option>Trạng thái: Tất cả</option>
+                                <option>Trạng thái: Chờ phê duyệt</option>
+                                <option>Trạng thái: Đã ký</option>
+                                <option>Trạng thái: Hết hạn</option>
+                            </select>
+                            <select class="rounded-lg bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border text-sm">
+                                <option>Khách hàng: Tất cả</option>
+                                <option>Khách hàng: Cty Hoa Quả Sạch</option>
+                                <option>Khách hàng: Tập đoàn May Mặc</option>
+                            </select>
+                            <button class="px-3 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 text-sm">
+                                <ion-icon name="filter-outline" class="text-lg"></ion-icon>
+                            </button>
+                        </div>
+                        <!-- Bảng Hợp đồng -->
+                        <table class="min-w-full divide-y divide-light-border dark:divide-dark-border">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Số HĐ</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tên Hợp đồng</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Khách hàng</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Trạng thái</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ngày hiệu lực</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ngày hết hạn</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contract-list-body" class="divide-y divide-light-border dark:divide-dark-border">
+                                <!-- Dữ liệu Hợp đồng (từ JS) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
+                <!-- View Báo giá (Ban đầu ẩn) -->
+                <div id="quote-view" class="view-content hidden">
+                    <div class="w-full bg-light-card dark:bg-dark-card rounded-lg shadow-md border border-light-border dark:border-dark-border overflow-hidden data-table">
+                         <!-- Filters -->
+                        <div class="p-4 flex items-center space-x-3 bg-gray-50 dark:bg-gray-700/50">
+                            <select class="rounded-lg bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border text-sm">
+                                <option>Trạng thái: Tất cả</option>
+                                <option>Trạng thái: Mới tạo</option>
+                                <option>Trạng thái: Đã duyệt</option>
+                                <option>Trạng thái: Từ chối</option>
+                            </select>
+                            <select class="rounded-lg bg-light-card dark:bg-dark-card border-light-border dark:border-dark-border text-sm">
+                                <option>Hợp đồng: Tất cả</option>
+                                <option>Hợp đồng: 2025/10/001/FLW-HQS</option>
+                            </select>
+                        </div>
+                        <!-- Bảng Báo giá -->
+                        <table class="min-w-full divide-y divide-light-border dark:divide-dark-border">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Số BG</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Hợp đồng liên quan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Khách hàng</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Trạng thái</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ngày báo giá</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tổng tiền</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quote-list-body" class="divide-y divide-light-border dark:divide-dark-border">
+                                <!-- Dữ liệu Báo giá (từ JS) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </main>
+        
+    </div>
+
+    <!-- Backdrop (Giữ nguyên) -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"></div>
+
+    <!-- [THÊM MỚI] Modal Tạo/Sửa Hợp đồng -->
+    <div id="modal-contract-form" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-light-card dark:bg-dark-card w-full max-w-3xl rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border">
+                <h3 id="contract-modal-title" class="text-lg font-semibold">Tạo Hợp đồng mới</h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <!-- Content (Form) -->
+            <form class="p-6 overflow-y-auto space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">Số hợp đồng (UC-HDK-01)</label>
+                        <input type="text" placeholder="VD: 2025/10/001/FLW-MãKH" class="form-input">
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium">Tên hợp đồng</label>
+                        <input type="text" placeholder="Hợp đồng nguyên tắc..." class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Khách hàng</label>
+                        <select class="form-input">
+                            <option>Công ty Hoa Quả Sạch</option>
+                            <option>Tập đoàn May Mặc VN</option>
+                            <option>Đối tác Singapore</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Loại hợp đồng</label>
+                        <select class="form-input">
+                            <option>Hợp đồng khung</option>
+                            <option>Hợp đồng theo lô</option>
+                            <option>Phụ lục</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium">Ngày hiệu lực (UC-HDK-03)</label>
+                        <input type="date" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Ngày hết hạn (UC-HDK-03)</label>
+                        <input type="date" class="form-input">
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium">Trạng thái (Mục 5.2)</label>
+                        <select class="form-input">
+                            <option>Chờ phê duyệt</option>
+                            <option>Đã ký</option>
+                            <option>Còn hiệu lực</option>
+                            <option>Đã hết hạn</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium">Thời hạn thanh toán (ngày)</label>
+                        <input type="number" value="30" class="form-input">
+                    </div>
+                </div>
+                 <div>
+                    <label class="block text-sm font-medium">Điều khoản mở rộng (UC-HDK-05)</label>
+                    <textarea rows="3" placeholder="Thêm các điều khoản bổ sung..." class="form-input"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Upload hợp đồng đã ký (UC-HDK-03)</label>
+                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100"/>
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="flex items-center justify-end p-4 border-t border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-card/50 rounded-b-lg">
+                <button class="close-modal px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Hủy</B>
+                <button class="px-4 py-2 ml-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700">Lưu Hợp đồng</B>
+            </div>
+        </div>
+    </div>
+    
+    <!-- [THÊM MỚI] Modal Tạo/Sửa Báo giá -->
+    <div id="modal-quote-form" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-light-card dark:bg-dark-card w-full max-w-4xl rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+             <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border">
+                <h3 id="quote-modal-title" class="text-lg font-semibold">Tạo Báo giá mới</h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <!-- Content (Form) -->
+            <form class="p-6 overflow-y-auto space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label class="block text-sm font-medium">Khách hàng (UC-BG-01)</label>
+                        <select class="form-input">
+                            <option>Công ty Hoa Quả Sạch</option>
+                            <option>Tập đoàn May Mặc VN</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium">Hợp đồng liên quan</label>
+                        <select class="form-input">
+                            <option>Không có</option>
+                            <option>2025/10/001/FLW-HQS</option>
+                            <option>2025/10/002/FLW-MM</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Ngày báo giá</label>
+                        <input type="date" class="form-input">
+                    </div>
+                </div>
+                
+                <!-- Chi tiết báo giá -->
+                <div class="pt-2">
+                    <h4 class="text-md font-semibold mb-2">Chi tiết dịch vụ báo giá</h4>
+                    <div class="overflow-x-auto rounded-lg border border-light-border dark:border-dark-border">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">Mã DV</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">Tên dịch vụ</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">ĐVT</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">Số lượng</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">Đơn giá</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">VAT (%)</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium uppercase">Tổng tiền</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium uppercase">...</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t border-light-border dark:border-dark-border">
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="VC-HQ"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="Phí vận chuyển HQ"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="Cont 20"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="2"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="1500000"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="10"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="3,300,000" disabled></td>
+                                    <td class="px-4 py-2 text-center"><button class="text-red-500"><ion-icon name="trash-outline"></ion-icon></button></td>
+                                </tr>
+                                 <tr class="border-t border-light-border dark:border-dark-border">
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="THQ-01"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="Phí thủ tục hải quan"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="Lô"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="1"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="500000"></td>
+                                    <td class="px-4 py-2"><input type="number" class="form-input-table" value="0"></td>
+                                    <td class="px-4 py-2"><input type="text" class="form-input-table" value="500,000" disabled></td>
+                                    <td class="px-4 py-2 text-center"><button class="text-red-500"><ion-icon name="trash-outline"></ion-icon></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="mt-2 text-sm text-primary-600 font-medium flex items-center space-x-1">
+                        <ion-icon name="add-outline"></ion-icon>
+                        <span>Thêm dòng</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">Ghi chú (Mục 5.2)</label>
+                        <textarea rows="3" placeholder="Ghi chú nội bộ, so sánh giá..." class="form-input"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Upload báo giá đã ký (UC-BG-03)</label>
+                        <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100"/>
+                    </div>
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="flex items-center justify-between p-4 border-t border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-card/50 rounded-b-lg">
+                <div class="text-lg font-semibold">
+                    Tổng cộng (sau VAT): <span class="text-primary-600">3,800,000 VND</span>
+                </div>
+                <div>
+                    <button class="close-modal px-4 py-2 rounded-lg">Hủy</button>
+                    <button class="px-4 py-2 ml-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700">Lưu Báo giá</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Dữ liệu JSON (Mock Data) -->
     <script>
-        const statusArea = $("#mainStatusArea");
-
-        function logStatus(message, type = "success") {
-            const p = $(`<p class="status-message ${type}"></p>`).text(message);
-            statusArea.append(p);
-            statusArea.scrollTop(statusArea[0].scrollHeight);
-        }
-
-        let apiBase = $("#baseApiUrlInput").val();
-
-        // Upload multiple files
-        $("#fileInput").on("change", function() {
-            $("#uploadButton").prop("disabled", this.files.length === 0);
-        });
-
-        $("#uploadButton").click(function() {
-            apiBase = $("#baseApiUrlInput").val();
-
-            const files = $("#fileInput")[0].files;
-            if (!files.length) return;
-
-            const folder = $("#uploadFolderNameInput").val().trim();
-            logStatus(`Bắt đầu upload ${files.length} file...`);
-
-            Array.from(files).forEach(file => {
-                $.ajax({
-                    url: apiBase + "/UploadFile",
-                    type: "POST",
-                    data: file,
-                    processData: false,
-                    contentType: "application/octet-stream",
-                    dataType: "text",
-                    success: function(resp) {
-                        const id = resp.replace(/<.*?>/g, "").trim();
-                        let saveUrl = apiBase + "/SaveFileInfo?id=" + encodeURIComponent(id)
-                            + "&fileName=" + encodeURIComponent(file.name);
-                        if (folder) saveUrl += "&folderName=" + encodeURIComponent(folder);
-
-                        $.ajax({
-                            url: saveUrl,
-                            type: "POST",
-                            dataType: "text",
-                            success: function(res) {
-                                logStatus(`Upload & Save thành công: ${file.name}`);
-                            },
-                            error: function(err) {
-                                logStatus(`Lỗi SaveFileInfo: ${file.name}`, "error");
-                            }
-                        });
-                    },
-                    error: function(err) {
-                        logStatus(`Lỗi upload: ${file.name}`, "error");
-                    }
-                });
-            });
-        });
-
-        // List files in folder
-        $("#listFilesButton").click(function() {
-            apiBase = $("#baseApiUrlInput").val();
-
-            const folder = $("#downloadFolderNameInput").val().trim();
-            let url = apiBase + "/ListFiles";
-            if (folder) url += "?folderName=" + encodeURIComponent(folder);
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success: function(files) {
-                    if (!files || files.length === 0) {
-                        $("#fileList").html("<li>Không có file nào trong folder này</li>");
-                        $("#downloadButton").prop("disabled", true);
-                        return;
-                    }
-                    let html = "";
-                    files.forEach(f => {
-                        html += `<li><input type="checkbox" class="fileCheckbox" value="${f}"> ${f}</li>`;
-                    });
-                    $("#fileList").html(html);
-                    $("#downloadButton").prop("disabled", false);
-                    logStatus(`Tìm thấy ${files.length} file trong folder "${folder}"`);
+        const dataApp = {
+            contracts: [
+                {
+                    id: "2025/10/001/FLW-HQS",
+                    name: "Hợp đồng khung dịch vụ XNK",
+                    customer: "Công ty Hoa Quả Sạch",
+                    status: "Đã ký",
+                    statusColor: "bg-green-500",
+                    startDate: "01/10/2025",
+                    endDate: "01/10/2026",
                 },
-                error: function(err) {
-                    logStatus("Lỗi liệt kê file: " + err.responseText, "error");
+                {
+                    id: "2025/10/002/FLW-MM",
+                    name: "Hợp đồng vận tải Lô Hàng 10/2025",
+                    customer: "Tập đoàn May Mặc VN",
+                    status: "Chờ phê duyệt",
+                    statusColor: "bg-yellow-500",
+                    startDate: "15/10/2025",
+                    endDate: "30/11/2025",
+                },
+                {
+                    id: "2024/09/005/FLW-SGP",
+                    name: "Hợp đồng dịch vụ 2024",
+                    customer: "Đối tác Singapore",
+                    status: "Hết hạn",
+                    statusColor: "bg-red-500",
+                    startDate: "01/09/2024",
+                    endDate: "01/09/2025",
                 }
-            });
-        });
+            ],
+            quotes: [
+                {
+                    id: "BG-2025-10-005",
+                    contractId: "2025/10/001/FLW-HQS",
+                    customer: "Công ty Hoa Quả Sạch",
+                    status: "Đã duyệt",
+                    statusColor: "bg-green-500",
+                    date: "05/10/2025",
+                    total: "3,800,000 VND"
+                },
+                {
+                    id: "BG-2025-10-006",
+                    contractId: "2025/10/002/FLW-MM",
+                    customer: "Tập đoàn May Mặc VN",
+                    status: "Mới tạo",
+                    statusColor: "bg-blue-500",
+                    date: "16/10/2025",
+                    total: "12,500,000 VND"
+                }
+            ]
+        };
+    </script>
+    
+    <!-- CSS Tùy chỉnh (Bổ sung cho form) -->
+    <style>
+        .form-input {
+            margin-top: 0.25rem;
+            display: block;
+            width: 100%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6; /* gray-100 */
+            border: 1px solid #e5e7eb; /* light-border */
+            outline: none;
+        }
+        .dark .form-input {
+            background-color: #374151; /* gray-700 */
+            border-color: #4b5563; /* dark-border */
+        }
+        .form-input:focus {
+            border-color: #3b82f6; /* primary-500 */
+            box-shadow: 0 0 0 2px #bfdbfe; /* ring */
+        }
+        .form-input-table {
+            width: 100%;
+            padding: 0.5rem 0.25rem;
+            border: none;
+            background-color: transparent;
+            outline: none;
+        }
+        .form-input-table:focus {
+            background-color: #eff6ff; /* primary-50 */
+        }
+        .dark .form-input-table:focus {
+            background-color: #1e3a8a; /* primary-900 */
+        }
+    </style>
 
-        // Download multiple files
-        $("#downloadButton").click(function() {
-            apiBase = $("#baseApiUrlInput").val();
+    <!-- JavaScript chính cho Tương tác -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Khai báo biến ---
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeText = document.getElementById('theme-text');
+            const html = document.documentElement;
 
-            const folder = $("#downloadFolderNameInput").val().trim();
-            const selectedFiles = $(".fileCheckbox:checked").map(function(){ return this.value; }).get();
+            const loginScreen = document.getElementById('login-screen');
+            const dashboardApp = document.getElementById('dashboard-app');
+            const loginForm = document.getElementById('login-form');
+            const logoutButton = document.getElementById('logout-button');
 
-            if (selectedFiles.length === 0) {
-                alert("Chọn ít nhất 1 file để download!");
-                return;
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const modals = document.querySelectorAll('.fixed.z-50');
+            const closeButtons = document.querySelectorAll('.close-modal');
+            
+            // [THÊM MỚI] Các biến cho giao diện Hợp đồng
+            const topbarCreateButton = document.getElementById('topbar-create-button');
+            const createButtonText = document.getElementById('create-button-text');
+            const pageTitle = document.getElementById('page-title');
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const viewContents = document.querySelectorAll('.view-content');
+
+            // --- Xử lý Đăng nhập / Đăng xuất ---
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    loginScreen.classList.add('hidden');
+                    dashboardApp.classList.remove('hidden');
+
+                    // [THÊM MỚI] Render cả 2 bảng khi đăng nhập
+                    renderContractTable(dataApp.contracts);
+                    renderQuoteTable(dataApp.quotes);
+                });
             }
 
-            logStatus(`Bắt đầu download ${selectedFiles.length} file...`);
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    dashboardApp.classList.add('hidden');
+                    loginScreen.classList.remove('hidden');
+                    closeAllModals();
+                });
+            }
 
-            selectedFiles.forEach(fileName => {
-                let url = apiBase + "/DownloadFile?fileName=" + encodeURIComponent(fileName);
-                if (folder) url += "&folderName=" + encodeURIComponent(folder);
-
-                fetch(url)
-                    .then(resp => {
-                        if (!resp.ok) throw new Error("Không tải được file: " + fileName);
-                        return resp.blob();
-                    })
-                    .then(blob => {
-                        const link = document.createElement("a");
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = fileName;
-                        link.click();
-                        logStatus(`Download thành công: ${fileName}`);
-                    })
-                    .catch(err => {
-                        logStatus(`Lỗi download: ${fileName} - ${err.message}`, "error");
-                    });
+            // --- Xử lý Chuyển đổi Theme ---
+            themeToggle.addEventListener('click', () => {
+                const isDark = html.classList.toggle('dark');
+                html.classList.toggle('light', !isDark);
+                themeIconDark.classList.toggle('hidden', isDark);
+                themeIconLight.classList.toggle('hidden', !isDark);
+                themeText.innerText = isDark ? 'Chế độ sáng' : 'Chế độ tối';
             });
+
+            // --- [THÊM MỚI] Render Bảng Hợp đồng ---
+            function renderContractTable(contracts) {
+                const tableBody = document.getElementById('contract-list-body');
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = '';
+                contracts.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors";
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">${item.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-light-text dark:text-dark-text">${item.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${item.customer}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${item.statusColor} text-white">${item.status}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${item.startDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${item.endDate}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                            <button class="text-primary-600 hover:text-primary-800" data-modal-target="modal-contract-form" data-id="${item.id}">Sửa</button>
+                            <button class="text-red-600 hover:text-red-800">Xóa</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // --- [THÊM MỚI] Render Bảng Báo giá ---
+            function renderQuoteTable(quotes) {
+                const tableBody = document.getElementById('quote-list-body');
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = '';
+                quotes.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors";
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">${item.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${item.contractId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-light-text dark:text-dark-text">${item.customer}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${item.statusColor} text-white">${item.status}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${item.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-light-text dark:text-dark-text">${item.total}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                            <button class="text-primary-600 hover:text-primary-800" data-modal-target="modal-quote-form" data-id="${item.id}">Sửa</button>
+                            <button class="text-red-600 hover:text-red-800">Xóa</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // --- [THÊM MỚI] Xử lý chuyển Tab và Nav ---
+            function switchView(viewName) {
+                // 1. Cập nhật Tiêu đề và Nút Tạo
+                if (viewName === 'contract') {
+                    pageTitle.innerText = 'Quản lý Hợp đồng';
+                    createButtonText.innerText = 'Tạo Hợp đồng';
+                    topbarCreateButton.setAttribute('data-modal-target', 'modal-contract-form');
+                } else if (viewName === 'quote') {
+                    pageTitle.innerText = 'Quản lý Báo giá';
+                    createButtonText.innerText = 'Tạo Báo giá';
+                    topbarCreateButton.setAttribute('data-modal-target', 'modal-quote-form');
+                }
+
+                // 2. Cập nhật trạng thái Tab
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-view') === viewName);
+                });
+
+                // 3. Cập nhật trạng thái Nav Sidebar
+                navLinks.forEach(link => {
+                    const linkView = link.getAttribute('data-view');
+                    if (linkView) { // Chỉ xử lý các link có data-view
+                        const isActive = linkView === viewName;
+                        link.classList.toggle('bg-primary-500', isActive);
+                        link.classList.toggle('text-white', isActive);
+                        link.classList.toggle('font-medium', isActive);
+                        link.classList.toggle('shadow-md', isActive);
+                        link.classList.toggle('text-gray-600', !isActive);
+                        link.classList.toggle('dark:text-gray-300', !isActive);
+                        link.classList.toggle('hover:bg-gray-100', !isActive);
+                        link.classList.toggle('dark:hover:bg-gray-700', !isActive);
+                    }
+                });
+
+                // 4. Hiển thị nội dung
+                viewContents.forEach(content => {
+                    content.classList.toggle('hidden', content.id !== `${viewName}-view`);
+                });
+            }
+
+            // Gắn sự kiện cho Tabs
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const viewName = button.getAttribute('data-view');
+                    switchView(viewName);
+                });
+            });
+
+            // Gắn sự kiện cho Nav Links
+            navLinks.forEach(link => {
+                const viewName = link.getAttribute('data-view');
+                if (viewName) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        switchView(viewName);
+                    });
+                }
+            });
+
+            // --- Hệ thống quản lý Modal (Nâng cấp) ---
+            
+            function openModal(modalId, data = null) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+
+                // Xử lý dữ liệu (ví dụ: điền form để "Sửa")
+                if (data) {
+                    if (modalId === 'modal-contract-form') {
+                        modal.querySelector('#contract-modal-title').innerText = 'Sửa Hợp đồng';
+                        // ... logic điền form ...
+                    } else if (modalId === 'modal-quote-form') {
+                         modal.querySelector('#quote-modal-title').innerText = 'Sửa Báo giá';
+                         // ... logic điền form ...
+                    }
+                } else {
+                     // Reset về "Tạo mới"
+                    if (modalId === 'modal-contract-form') {
+                        modal.querySelector('#contract-modal-title').innerText = 'Tạo Hợp đồng mới';
+                    } else if (modalId === 'modal-quote-form') {
+                         modal.querySelector('#quote-modal-title').innerText = 'Tạo Báo giá mới';
+                    }
+                }
+
+                modalBackdrop.classList.remove('hidden');
+                modalBackdrop.classList.add('opacity-100');
+                modal.classList.remove('hidden');
+            }
+
+            function closeModal(modal) {
+                modalBackdrop.classList.add('hidden');
+                modalBackdrop.classList.remove('opacity-100');
+                modal.classList.add('hidden');
+            }
+
+            function closeAllModals() {
+                modals.forEach(modal => closeModal(modal));
+            }
+
+            // Gắn sự kiện mở modal (cho nút tạo mới và nút sửa)
+            document.body.addEventListener('click', (e) => {
+                // Tìm button cha gần nhất có 'data-modal-target'
+                const targetButton = e.target.closest('[data-modal-target]');
+                if (targetButton) {
+                    const modalId = targetButton.getAttribute('data-modal-target');
+                    const dataId = targetButton.getAttribute('data-id'); // Lấy data-id (nếu có)
+                    openModal(modalId, dataId);
+                }
+            });
+
+            // Gắn sự kiện đóng modal
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const modal = e.currentTarget.closest('.fixed.z-50');
+                    closeModal(modal);
+                });
+            });
+
         });
     </script>
 </body>

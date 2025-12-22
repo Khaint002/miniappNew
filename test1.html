@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang quản trị nghiệp vụ Xuất Nhập Khẩu</title>
+    
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Favicon (sử dụng logo) -->
+    <link rel="icon" href="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" type="image/webp">
+    
+    <!-- Cấu hình Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Kích hoạt dark mode bằng class 'dark'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'], // Font chữ Inter cho giao diện hiện đại
+                    },
+                    colors: {
+                        primary: {
+                            '50': '#eff6ff',
+                            '100': '#dbeafe',
+                            '200': '#bfdbfe',
+                            '300': '#93c5fd',
+                            '400': '#60a5fa',
+                            '500': '#3b82f6', // Màu xanh dương làm điểm nhấn
+                            '600': '#2563eb',
+                            '700': '#1d4ed8',
+                            '800': '#1e40af',
+                            '900': '#1e3a8a',
+                            '950': '#172554',
+                        },
+                        // Màu nền cho light/dark mode
+                        light: {
+                            bg: '#f9fafb', // gray-50
+                            card: '#ffffff', // white
+                            text: '#111827', // gray-900
+                            border: '#e5e7eb', // gray-200
+                        },
+                        dark: {
+                            bg: '#111827', // gray-900
+                            card: '#1f2937', // gray-800
+                            text: '#f9fafb', // gray-50
+                            border: '#374151', // gray-700
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Icons (Heroicons) -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <!-- CSS Tùy chỉnh -->
+    <style>
+        /* Font Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        /* Tùy chỉnh thanh cuộn cho đẹp mắt */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #93c5fd; /* primary-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #60a5fa; /* primary-400 */
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        /* Hiệu ứng chuyển màu mượt mà */
+        body, .sidebar, .topbar, .kanban-card, .kanban-column, .workflow-step {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text">
+
+    <!-- [THÊM MỚI] Màn hình Đăng nhập -->
+    <!-- Màn hình này sẽ hiển thị mặc định, che đi dashboard -->
+    <div id="login-screen" class="flex min-h-screen items-center justify-center p-4">
+        <div class="w-full max-w-sm p-8 bg-light-card dark:bg-dark-card rounded-2xl shadow-2xl space-y-6 transition-all">
+            <!-- Logo -->
+            <div class="flex justify-center">
+                <img src="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" alt="HomeOS Logo" class="h-16">
+            </div>
+            
+            <h2 class="text-2xl font-bold text-center text-light-text dark:text-dark-text">Đăng nhập hệ thống</h2>
+            
+            <!-- Form Đăng nhập -->
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" value="admin" class="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 focus:ring-primary-500 outline-none transition" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mật khẩu</label>
+                    <input type="password" id="password" name="password" value="password" class="mt-1 block w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 focus:ring-primary-500 outline-none transition" required>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900 dark:text-gray-200">Ghi nhớ tôi</R>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">Quên mật khẩu?</a>
+                </div>
+                
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all">
+                        Đăng nhập
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- [CHỈNH SỬA] Thêm ID và class 'hidden' cho dashboard chính -->
+    <div id="dashboard-app" class="flex h-screen overflow-hidden hidden">
+        
+        <!-- Sidebar (Menu Bar) -->
+        <nav class="sidebar w-64 flex-shrink-0 bg-light-card dark:bg-dark-card shadow-lg flex flex-col border-r border-light-border dark:border-dark-border">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-20 border-b border-light-border dark:border-dark-border">
+                <img src="https://homeos.com.vn/storage/photos/logo_1611367959_1716866836.webp" alt="HomeOS Logo" class="h-12">
+            </div>
+            
+            <!-- Menu Chính -->
+            <div class="flex-1 overflow-y-auto py-6">
+                <ul class="space-y-2 px-4">
+                    <!-- Dashboard (Kanban) - Active -->
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-500 text-white font-medium shadow-md">
+                            <ion-icon name="grid-outline" class="text-xl"></ion-icon>
+                            <span>Dashboard (Kanban)</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Các menu khác -->
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="document-text-outline" class="text-xl"></ion-icon>
+                            <span>Đơn hàng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="pricetag-outline" class="text-xl"></ion-icon>
+                            <span>Báo giá</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="document-attach-outline" class="text-xl"></ion-icon>
+                            <span>Hợp đồng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="wallet-outline" class="text-xl"></ion-icon>
+                            <span>Thanh toán</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Phân cách -->
+                    <li class="pt-4 pb-2 px-4">
+                        <span class="text-xs font-semibold text-gray-400 uppercase">Báo cáo</span>
+                    </li>
+                    
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="bar-chart-outline" class="text-xl"></ion-icon>
+                            <span>Thống kê Hợp đồng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <ion-icon name="analytics-outline" class="text-xl"></ion-icon>
+                            <span>Dòng tiền</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Theme Toggle & User -->
+            <div class="p-4 border-t border-light-border dark:border-dark-border">
+                <button id="theme-toggle" class="w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="moon-outline" id="theme-icon-dark" class="text-xl"></ion-icon>
+                    <ion-icon name="sunny-outline" id="theme-icon-light" class="text-xl hidden"></ion-icon>
+                    <span id="theme-text">Chế độ tối</span>
+                </button>
+                
+                <!-- [THÊM MỚI] Nút Đăng xuất -->
+                <button id="logout-button" class="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-2 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition-colors">
+                    <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
+                    <span>Đăng xuất</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Vùng nội dung chính -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Top Bar -->
+            <header class="topbar bg-light-card dark:bg-dark-card shadow-sm border-b border-light-border dark:border-dark-border flex-shrink-0">
+                <div class="flex items-center justify-between h-20 px-6">
+                    <!-- Tiêu đề trang -->
+                    <h1 id="page-title" class="text-2xl font-semibold text-light-text dark:text-dark-text">Quản lý Đơn hàng</h1>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- [THAY ĐỔI] Nút Tạo đơn hàng mới -->
+                        <button id="show-new-order-modal" class="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg shadow-md hover:bg-primary-700 transition-colors font-medium">
+                            <ion-icon name="add-circle-outline" class="text-xl"></ion-icon>
+                            <span>Tạo đơn hàng mới</span>
+                        </button>
+                        
+                        <!-- Tìm kiếm -->
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <ion-icon name="search-outline" class="text-gray-400"></ion-icon>
+                            </span>
+                            <input type="text" placeholder="Tìm kiếm đơn hàng, hợp đồng..." class="w-72 pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-primary-500 focus:bg-white dark:focus:bg-gray-800 focus:ring-0 outline-none transition">
+                        </div>
+                        
+                        <!-- Nút thông báo -->
+                        <button class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 relative">
+                            <ion-icon name="notifications-outline" class="text-2xl"></ion-icon>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        
+                        <!-- User Profile -->
+                        <div class="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/60a5fa/ffffff?text=AV" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <div class="font-medium">Nguyễn Văn A</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">BP. Kinh Doanh</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Nội dung chính (Kanban Board) -->
+            <div class="flex-1 p-6 overflow-y-auto">
+                
+                <!-- [XÓA BỎ] Sơ đồ luồng nghiệp vụ đơn giản -->
+                <!-- [XÓA BỎ] Bảng Kanban -->
+                
+                <!-- [THAY THẾ] Bảng Danh sách Đơn hàng -->
+                <div class="w-full bg-light-card dark:bg-dark-card rounded-lg shadow-md border border-light-border dark:border-dark-border overflow-hidden">
+                    <table class="min-w-full divide-y divide-light-border dark:divide-dark-border">
+                        <thead class="bg-gray-50 dark:bg-gray-700/50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Mã ĐH</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Khách hàng</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Loại hình</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Trạng thái</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Người phụ trách</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-list-body" class="divide-y divide-light-border dark:divide-dark-border">
+                            <!-- Dữ liệu từ dataApp.orders sẽ được render vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+            
+        </main>
+        
+    </div>
+
+    <!-- [THÊM MỚI] Modal Backdrop -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"></div>
+
+    <!-- [THÊM MỚI] Modal Tạo Đơn hàng mới -->
+    <div id="modal-new-order" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-light-card dark:bg-dark-card w-full max-w-2xl rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border">
+                <h3 class="text-lg font-semibold">Khai báo thông tin đơn hàng mới</h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <!-- Content (Form) -->
+            <form class="p-6 overflow-y-auto space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Khách hàng</label>
+                    <input type="text" placeholder="Nhập tên khách hàng" class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Loại hình dịch vụ</label>
+                    <select class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none">
+                        <option>Nhập khẩu</option>
+                        <option>Xuất khẩu</option>
+                        <option>Dịch vụ Logistics</option>
+                        <option>Thủ tục Hải quan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Thông tin hàng hóa</label>
+                    <textarea rows="3" placeholder="Mô tả hàng hóa, số lượng,..." class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none"></textarea>
+                </div>
+                 <div>
+                    <label class="block text-sm font-medium">Người phụ trách</label>
+                    <input type="text" value="Nguyễn Văn A" disabled class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-600 border border-light-border dark:border-dark-border">
+                </div>
+            </form>
+            <!-- Footer -->
+            <div class="flex items-center justify-end p-4 border-t border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-card/50 rounded-b-lg">
+                <button class="close-modal px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">Hủy</button>
+                <button class="px-4 py-2 ml-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700">Lưu đơn hàng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [THÊM MỚI] Modal Theo dõi Quy trình Đơn hàng -->
+    <div id="modal-order-tracking" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-light-bg dark:bg-dark-bg w-full max-w-6xl rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border bg-light-card dark:bg-dark-card rounded-t-lg">
+                <h3 class="text-lg font-semibold">Theo dõi quy trình Đơn hàng: <span id="tracking-order-id" class="text-primary-600">ĐH #10234</span></h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <!-- Content (Flowchart) -->
+            <div class="p-6 overflow-y-auto space-y-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Đây là giao diện mô phỏng sơ đồ quy trình nghiệp vụ bạn đã cung cấp. Các bước sẽ tự động cập nhật trạng thái khi nghiệp vụ phát sinh.</p>
+                
+                <!-- Sơ đồ quy trình (CSS-based) -->
+                <div class="flex flex-col lg:flex-row lg:space-x-4">
+                    
+                    <!-- Cột 1: Bắt đầu & Tác vụ chính -->
+                    <div class="flex-1 space-y-3">
+                        <div class="flow-step complete">
+                            <ion-icon name="flag-outline"></ion-icon>
+                            <span>Start: Khai báo thông tin đơn hàng</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step pending" data-modal="modal-cash-advance">
+                            <ion-icon name="cash-outline"></ion-icon>
+                            <span>Khai báo tạm ứng theo đơn hàng</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="checkmark-done-outline"></ion-icon>
+                            <span>Duyệt tạm ứng đơn hàng</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="construct-outline"></ion-icon>
+                            <span>Thực hiện các dịch vụ theo đơn hàng</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive" data-modal="modal-customs-declaration">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <span>Khai báo tờ khai hàng</span>
+                        </div>
+                         <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="cloud-upload-outline"></ion-icon>
+                            <span>Import tờ khai hải quan</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Cột 2: Logistics & NCC -->
+                    <div class="flex-1 space-y-3 mt-4 lg:mt-24">
+                        <div class="flow-step inactive">
+                            <ion-icon name="briefcase-outline"></ion-icon>
+                            <span>PLW (Logistics)</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="airplane-outline"></ion-icon>
+                            <span>Khai báo thông tin giao nhận hàng</span>
+                        </div>
+                        
+                        <div class="flow-step inactive mt-8">
+                            <ion-icon name="business-outline"></ion-icon>
+                            <span>NCC (Nhà cung cấp)</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="paper-plane-outline"></ion-icon>
+                            <span>Yêu cầu cung cấp dịch vụ</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="wallet-outline"></ion-icon>
+                            <span>Yêu cầu trả tiền</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột 3: Thanh toán & Hoàn ứng -->
+                    <div class="flex-1 space-y-3 mt-4 lg:mt-0">
+                         <div class="flow-step inactive mt-0 lg:mt-48">
+                            <ion-icon name="receipt-outline"></ion-icon>
+                            <span>Khai báo chi phí tiền mặt</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="calculator-outline"></ion-icon>
+                            <span>Tổng hợp chi phí tiền mặt & tạm ứng</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="shield-checkmark-outline"></ion-icon>
+                            <span>Xác nhận hoàn ứng</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột 4: Kết thúc -->
+                     <div class="flex-1 space-y-3 mt-4 lg:mt-0">
+                        <div class="flow-step inactive mt-0 lg:mt-[21rem]">
+                            <ion-icon name="card-outline"></ion-icon>
+                            <span>Đề nghị thanh toán</span>
+                        </div>
+                        <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="bar-chart-outline"></ion-icon>
+                            <span>Theo dõi đơn hàng</span>
+                        </div>
+                         <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="newspaper-outline"></ion-icon>
+                            <span>Tạo báo cáo thống kê</span>
+                        </div>
+                         <div class="flow-step-arrow">&darr;</div>
+                        <div class="flow-step inactive">
+                            <ion-icon name="flag-outline"></ion-icon>
+                            <span>End</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <!-- [THÊM MỚI] Modal Khai báo Tạm ứng -->
+    <div id="modal-cash-advance" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-light-card dark:bg-dark-card w-full max-w-lg rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+             <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border">
+                <h3 class="text-lg font-semibold">Khai báo tạm ứng (ĐH #10234)</h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Số tiền tạm ứng (VND)</label>
+                    <input type="number" placeholder="Nhập số tiền" class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Lý do tạm ứng</label>
+                    <textarea rows="3" placeholder="Chi phí vận tải, phí hải quan,..." class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none"></textarea>
+                </div>
+            </div>
+            <div class="flex items-center justify-end p-4 border-t border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-card/50 rounded-b-lg">
+                <button class="close-modal px-4 py-2 rounded-lg">Hủy</button>
+                <button class="px-4 py-2 ml-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700">Gửi yêu cầu</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- [THÊM MỚI] Modal Khai báo Tờ khai -->
+    <div id="modal-customs-declaration" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
+         <div class="bg-light-card dark:bg-dark-card w-full max-w-lg rounded-lg shadow-xl max-h-[90vh] flex flex-col">
+             <div class="flex items-center justify-between p-4 border-b border-light-border dark:border-dark-border">
+                <h3 class="text-lg font-semibold">Khai báo tờ khai (ĐH #10234)</h3>
+                <button class="close-modal p-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Số tờ khai</label>
+                    <input type="text" placeholder="Nhập số tờ khai" class="mt-1 block w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-light-border dark:border-dark-border focus:border-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Tải lên file tờ khai (.pdf, .xml)</label>
+                    <input type="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100"/>
+                </div>
+            </div>
+            <div class="flex items-center justify-end p-4 border-t border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-card/50 rounded-b-lg">
+                <button class="close-modal px-4 py-2 rounded-lg">Hủy</button>
+                <button class="px-4 py-2 ml-3 rounded-lg text-white bg-primary-600 hover:bg-primary-700">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Dữ liệu JSON (Mock Data) -->
+    <script>
+        const dataApp = {
+            // [XÓA BỎ] columns
+            // [THÊM MỚI] orders
+            orders: [
+                {
+                    id: "ĐH #10234",
+                    customer: "Công ty Hoa Quả Sạch",
+                    type: "Nhập khẩu",
+                    status: "Đang xử lý (Chờ tạm ứng)",
+                    statusColor: "bg-yellow-500",
+                    assignee: "Nguyễn Văn A"
+                },
+                {
+                    id: "ĐH #10235",
+                    customer: "Tập đoàn May Mặc VN",
+                    type: "Dịch vụ vận tải",
+                    status: "Hoàn thành",
+                    statusColor: "bg-green-500",
+                    assignee: "Trần Thị B"
+                },
+                 {
+                    id: "ĐH #10233",
+                    customer: "Đối tác Singapore",
+                    type: "Xuất khẩu",
+                    status: "Mới (Chờ xử lý)",
+                    statusColor: "bg-blue-500",
+                    assignee: "Lê Văn C"
+                },
+                {
+                    id: "ĐH #10230",
+                    customer: "Công ty ABC",
+                    type: "Dịch vụ khai báo HQ",
+                    status: "Công nợ (Quá hạn)",
+                    statusColor: "bg-red-500",
+                    assignee: "Phạm Thị D"
+                }
+            ]
+        };
+    </script>
+    
+    <!-- CSS Tùy chỉnh (Bổ sung cho Flowchart) -->
+    <style>
+        /* ... CSS cũ ... */
+
+        /* [THÊM MỚI] CSS cho Flowchart trong Modal */
+        .flow-step {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .flow-step ion-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        /* Trạng thái Hoàn thành */
+        .flow-step.complete {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #86efac; /* green-300 */
+            color: #166534; /* green-800 */
+        }
+        .dark .flow-step.complete {
+            background-color: #14532d; /* green-900 */
+            border-color: #22c55e; /* green-500 */
+            color: #dcfce7; /* green-100 */
+        }
+
+        /* Trạng thái Đang chờ (Pending) - Bước hiện tại */
+        .flow-step.pending {
+            background-color: #feefc7; /* yellow-100 */
+            border-color: #fde08a; /* yellow-300 */
+            color: #854d0e; /* yellow-800 */
+            cursor: pointer; /* Có thể nhấp vào */
+            animation: pulse-border 2s infinite;
+        }
+        .dark .flow-step.pending {
+            background-color: #7c510b; /* yellow-900 */
+            border-color: #facc15; /* yellow-500 */
+            color: #feefc7; /* yellow-100 */
+        }
+        .flow-step.pending:hover {
+            opacity: 0.8;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+        }
+
+        /* Trạng thái Chưa kích hoạt */
+        .flow-step.inactive {
+            background-color: #f3f4f6; /* gray-100 */
+            border-color: #e5e7eb; /* gray-200 */
+            color: #6b7280; /* gray-500 */
+        }
+        .dark .flow-step.inactive {
+            background-color: #374151; /* gray-700 */
+            border-color: #4b5563; /* gray-600 */
+            color: #d1d5db; /* gray-300 */
+        }
+
+        /* Mũi tên */
+        .flow-step-arrow {
+            text-align: center;
+            color: #9ca3af; /* gray-400 */
+            font-size: 20px;
+            margin: -8px 0;
+        }
+        @media (min-width: 1024px) {
+            .flow-step-arrow {
+                margin: -4px 0;
+            }
+        }
+    </style>
+
+    <!-- JavaScript chính cho Tương tác -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeText = document.getElementById('theme-text');
+            const html = document.documentElement;
+
+            // [SỬA ĐỔI] Lấy các phần tử UI
+            const loginScreen = document.getElementById('login-screen');
+            const dashboardApp = document.getElementById('dashboard-app');
+            const loginForm = document.getElementById('login-form');
+            const logoutButton = document.getElementById('logout-button'); // [THÊM MỚI]
+
+            // [THÊM MỚI] Lấy các phần tử Modal
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            // [SỬA LỖI] Phải thoát ký tự '\' hai lần cho JavaScript string (từ 'z-\[60\]' thành 'z-\\[60\\]')
+            const modals = document.querySelectorAll('.fixed.z-50, .fixed.z-\\[60\\]'); // Lấy tất cả các modal
+            const closeButtons = document.querySelectorAll('.close-modal');
+            const showNewOrderModalButton = document.getElementById('show-new-order-modal');
+
+            // --- Xử lý Đăng nhập / Đăng xuất ---
+
+            // [SỬA ĐỔI] Xử lý sự kiện đăng nhập
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault(); // Ngăn form gửi đi
+                    
+                    // ---
+                    // TẠI ĐÂY: Thêm logic xác thực người dùng thật
+                    // ---
+                    
+                    // Mô phỏng đăng nhập thành công:
+                    // Ẩn màn hình đăng nhập
+                    loginScreen.classList.add('hidden');
+                    
+                    // Hiển thị dashboard
+                    dashboardApp.classList.remove('hidden');
+
+                    // [THÊM MỚI] Render bảng khi đăng nhập
+                    renderOrderTable(dataApp.orders);
+                });
+            }
+
+            // [THÊM MỚI] Xử lý đăng xuất
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    // Ẩn dashboard
+                    dashboardApp.classList.add('hidden');
+                    // Hiển thị màn hình đăng nhập
+                    loginScreen.classList.remove('hidden');
+                    // Đóng mọi modal đang mở (nếu có)
+                    closeAllModals();
+                });
+            }
+
+            // --- Xử lý Chuyển đổi Theme ---
+            themeToggle.addEventListener('click', () => {
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    html.classList.add('light');
+                    themeIconDark.classList.remove('hidden');
+                    themeIconLight.classList.add('hidden');
+                    themeText.innerText = 'Chế độ tối';
+                } else {
+                    html.classList.remove('light');
+                    html.classList.add('dark');
+                    themeIconDark.classList.add('hidden');
+                    themeIconLight.classList.remove('hidden');
+                    themeText.innerText = 'Chế độ sáng';
+                }
+            });
+
+            // --- [THAY THẾ] Render Bảng Đơn hàng (thay cho Kanban) ---
+            function renderOrderTable(orders) {
+                const tableBody = document.getElementById('order-list-body');
+                if (!tableBody) return;
+                
+                tableBody.innerHTML = ''; // Xóa dữ liệu cũ
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors";
+                    
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-600 dark:text-primary-400">
+                            ${order.id}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-light-text dark:text-dark-text">
+                            ${order.customer}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            ${order.type}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${order.statusColor} text-white">
+                                ${order.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            ${order.assignee}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="show-tracking-modal text-primary-600 hover:text-primary-800" data-order-id="${order.id}">
+                                Xem quy trình
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Gắn sự kiện cho các nút "Xem quy trình"
+                document.querySelectorAll('.show-tracking-modal').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const orderId = e.currentTarget.getAttribute('data-order-id');
+                        openModal('modal-order-tracking', orderId);
+                    });
+                });
+            }
+
+            // --- [THÊM MỚI] Hệ thống quản lý Modal ---
+            
+            function openModal(modalId, data = null) {
+                const modal = document.getElementById(modalId);
+                if (!modal) return;
+
+                // Xử lý dữ liệu (ví dụ: điền ID đơn hàng)
+                if (modalId === 'modal-order-tracking' && data) {
+                    modal.querySelector('#tracking-order-id').innerText = data;
+                }
+
+                // Xử lý các modal con (lồng nhau)
+                const zIndex = modal.classList.contains('z-[60]') ? 'z-[60]' : 'z-50';
+                
+                // Hiển thị backdrop
+                if (zIndex === 'z-50') { // Chỉ hiển thị backdrop cho modal chính
+                    modalBackdrop.classList.remove('hidden');
+                    modalBackdrop.style.zIndex = 40;
+                } else {
+                    modalBackdrop.style.zIndex = 55; // Backdrop cho modal con
+                }
+                modalBackdrop.classList.add('opacity-100');
+
+
+                modal.classList.remove('hidden');
+                // Thêm hiệu ứng
+                modal.querySelector(':first-child').classList.add('scale-100');
+            }
+
+            function closeModal(modal) {
+                // Xử lý backdrop
+                const zIndex = modal.classList.contains('z-[60]') ? 'z-[60]' : 'z-50';
+                
+                if (zIndex === 'z-50') { // Nếu là modal chính
+                    modalBackdrop.classList.add('hidden');
+                    modalBackdrop.style.zIndex = 40;
+                } else {
+                     modalBackdrop.style.zIndex = 55; // Vẫn giữ backdrop của modal cha
+                }
+
+                modal.classList.add('hidden');
+                 modal.querySelector(':first-child').classList.remove('scale-100');
+            }
+
+            function closeAllModals() {
+                modals.forEach(modal => {
+                    modal.classList.add('hidden');
+                    modal.querySelector(':first-child').classList.remove('scale-100');
+                });
+                modalBackdrop.classList.add('hidden');
+                modalBackdrop.style.zIndex = 40;
+            }
+
+            // Sự kiện mở modal Tạo đơn hàng
+            if(showNewOrderModalButton) {
+                showNewOrderModalButton.addEventListener('click', () => {
+                    openModal('modal-new-order');
+                });
+            }
+
+            // Sự kiện đóng modal
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    // [SỬA LỖI] Đảm bảo selector ở đây cũng đúng (nó đã đúng sẵn 'z-\\[60\\]')
+                    const modal = e.currentTarget.closest('.fixed.z-50, .fixed.z-\\[60\\]');
+                    closeModal(modal);
+                });
+            });
+
+            // [THÊM MỚI] Sự kiện click vào các bước trong flowchart
+            document.querySelectorAll('.flow-step[data-modal]').forEach(step => {
+                step.addEventListener('click', () => {
+                    const modalId = step.getAttribute('data-modal');
+                    openModal(modalId);
+                });
+            });
+
+            // [XÓA BỎ] Render Kanban
+            // const kanbanBoard = document.getElementById('kanban-board'); ...
+
+            // [XÓA BỎ] function renderKanban(columns) { ... }
+            
+            // [XÓA BỎ] function createKanbanCard(item) { ... }
+            
+            // [GIỮ LẠI] các hàm helper (nếu cần, nhưng hiện tại không)
+            // function formatCurrency(value) { ... }
+            // function getTagColor(tag) { ... }
+
+        });
+    </script>
+
+</body>
+</html>

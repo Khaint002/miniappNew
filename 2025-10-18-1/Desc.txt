@@ -1,3 +1,0 @@
-Cập nhật ngày 18/10/2025 lần 1:
-- chỉnh sửa BOM, thêm hiển thị tài liệu kĩ thuật
-- chỉnh sửa nhập xuất kho linh kiện
