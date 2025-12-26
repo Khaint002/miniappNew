@@ -722,7 +722,7 @@ async function createLot(type) {
     );
 
     console.log(scannedData.data);
-    generateCKUrls(80, scannedData.data, type);
+    generateCKUrls(1200, scannedData.data, type);
 }
 
 function generateCKUrls(count, data, type) {
@@ -852,9 +852,9 @@ async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRC
         const ckValue = extractCK(url);
         
         const willInsertData = {
-            QR_CODE: "T20251222,DMCO-CWM.01,D202512."+prKeyStr,
+            QR_CODE: "T20251226,ROLE-ASS.F2200.1P,P202512."+prKeyStr,
             CK_CODE: ckValue,
-            MA_SAN_PHAM: "DMCO-CWM.01",
+            MA_SAN_PHAM: "ROLE-ASS.F2200.1P",
             DATE_CREATE: new Date(),
             ACTIVATE_WARRANTY: new Date('1999-01-01 07:00:00.000'),
             USER_ID: '6722547918621605824',
@@ -863,7 +863,7 @@ async function generateQRCodeExcel(urls, sheetName = "QR Codes", fileName = "QRC
         console.log(willInsertData);
         await HOMEOSAPP.add('DM_QRCODE', willInsertData);
         // const qrBase64 = await QRCode.toDataURL(url, { width: 150 });
-        excelData.push([i + 1, "D202512."+prKeyStr, url]);
+        excelData.push([i + 1, "P202512."+prKeyStr, url]);
         PR_KEY++;
     }
 
